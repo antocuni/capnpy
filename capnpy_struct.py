@@ -1,24 +1,5 @@
 import struct
 
-import cffi
-ffi = cffi.FFI()
-ffi.cdef("""
-    typedef struct {
-        unsigned int kind:2;
-        unsigned int offset:30;
-        unsigned int data_size:16;
-        unsigned int ptr_size:16;
-    } Ptr;
-
-    typedef struct {
-        Ptr root; // MessageRoot*
-    } Message;
-
-    typedef struct {
-        Ptr value;
-    } MessageRoot;
-""")
-
 def decode_message(bytes, rootcls):
     msg = Message(bytes, rootcls)
     return msg.root.value
