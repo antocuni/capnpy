@@ -89,7 +89,7 @@ def bench_rect():
     for r in rlist:
         res += r.a.x + r.a.y + r.b.x + r.b.y
     b = time.time()
-    print '  pycapnp:       %9.4f ms (res=%d)' % ((b-a)*1000, res)
+    print '  pycapnp:               %9.4f ms (res=%d)' % ((b-a)*1000, res)
 
 
 def bench_point():
@@ -131,7 +131,7 @@ def bench_point():
     for p in plist:
         res += p.x + p.y
     b = time.time()
-    print '  pycapnp:       %9.4f ms (res=%d)' % ((b-a)*1000, res)
+    print '  pycapnp:               %9.4f ms (res=%d)' % ((b-a)*1000, res)
 
 
 
