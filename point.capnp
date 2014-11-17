@@ -9,3 +9,7 @@ struct Rectangle {
   a @0 :Point;
   b @1 :Point;
 }
+
+struct Polygon {
+  points @0 :List(Point);
+}
