@@ -12,8 +12,7 @@ def ptrunpack_struct(buf, offset):
     ptrs_size = ptr>>48 & 0xffff
     #
     assert ptr_kind == 0
-    offset = offset + (ptr_offset+1)*8
-    return offset, data_size, ptrs_size
+    return ptr_offset, data_size, ptrs_size
 
 def ptrderef_struct(buf, offset):
     ptr = struct.unpack_from('=q', buf, offset)[0]
@@ -52,23 +51,25 @@ class AbstractStruct(object):
 
 class List(object):
 
-    def __init__(self, buf, offset):
+    def __init__(self, buf, offset, length):
         self._buf = buf
         self._offset = offset
+        self._length = length
 
     @classmethod
-    def from_pointer(cls, buf, offset, *args, **kwds):
-        offset, item_size, item_num = ptrderef_list(buf, offset)
+    def from_pointer(cls, buf, offset):
+        offset, item_size, item_count = ptrderef_list(buf, offset)
         if item_size == 7:
-            # TODO: read and interpret the TAG
+            # read the list TAG
+            item_count, _, _ = ptrunpack_struct(buf, offset)
             offset += 8
-        return cls(buf, offset, *args, **kwds)
+        return cls(buf, offset, item_count)
 
     def __len__(self):
-        return 100 # XXX
+        return self._length
 
     def __getitem__(self, i):
-        if 0 <= i < 100:
+        if 0 <= i < self._length:
             return Point(self._buf, self._offset+(i*16))
         raise IndexError
 
