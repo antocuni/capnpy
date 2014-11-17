@@ -177,14 +177,13 @@ def bench_poly():
     print '  capnpy_struct:         %9.4f ms (res=%d)' % ((b-a)*1000, res)
 
 
-N = 100000
+N = 1000000
 
-bench_rect()
-bench_rect()
-
+## bench_rect()
+## bench_rect()
 ## bench_poly()
 ## bench_poly()
-sys.exit(0)
+## sys.exit(0)
 
 
 print '<first run>'
