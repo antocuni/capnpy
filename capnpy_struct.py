@@ -51,26 +51,29 @@ class AbstractStruct(object):
 
 class List(object):
 
-    def __init__(self, buf, offset, length):
+    def __init__(self, itemcls, buf, offset, item_size, item_count):
+        self._itemcls = itemcls
         self._buf = buf
         self._offset = offset
-        self._length = length
+        self._item_size = item_size
+        self._item_count = item_count
 
     @classmethod
-    def from_pointer(cls, buf, offset):
+    def from_pointer(cls, itemcls, buf, offset):
         offset, item_size, item_count = ptrderef_list(buf, offset)
         if item_size == 7:
             # read the list TAG
-            item_count, _, _ = ptrunpack_struct(buf, offset)
+            item_count, data_size, ptrs_size = ptrunpack_struct(buf, offset)
+            item_size = (data_size+ptrs_size)*8
             offset += 8
-        return cls(buf, offset, item_count)
+        return cls(itemcls, buf, offset, item_size, item_count)
 
     def __len__(self):
-        return self._length
+        return self._item_count
 
     def __getitem__(self, i):
-        if 0 <= i < self._length:
-            return Point(self._buf, self._offset+(i*16))
+        if 0 <= i < self._item_count:
+            return self._itemcls(self._buf, self._offset+(i*self._item_size))
         raise IndexError
 
 
@@ -141,4 +144,4 @@ class Polygon(AbstractStruct):
 
     @property
     def points(self):
-        return List.from_pointer(self._buf, self._offset+0)
+        return List.from_pointer(Point, self._buf, self._offset+0)
