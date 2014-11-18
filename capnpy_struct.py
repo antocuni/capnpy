@@ -48,6 +48,10 @@ class AbstractStruct(object):
     def _read_int64(self, offset):
         return struct.unpack_from('=q', self._buf, offset+self._offset)[0]
 
+    def _read_string(self, offset):
+        offset, item_size, item_count = ptrderef_list(self._buf, offset+self._offset)
+        assert item_size == 2 # 1 byte
+        return self._buf[offset:offset+item_count-1]
 
 class List(object):
 
@@ -114,6 +118,10 @@ class Point(AbstractStruct):
     def y(self):
         return self._read_int64(8)
 
+    @property
+    def name(self):
+        return self._read_string(16)
+    
 
 class Rectangle(AbstractStruct):
 

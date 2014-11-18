@@ -3,6 +3,7 @@
 struct Point {
   x @0 :Int64;
   y @1 :Int64;
+  name @2 :Text;
 }
 
 struct Rectangle {
