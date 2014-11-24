@@ -42,3 +42,31 @@ class Blob(object):
         # pointer itself
         offset = offset + (ptr_offset+1)*8
         return offset
+
+    def _unpack_ptrlist(self, offset):
+        ## lsb                       list pointer                        msb
+        ## +-+-----------------------------+--+----------------------------+
+        ## |A|             B               |C |             D              |
+        ## +-+-----------------------------+--+----------------------------+
+        ##
+        ## A (2 bits) = 1, to indicate that this is a list pointer.
+        ## B (30 bits) = Offset, in words, from the end of the pointer to the
+        ##     start of the first element of the list.  Signed.
+        ## C (3 bits) = Size of each element:
+        ##     0 = 0 (e.g. List(Void))
+        ##     1 = 1 bit
+        ##     2 = 1 byte
+        ##     3 = 2 bytes
+        ##     4 = 4 bytes
+        ##     5 = 8 bytes (non-pointer)
+        ##     6 = 8 bytes (pointer)
+        ##     7 = composite (see below)
+        ## D (29 bits) = Number of elements in the list, except when C is 7
+        ptr = self._read_int64(offset)
+        ptr_kind  = ptr & 0x3
+        ptr_offset = ptr>>2 & 0x3fffffff
+        item_size = ptr>>32 & 0x7
+        item_count = ptr>>35
+        assert ptr_kind == self.PTR_LIST
+        #offset = offset + (ptr_offset+1)*8
+        return offset, item_size, item_count
