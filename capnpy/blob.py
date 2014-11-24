@@ -10,7 +10,18 @@ class Blob(object):
         self._offset = offset
 
     def _read_int64(self, offset):
+        """
+        Read an int64 at the given offset
+        """
         return struct.unpack_from('=q', self._buf, self._offset+offset)[0]
+
+    def _read_struct(self, offset, cls):
+        """
+        Read and dereference a struct pointer at the given offset.  It returns an
+        instance of ``cls`` pointing to the dereferenced struct.
+        """
+        struct_offset = self._deref_ptrstruct(offset)
+        return cls(self._buf, self._offset+struct_offset)
 
     def _unpack_ptrstruct(self, offset):
         ## lsb                      struct pointer                       msb

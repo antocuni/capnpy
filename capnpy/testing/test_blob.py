@@ -2,7 +2,8 @@ from capnpy.blob import Blob
 
 def test_Blob():
     # buf is an array of int64 == [1, 2]
-    buf = '\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00'
+    buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
     b1 = Blob(buf, 0)
     assert b1._read_int64(0) == 1
     assert b1._read_int64(8) == 2
@@ -30,3 +31,19 @@ def test_ptrlist():
     assert offset == 16
     assert item_size == 7
     assert item_count == 200
+
+
+def test_read_struct():
+    ## struct Point {
+    ##   x @0 :Int64;
+    ##   y @1 :Int64;
+    ## }
+    buf = ('\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
+           '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
+    blob = Blob(buf, 0)
+    p = blob._read_struct(0, Blob)
+    assert p._buf is blob._buf
+    assert p._offset == 8
+    assert p._read_int64(0) == 1
+    assert p._read_int64(8) == 2
