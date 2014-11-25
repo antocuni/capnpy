@@ -6,14 +6,15 @@ class Blob(object):
     PTR_STRUCT = 0
     PTR_LIST = 1
 
-    # list size
+    # list item size tag
     LIST_BIT = 1
     LIST_8 = 2
     LIST_16 = 3
     LIST_32 = 4
     LIST_64 = 5
     LIST_PTR = 6
-    # map each LIST_* to the corresponding size in bytes. LIST_BIT is None, as
+    LIST_COMPOSITE = 7
+    # map each LIST size tag to the corresponding size in bytes. LIST_BIT is None, as
     # it is handled specially
     LIST_SIZE = (None, None, 1, 2, 4, 8, 8)
 
@@ -37,8 +38,6 @@ class Blob(object):
 
     def _read_list(self, offset, listcls, itemcls=None):
         offset, item_size, item_count = self._deref_ptrlist(offset)
-        assert item_size != self.LIST_BIT, 'Lists of bits are not supported'
-        item_size = self.LIST_SIZE[item_size]
         return listcls(self._buf, offset, item_size, item_count, itemcls)
 
     def _unpack_ptrstruct(self, offset):
@@ -94,14 +93,30 @@ class Blob(object):
         ptr = self._read_int64(offset)
         ptr_kind  = ptr & 0x3
         ptr_offset = ptr>>2 & 0x3fffffff
-        item_size = ptr>>32 & 0x7
+        item_size_tag = ptr>>32 & 0x7
         item_count = ptr>>35
         assert ptr_kind == self.PTR_LIST
         #offset = offset + (ptr_offset+1)*8
-        return ptr_offset, item_size, item_count
+        return ptr_offset, item_size_tag, item_count
 
     def _deref_ptrlist(self, offset):
-        ptr_offset, item_size, item_count = self._unpack_ptrlist(offset)
-        # if item_size == 7 ...
+        """
+        Dereference a list pointer at the given offset.  It returns a tuple
+        (offset, item_size, item_count):
+
+        - offset is where the list items start, from the start of the blob
+        - item_size: the size IN BYTES of each element
+        - item_count: the total number of elements
+        """
+        ptr_offset, item_size_tag, item_count = self._unpack_ptrlist(offset)
         offset = offset + (ptr_offset+1)*8
+        if item_size_tag == self.LIST_COMPOSITE:
+            item_count, data_size, ptrs_size = self._unpack_ptrstruct(offset)
+            item_size = (data_size+ptrs_size)*8
+            offset += 8
+        elif item_size_tag == self.LIST_BIT:
+            raise ValueError('Lists of bits are not supported')
+        else:
+            item_size = self.LIST_SIZE[item_size]
+
         return offset, item_size, item_count

@@ -34,3 +34,8 @@ class List(Blob):
 class Int64List(List):
     def _read_list_item(self, offset):
         return self._read_int64(offset)
+
+
+class StructList(List):
+    def _read_list_item(self, offset):
+        return self._itemcls(self._buf, self._offset+offset)
