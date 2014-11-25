@@ -13,6 +13,9 @@ class Blob(object):
     LIST_32 = 4
     LIST_64 = 5
     LIST_PTR = 6
+    # map each LIST_* to the corresponding size in bytes. LIST_BIT is None, as
+    # it is handled specially
+    LIST_SIZE = (None, None, 1, 2, 4, 8, 8)
 
     def __init__(self, buf, offset):
         self._buf = buf
@@ -34,6 +37,8 @@ class Blob(object):
 
     def _read_list(self, offset, listcls, itemcls=None):
         offset, item_size, item_count = self._deref_ptrlist(offset)
+        assert item_size != self.LIST_BIT, 'Lists of bits are not supported'
+        item_size = self.LIST_SIZE[item_size]
         return listcls(self._buf, offset, item_size, item_count, itemcls)
 
     def _unpack_ptrstruct(self, offset):
