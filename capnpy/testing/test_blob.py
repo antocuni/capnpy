@@ -47,3 +47,23 @@ def test_read_struct():
     assert p._offset == 8
     assert p._read_int64(0) == 1
     assert p._read_int64(8) == 2
+
+def test_nested_struct():
+    ## struct Rectangle {
+    ##   a @0 :Point;
+    ##   b @1 :Point;
+    ## }
+    buf = ('\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+           '\x08\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
+           '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
+           '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
+           '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
+    rect = Blob(buf, 0)
+    p1 = rect._read_struct(0, Blob)
+    p2 = rect._read_struct(8, Blob)
+    assert p1._read_int64(0) == 1
+    assert p1._read_int64(8) == 2
+    assert p2._read_int64(0) == 3
+    assert p2._read_int64(8) == 4
+    
