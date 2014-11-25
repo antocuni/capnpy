@@ -19,6 +19,24 @@ def test_read_list():
     assert lst._read_list_item(16) == 3
     assert lst._read_list_item(24) == 4
 
+def test_read_list_offset():
+    buf = ('abcd'                               # random garbage
+           '\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
+           '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
+           '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
+           '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
+    blob = Blob(buf, 4)
+    lst = blob._read_list(0, Int64List)
+    assert lst._buf is blob._buf
+    assert lst._offset == 12
+    assert lst._item_count == 4
+    assert lst._item_size == 8
+    assert lst._read_list_item(0) == 1
+    assert lst._read_list_item(8) == 2
+    assert lst._read_list_item(16) == 3
+    assert lst._read_list_item(24) == 4
+
 def test_pythonic():
     buf = ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
            '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1

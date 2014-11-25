@@ -38,7 +38,7 @@ class Blob(object):
 
     def _read_list(self, offset, listcls, itemcls=None):
         offset, item_size, item_count = self._deref_ptrlist(offset)
-        return listcls(self._buf, offset, item_size, item_count, itemcls)
+        return listcls(self._buf, self._offset+offset, item_size, item_count, itemcls)
 
     def _read_string(self, offset):
         offset, item_size, item_count = self._deref_ptrlist(offset)
