@@ -11,6 +11,10 @@ def test_Blob():
     b2 = Blob(buf, 8)
     assert b2._read_int64(0) == 2
 
+def test_float64():
+    buf = '\x58\x39\xb4\xc8\x76\xbe\xf3\x3f'   # 1.234
+    blob = Blob(buf, 0)
+    assert blob._read_float64(0) == 1.234
 
 def test_ptrstruct():
     buf = '\x90\x01\x00\x00\x02\x00\x04\x00'

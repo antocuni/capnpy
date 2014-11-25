@@ -1,6 +1,6 @@
 import py
 from capnpy.blob import Blob
-from capnpy.list import Int64List, StructList
+from capnpy.list import Int64List, Float64List, StructList
 
 def test_read_list():
     buf = ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
@@ -95,3 +95,14 @@ def test_string_with_offset():
     blob = Blob(buf, 4)
     s = blob._read_string(0)
     assert s == 'hello capnproto'
+
+
+def test_Float64List():
+    buf = ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
+           '\x58\x39\xb4\xc8\x76\xbe\xf3\x3f'   # 1.234
+           '\xc3\xf5\x28\x5c\x8f\xc2\x02\x40'   # 2.345
+           '\xd9\xce\xf7\x53\xe3\xa5\x0b\x40'   # 3.456
+           '\xf8\x53\xe3\xa5\x9b\x44\x12\x40')  # 4.567
+    blob = Blob(buf, 0)
+    lst = blob._read_list(0, Float64List)
+    assert list(lst) == [1.234, 2.345, 3.456, 4.567]

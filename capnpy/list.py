@@ -35,6 +35,9 @@ class Int64List(List):
     def _read_list_item(self, offset):
         return self._read_int64(offset)
 
+class Float64List(List):
+    def _read_list_item(self, offset):
+        return self._read_float64(offset)
 
 class StructList(List):
     def _read_list_item(self, offset):

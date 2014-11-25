@@ -22,11 +22,20 @@ class Blob(object):
         self._buf = buf
         self._offset = offset
 
+    def _read_primitive(self, offset, fmt):
+        return struct.unpack_from(fmt, self._buf, self._offset+offset)[0]
+
     def _read_int64(self, offset):
         """
         Read an int64 at the given offset
         """
-        return struct.unpack_from('<q', self._buf, self._offset+offset)[0]
+        return self._read_primitive(offset, '<q')
+
+    def _read_float64(self, offset):
+        """
+        Read an int64 at the given offset
+        """
+        return self._read_primitive(offset, 'd')
 
     def _read_struct(self, offset, structcls):
         """
