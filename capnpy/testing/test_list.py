@@ -69,3 +69,11 @@ def test_string():
     blob = Blob(buf, 0)
     s = blob._read_string(0)
     assert s == 'hello capnproto'
+
+def test_string_with_offset():
+    buf = ('abcd'                               # some random garbage
+           '\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
+           'hello capnproto\0')                 # string
+    blob = Blob(buf, 4)
+    s = blob._read_string(0)
+    assert s == 'hello capnproto'

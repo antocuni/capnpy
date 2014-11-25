@@ -43,7 +43,9 @@ class Blob(object):
     def _read_string(self, offset):
         offset, item_size, item_count = self._deref_ptrlist(offset)
         assert item_size == 1
-        return self._buf[offset:offset+item_count-1]
+        start = self._offset + offset
+        end = start + item_count - 1
+        return self._buf[start:end]
 
     def _unpack_ptrstruct(self, offset):
         ## lsb                      struct pointer                       msb
