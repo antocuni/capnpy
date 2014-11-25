@@ -2,8 +2,17 @@ import struct
 
 class Blob(object):
 
+    # pointer kind
     PTR_STRUCT = 0
     PTR_LIST = 1
+
+    # list size
+    LIST_BIT = 1
+    LIST_8 = 2
+    LIST_16 = 3
+    LIST_32 = 4
+    LIST_64 = 5
+    LIST_PTR = 6
 
     def __init__(self, buf, offset):
         self._buf = buf
@@ -15,13 +24,17 @@ class Blob(object):
         """
         return struct.unpack_from('=q', self._buf, self._offset+offset)[0]
 
-    def _read_struct(self, offset, cls):
+    def _read_struct(self, offset, structcls):
         """
         Read and dereference a struct pointer at the given offset.  It returns an
         instance of ``cls`` pointing to the dereferenced struct.
         """
         struct_offset = self._deref_ptrstruct(offset)
-        return cls(self._buf, self._offset+struct_offset)
+        return structcls(self._buf, self._offset+struct_offset)
+
+    def _read_list(self, offset, listcls, itemcls=None):
+        offset, item_size, item_count = self._deref_ptrlist(offset)
+        return listcls(self._buf, offset, item_size, item_count, itemcls)
 
     def _unpack_ptrstruct(self, offset):
         ## lsb                      struct pointer                       msb
@@ -80,4 +93,10 @@ class Blob(object):
         item_count = ptr>>35
         assert ptr_kind == self.PTR_LIST
         #offset = offset + (ptr_offset+1)*8
+        return ptr_offset, item_size, item_count
+
+    def _deref_ptrlist(self, offset):
+        ptr_offset, item_size, item_count = self._unpack_ptrlist(offset)
+        # if item_size == 7 ...
+        offset = offset + (ptr_offset+1)*8
         return offset, item_size, item_count
