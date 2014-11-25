@@ -25,10 +25,10 @@ def test_ptrstruct():
 
 
 def test_ptrlist():
-    buf = '\x01\x00\x00\x00G\x06\x00\x00'
+    buf = '\x01\x01\x00\x00G\x06\x00\x00'
     blob = Blob(buf, 0)
     offset, item_size, item_count = blob._unpack_ptrlist(0)
-    assert offset == 16
+    assert offset == 64
     assert item_size == 7
     assert item_count == 200
 
