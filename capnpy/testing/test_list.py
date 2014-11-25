@@ -61,3 +61,11 @@ def test_list_of_structs():
     assert read_point(1) == (20, 200)
     assert read_point(2) == (30, 300)
     assert read_point(3) == (40, 400)
+
+
+def test_string():
+    buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
+           'hello capnproto\0')                 # string
+    blob = Blob(buf, 0)
+    s = blob._read_string(0)
+    assert s == 'hello capnproto'

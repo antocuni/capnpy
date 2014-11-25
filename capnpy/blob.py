@@ -40,6 +40,11 @@ class Blob(object):
         offset, item_size, item_count = self._deref_ptrlist(offset)
         return listcls(self._buf, offset, item_size, item_count, itemcls)
 
+    def _read_string(self, offset):
+        offset, item_size, item_count = self._deref_ptrlist(offset)
+        assert item_size == 1
+        return self._buf[offset:offset+item_count-1]
+
     def _unpack_ptrstruct(self, offset):
         ## lsb                      struct pointer                       msb
         ## +-+-----------------------------+---------------+---------------+
@@ -117,6 +122,5 @@ class Blob(object):
         elif item_size_tag == self.LIST_BIT:
             raise ValueError('Lists of bits are not supported')
         else:
-            item_size = self.LIST_SIZE[item_size]
-
+            item_size = self.LIST_SIZE[item_size_tag]
         return offset, item_size, item_count
