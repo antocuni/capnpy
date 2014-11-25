@@ -26,7 +26,7 @@ class Blob(object):
         """
         Read an int64 at the given offset
         """
-        return struct.unpack_from('=q', self._buf, self._offset+offset)[0]
+        return struct.unpack_from('<q', self._buf, self._offset+offset)[0]
 
     def _read_struct(self, offset, structcls):
         """
