@@ -31,7 +31,7 @@ class Message(object):
     """
 
     def __init__(self, buf):
-        blob = Blob(buf, 0)
+        blob = Blob.from_buffer(buf, 0)
         self._root = blob._read_struct(0, Blob)
 
     def get_struct(self, structcls):

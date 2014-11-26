@@ -18,9 +18,12 @@ class Blob(object):
     # it is handled specially
     LIST_SIZE = (None, None, 1, 2, 4, 8, 8)
 
-    def __init__(self, buf, offset):
+    @classmethod
+    def from_buffer(cls, buf, offset):
+        self = cls()
         self._buf = buf
         self._offset = offset
+        return self
 
     def _read_primitive(self, offset, fmt):
         return struct.unpack_from(fmt, self._buf, self._offset+offset)[0]
@@ -45,13 +48,14 @@ class Blob(object):
         struct_offset = self._deref_ptrstruct(offset)
         if struct_offset is None:
             return None
-        return structcls(self._buf, self._offset+struct_offset)
+        return structcls.from_buffer(self._buf, self._offset+struct_offset)
 
     def _read_list(self, offset, listcls, itemcls=None):
         offset, item_size, item_count = self._deref_ptrlist(offset)
         if offset is None:
             return None
-        return listcls(self._buf, self._offset+offset, item_size, item_count, itemcls)
+        return listcls.from_buffer(self._buf, self._offset+offset,
+                                   item_size, item_count, itemcls)
 
     def _read_string(self, offset):
         offset, item_size, item_count = self._deref_ptrlist(offset)

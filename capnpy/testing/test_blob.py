@@ -4,21 +4,21 @@ def test_Blob():
     # buf is an array of int64 == [1, 2]
     buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
-    b1 = Blob(buf, 0)
+    b1 = Blob.from_buffer(buf, 0)
     assert b1._read_int64(0) == 1
     assert b1._read_int64(8) == 2
     #
-    b2 = Blob(buf, 8)
+    b2 = Blob.from_buffer(buf, 8)
     assert b2._read_int64(0) == 2
 
 def test_float64():
     buf = '\x58\x39\xb4\xc8\x76\xbe\xf3\x3f'   # 1.234
-    blob = Blob(buf, 0)
+    blob = Blob.from_buffer(buf, 0)
     assert blob._read_float64(0) == 1.234
 
 def test_ptrstruct():
     buf = '\x90\x01\x00\x00\x02\x00\x04\x00'
-    blob = Blob(buf, 0)
+    blob = Blob.from_buffer(buf, 0)
     offset, data_size, ptrs_size = blob._unpack_ptrstruct(0)
     assert offset == 100
     assert data_size == 2
@@ -30,7 +30,7 @@ def test_ptrstruct():
 
 def test_ptrlist():
     buf = '\x01\x01\x00\x00G\x06\x00\x00'
-    blob = Blob(buf, 0)
+    blob = Blob.from_buffer(buf, 0)
     offset, item_size, item_count = blob._unpack_ptrlist(0)
     assert offset == 64
     assert item_size == 7
@@ -45,7 +45,7 @@ def test_read_struct():
     buf = ('\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
            '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
            '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
-    blob = Blob(buf, 0)
+    blob = Blob.from_buffer(buf, 0)
     p = blob._read_struct(0, Blob)
     assert p._buf is blob._buf
     assert p._offset == 8
@@ -63,7 +63,7 @@ def test_nested_struct():
            '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
            '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
-    rect = Blob(buf, 0)
+    rect = Blob.from_buffer(buf, 0)
     p1 = rect._read_struct(0, Blob)
     p2 = rect._read_struct(8, Blob)
     assert p1._read_int64(0) == 1
@@ -74,7 +74,7 @@ def test_nested_struct():
 
 def test_null_pointers():
     buf = '\x00\x00\x00\x00\x00\x00\x00\x00'    # NULL pointer
-    blob = Blob(buf, 0)
+    blob = Blob.from_buffer(buf, 0)
     assert blob._read_struct(0, Blob) is None
     assert blob._read_list(0, None, None) is None
     assert blob._read_string(0) is None

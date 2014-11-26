@@ -2,7 +2,8 @@ from capnpy.blob import Blob
 
 class List(Blob):
 
-    def __init__(self, buf, offset, item_size, item_count, itemcls):
+    @classmethod
+    def from_buffer(cls, buf, offset, item_size, item_count, itemcls):
         """
         buf, offset: the underlying buffer and the offset where the list starts
 
@@ -11,10 +12,11 @@ class List(Blob):
 
         itemcls: the class of each item, only for list of structs
         """
-        Blob.__init__(self, buf, offset)
+        self = super(List, cls).from_buffer(buf, offset)
         self._item_size = item_size
         self._item_count = item_count
         self._itemcls = itemcls
+        return self
 
     def _read_list_item(self, offset):
         raise NotImplementedError
@@ -41,4 +43,4 @@ class Float64List(List):
 
 class StructList(List):
     def _read_list_item(self, offset):
-        return self._itemcls(self._buf, self._offset+offset)
+        return self._itemcls.from_buffer(self._buf, self._offset+offset)
