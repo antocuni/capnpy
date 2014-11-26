@@ -43,14 +43,20 @@ class Blob(object):
         instance of ``cls`` pointing to the dereferenced struct.
         """
         struct_offset = self._deref_ptrstruct(offset)
+        if struct_offset is None:
+            return None
         return structcls(self._buf, self._offset+struct_offset)
 
     def _read_list(self, offset, listcls, itemcls=None):
         offset, item_size, item_count = self._deref_ptrlist(offset)
+        if offset is None:
+            return None
         return listcls(self._buf, self._offset+offset, item_size, item_count, itemcls)
 
     def _read_string(self, offset):
         offset, item_size, item_count = self._deref_ptrlist(offset)
+        if offset is None:
+            return None
         assert item_size == 1
         start = self._offset + offset
         end = start + item_count - 1
@@ -79,6 +85,8 @@ class Blob(object):
         # we partially replicate the logic of _unpack_ptrstruct, because in
         # the common case it's not needed to decode data_size and ptrs_size
         ptr = self._read_int64(offset)
+        if ptr == 0:
+            return None
         ptr_kind  = ptr & 0x3
         ptr_offset = ptr>>2 & 0x3fffffff
         assert ptr_kind == self.PTR_STRUCT
@@ -107,12 +115,13 @@ class Blob(object):
         ##     7 = composite (see below)
         ## D (29 bits) = Number of elements in the list, except when C is 7
         ptr = self._read_int64(offset)
+        if ptr == 0:
+            return None, None, None
         ptr_kind  = ptr & 0x3
         ptr_offset = ptr>>2 & 0x3fffffff
         item_size_tag = ptr>>32 & 0x7
         item_count = ptr>>35
         assert ptr_kind == self.PTR_LIST
-        #offset = offset + (ptr_offset+1)*8
         return ptr_offset, item_size_tag, item_count
 
     def _deref_ptrlist(self, offset):
@@ -125,6 +134,8 @@ class Blob(object):
         - item_count: the total number of elements
         """
         ptr_offset, item_size_tag, item_count = self._unpack_ptrlist(offset)
+        if ptr_offset is None:
+            return None, None, None
         offset = offset + (ptr_offset+1)*8
         if item_size_tag == self.LIST_COMPOSITE:
             item_count, data_size, ptrs_size = self._unpack_ptrstruct(offset)

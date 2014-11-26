@@ -71,3 +71,10 @@ def test_nested_struct():
     assert p2._read_int64(0) == 3
     assert p2._read_int64(8) == 4
     
+
+def test_null_pointers():
+    buf = '\x00\x00\x00\x00\x00\x00\x00\x00'    # NULL pointer
+    blob = Blob(buf, 0)
+    assert blob._read_struct(0, Blob) is None
+    assert blob._read_list(0, None, None) is None
+    assert blob._read_string(0) is None
