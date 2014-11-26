@@ -2,8 +2,7 @@ from capnpy.builder import Builder
 from capnpy.blob import Blob
 
 def test_builder():
-    builder = Builder(64)
-    builder.allocate(24)
+    builder = Builder(24, maxsize=64)
     builder.write_int64(0, 1)
     builder.write_int64(8, 2)
     builder.write_float64(16, 1.234)
@@ -16,8 +15,7 @@ def test_write_struct():
     mybuf = ('\x01\x00\x00\x00\x00\x00\x00\x00'
              '\x02\x00\x00\x00\x00\x00\x00\x00')
     mystruct = Blob.from_buffer(mybuf, 0)
-    builder = Builder(64)
-    builder.allocate(8) # allocate enough space only for the pointer
+    builder = Builder(8, maxsize=64)
     builder.write_struct(0, mystruct, Blob, data_size=16, ptrs_size=0)
     assert builder._size == 24 # 8 for the ptr, 16 for mystruct
     buf = builder.build()

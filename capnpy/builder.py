@@ -3,10 +3,10 @@ import struct
 
 class Builder(object):
 
-    def __init__(self, maxsize):
+    def __init__(self, size, maxsize):
         self._array = bytearray(maxsize)
+        self._size = size
         self._maxsize = maxsize
-        self._size = 0
 
     def allocate(self, size):
         newsize = self._size + size
