@@ -1,3 +1,4 @@
+from capnpy.blob import Blob
 import struct
 
 class Builder(object):
@@ -12,7 +13,12 @@ class Builder(object):
         if newsize > self._maxsize:
             raise ValueError("Cannot allocate %d bytes: maximum size of %d exceeded" %
                              (size, self._maxsize))
+        offset = self._size
         self._size = newsize
+        return offset
+
+    def build(self):
+        return str(self._array[:self._size])
 
     def _write_primitive(self, fmt, offset, value):
         struct.pack_into(fmt, self._array, offset, value)
@@ -23,5 +29,23 @@ class Builder(object):
     def write_float64(self, offset, value):
         self._write_primitive('<d', offset, value)
 
-    def build(self):
-        return str(self._array[:self._size])
+    def write_struct(self, offset, value, data_size, ptrs_size):
+        # 1) compute the offset of struct relative to the end of the word
+        # we are writing to
+        ptr_offset = (self._size - (offset+8))
+        #
+        # 2) allocate the space for the struct at the end of the array
+        struct_size = data_size + ptrs_size
+        struct_offset = self.allocate(struct_size)
+        #
+        # 3) build the ptrstruct; note that sizes and offsets are expressed in
+        # words, not in bytes
+        ptr = 0
+        ptr |= ptrs_size/8 << 48
+        ptr |= data_size/8 << 32
+        ptr |= ptr_offset/8 << 2
+        ptr |= Blob.PTR_STRUCT
+        #
+        # 4) write the ptrstruct and the struct
+        self.write_int64(offset, ptr)
+        self._array[struct_offset:struct_offset+struct_size] = value._buf
