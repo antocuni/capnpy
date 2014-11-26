@@ -35,7 +35,7 @@ class Blob(object):
         """
         Read an int64 at the given offset
         """
-        return self._read_primitive(offset, 'd')
+        return self._read_primitive(offset, '<d')
 
     def _read_struct(self, offset, structcls):
         """
