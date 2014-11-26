@@ -18,7 +18,7 @@ def test_write_struct():
     mystruct = Blob.from_buffer(mybuf, 0)
     builder = Builder(64)
     builder.allocate(8) # allocate enough space only for the pointer
-    builder.write_struct(0, mystruct, data_size=16, ptrs_size=0)
+    builder.write_struct(0, mystruct, Blob, data_size=16, ptrs_size=0)
     assert builder._size == 24 # 8 for the ptr, 16 for mystruct
     buf = builder.build()
     assert buf == ('\x00\x00\x00\x00\x02\x00\x00\x00'  # ptr to mystruct

@@ -29,7 +29,10 @@ class Builder(object):
     def write_float64(self, offset, value):
         self._write_primitive('<d', offset, value)
 
-    def write_struct(self, offset, value, data_size, ptrs_size):
+    def write_struct(self, offset, value, expected_type, data_size, ptrs_size):
+        if not isinstance(value, expected_type):
+            raise TypeError("Expected %s instance, got %s" %
+                            (expected_type.__class__.__name__, value))
         # 1) compute the offset of struct relative to the end of the word
         # we are writing to
         ptr_offset = (self._size - (offset+8))
