@@ -1,5 +1,7 @@
-from capnpy.blob import Blob
 import struct
+from capnpy.pypycompat import setslice8
+from capnpy.blob import Blob
+
 
 class Builder(object):
 
@@ -21,7 +23,9 @@ class Builder(object):
         return str(self._array[:self._size])
 
     def _write_primitive(self, fmt, offset, value):
-        struct.pack_into(fmt, self._array, offset, value)
+        s = struct.pack(fmt, value)
+        setslice8(self._array, offset, s)
+        #struct.pack_into(fmt, self._array, offset, value)
 
     def write_int64(self, offset, value):
         self._write_primitive('<q', offset, value)
