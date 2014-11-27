@@ -1,51 +1,27 @@
 import struct
-from capnpy.pypycompat import setslice8
 from capnpy.blob import Blob
-
 
 class Builder(object):
 
-    def __init__(self, size, maxsize):
-        self._array = bytearray(maxsize)
-        self._size = size
-        self._maxsize = maxsize
+    def __init__(self, fmt):
+        self._fmt = '<' + fmt # force little endian
+        self._size = struct.calcsize(self._fmt)
+        self._extra = []
+        self._totalsize = self._size # the total size of _extra chunks
 
-    def allocate(self, size):
-        newsize = self._size + size
-        if newsize > self._maxsize:
-            raise ValueError("Cannot allocate %d bytes: maximum size of %d exceeded" %
-                             (size, self._maxsize))
-        offset = self._size
-        self._size = newsize
-        return offset
+    def build(self, *items):
+        s = struct.pack(self._fmt, *items)
+        return s + ''.join(self._extra)
 
-    def build(self):
-        return str(self._array[:self._size])
-
-    def _write_primitive(self, fmt, offset, value):
-        s = struct.pack(fmt, value)
-        setslice8(self._array, offset, s)
-        #struct.pack_into(fmt, self._array, offset, value)
-
-    def write_int64(self, offset, value):
-        self._write_primitive('<q', offset, value)
-
-    def write_float64(self, offset, value):
-        self._write_primitive('<d', offset, value)
-
-    def write_struct(self, offset, value, expected_type, data_size, ptrs_size):
+    def alloc_struct(self, offset, value, expected_type, data_size, ptrs_size):
         if not isinstance(value, expected_type):
             raise TypeError("Expected %s instance, got %s" %
                             (expected_type.__class__.__name__, value))
         # 1) compute the offset of struct relative to the end of the word
         # we are writing to
-        ptr_offset = (self._size - (offset+8))
+        ptr_offset = self._totalsize - (offset+8)
         #
-        # 2) allocate the space for the struct at the end of the array
-        struct_size = data_size + ptrs_size
-        struct_offset = self.allocate(struct_size)
-        #
-        # 3) build the ptrstruct; note that sizes and offsets are expressed in
+        # 2) build the ptrstruct; note that sizes and offsets are expressed in
         # words, not in bytes
         ptr = 0
         ptr |= ptrs_size/8 << 48
@@ -53,6 +29,8 @@ class Builder(object):
         ptr |= ptr_offset/8 << 2
         ptr |= Blob.PTR_STRUCT
         #
-        # 4) write the ptrstruct and the struct
-        self.write_int64(offset, ptr)
-        self._array[struct_offset:struct_offset+struct_size] = value._buf
+        # 3) append the struct _buf to the end of our stream
+        assert len(value._buf) == data_size + ptrs_size
+        self._extra.append(value._buf)
+        self._totalsize += len(value._buf)
+        return ptr
