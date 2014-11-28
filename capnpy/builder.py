@@ -58,7 +58,7 @@ class Builder(object):
         #
         return self._new_ptrlist(ptr_offset, Blob.LIST_COMPOSITE, total_words)
 
-    def alloc_struct(self, offset, value, struct_type):
+    def alloc_struct(self, offset, struct_type, value):
         if value is None:
             return 0 # NULL
         if not isinstance(value, struct_type):

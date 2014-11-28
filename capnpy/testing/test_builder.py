@@ -19,7 +19,7 @@ def test_alloc_struct():
     mystruct = MyStruct.from_buffer(mybuf, 0)
     #
     builder = Builder('q')
-    ptr = builder.alloc_struct(0, mystruct, MyStruct)
+    ptr = builder.alloc_struct(0, MyStruct, mystruct)
     buf = builder.build(ptr)
     assert buf == ('\x00\x00\x00\x00\x02\x00\x00\x00'  # ptr to mystruct
                    + mybuf)
@@ -93,7 +93,7 @@ def test_alloc_list_of_structs():
 def test_null_pointers():
     NULL = '\x00\x00\x00\x00\x00\x00\x00\x00' # NULL pointer
     builder = Builder('qqq')
-    ptr1 = builder.alloc_struct(0, None, Blob)
+    ptr1 = builder.alloc_struct(0, Blob, None)
     ptr2 = builder.alloc_string(8, None)
     ptr3 = builder.alloc_list(16, PrimitiveList, Types.Int64, None)
     buf = builder.build(ptr1, ptr2, ptr3)
