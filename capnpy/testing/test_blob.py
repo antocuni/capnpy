@@ -1,3 +1,4 @@
+import py
 from capnpy.blob import Blob, Types
 
 def test_Blob():
@@ -10,6 +11,10 @@ def test_Blob():
     #
     b2 = Blob.from_buffer(buf, 8)
     assert b2._read_primitive(0, Types.Int64) == 2
+
+def test_Blob_ctor():
+    py.test.raises(NotImplementedError, "Blob()")
+    
 
 def test_float64():
     buf = '\x58\x39\xb4\xc8\x76\xbe\xf3\x3f'   # 1.234

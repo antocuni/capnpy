@@ -22,9 +22,13 @@ class Blob(object):
     # it is handled specially
     LIST_SIZE = (None, None, 1, 2, 4, 8, 8)
 
+    def __init__(self):
+        raise NotImplementedError('Cannot instantiate Blob directly; '
+                                  'use Blob.from_buffer instead')
+
     @classmethod
     def from_buffer(cls, buf, offset):
-        self = cls()
+        self = cls.__new__(cls)
         self._buf = buf
         self._offset = offset
         return self
