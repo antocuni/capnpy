@@ -62,11 +62,17 @@ class StructList(List):
 
     @classmethod
     def pack_item(cls, item_type, item):
-        raise NotImplementedError
+        if not isinstance(item, item_type):
+            raise TypeError("Expected an object of type %s, got %s instead" %
+                            (item_type.__name__, item.__class__.__name__))
+        return item._buf
 
     @classmethod
     def get_size_tag(cls, item_type):
-        raise NotImplementedError
+        total_size = item_type.__data_size__ + item_type.__ptrs_size__ # in bytes
+        if total_size > 8:
+            return Blob.LIST_COMPOSITE
+        assert False, 'XXX'
 
     def _read_list_item(self, offset):
         return self._item_type.from_buffer(self._buf, self._offset+offset)

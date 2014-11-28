@@ -1,6 +1,6 @@
 from capnpy.builder import Builder
 from capnpy.blob import Blob, Types
-from capnpy.list import PrimitiveList
+from capnpy.list import PrimitiveList, StructList
 
 def test_primitive():
     builder = Builder('qqd')
@@ -10,12 +10,16 @@ def test_primitive():
                    '\x58\x39\xb4\xc8\x76\xbe\xf3\x3f') # 1.234
 
 def test_alloc_struct():
+    class MyStruct(Blob):
+        __data_size__ = 16
+        __ptrs_size__ = 0
+
     mybuf = ('\x01\x00\x00\x00\x00\x00\x00\x00'
              '\x02\x00\x00\x00\x00\x00\x00\x00')
-    mystruct = Blob.from_buffer(mybuf, 0)
+    mystruct = MyStruct.from_buffer(mybuf, 0)
     #
     builder = Builder('q')
-    ptr = builder.alloc_struct(0, mystruct, Blob, data_size=16, ptrs_size=0)
+    ptr = builder.alloc_struct(0, mystruct, MyStruct)
     buf = builder.build(ptr)
     assert buf == ('\x00\x00\x00\x00\x02\x00\x00\x00'  # ptr to mystruct
                    + mybuf)
@@ -52,3 +56,36 @@ def test_alloc_list_float64():
                    '\xc3\xf5\x28\x5c\x8f\xc2\x02\x40'   # 2.345
                    '\xd9\xce\xf7\x53\xe3\xa5\x0b\x40'   # 3.456
                    '\xf8\x53\xe3\xa5\x9b\x44\x12\x40')  # 4.567
+
+def test_alloc_list_of_structs():
+    class Point(Blob):
+        __data_size__ = 16
+        __ptrs_size__ = 0
+
+    buf1 = ('\x0a\x00\x00\x00\x00\x00\x00\x00'    # 10
+            '\x64\x00\x00\x00\x00\x00\x00\x00')   # 100
+    buf2 = ('\x14\x00\x00\x00\x00\x00\x00\x00'    # 20
+            '\xc8\x00\x00\x00\x00\x00\x00\x00')   # 200
+    buf3 = ('\x1e\x00\x00\x00\x00\x00\x00\x00'    # 30
+            '\x2c\x01\x00\x00\x00\x00\x00\x00')   # 300
+    buf4 = ('\x28\x00\x00\x00\x00\x00\x00\x00'    # 40
+            '\x90\x01\x00\x00\x00\x00\x00\x00')   # 400
+    p1 = Point.from_buffer(buf1, 0)
+    p2 = Point.from_buffer(buf2, 0)
+    p3 = Point.from_buffer(buf3, 0)
+    p4 = Point.from_buffer(buf4, 0)
+    #
+    builder = Builder('q')
+    ptr = builder.alloc_list(0, StructList, Point, [p1, p2, p3, p4])
+    buf = builder.build(ptr)
+    expected_buf = ('\x01\x00\x00\x00\x47\x00\x00\x00'    # ptrlist
+                    '\x10\x00\x00\x00\x02\x00\x00\x00'    # list tag
+                    '\x0a\x00\x00\x00\x00\x00\x00\x00'    # 10
+                    '\x64\x00\x00\x00\x00\x00\x00\x00'    # 100
+                    '\x14\x00\x00\x00\x00\x00\x00\x00'    # 20
+                    '\xc8\x00\x00\x00\x00\x00\x00\x00'    # 200
+                    '\x1e\x00\x00\x00\x00\x00\x00\x00'    # 30
+                    '\x2c\x01\x00\x00\x00\x00\x00\x00'    # 300
+                    '\x28\x00\x00\x00\x00\x00\x00\x00'    # 40
+                    '\x90\x01\x00\x00\x00\x00\x00\x00')   # 400
+    assert buf == expected_buf
