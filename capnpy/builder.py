@@ -46,14 +46,14 @@ class Builder(object):
         ptr |= Blob.PTR_LIST
         return ptr
 
-    def alloc_list(self, offset, listcls, lst):
+    def alloc_list(self, offset, listcls, item_type, lst):
         ptr_offset = self._calc_relative_offset(offset)
         for item in lst:
-            s = struct.pack(listcls.FORMAT, item)
+            s = listcls.pack_item(item_type, item)
             self._alloc(s)
         ptr = 0
         ptr |= len(lst) << 35
-        ptr |= listcls.SIZE_TAG << 32
+        ptr |= listcls.get_size_tag(item_type) << 32
         ptr |= ptr_offset/8 << 2
         ptr |= Blob.PTR_LIST
         return ptr

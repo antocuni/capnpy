@@ -1,21 +1,23 @@
+import struct
 from capnpy.blob import Blob
 
 class List(Blob):
 
     @classmethod
-    def from_buffer(cls, buf, offset, item_size, item_count, itemcls):
+    def from_buffer(cls, buf, offset, item_size, item_count, item_type):
         """
         buf, offset: the underlying buffer and the offset where the list starts
 
         item_size: the size of each list item, in BYTES. Note: this is NOT the
         value of the LIST_* tag, although it's obviously based on it
 
-        itemcls: the class of each item, only for list of structs
+        item_type: the type of each list item. Either a Blob/Struct subclass,
+        or a Types.*
         """
         self = super(List, cls).from_buffer(buf, offset)
         self._item_size = item_size
         self._item_count = item_count
-        self._itemcls = itemcls
+        self._item_type = item_type
         return self
 
     def _read_list_item(self, offset):
@@ -33,21 +35,38 @@ class List(Blob):
         raise IndexError
 
 
-class Int64List(List):
-    SIZE_TAG = Blob.LIST_64
-    FORMAT = '<q' # XXX to be removed
-    
-    def _read_list_item(self, offset):
-        return self._read_int64(offset)
+class PrimitiveList(List):
 
-class Float64List(List):
-    SIZE_TAG = Blob.LIST_64
+    @classmethod
+    def pack_item(cls, item_type, item):
+        return struct.pack('<'+item_type, item)
+
+    @classmethod
+    def get_size_tag(cls, item_type):
+        size = struct.calcsize(item_type)
+        if size == 1:
+            return Blob.LIST_8
+        elif size == 2:
+            return Blob.LIST_16
+        elif size == 4:
+            return Blob.LIST_32
+        elif size == 8:
+            return Blob.LIST_64
+        else:
+            raise ValueError('Unsupported size: %d' % size)
 
     def _read_list_item(self, offset):
-        return self._read_float64(offset)
+        return self._read_primitive(offset, self._item_type)
 
 class StructList(List):
-    SIZE_TAG = Blob.LIST_COMPOSITE
+
+    @classmethod
+    def pack_item(cls, item_type, item):
+        raise NotImplementedError
+
+    @classmethod
+    def get_size_tag(cls, item_type):
+        raise NotImplementedError
 
     def _read_list_item(self, offset):
-        return self._itemcls.from_buffer(self._buf, self._offset+offset)
+        return self._item_type.from_buffer(self._buf, self._offset+offset)

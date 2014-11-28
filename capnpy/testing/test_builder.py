@@ -1,6 +1,6 @@
 from capnpy.builder import Builder
-from capnpy.blob import Blob
-from capnpy.list import Int64List
+from capnpy.blob import Blob, Types
+from capnpy.list import PrimitiveList
 
 def test_primitive():
     builder = Builder('qqd')
@@ -34,7 +34,7 @@ def test_alloc_string():
 
 def test_alloc_list_int64():
     builder = Builder('q')
-    ptr = builder.alloc_list(0, Int64List, [1, 2, 3, 4])
+    ptr = builder.alloc_list(0, PrimitiveList, Types.Int64, [1, 2, 3, 4])
     buf = builder.build(ptr)
     assert buf == ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
                    '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1

@@ -1,6 +1,6 @@
 import py
-from capnpy.blob import Blob
-from capnpy.list import Int64List, Float64List, StructList
+from capnpy.blob import Blob, Types
+from capnpy.list import PrimitiveList, StructList
 
 def test_read_list():
     buf = ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
@@ -9,7 +9,7 @@ def test_read_list():
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     blob = Blob.from_buffer(buf, 0)
-    lst = blob._read_list(0, Int64List)
+    lst = blob._read_list(0, PrimitiveList, Types.Int64)
     assert lst._buf is blob._buf
     assert lst._offset == 8
     assert lst._item_count == 4
@@ -27,7 +27,7 @@ def test_read_list_offset():
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     blob = Blob.from_buffer(buf, 4)
-    lst = blob._read_list(0, Int64List)
+    lst = blob._read_list(0, PrimitiveList, Types.Int64)
     assert lst._buf is blob._buf
     assert lst._offset == 12
     assert lst._item_count == 4
@@ -44,7 +44,7 @@ def test_pythonic():
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     blob = Blob.from_buffer(buf, 0)
-    lst = blob._read_list(0, Int64List)
+    lst = blob._read_list(0, PrimitiveList, Types.Int64)
     assert len(lst) == 4
     assert lst[0] == 1
     assert lst[3] == 4
@@ -74,7 +74,9 @@ def test_list_of_structs():
     assert len(lst) == 4
     def read_point(i):
         p = lst[i]
-        return p._read_int64(0), p._read_int64(8)
+        x = p._read_primitive(0, Types.Int64)
+        y = p._read_primitive(8, Types.Int64)
+        return x, y
     assert read_point(0) == (10, 100)
     assert read_point(1) == (20, 200)
     assert read_point(2) == (30, 300)
@@ -104,5 +106,5 @@ def test_Float64List():
            '\xd9\xce\xf7\x53\xe3\xa5\x0b\x40'   # 3.456
            '\xf8\x53\xe3\xa5\x9b\x44\x12\x40')  # 4.567
     blob = Blob.from_buffer(buf, 0)
-    lst = blob._read_list(0, Float64List)
+    lst = blob._read_list(0, PrimitiveList, Types.Float64)
     assert list(lst) == [1.234, 2.345, 3.456, 4.567]

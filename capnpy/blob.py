@@ -1,5 +1,9 @@
 import struct
 
+class Types(object):
+    Int64 = 'q'
+    Float64 = 'd'
+
 class Blob(object):
 
     # pointer kind
@@ -26,19 +30,7 @@ class Blob(object):
         return self
 
     def _read_primitive(self, offset, fmt):
-        return struct.unpack_from(fmt, self._buf, self._offset+offset)[0]
-
-    def _read_int64(self, offset):
-        """
-        Read an int64 at the given offset
-        """
-        return self._read_primitive(offset, '<q')
-
-    def _read_float64(self, offset):
-        """
-        Read an int64 at the given offset
-        """
-        return self._read_primitive(offset, '<d')
+        return struct.unpack_from('<' + fmt, self._buf, self._offset+offset)[0]
 
     def _read_struct(self, offset, structcls):
         """
@@ -50,12 +42,12 @@ class Blob(object):
             return None
         return structcls.from_buffer(self._buf, self._offset+struct_offset)
 
-    def _read_list(self, offset, listcls, itemcls=None):
+    def _read_list(self, offset, listcls, item_type):
         offset, item_size, item_count = self._deref_ptrlist(offset)
         if offset is None:
             return None
         return listcls.from_buffer(self._buf, self._offset+offset,
-                                   item_size, item_count, itemcls)
+                                   item_size, item_count, item_type)
 
     def _read_string(self, offset):
         offset, item_size, item_count = self._deref_ptrlist(offset)
@@ -77,7 +69,7 @@ class Blob(object):
         ##     start of the struct's data section.  Signed.
         ## C (16 bits) = Size of the struct's data section, in words.
         ## D (16 bits) = Size of the struct's pointer section, in words.
-        ptr = self._read_int64(offset)
+        ptr = self._read_primitive(offset, Types.Int64)
         ptr_kind  = ptr & 0x3
         ptr_offset = ptr>>2 & 0x3fffffff
         data_size = ptr>>32 & 0xffff
@@ -88,7 +80,7 @@ class Blob(object):
     def _deref_ptrstruct(self, offset):
         # we partially replicate the logic of _unpack_ptrstruct, because in
         # the common case it's not needed to decode data_size and ptrs_size
-        ptr = self._read_int64(offset)
+        ptr = self._read_primitive(offset, Types.Int64)
         if ptr == 0:
             return None
         ptr_kind  = ptr & 0x3
@@ -118,7 +110,7 @@ class Blob(object):
         ##     6 = 8 bytes (pointer)
         ##     7 = composite (see below)
         ## D (29 bits) = Number of elements in the list, except when C is 7
-        ptr = self._read_int64(offset)
+        ptr = self._read_primitive(offset, Types.Int64)
         if ptr == 0:
             return None, None, None
         ptr_kind  = ptr & 0x3

@@ -1,5 +1,5 @@
 from capnpy.message import Message, loads
-from capnpy.blob import Blob
+from capnpy.blob import Blob, Types
 
 def test_Message():
     buf = ('\x00\x00\x00\x00\x02\x00\x00\x00'   # ptr to anonymous struct
@@ -8,10 +8,10 @@ def test_Message():
            '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
     m = Message(buf)
     p = m.get_struct(Blob)
-    assert p._read_int64(0) == 1
-    assert p._read_int64(8) == 2
+    assert p._read_primitive(0, Types.Int64) == 1
+    assert p._read_primitive(8, Types.Int64) == 2
     #
     p = loads(buf, Blob)
     assert isinstance(p, Blob)
-    assert p._read_int64(0) == 1
-    assert p._read_int64(8) == 2
+    assert p._read_primitive(0, Types.Int64) == 1
+    assert p._read_primitive(8, Types.Int64) == 2
