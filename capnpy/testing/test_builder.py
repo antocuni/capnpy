@@ -26,14 +26,15 @@ def test_alloc_struct():
 
 
 def test_alloc_string():
-    # the first word is just some random garbage to test when we have a non-0
-    # offset. The second is the string pointer
     builder = Builder('qq')
-    ptr = builder.alloc_string(8, 'hello capnproto')
-    buf = builder.build(1, ptr)
-    assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'
-                   '\x01\x00\x00\x00\x82\x00\x00\x00'   # ptr
-                   'hello capnproto\0')                 # string
+    ptr1 = builder.alloc_string(0, 'hello capnproto')
+    ptr2 = builder.alloc_string(8, 'hello world')
+    buf = builder.build(ptr1, ptr2)
+    assert buf == ('\x05\x00\x00\x00\x82\x00\x00\x00'
+                   '\x09\x00\x00\x00\x62\x00\x00\x00'
+                   'hello capnproto\0'
+                   'hello world\0')
+    assert False, 'This is wrong: we need to think about alignment'
 
 
 def test_alloc_list_int64():
