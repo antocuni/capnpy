@@ -1,4 +1,5 @@
 import struct
+from capnpy.ptr import PtrStruct, PtrList
 
 class Types(object):
     Int64 = 'q'
@@ -7,7 +8,7 @@ class Types(object):
 class Blob(object):
 
     # pointer kind
-    PTR_STRUCT = 0
+    PTR_STRUCT = PtrStruct.KIND
     PTR_LIST = 1
 
     # list item size tag
@@ -62,67 +63,15 @@ class Blob(object):
         end = start + item_count - 1
         return self._buf[start:end]
 
-    def _unpack_ptrstruct(self, offset):
-        ## lsb                      struct pointer                       msb
-        ## +-+-----------------------------+---------------+---------------+
-        ## |A|             B               |       C       |       D       |
-        ## +-+-----------------------------+---------------+---------------+
-        ##
-        ## A (2 bits) = 0, to indicate that this is a struct pointer.
-        ## B (30 bits) = Offset, in words, from the end of the pointer to the
-        ##     start of the struct's data section.  Signed.
-        ## C (16 bits) = Size of the struct's data section, in words.
-        ## D (16 bits) = Size of the struct's pointer section, in words.
-        ptr = self._read_primitive(offset, Types.Int64)
-        ptr_kind  = ptr & 0x3
-        ptr_offset = ptr>>2 & 0x3fffffff
-        data_size = ptr>>32 & 0xffff
-        ptrs_size = ptr>>48 & 0xffff
-        assert ptr_kind == self.PTR_STRUCT
-        return ptr_offset, data_size, ptrs_size
-
     def _deref_ptrstruct(self, offset):
-        # we partially replicate the logic of _unpack_ptrstruct, because in
-        # the common case it's not needed to decode data_size and ptrs_size
         ptr = self._read_primitive(offset, Types.Int64)
         if ptr == 0:
             return None
-        ptr_kind  = ptr & 0x3
-        ptr_offset = ptr>>2 & 0x3fffffff
-        assert ptr_kind == self.PTR_STRUCT
+        ptr_offset = PtrStruct.unpack_offset(ptr)
         # the +1 is needed because the offset is measured from the end of the
         # pointer itself
         offset = offset + (ptr_offset+1)*8
         return offset
-
-    def _unpack_ptrlist(self, offset):
-        ## lsb                       list pointer                        msb
-        ## +-+-----------------------------+--+----------------------------+
-        ## |A|             B               |C |             D              |
-        ## +-+-----------------------------+--+----------------------------+
-        ##
-        ## A (2 bits) = 1, to indicate that this is a list pointer.
-        ## B (30 bits) = Offset, in words, from the end of the pointer to the
-        ##     start of the first element of the list.  Signed.
-        ## C (3 bits) = Size of each element:
-        ##     0 = 0 (e.g. List(Void))
-        ##     1 = 1 bit
-        ##     2 = 1 byte
-        ##     3 = 2 bytes
-        ##     4 = 4 bytes
-        ##     5 = 8 bytes (non-pointer)
-        ##     6 = 8 bytes (pointer)
-        ##     7 = composite (see below)
-        ## D (29 bits) = Number of elements in the list, except when C is 7
-        ptr = self._read_primitive(offset, Types.Int64)
-        if ptr == 0:
-            return None, None, None
-        ptr_kind  = ptr & 0x3
-        ptr_offset = ptr>>2 & 0x3fffffff
-        item_size_tag = ptr>>32 & 0x7
-        item_count = ptr>>35
-        assert ptr_kind == self.PTR_LIST
-        return ptr_offset, item_size_tag, item_count
 
     def _deref_ptrlist(self, offset):
         """
@@ -133,12 +82,14 @@ class Blob(object):
         - item_size: the size IN BYTES of each element
         - item_count: the total number of elements
         """
-        ptr_offset, item_size_tag, item_count = self._unpack_ptrlist(offset)
-        if ptr_offset is None:
+        ptr = self._read_primitive(offset, Types.Int64)
+        if ptr == 0:
             return None, None, None
+        ptr_offset, item_size_tag, item_count = PtrList.unpack(ptr)
         offset = offset + (ptr_offset+1)*8
         if item_size_tag == self.LIST_COMPOSITE:
-            item_count, data_size, ptrs_size = self._unpack_ptrstruct(offset)
+            tag = self._read_primitive(offset, Types.Int64)
+            item_count, data_size, ptrs_size = PtrStruct.unpack(tag)
             item_size = (data_size+ptrs_size)*8
             offset += 8
         elif item_size_tag == self.LIST_BIT:

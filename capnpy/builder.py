@@ -1,5 +1,6 @@
 import struct
 from capnpy.blob import Blob
+from capnpy.ptr import PtrStruct, PtrList
 
 class Builder(object):
 
@@ -21,29 +22,6 @@ class Builder(object):
     def _calc_relative_offset(self, offset):
         return self._totalsize - (offset+8)
 
-    def _new_ptrstruct(self, ptr_offset, data_size, ptrs_size):
-        """
-        Construct a pointer to struct; data_size and ptrs_size are expressed in
-        BYTES (not in words)
-        """
-        ptr = 0
-        ptr |= ptrs_size/8 << 48
-        ptr |= data_size/8 << 32
-        ptr |= ptr_offset/8 << 2
-        ptr |= Blob.PTR_STRUCT
-        return ptr
-
-    def _new_ptrlist(self, ptr_offset, size_tag, item_count):
-        """
-        Construct a pointer to list
-        """
-        ptr = 0
-        ptr |= item_count << 35
-        ptr |= size_tag << 32
-        ptr |= ptr_offset/8 << 2
-        ptr |= Blob.PTR_LIST
-        return ptr
-
     def _new_ptrlist_composite(self, ptr_offset, item_type, item_count):
         # if size is composite, ptr contains the total size in words, and
         # we also need to emit a "list tag"
@@ -53,10 +31,10 @@ class Builder(object):
         #
         # emit the tag
         # we need to pass item_count*8, because _new_ptrstruct divides by 8 internally
-        tag = self._new_ptrstruct(item_count*8, data_size, ptrs_size)
+        tag = PtrStruct.pack(item_count*8, data_size, ptrs_size)
         self._alloc(struct.pack('<q', tag))
         #
-        return self._new_ptrlist(ptr_offset, Blob.LIST_COMPOSITE, total_words)
+        return PtrList.pack(ptr_offset, Blob.LIST_COMPOSITE, total_words)
 
     def alloc_struct(self, offset, struct_type, value):
         if value is None:
@@ -69,7 +47,7 @@ class Builder(object):
         ptrs_size = struct_type.__ptrs_size__
         ptr_offset = self._calc_relative_offset(offset)
         self._alloc(value._buf, expected_size=data_size+ptrs_size)
-        ptr = self._new_ptrstruct(ptr_offset, data_size, ptrs_size)
+        ptr = PtrStruct.pack(ptr_offset, data_size, ptrs_size)
         return ptr
 
     def alloc_string(self, offset, value):
@@ -78,7 +56,7 @@ class Builder(object):
         value += '\0'
         ptr_offset = self._calc_relative_offset(offset)
         self._alloc(value)
-        ptr = self._new_ptrlist(ptr_offset, Blob.LIST_8, len(value))
+        ptr = PtrList.pack(ptr_offset, Blob.LIST_8, len(value))
         return ptr
 
     def alloc_list(self, offset, listcls, item_type, lst):
@@ -90,7 +68,7 @@ class Builder(object):
         if size_tag == Blob.LIST_COMPOSITE:
             ptr = self._new_ptrlist_composite(ptr_offset, item_type, item_count)
         else:
-            ptr = self._new_ptrlist(ptr_offset, size_tag, item_count)
+            ptr = PtrList.pack(ptr_offset, size_tag, item_count)
         #
         for item in lst:
             s = listcls.pack_item(item_type, item)
