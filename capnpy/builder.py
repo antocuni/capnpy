@@ -59,6 +59,8 @@ class Builder(object):
         return self._new_ptrlist(ptr_offset, Blob.LIST_COMPOSITE, total_words)
 
     def alloc_struct(self, offset, value, struct_type):
+        if value is None:
+            return 0 # NULL
         if not isinstance(value, struct_type):
             raise TypeError("Expected %s instance, got %s" %
                             (struct_type.__class__.__name__, value))
@@ -71,6 +73,8 @@ class Builder(object):
         return ptr
 
     def alloc_string(self, offset, value):
+        if value is None:
+            return 0 # NULL
         value += '\0'
         ptr_offset = self._calc_relative_offset(offset)
         self._alloc(value)
@@ -78,6 +82,8 @@ class Builder(object):
         return ptr
 
     def alloc_list(self, offset, listcls, item_type, lst):
+        if lst is None:
+            return 0 # NULL
         ptr_offset = self._calc_relative_offset(offset)
         size_tag = listcls.get_size_tag(item_type)
         item_count = len(lst)

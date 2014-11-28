@@ -89,3 +89,12 @@ def test_alloc_list_of_structs():
                     '\x28\x00\x00\x00\x00\x00\x00\x00'    # 40
                     '\x90\x01\x00\x00\x00\x00\x00\x00')   # 400
     assert buf == expected_buf
+
+def test_null_pointers():
+    NULL = '\x00\x00\x00\x00\x00\x00\x00\x00' # NULL pointer
+    builder = Builder('qqq')
+    ptr1 = builder.alloc_struct(0, None, Blob)
+    ptr2 = builder.alloc_string(8, None)
+    ptr3 = builder.alloc_list(16, PrimitiveList, Types.Int64, None)
+    buf = builder.build(ptr1, ptr2, ptr3)
+    assert buf == NULL*3
