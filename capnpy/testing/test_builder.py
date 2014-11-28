@@ -1,5 +1,6 @@
 from capnpy.builder import Builder
 from capnpy.blob import Blob
+from capnpy.list import Int64List
 
 def test_primitive():
     builder = Builder('qqd')
@@ -21,9 +22,22 @@ def test_alloc_struct():
 
 
 def test_alloc_string():
-    builder = Builder('q')
-    ptr = builder.alloc_string(0, 'hello capnproto')
-    buf = builder.build(ptr)
-    assert buf == ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptr
+    # the first word is just some random garbage to test when we have a non-0
+    # offset. The second is the string pointer
+    builder = Builder('qq')
+    ptr = builder.alloc_string(8, 'hello capnproto')
+    buf = builder.build(1, ptr)
+    assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'
+                   '\x01\x00\x00\x00\x82\x00\x00\x00'   # ptr
                    'hello capnproto\0')                 # string
 
+
+def test_alloc_list_int64():
+    builder = Builder('q')
+    ptr = builder.alloc_list(0, Int64List, [1, 2, 3, 4])
+    buf = builder.build(ptr)
+    assert buf == ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
+                   '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
+                   '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
+                   '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
+                   '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4

@@ -34,13 +34,20 @@ class List(Blob):
 
 
 class Int64List(List):
+    SIZE_TAG = Blob.LIST_64
+    FORMAT = '<q' # XXX to be removed
+    
     def _read_list_item(self, offset):
         return self._read_int64(offset)
 
 class Float64List(List):
+    SIZE_TAG = Blob.LIST_64
+
     def _read_list_item(self, offset):
         return self._read_float64(offset)
 
 class StructList(List):
+    SIZE_TAG = Blob.LIST_COMPOSITE
+
     def _read_list_item(self, offset):
         return self._itemcls.from_buffer(self._buf, self._offset+offset)

@@ -13,38 +13,48 @@ class Builder(object):
         s = struct.pack(self._fmt, *items)
         return s + ''.join(self._extra)
 
+    def _alloc(self, s, expected_size=None):
+        assert expected_size is None or expected_size == len(s)
+        self._extra.append(s)
+        self._totalsize += len(s)
+
+    def _calc_relative_offset(self, offset):
+        return self._totalsize - (offset+8)
+
     def alloc_struct(self, offset, value, expected_type, data_size, ptrs_size):
         if not isinstance(value, expected_type):
             raise TypeError("Expected %s instance, got %s" %
                             (expected_type.__class__.__name__, value))
-        # 1) compute the offset of struct relative to the end of the word
-        # we are writing to
-        ptr_offset = self._totalsize - (offset+8)
         #
-        # 2) build the ptrstruct; note that sizes and offsets are expressed in
-        # words, not in bytes
+        ptr_offset = self._calc_relative_offset(offset)
+        self._alloc(value._buf, expected_size=data_size+ptrs_size)
         ptr = 0
         ptr |= ptrs_size/8 << 48
         ptr |= data_size/8 << 32
         ptr |= ptr_offset/8 << 2
         ptr |= Blob.PTR_STRUCT
-        #
-        # 3) append the struct _buf to the end of our stream
-        assert len(value._buf) == data_size + ptrs_size
-        self._extra.append(value._buf)
-        self._totalsize += len(value._buf)
         return ptr
 
     def alloc_string(self, offset, value):
         value += '\0'
-        str_size = len(value)
-        ptr_offset = self._totalsize - (offset+8)
+        ptr_offset = self._calc_relative_offset(offset)
+        self._alloc(value)
         ptr = 0
-        ptr |= str_size << 35
+        ptr |= len(value) << 35
         ptr |= Blob.LIST_8 << 32
         ptr |= ptr_offset/8 << 2
         ptr |= Blob.PTR_LIST
-        #
-        self._extra.append(value)
-        self._totalsize += len(value)
         return ptr
+
+    def alloc_list(self, offset, listcls, lst):
+        ptr_offset = self._calc_relative_offset(offset)
+        for item in lst:
+            s = struct.pack(listcls.FORMAT, item)
+            self._alloc(s)
+        ptr = 0
+        ptr |= len(lst) << 35
+        ptr |= listcls.SIZE_TAG << 32
+        ptr |= ptr_offset/8 << 2
+        ptr |= Blob.PTR_LIST
+        return ptr
+        
