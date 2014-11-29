@@ -15,9 +15,9 @@ class PtrStruct(int):
     @classmethod
     def new(cls, offset, data_size, ptrs_size):
         ptr = 0
-        ptr |= ptrs_size/8 << 48
-        ptr |= data_size/8 << 32
-        ptr |= offset/8 << 2
+        ptr |= ptrs_size << 48
+        ptr |= data_size << 32
+        ptr |= offset << 2
         ptr |= cls.KIND
         return cls(ptr)
 
@@ -65,7 +65,7 @@ class PtrList(int):
         ptr = 0
         ptr |= item_count << 35
         ptr |= size_tag << 32
-        ptr |= ptr_offset/8 << 2
+        ptr |= ptr_offset << 2
         ptr |= cls.KIND
         return ptr
 

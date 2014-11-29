@@ -14,7 +14,7 @@ def test_PtrStruct():
     assert ptr.ptrs_size == 4
 
 def test_PtrStruct_new():
-    ptr = PtrStruct.new(100*8, 2*8, 4*8)
+    ptr = PtrStruct.new(100, 2, 4)
     assert ptr.kind == PtrStruct.KIND
     assert ptr.offset == 100
     assert ptr.data_size == 2

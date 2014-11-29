@@ -20,21 +20,20 @@ class Builder(object):
         self._totalsize += len(s)
 
     def _calc_relative_offset(self, offset):
-        return self._totalsize - (offset+8)
+        return (self._totalsize - (offset+8)) / 8
 
     def _new_ptrlist_composite(self, ptr_offset, item_type, item_count):
         # if size is composite, ptr contains the total size in words, and
         # we also need to emit a "list tag"
-        data_size = item_type.__data_size__  # in bytes
-        ptrs_size = item_type.__ptrs_size__  # in bytes
-        total_words = (data_size+ptrs_size)/8 * item_count
+        data_size = item_type.__data_size__ / 8  # in words
+        ptrs_size = item_type.__ptrs_size__ / 8  # in words
+        total_words = (data_size+ptrs_size) * item_count
         #
         # emit the tag
-        # we need to pass item_count*8, because _new_ptrstruct divides by 8 internally
-        tag = PtrStruct.new(item_count*8, data_size, ptrs_size)
+        tag = PtrStruct.new(item_count, data_size, ptrs_size)
         self._alloc(struct.pack('<q', tag))
         #
-        return PtrList.new(ptr_offset, Blob.LIST_COMPOSITE, total_words)
+        return PtrList.new(ptr_offset/8, Blob.LIST_COMPOSITE, total_words)
 
     def alloc_struct(self, offset, struct_type, value):
         if value is None:
@@ -43,11 +42,11 @@ class Builder(object):
             raise TypeError("Expected %s instance, got %s" %
                             (struct_type.__class__.__name__, value))
         #
-        data_size = struct_type.__data_size__
-        ptrs_size = struct_type.__ptrs_size__
-        ptr_offset = self._calc_relative_offset(offset)
+        data_size = struct_type.__data_size__           # in bytes
+        ptrs_size = struct_type.__ptrs_size__           # in bytes
+        ptr_offset = self._calc_relative_offset(offset) # in words
         self._alloc(value._buf, expected_size=data_size+ptrs_size)
-        ptr = PtrStruct.new(ptr_offset, data_size, ptrs_size)
+        ptr = PtrStruct.new(ptr_offset, data_size/8, ptrs_size/8)
         return ptr
 
     def alloc_string(self, offset, value):
