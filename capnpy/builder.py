@@ -15,8 +15,7 @@ class Builder(object):
         s = struct.pack(self._fmt, *items)
         return s + ''.join(self._extra)
 
-    def _alloc(self, s, aligned=True, expected_size=None):
-        assert expected_size is None or expected_size == len(s)
+    def _alloc(self, s, aligned=True):
         self._extra.append(s)
         self._totalsize += len(s)
         if aligned:
@@ -51,11 +50,11 @@ class Builder(object):
             raise TypeError("Expected %s instance, got %s" %
                             (struct_type.__class__.__name__, value))
         #
-        data_size = struct_type.__data_size__           # in bytes
-        ptrs_size = struct_type.__ptrs_size__           # in bytes
+        data_size = struct_type.__data_size__ / 8       # in words
+        ptrs_size = struct_type.__ptrs_size__ / 8       # in words
         ptr_offset = self._calc_relative_offset(offset) # in words
-        self._alloc(value._buf, expected_size=data_size+ptrs_size)
-        ptr = PtrStruct.new(ptr_offset, data_size/8, ptrs_size/8)
+        self._alloc(value._buf)
+        ptr = PtrStruct.new(ptr_offset, data_size, ptrs_size)
         return ptr
 
     def alloc_string(self, offset, value):
