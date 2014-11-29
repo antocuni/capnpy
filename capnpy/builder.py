@@ -31,10 +31,10 @@ class Builder(object):
         #
         # emit the tag
         # we need to pass item_count*8, because _new_ptrstruct divides by 8 internally
-        tag = PtrStruct.pack(item_count*8, data_size, ptrs_size)
+        tag = PtrStruct.new(item_count*8, data_size, ptrs_size)
         self._alloc(struct.pack('<q', tag))
         #
-        return PtrList.pack(ptr_offset, Blob.LIST_COMPOSITE, total_words)
+        return PtrList.new(ptr_offset, Blob.LIST_COMPOSITE, total_words)
 
     def alloc_struct(self, offset, struct_type, value):
         if value is None:
@@ -47,7 +47,7 @@ class Builder(object):
         ptrs_size = struct_type.__ptrs_size__
         ptr_offset = self._calc_relative_offset(offset)
         self._alloc(value._buf, expected_size=data_size+ptrs_size)
-        ptr = PtrStruct.pack(ptr_offset, data_size, ptrs_size)
+        ptr = PtrStruct.new(ptr_offset, data_size, ptrs_size)
         return ptr
 
     def alloc_string(self, offset, value):
@@ -56,7 +56,7 @@ class Builder(object):
         value += '\0'
         ptr_offset = self._calc_relative_offset(offset)
         self._alloc(value)
-        ptr = PtrList.pack(ptr_offset, Blob.LIST_8, len(value))
+        ptr = PtrList.new(ptr_offset, Blob.LIST_8, len(value))
         return ptr
 
     def alloc_list(self, offset, listcls, item_type, lst):
@@ -68,7 +68,7 @@ class Builder(object):
         if size_tag == Blob.LIST_COMPOSITE:
             ptr = self._new_ptrlist_composite(ptr_offset, item_type, item_count)
         else:
-            ptr = PtrList.pack(ptr_offset, size_tag, item_count)
+            ptr = PtrList.new(ptr_offset, size_tag, item_count)
         #
         for item in lst:
             s = listcls.pack_item(item_type, item)

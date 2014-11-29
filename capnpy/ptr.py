@@ -1,4 +1,4 @@
-class PtrStruct(object):
+class PtrStruct(int):
     ## lsb                      struct pointer                       msb
     ## +-+-----------------------------+---------------+---------------+
     ## |A|             B               |       C       |       D       |
@@ -13,35 +13,32 @@ class PtrStruct(object):
     KIND = 0
 
     @classmethod
-    def unpack(cls, ptr):
-        ptr_kind  = ptr & 0x3
-        ptr_offset = ptr>>2 & 0x3fffffff
-        data_size = ptr>>32 & 0xffff
-        ptrs_size = ptr>>48 & 0xffff
-        assert ptr_kind == cls.KIND
-        return ptr_offset, data_size, ptrs_size
-
-    @classmethod
-    def unpack_offset(cls, ptr):
-        # we partially replicate the logic of _unpack_ptrstruct, because in
-        # the common case it's not needed to decode data_size and ptrs_size
-        ptr_kind  = ptr & 0x3
-        ptr_offset = ptr>>2 & 0x3fffffff
-        assert ptr_kind == cls.KIND
-        return ptr_offset
-
-    @classmethod
-    def pack(cls, ptr_offset, data_size, ptrs_size):
+    def new(cls, offset, data_size, ptrs_size):
         ptr = 0
         ptr |= ptrs_size/8 << 48
         ptr |= data_size/8 << 32
-        ptr |= ptr_offset/8 << 2
+        ptr |= offset/8 << 2
         ptr |= cls.KIND
-        return ptr
+        return cls(ptr)
+
+    @property
+    def kind(self):
+        return self & 0x3
+
+    @property
+    def offset(self):
+        return self>>2 & 0x3fffffff
+
+    @property
+    def data_size(self):
+        return self>>32 & 0xffff
+
+    @property
+    def ptrs_size(self):
+        return self>>48 & 0xffff
 
 
-
-class PtrList(object):
+class PtrList(int):
     ## lsb                       list pointer                        msb
     ## +-+-----------------------------+--+----------------------------+
     ## |A|             B               |C |             D              |
@@ -64,19 +61,26 @@ class PtrList(object):
     KIND = 1
 
     @classmethod
-    def unpack(cls, ptr):
-        ptr_kind  = ptr & 0x3
-        ptr_offset = ptr>>2 & 0x3fffffff
-        item_size_tag = ptr>>32 & 0x7
-        item_count = ptr>>35
-        assert ptr_kind == cls.KIND
-        return ptr_offset, item_size_tag, item_count
-
-    @classmethod
-    def pack(cls, ptr_offset, size_tag, item_count):
+    def new(cls, ptr_offset, size_tag, item_count):
         ptr = 0
         ptr |= item_count << 35
         ptr |= size_tag << 32
         ptr |= ptr_offset/8 << 2
         ptr |= cls.KIND
         return ptr
+
+    @property
+    def kind(self):
+        return self & 0x3
+
+    @property
+    def offset(self):
+        return self>>2 & 0x3fffffff
+
+    @property
+    def size_tag(self):
+        return self>>32 & 0x7
+
+    @property
+    def item_count(self):
+        return self>>35

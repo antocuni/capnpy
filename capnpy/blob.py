@@ -67,10 +67,10 @@ class Blob(object):
         ptr = self._read_primitive(offset, Types.Int64)
         if ptr == 0:
             return None
-        ptr_offset = PtrStruct.unpack_offset(ptr)
+        ptr = PtrStruct(ptr)
         # the +1 is needed because the offset is measured from the end of the
         # pointer itself
-        offset = offset + (ptr_offset+1)*8
+        offset = offset + (ptr.offset+1)*8
         return offset
 
     def _deref_ptrlist(self, offset):
@@ -85,12 +85,15 @@ class Blob(object):
         ptr = self._read_primitive(offset, Types.Int64)
         if ptr == 0:
             return None, None, None
-        ptr_offset, item_size_tag, item_count = PtrList.unpack(ptr)
-        offset = offset + (ptr_offset+1)*8
+        ptr = PtrList(ptr)
+        offset = offset + (ptr.offset+1)*8
+        item_size_tag = ptr.size_tag
+        item_count = ptr.item_count
         if item_size_tag == self.LIST_COMPOSITE:
             tag = self._read_primitive(offset, Types.Int64)
-            item_count, data_size, ptrs_size = PtrStruct.unpack(tag)
-            item_size = (data_size+ptrs_size)*8
+            tag = PtrStruct(tag)
+            item_count = tag.offset
+            item_size = (tag.data_size+tag.ptrs_size)*8
             offset += 8
         elif item_size_tag == self.LIST_BIT:
             raise ValueError('Lists of bits are not supported')
