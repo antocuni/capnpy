@@ -2,6 +2,7 @@ import struct
 from capnpy.ptr import PtrStruct, PtrList
 
 class Types(object):
+    Int8 = 'b'
     Int64 = 'q'
     Float64 = 'd'
 

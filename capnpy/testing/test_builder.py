@@ -49,6 +49,14 @@ def test_alloc_list_int64():
                    '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
                    '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
 
+def test_alloc_list_int8():
+    builder = Builder('q')
+    ptr = builder.alloc_list(0, PrimitiveList, Types.Int8, [1, 2, 3, 4])
+    buf = builder.build(ptr)
+    assert buf == ('\x01\x00\x00\x00\x22\x00\x00\x00'   # ptrlist
+                   '\x01\x02\x03\x04\x00\x00\x00\x00')  # 1,2,3,4 + padding
+
+
 def test_alloc_list_float64():
     builder = Builder('q')
     ptr = builder.alloc_list(0, PrimitiveList, Types.Float64,

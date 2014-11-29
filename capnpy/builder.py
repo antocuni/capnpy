@@ -20,10 +20,13 @@ class Builder(object):
         self._extra.append(s)
         self._totalsize += len(s)
         if aligned:
-            padding = 8 - (self._totalsize % 8)
-            if padding != 8:
-                self._extra.append('\x00'*padding)
-                self._totalsize += padding
+            self._force_alignment()
+
+    def _force_alignment(self):
+        padding = 8 - (self._totalsize % 8)
+        if padding != 8:
+            self._extra.append('\x00'*padding)
+            self._totalsize += padding
 
     def _calc_relative_offset(self, offset):
         return (self._totalsize - (offset+8)) / 8
@@ -77,6 +80,6 @@ class Builder(object):
         #
         for item in lst:
             s = listcls.pack_item(item_type, item)
-            self._alloc(s) # XXX aligned=False
-        #
+            self._alloc(s, aligned=False)
+        self._force_alignment()
         return ptr
