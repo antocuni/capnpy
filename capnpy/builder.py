@@ -7,6 +7,7 @@ class Builder(object):
     def __init__(self, fmt):
         self._fmt = '<' + fmt # force little endian
         self._size = struct.calcsize(self._fmt) # the size of the main struct
+        assert self._size % 8 == 0 # fmt must contains padding bytes, if needed
         self._extra = []
         self._totalsize = self._size # the total size, including the chunks in _extra
 
@@ -14,10 +15,15 @@ class Builder(object):
         s = struct.pack(self._fmt, *items)
         return s + ''.join(self._extra)
 
-    def _alloc(self, s, expected_size=None):
+    def _alloc(self, s, aligned=True, expected_size=None):
         assert expected_size is None or expected_size == len(s)
         self._extra.append(s)
         self._totalsize += len(s)
+        if aligned:
+            padding = 8 - (self._totalsize % 8)
+            if padding != 8:
+                self._extra.append('\x00'*padding)
+                self._totalsize += padding
 
     def _calc_relative_offset(self, offset):
         return (self._totalsize - (offset+8)) / 8
@@ -71,6 +77,6 @@ class Builder(object):
         #
         for item in lst:
             s = listcls.pack_item(item_type, item)
-            self._alloc(s)
+            self._alloc(s) # XXX aligned=False
         #
         return ptr

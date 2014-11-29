@@ -27,14 +27,16 @@ def test_alloc_struct():
 
 def test_alloc_string():
     builder = Builder('qq')
-    ptr1 = builder.alloc_string(0, 'hello capnproto')
-    ptr2 = builder.alloc_string(8, 'hello world')
+    ptr1 = builder.alloc_string(0, 'hello capnp')
+    ptr2 = builder.alloc_string(8, 'hi world')
     buf = builder.build(ptr1, ptr2)
-    assert buf == ('\x05\x00\x00\x00\x82\x00\x00\x00'
-                   '\x09\x00\x00\x00\x62\x00\x00\x00'
-                   'hello capnproto\0'
-                   'hello world\0')
-    assert False, 'This is wrong: we need to think about alignment'
+    expected_buf = ('\x05\x00\x00\x00\x62\x00\x00\x00'
+                    '\x09\x00\x00\x00\x4a\x00\x00\x00'
+                    'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
+                    'p' 'n' 'p' '\x00\x00\x00\x00\x00'
+                    'h' 'i' ' ' 'w' 'o' 'r' 'l' 'd'
+                    '\x00\x00\x00\x00\x00\x00\x00\x00')
+    assert buf == expected_buf
 
 
 def test_alloc_list_int64():
