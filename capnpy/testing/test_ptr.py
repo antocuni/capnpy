@@ -33,3 +33,11 @@ def test_PtrList():
     assert ptr.offset == 64
     assert ptr.size_tag == 7
     assert ptr.item_count == 200
+
+def test_PtrList_new():
+    ptr = PtrList.new(64, 7, 200)
+    assert ptr.kind == PtrList.KIND
+    assert ptr.offset == 64
+    assert ptr.size_tag == 7
+    assert ptr.item_count == 200
+    assert ptr == 0x0000064700000101

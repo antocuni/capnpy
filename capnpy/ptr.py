@@ -67,7 +67,7 @@ class PtrList(int):
         ptr |= size_tag << 32
         ptr |= ptr_offset << 2
         ptr |= cls.KIND
-        return ptr
+        return cls(ptr)
 
     @property
     def kind(self):
