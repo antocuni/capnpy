@@ -1,6 +1,6 @@
 import py
 from capnpy.blob import Blob, Types
-from capnpy.list import PrimitiveList, StructList
+from capnpy.list import PrimitiveList, StructList, StringList
 
 def test_read_list():
     buf = ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
@@ -108,3 +108,18 @@ def test_Float64List():
     blob = Blob.from_buffer(buf, 0)
     lst = blob._read_list(0, PrimitiveList, Types.Float64)
     assert list(lst) == [1.234, 2.345, 3.456, 4.567]
+
+
+def test_list_of_strings():
+    buf = ('\x01\x00\x00\x00\x26\x00\x00\x00'   # ptrlist
+           '\x0d\x00\x00\x00\x12\x00\x00\x00'   # ptr item 1
+           '\x0d\x00\x00\x00\x1a\x00\x00\x00'   # ptr item 2
+           '\x0d\x00\x00\x00\x22\x00\x00\x00'   # ptr item 3
+           '\x0d\x00\x00\x00\x2a\x00\x00\x00'   # ptr item 4
+           'A' '\x00\x00\x00\x00\x00\x00\x00'   # A
+           'B' 'C' '\x00\x00\x00\x00\x00\x00'   # BC
+           'D' 'E' 'F' '\x00\x00\x00\x00\x00'   # DEF
+           'G' 'H' 'I' 'J' '\x00\x00\x00\x00')  # GHIJ
+    blob = Blob.from_buffer(buf, 0)
+    lst = blob._read_list(0, StringList, None)
+    assert list(lst) == ['A', 'BC', 'DEF', 'GHIJ']
