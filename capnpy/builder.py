@@ -67,16 +67,15 @@ class AbstractBuilder(object):
         if lst is None:
             return 0 # NULL
         # build the list, using a separate listbuilder
-        item_size, size_tag = listcls.get_item_size(item_type)
         item_count = len(lst)
-        listbuilder = ListBuilder(item_size, item_count)
+        listbuilder = ListBuilder(listcls, item_type, item_count)
         for i, item in enumerate(lst):
-            s = listcls.pack_item(listbuilder, i, item_type, item)
+            s = listcls.pack_item(listbuilder, i, item)
             listbuilder.append(s)
         #
         # create the ptrlist, and allocate the list body itself
         ptr_offset = self._calc_relative_offset(offset)
-        ptr = self._new_ptrlist(size_tag, ptr_offset, item_type, item_count)
+        ptr = self._new_ptrlist(listbuilder.size_tag, ptr_offset, item_type, item_count)
         self._alloc(listbuilder.build())
         return ptr
 
@@ -96,19 +95,21 @@ class StructBuilder(AbstractBuilder):
 
 class ListBuilder(AbstractBuilder):
 
-    def __init__(self, item_size, item_count):
-        size = item_size*item_count
-        AbstractBuilder.__init__(self, size)
+    def __init__(self, listcls, item_type, item_count):
+        self.listcls = listcls
+        self.item_type = item_type
+        self.item_size, self.size_tag = listcls.get_item_size(item_type)
+        self.item_count = item_count
         self._items = []
-        self._item_size = item_size
-        self._item_count = item_count
+        size = self.item_size * self.item_count
+        AbstractBuilder.__init__(self, size)
         self._force_alignment()
 
     def append(self, item):
         self._items.append(item)
 
     def build(self):
-        assert len(self._items) == self._item_count
+        assert len(self._items) == self.item_count
         listbody = ''.join(self._items)
         assert len(listbody) == self._size
         return listbody + ''.join(self._extra)

@@ -52,7 +52,8 @@ class PrimitiveList(List):
             raise ValueError('Unsupported size: %d' % size)
 
     @classmethod
-    def pack_item(cls, builder, offset, item_type, item):
+    def pack_item(cls, listbuilder, i, item):
+        item_type = listbuilder.item_type
         return struct.pack('<'+item_type, item)
 
     def _read_list_item(self, offset):
@@ -68,7 +69,8 @@ class StructList(List):
         assert False, 'XXX'
 
     @classmethod
-    def pack_item(cls, builder, offset, item_type, item):
+    def pack_item(cls, listbuilder, i, item):
+        item_type = listbuilder.item_type
         if not isinstance(item, item_type):
             raise TypeError("Expected an object of type %s, got %s instead" %
                             (item_type.__name__, item.__class__.__name__))
@@ -85,8 +87,8 @@ class StringList(List):
         return 8, Blob.LIST_PTR
 
     @classmethod
-    def pack_item(cls, listbuilder, i, item_type, item):
-        offset = i * listbuilder._item_size
+    def pack_item(cls, listbuilder, i, item):
+        offset = i * listbuilder.item_size
         ptr = listbuilder.alloc_string(offset, item)
         packed = struct.pack('q', ptr)
         return packed
