@@ -1,3 +1,5 @@
+import struct
+
 class PtrStruct(int):
     ## lsb                      struct pointer                       msb
     ## +-+-----------------------------+---------------+---------------+
@@ -19,6 +21,11 @@ class PtrStruct(int):
         ptr |= data_size << 32
         ptr |= offset << 2
         ptr |= cls.KIND
+        return cls(ptr)
+
+    @classmethod
+    def from_bytes(cls, s):
+        ptr = struct.unpack('q', s)[0]
         return cls(ptr)
 
     @property
@@ -67,6 +74,11 @@ class PtrList(int):
         ptr |= size_tag << 32
         ptr |= ptr_offset << 2
         ptr |= cls.KIND
+        return cls(ptr)
+
+    @classmethod
+    def from_bytes(cls, s):
+        ptr = struct.unpack('q', s)[0]
         return cls(ptr)
 
     @property
