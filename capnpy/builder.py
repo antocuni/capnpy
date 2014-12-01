@@ -38,17 +38,13 @@ class AbstractBuilder(object):
         ptr = PtrStruct.new(ptr_offset, data_size, ptrs_size)
         return ptr
 
-    def _alloc_string_internal(self, offset, value):
-        value += '\0'
-        ptr_offset = self._calc_relative_offset(offset)
-        ptr = PtrList.new(ptr_offset, Blob.LIST_8, len(value))
-        return ptr, value
-
     def alloc_string(self, offset, value):
         if value is None:
             return 0 # NULL
-        ptr, extra = self._alloc_string_internal(offset, value)
-        self._alloc(extra)
+        value += '\0'
+        ptr_offset = self._calc_relative_offset(offset)
+        ptr = PtrList.new(ptr_offset, Blob.LIST_8, len(value))
+        self._alloc(value)
         return ptr
 
     def _new_ptrlist(self, size_tag, ptr_offset, item_type, item_count):
@@ -74,11 +70,9 @@ class AbstractBuilder(object):
         item_size, size_tag = listcls.get_item_size(item_type)
         item_count = len(lst)
         listbuilder = ListBuilder(item_size, item_count)
-        for item in lst:
-            s, extra = listcls.pack_item(listbuilder, offset, item_type, item)
+        for i, item in enumerate(lst):
+            s = listcls.pack_item(listbuilder, i, item_type, item)
             listbuilder.append(s)
-            if extra:
-                listbuilder._alloc(extra)
         #
         # create the ptrlist, and allocate the list body itself
         ptr_offset = self._calc_relative_offset(offset)

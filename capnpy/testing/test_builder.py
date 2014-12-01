@@ -112,7 +112,6 @@ def test_null_pointers():
     assert buf == NULL*3
 
 def test_alloc_list_of_strings():
-    py.test.skip('in-progress')
     from capnpy.ptr import PtrList
     
     builder = StructBuilder('q')

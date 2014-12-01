@@ -38,10 +38,6 @@ class List(Blob):
 class PrimitiveList(List):
 
     @classmethod
-    def pack_item(cls, builder, offset, item_type, item):
-        return struct.pack('<'+item_type, item), ''
-
-    @classmethod
     def get_item_size(cls, item_type):
         size = struct.calcsize(item_type)
         if size == 1:
@@ -55,17 +51,14 @@ class PrimitiveList(List):
         else:
             raise ValueError('Unsupported size: %d' % size)
 
+    @classmethod
+    def pack_item(cls, builder, offset, item_type, item):
+        return struct.pack('<'+item_type, item)
+
     def _read_list_item(self, offset):
         return self._read_primitive(offset, self._item_type)
 
 class StructList(List):
-
-    @classmethod
-    def pack_item(cls, builder, offset, item_type, item):
-        if not isinstance(item, item_type):
-            raise TypeError("Expected an object of type %s, got %s instead" %
-                            (item_type.__name__, item.__class__.__name__))
-        return item._buf, ''
 
     @classmethod
     def get_item_size(cls, item_type):
@@ -74,11 +67,29 @@ class StructList(List):
             return total_size, Blob.LIST_COMPOSITE
         assert False, 'XXX'
 
+    @classmethod
+    def pack_item(cls, builder, offset, item_type, item):
+        if not isinstance(item, item_type):
+            raise TypeError("Expected an object of type %s, got %s instead" %
+                            (item_type.__name__, item.__class__.__name__))
+        return item._buf
+
     def _read_list_item(self, offset):
         return self._item_type.from_buffer(self._buf, self._offset+offset)
 
 
 class StringList(List):
+
+    @classmethod
+    def get_item_size(cls, item_type):
+        return 8, Blob.LIST_PTR
+
+    @classmethod
+    def pack_item(cls, listbuilder, i, item_type, item):
+        offset = i * listbuilder._item_size
+        ptr = listbuilder.alloc_string(offset, item)
+        packed = struct.pack('q', ptr)
+        return packed
 
     def _read_list_item(self, offset):
         return self._read_string(offset)
