@@ -38,20 +38,20 @@ class List(Blob):
 class PrimitiveList(List):
 
     @classmethod
-    def pack_item(cls, item_type, item):
-        return struct.pack('<'+item_type, item)
+    def pack_item(cls, builder, offset, item_type, item):
+        return struct.pack('<'+item_type, item), ''
 
     @classmethod
-    def get_size_tag(cls, item_type):
+    def get_item_size(cls, item_type):
         size = struct.calcsize(item_type)
         if size == 1:
-            return Blob.LIST_8
+            return size, Blob.LIST_8
         elif size == 2:
-            return Blob.LIST_16
+            return size, Blob.LIST_16
         elif size == 4:
-            return Blob.LIST_32
+            return size, Blob.LIST_32
         elif size == 8:
-            return Blob.LIST_64
+            return size, Blob.LIST_64
         else:
             raise ValueError('Unsupported size: %d' % size)
 
@@ -61,17 +61,17 @@ class PrimitiveList(List):
 class StructList(List):
 
     @classmethod
-    def pack_item(cls, item_type, item):
+    def pack_item(cls, builder, offset, item_type, item):
         if not isinstance(item, item_type):
             raise TypeError("Expected an object of type %s, got %s instead" %
                             (item_type.__name__, item.__class__.__name__))
-        return item._buf
+        return item._buf, ''
 
     @classmethod
-    def get_size_tag(cls, item_type):
+    def get_item_size(cls, item_type):
         total_size = item_type.__data_size__ + item_type.__ptrs_size__ # in bytes
         if total_size > 8:
-            return Blob.LIST_COMPOSITE
+            return total_size, Blob.LIST_COMPOSITE
         assert False, 'XXX'
 
     def _read_list_item(self, offset):

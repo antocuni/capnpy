@@ -1,9 +1,10 @@
-from capnpy.builder import Builder
+import py
+from capnpy.builder import StructBuilder
 from capnpy.blob import Blob, Types
-from capnpy.list import PrimitiveList, StructList
+from capnpy.list import PrimitiveList, StructList, StringList
 
 def test_primitive():
-    builder = Builder('qqd')
+    builder = StructBuilder('qqd')
     buf = builder.build(1, 2, 1.234)
     assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                    '\x02\x00\x00\x00\x00\x00\x00\x00'  # 2
@@ -18,7 +19,7 @@ def test_alloc_struct():
              '\x02\x00\x00\x00\x00\x00\x00\x00')
     mystruct = MyStruct.from_buffer(mybuf, 0)
     #
-    builder = Builder('q')
+    builder = StructBuilder('q')
     ptr = builder.alloc_struct(0, MyStruct, mystruct)
     buf = builder.build(ptr)
     assert buf == ('\x00\x00\x00\x00\x02\x00\x00\x00'  # ptr to mystruct
@@ -26,7 +27,7 @@ def test_alloc_struct():
 
 
 def test_alloc_string():
-    builder = Builder('qq')
+    builder = StructBuilder('qq')
     ptr1 = builder.alloc_string(0, 'hello capnp')
     ptr2 = builder.alloc_string(8, 'hi world')
     buf = builder.build(ptr1, ptr2)
@@ -40,7 +41,7 @@ def test_alloc_string():
 
 
 def test_alloc_list_int64():
-    builder = Builder('q')
+    builder = StructBuilder('q')
     ptr = builder.alloc_list(0, PrimitiveList, Types.Int64, [1, 2, 3, 4])
     buf = builder.build(ptr)
     assert buf == ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
@@ -50,7 +51,7 @@ def test_alloc_list_int64():
                    '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
 
 def test_alloc_list_int8():
-    builder = Builder('q')
+    builder = StructBuilder('q')
     ptr = builder.alloc_list(0, PrimitiveList, Types.Int8, [1, 2, 3, 4])
     buf = builder.build(ptr)
     assert buf == ('\x01\x00\x00\x00\x22\x00\x00\x00'   # ptrlist
@@ -58,7 +59,7 @@ def test_alloc_list_int8():
 
 
 def test_alloc_list_float64():
-    builder = Builder('q')
+    builder = StructBuilder('q')
     ptr = builder.alloc_list(0, PrimitiveList, Types.Float64,
                              [1.234, 2.345, 3.456, 4.567])
     buf = builder.build(ptr)
@@ -86,7 +87,7 @@ def test_alloc_list_of_structs():
     p3 = Point.from_buffer(buf3, 0)
     p4 = Point.from_buffer(buf4, 0)
     #
-    builder = Builder('q')
+    builder = StructBuilder('q')
     ptr = builder.alloc_list(0, StructList, Point, [p1, p2, p3, p4])
     buf = builder.build(ptr)
     expected_buf = ('\x01\x00\x00\x00\x47\x00\x00\x00'    # ptrlist
@@ -103,9 +104,27 @@ def test_alloc_list_of_structs():
 
 def test_null_pointers():
     NULL = '\x00\x00\x00\x00\x00\x00\x00\x00' # NULL pointer
-    builder = Builder('qqq')
+    builder = StructBuilder('qqq')
     ptr1 = builder.alloc_struct(0, Blob, None)
     ptr2 = builder.alloc_string(8, None)
     ptr3 = builder.alloc_list(16, PrimitiveList, Types.Int64, None)
     buf = builder.build(ptr1, ptr2, ptr3)
     assert buf == NULL*3
+
+def test_alloc_list_of_strings():
+    py.test.skip('in-progress')
+    from capnpy.ptr import PtrList
+    
+    builder = StructBuilder('q')
+    ptr = builder.alloc_list(0, StringList, None, ['A', 'BC', 'DEF', 'GHIJ'])
+    buf = builder.build(ptr)
+    expected_buf = ('\x01\x00\x00\x00\x26\x00\x00\x00'   # ptrlist
+                    '\x0d\x00\x00\x00\x12\x00\x00\x00'   # ptr item 1
+                    '\x0d\x00\x00\x00\x1a\x00\x00\x00'   # ptr item 2
+                    '\x0d\x00\x00\x00\x22\x00\x00\x00'   # ptr item 3
+                    '\x0d\x00\x00\x00\x2a\x00\x00\x00'   # ptr item 4
+                    'A' '\x00\x00\x00\x00\x00\x00\x00'   # A
+                    'B' 'C' '\x00\x00\x00\x00\x00\x00'   # BC
+                    'D' 'E' 'F' '\x00\x00\x00\x00\x00'   # DEF
+                    'G' 'H' 'I' 'J' '\x00\x00\x00\x00')  # GHIJ
+    assert buf == expected_buf
