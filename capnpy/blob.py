@@ -29,7 +29,7 @@ class Blob(object):
                                   'use Blob.from_buffer instead')
 
     @classmethod
-    def from_buffer(cls, buf, offset):
+    def from_buffer(cls, buf, offset=0):
         self = cls.__new__(cls)
         self._buf = buf
         self._offset = offset
