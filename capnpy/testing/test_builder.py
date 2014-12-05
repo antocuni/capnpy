@@ -127,3 +127,34 @@ def test_alloc_list_of_strings():
                     'D' 'E' 'F' '\x00\x00\x00\x00\x00'   # DEF
                     'G' 'H' 'I' 'J' '\x00\x00\x00\x00')  # GHIJ
     assert buf == expected_buf
+
+
+def test_alloc_list_of_structs_with_pointers():
+    class Person(Blob):
+        __data_size__ = 8
+        __ptrs_size__ = 8
+
+    john =  ('\x20\x00\x00\x00\x00\x00\x00\x00'    # age=32
+             '\x01\x00\x00\x00\x2a\x00\x00\x00'    # name=ptr
+             'J' 'o' 'h' 'n' '\x00\x00\x00\x00')   # John
+
+    emily = ('\x18\x00\x00\x00\x00\x00\x00\x00'    # age=24
+             '\x01\x00\x00\x00\x32\x00\x00\x00'    # name=ptr
+             '\x45\x6d\x69\x6c\x79\x00\x00\x00')   # Emily
+
+    john = Person.from_buffer(john, 0)
+    emily = Person.from_buffer(emily, 0)
+    #
+    builder = StructBuilder('q')
+    ptr = builder.alloc_list(0, StructList, Person, [john, emily])
+    buf = builder.build(ptr)
+
+    expected_buf = ('\x01\x00\x00\x00\x27\x00\x00\x00'    # ptrlist
+                    '\x08\x00\x00\x00\x01\x00\x01\x00'    # list tag
+                    '\x20\x00\x00\x00\x00\x00\x00\x00'    # age=32
+                    '\x09\x00\x00\x00\x2a\x00\x00\x00'    # name=ptr
+                    '\x18\x00\x00\x00\x00\x00\x00\x00'    # age=24
+                    '\x05\x00\x00\x00\x32\x00\x00\x00'    # name=ptr
+                    'J' 'o' 'h' 'n' '\x00\x00\x00\x00'    # John
+                    'E' 'm' 'i' 'l' 'y' '\x00\x00\x00')   # Emily
+    assert buf == expected_buf

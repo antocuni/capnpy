@@ -1,5 +1,42 @@
 import struct
 
+class Ptr(int):
+    ## lsb                      generic pointer                      msb
+    ## +-+-----------------------------+-------------------------------+
+    ## |A|             B               |               C               |
+    ## +-+-----------------------------+-------------------------------+
+    ##
+    ## A (2 bits) = 0, pointer kind (0 for struct, 1 for list)
+    ## B (30 bits) = Offset, in words, from the end of the pointer to the
+    ##     start of the struct's data section.  Signed.
+    ## C (32 bits) = extra info, depends on the kind
+
+    @classmethod
+    def new(cls, kind, offset, extra):
+        ptr = 0
+        ptr |= extra << 32
+        ptr |= offset << 2
+        ptr |= kind
+        return cls(ptr)
+
+    @classmethod
+    def from_bytes(cls, s):
+        ptr = struct.unpack('q', s)[0]
+        return cls(ptr)
+
+    @property
+    def kind(self):
+        return self & 0x3
+
+    @property
+    def offset(self):
+        return self>>2 & 0x3fffffff
+
+    @property
+    def extra(self):
+        return self>>32
+
+
 class PtrStruct(int):
     ## lsb                      struct pointer                       msb
     ## +-+-----------------------------+---------------+---------------+

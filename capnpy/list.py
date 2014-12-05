@@ -1,5 +1,6 @@
 import struct
-from capnpy.blob import Blob
+from capnpy.blob import Blob, Types
+from capnpy.ptr import Ptr
 
 class List(Blob):
 
@@ -74,7 +75,51 @@ class StructList(List):
         if not isinstance(item, item_type):
             raise TypeError("Expected an object of type %s, got %s instead" %
                             (item_type.__name__, item.__class__.__name__))
-        return item._buf
+        if item_type.__ptrs_size__ == 0:
+            # easy case, just copy the buffer
+            return item._buf
+        #
+        # hard case. The layout of item._buf is like this, where the length of
+        # extra might be different for each item
+        # +------+------+-------------+
+        # | data | ptrs |    extra    |
+        # +------+------+-------------+
+        #
+        # ptrs contains pointers pointing somewhere inside extra. The layout
+        # of the list looks like this:
+        # +------+------+------+------+....+-------------+----------+....
+        # |  D1  |  P1  |  D2  |  P2  |    |    extra1   |  extra2  |
+        # +------+------+------+------+....+-------------+----------+....
+        #
+        # So, to pack an item:
+        # 1) the data section is copied verbatim
+        # 2) the offset of pointers in ptrs need to be adjusted because extra
+        #    will be moved to the end of the list
+        # 3) extra must be allocated at the end of the list
+        #
+        data_size = item_type.__data_size__
+        ptrs_size = item_type.__ptrs_size__
+        data_buf = item._buf[:data_size]
+
+        # XXX: there might be other stuff after extra: we need a way to
+        # compute the lenght of extra
+        extra_buf = item._buf[data_size+ptrs_size:]
+        #
+        parts = [data_buf]
+        offset = i * listbuilder.item_size + data_size
+        additional_offset = listbuilder._calc_relative_offset(offset)
+        #
+        # iterate over and fix the pointers
+        for j in range(item_type.__ptrs_size__/8):
+            # read pointer, update its offset, and pack it
+            ptrstart = data_size + j*8
+            ptr = Ptr(item._read_primitive(ptrstart, Types.Int64))
+            ptr = Ptr.new(ptr.kind, ptr.offset+additional_offset, ptr.extra)
+            s = struct.pack('q', ptr)
+            parts.append(s)
+        #
+        listbuilder._alloc(extra_buf)
+        return ''.join(parts)
 
     def _read_list_item(self, offset):
         return self._item_type.from_buffer(self._buf, self._offset+offset)
