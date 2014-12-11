@@ -4,25 +4,25 @@ from capnpy.ptr import PtrStruct, PtrList
 
 class AbstractBuilder(object):
 
-    def __init__(self, size):
-        self._size = size
+    def __init__(self, length):
+        self._length = length
         self._extra = []
-        self._totalsize = self._size # the total size, including the chunks in _extra
+        self._total_length = self._length # the total length, including the chunks in _extra
 
     def _alloc(self, s, aligned=True):
         self._extra.append(s)
-        self._totalsize += len(s)
+        self._total_length += len(s)
         if aligned:
             self._force_alignment()
 
     def _force_alignment(self):
-        padding = 8 - (self._totalsize % 8)
+        padding = 8 - (self._total_length % 8)
         if padding != 8:
             self._extra.append('\x00'*padding)
-            self._totalsize += padding
+            self._total_length += padding
 
     def _calc_relative_offset(self, offset):
-        return (self._totalsize - (offset+8)) / 8
+        return (self._total_length - (offset+8)) / 8
 
     def alloc_struct(self, offset, struct_type, value):
         if value is None:
@@ -84,9 +84,9 @@ class StructBuilder(AbstractBuilder):
     def __init__(self, fmt):
         # the size of the main struct
         self._fmt = '<' + fmt # force little endian
-        size = struct.calcsize(self._fmt)
-        assert size % 8 == 0 # fmt must contains padding bytes, if needed
-        AbstractBuilder.__init__(self, size)
+        length = struct.calcsize(self._fmt)
+        assert length % 8 == 0 # fmt must contains padding bytes, if needed
+        AbstractBuilder.__init__(self, length)
 
     def build(self, *items):
         s = struct.pack(self._fmt, *items)
@@ -98,11 +98,11 @@ class ListBuilder(AbstractBuilder):
     def __init__(self, listcls, item_type, item_count):
         self.listcls = listcls
         self.item_type = item_type
-        self.item_size, self.size_tag = listcls.get_item_size(item_type)
+        self.item_length, self.size_tag = listcls.get_item_length(item_type)
         self.item_count = item_count
         self._items = []
-        size = self.item_size * self.item_count
-        AbstractBuilder.__init__(self, size)
+        length = self.item_length * self.item_count
+        AbstractBuilder.__init__(self, length)
         self._force_alignment()
 
     def append(self, item):
@@ -111,5 +111,5 @@ class ListBuilder(AbstractBuilder):
     def build(self):
         assert len(self._items) == self.item_count
         listbody = ''.join(self._items)
-        assert len(listbody) == self._size
+        assert len(listbody) == self._length
         return listbody + ''.join(self._extra)

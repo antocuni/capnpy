@@ -5,18 +5,18 @@ from capnpy.ptr import Ptr
 class List(Blob):
 
     @classmethod
-    def from_buffer(cls, buf, offset, item_size, item_count, item_type):
+    def from_buffer(cls, buf, offset, item_length, item_count, item_type):
         """
         buf, offset: the underlying buffer and the offset where the list starts
 
-        item_size: the size of each list item, in BYTES. Note: this is NOT the
+        item_length: the length of each list item, in BYTES. Note: this is NOT the
         value of the LIST_* tag, although it's obviously based on it
 
         item_type: the type of each list item. Either a Blob/Struct subclass,
         or a Types.*
         """
         self = super(List, cls).from_buffer(buf, offset)
-        self._item_size = item_size
+        self._item_length = item_length
         self._item_count = item_count
         self._item_type = item_type
         return self
@@ -31,7 +31,7 @@ class List(Blob):
         if i < 0:
             i += self._item_count
         if 0 <= i < self._item_count:
-            offset = (i*self._item_size)
+            offset = (i*self._item_length)
             return self._read_list_item(offset)
         raise IndexError
 
@@ -39,18 +39,18 @@ class List(Blob):
 class PrimitiveList(List):
 
     @classmethod
-    def get_item_size(cls, item_type):
-        size = struct.calcsize(item_type)
-        if size == 1:
-            return size, Blob.LIST_8
-        elif size == 2:
-            return size, Blob.LIST_16
-        elif size == 4:
-            return size, Blob.LIST_32
-        elif size == 8:
-            return size, Blob.LIST_64
+    def get_item_length(cls, item_type):
+        length = struct.calcsize(item_type)
+        if length == 1:
+            return length, Blob.LIST_8
+        elif length == 2:
+            return length, Blob.LIST_16
+        elif length == 4:
+            return length, Blob.LIST_32
+        elif length == 8:
+            return length, Blob.LIST_64
         else:
-            raise ValueError('Unsupported size: %d' % size)
+            raise ValueError('Unsupported size: %d' % length)
 
     @classmethod
     def pack_item(cls, listbuilder, i, item):
@@ -63,11 +63,11 @@ class PrimitiveList(List):
 class StructList(List):
 
     @classmethod
-    def get_item_size(cls, item_type):
+    def get_item_length(cls, item_type):
         total_size = item_type.__data_size__ + item_type.__ptrs_size__ # in words
-        total_size *= 8 # in bytes
-        if total_size > 8:
-            return total_size, Blob.LIST_COMPOSITE
+        total_length = total_size*8 # in bytes
+        if total_length > 8:
+            return total_length, Blob.LIST_COMPOSITE
         assert False, 'XXX'
 
     @classmethod
@@ -108,7 +108,7 @@ class StructList(List):
         extra_buf = item._buf[extra_offset:]
         #
         parts = [data_buf]
-        offset = i * listbuilder.item_size + data_size*8
+        offset = i * listbuilder.item_length + data_size*8
         additional_offset = listbuilder._calc_relative_offset(offset)
         #
         # iterate over and fix the pointers
@@ -130,12 +130,12 @@ class StructList(List):
 class StringList(List):
 
     @classmethod
-    def get_item_size(cls, item_type):
+    def get_item_length(cls, item_type):
         return 8, Blob.LIST_PTR
 
     @classmethod
     def pack_item(cls, listbuilder, i, item):
-        offset = i * listbuilder.item_size
+        offset = i * listbuilder.item_length
         ptr = listbuilder.alloc_string(offset, item)
         packed = struct.pack('q', ptr)
         return packed

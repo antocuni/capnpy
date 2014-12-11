@@ -13,7 +13,7 @@ def test_read_list():
     assert lst._buf is blob._buf
     assert lst._offset == 8
     assert lst._item_count == 4
-    assert lst._item_size == 8
+    assert lst._item_length == 8
     assert lst._read_list_item(0) == 1
     assert lst._read_list_item(8) == 2
     assert lst._read_list_item(16) == 3
@@ -31,7 +31,7 @@ def test_read_list_offset():
     assert lst._buf is blob._buf
     assert lst._offset == 12
     assert lst._item_count == 4
-    assert lst._item_size == 8
+    assert lst._item_length == 8
     assert lst._read_list_item(0) == 1
     assert lst._read_list_item(8) == 2
     assert lst._read_list_item(16) == 3
@@ -69,7 +69,7 @@ def test_list_of_structs():
     assert lst._buf is blob._buf
     assert lst._offset == 16
     assert lst._item_count == 4
-    assert lst._item_size == 16
+    assert lst._item_length == 16
     #
     assert len(lst) == 4
     def read_point(i):

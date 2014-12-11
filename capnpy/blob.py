@@ -1,3 +1,9 @@
+# glossary:
+#
+#   - size: they are always expressed in WORDS
+#   - length: they are always expressed in BYTES
+
+
 import struct
 from capnpy.ptr import PtrStruct, PtrList
 
@@ -20,9 +26,9 @@ class Blob(object):
     LIST_64 = 5
     LIST_PTR = 6
     LIST_COMPOSITE = 7
-    # map each LIST size tag to the corresponding size in bytes. LIST_BIT is None, as
+    # map each LIST size tag to the corresponding length in bytes. LIST_BIT is None, as
     # it is handled specially
-    LIST_SIZE = (None, None, 1, 2, 4, 8, 8)
+    LIST_ITEM_LENGTH = (None, None, 1, 2, 4, 8, 8)
 
     def __init__(self):
         raise NotImplementedError('Cannot instantiate Blob directly; '
@@ -49,17 +55,17 @@ class Blob(object):
         return structcls.from_buffer(self._buf, self._offset+struct_offset)
 
     def _read_list(self, offset, listcls, item_type):
-        offset, item_size, item_count = self._deref_ptrlist(offset)
+        offset, item_length, item_count = self._deref_ptrlist(offset)
         if offset is None:
             return None
         return listcls.from_buffer(self._buf, self._offset+offset,
-                                   item_size, item_count, item_type)
+                                   item_length, item_count, item_type)
 
     def _read_string(self, offset):
-        offset, item_size, item_count = self._deref_ptrlist(offset)
+        offset, item_length, item_count = self._deref_ptrlist(offset)
         if offset is None:
             return None
-        assert item_size == 1
+        assert item_length == 1
         start = self._offset + offset
         end = start + item_count - 1
         return self._buf[start:end]
@@ -77,10 +83,10 @@ class Blob(object):
     def _deref_ptrlist(self, offset):
         """
         Dereference a list pointer at the given offset.  It returns a tuple
-        (offset, item_size, item_count):
+        (offset, item_length, item_count):
 
         - offset is where the list items start, from the start of the blob
-        - item_size: the size IN BYTES of each element
+        - item_length: the length IN BYTES of each element
         - item_count: the total number of elements
         """
         ptr = self._read_primitive(offset, Types.Int64)
@@ -94,10 +100,10 @@ class Blob(object):
             tag = self._read_primitive(offset, Types.Int64)
             tag = PtrStruct(tag)
             item_count = tag.offset
-            item_size = (tag.data_size+tag.ptrs_size)*8
+            item_length = (tag.data_size+tag.ptrs_size)*8
             offset += 8
         elif item_size_tag == self.LIST_BIT:
             raise ValueError('Lists of bits are not supported')
         else:
-            item_size = self.LIST_SIZE[item_size_tag]
-        return offset, item_size, item_count
+            item_length = self.LIST_ITEM_LENGTH[item_size_tag]
+        return offset, item_length, item_count
