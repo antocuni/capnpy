@@ -64,7 +64,8 @@ class StructList(List):
 
     @classmethod
     def get_item_size(cls, item_type):
-        total_size = item_type.__data_size__ + item_type.__ptrs_size__ # in bytes
+        total_size = item_type.__data_size__ + item_type.__ptrs_size__ # in words
+        total_size *= 8 # in bytes
         if total_size > 8:
             return total_size, Blob.LIST_COMPOSITE
         assert False, 'XXX'
@@ -99,20 +100,21 @@ class StructList(List):
         #
         data_size = item_type.__data_size__
         ptrs_size = item_type.__ptrs_size__
-        data_buf = item._buf[:data_size]
+        data_buf = item._buf[:data_size*8]
 
         # XXX: there might be other stuff after extra: we need a way to
         # compute the lenght of extra
-        extra_buf = item._buf[data_size+ptrs_size:]
+        extra_offset = (data_size+ptrs_size)*8
+        extra_buf = item._buf[extra_offset:]
         #
         parts = [data_buf]
-        offset = i * listbuilder.item_size + data_size
+        offset = i * listbuilder.item_size + data_size*8
         additional_offset = listbuilder._calc_relative_offset(offset)
         #
         # iterate over and fix the pointers
-        for j in range(item_type.__ptrs_size__/8):
+        for j in range(ptrs_size):
             # read pointer, update its offset, and pack it
-            ptrstart = data_size + j*8
+            ptrstart = (data_size+j) * 8
             ptr = Ptr(item._read_primitive(ptrstart, Types.Int64))
             ptr = Ptr.new(ptr.kind, ptr.offset+additional_offset, ptr.extra)
             s = struct.pack('q', ptr)

@@ -12,7 +12,7 @@ def test_primitive():
 
 def test_alloc_struct():
     class MyStruct(Blob):
-        __data_size__ = 16
+        __data_size__ = 2
         __ptrs_size__ = 0
 
     mybuf = ('\x01\x00\x00\x00\x00\x00\x00\x00'
@@ -71,7 +71,7 @@ def test_alloc_list_float64():
 
 def test_alloc_list_of_structs():
     class Point(Blob):
-        __data_size__ = 16
+        __data_size__ = 2
         __ptrs_size__ = 0
 
     buf1 = ('\x0a\x00\x00\x00\x00\x00\x00\x00'    # 10
@@ -131,8 +131,8 @@ def test_alloc_list_of_strings():
 
 def test_alloc_list_of_structs_with_pointers():
     class Person(Blob):
-        __data_size__ = 8
-        __ptrs_size__ = 8
+        __data_size__ = 1
+        __ptrs_size__ = 1
 
     john =  ('\x20\x00\x00\x00\x00\x00\x00\x00'    # age=32
              '\x01\x00\x00\x00\x2a\x00\x00\x00'    # name=ptr
