@@ -5,7 +5,7 @@
 
 
 import struct
-from capnpy.ptr import PtrStruct, PtrList
+from capnpy.ptr import Ptr, PtrStruct, PtrList
 
 class Types(object):
     Int8 = 'b'
@@ -13,6 +13,17 @@ class Types(object):
     Float64 = 'd'
 
 class Blob(object):
+    """
+    Base class to read a generic capnp object.
+
+    Some features cannot be used directly, because you need to specify
+    __data_size__ and __ptrs_size__. You can either:
+
+      1) subclass Blob and add __data_size__, __ptrs_size__ as class
+         attributes
+
+      2) instantiate GenericBlob, and pass them to the constructor
+    """
 
     # pointer kind
     PTR_STRUCT = PtrStruct.KIND
@@ -70,15 +81,16 @@ class Blob(object):
         end = start + item_count - 1
         return self._buf[start:end]
 
+    def _read_ptr(self, offset):
+        ptr = self._read_primitive(offset, Types.Int64)
+        return Ptr(ptr)
+
     def _deref_ptrstruct(self, offset):
         ptr = self._read_primitive(offset, Types.Int64)
         if ptr == 0:
             return None
         ptr = PtrStruct(ptr)
-        # the +1 is needed because the offset is measured from the end of the
-        # pointer itself
-        offset = offset + (ptr.offset+1)*8
-        return offset
+        return ptr.deref(offset)
 
     def _deref_ptrlist(self, offset):
         """
@@ -93,7 +105,7 @@ class Blob(object):
         if ptr == 0:
             return None, None, None
         ptr = PtrList(ptr)
-        offset = offset + (ptr.offset+1)*8
+        offset = ptr.deref(offset)
         item_size_tag = ptr.size_tag
         item_count = ptr.item_count
         if item_size_tag == self.LIST_COMPOSITE:
@@ -107,3 +119,48 @@ class Blob(object):
         else:
             item_length = self.LIST_ITEM_LENGTH[item_size_tag]
         return offset, item_length, item_count
+
+
+    def _ptr_by_index(self, i):
+        offset = (self.__data_size__ + i) * 8
+        return offset, self._read_ptr(offset)
+
+    def _get_body_range(self):
+        return self._get_body_start(), self._get_body_end()
+
+    def _get_extra_range(self):
+        return self._get_extra_start(), self._get_extra_end()
+
+    def _get_body_start(self):
+        return self._offset
+
+    def _get_body_end(self):
+        return self._offset + (self.__data_size__ + self.__ptrs_size__) * 8
+
+    def _get_extra_start(self):
+        if self.__ptrs_size__ == 0:
+            return self._get_body_end()
+        ptr_offset, ptr = self._ptr_by_index(0)
+        return self._offset + ptr.deref(ptr_offset)
+
+    def _get_extra_end(self):
+        # see doc/normalize.rst for an explanation of why we can compute the
+        # extra range this way
+        if self.__ptrs_size__ == 0:
+            return self._get_body_end()
+        ptr_offset, ptr = self._ptr_by_index(self.__ptrs_size__ - 1)
+        blob_offet = ptr.deref(ptr_offset)
+        data_size, ptrs_size = ptr.get_size()
+        blob = GenericBlob.from_buffer_and_size(self._buf, self._offset+blob_offet,
+                                                data_size, ptrs_size)
+        return blob._get_extra_end()
+        
+
+class GenericBlob(Blob):
+
+    @classmethod
+    def from_buffer_and_size(cls, buf, offset, data_size, ptrs_size):
+        self = cls.from_buffer(buf, offset)
+        self.__data_size__ = data_size
+        self.__ptrs_size__ = ptrs_size
+        return self

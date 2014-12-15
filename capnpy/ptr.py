@@ -36,8 +36,31 @@ class Ptr(int):
     def extra(self):
         return self>>32
 
+    def deref(self, offset):
+        """
+        Compute the offset of the object pointed to, assuming that the Ptr itself
+        is at ``offset``
+        """
+        # the +1 is needed because the offset is measured from the end of the
+        # pointer itself
+        return offset + (self.offset+1)*8
 
-class PtrStruct(int):
+    def specialize(self):
+        """
+        Return a PtrStruct or PtrList, depending on self.kind
+        """
+        kind = self.kind
+        if kind == PtrStruct.KIND:
+            return PtrStruct(self)
+        elif kind == PtrList.KIND:
+            return PtrList(self)
+        else:
+            raise ValueError("Unknown ptr kind: %d" % kind)
+
+    def get_size(self):
+        return self.specialize().get_size()
+
+class PtrStruct(Ptr):
     ## lsb                      struct pointer                       msb
     ## +-+-----------------------------+---------------+---------------+
     ## |A|             B               |       C       |       D       |
@@ -60,19 +83,6 @@ class PtrStruct(int):
         ptr |= cls.KIND
         return cls(ptr)
 
-    @classmethod
-    def from_bytes(cls, s):
-        ptr = struct.unpack('q', s)[0]
-        return cls(ptr)
-
-    @property
-    def kind(self):
-        return self & 0x3
-
-    @property
-    def offset(self):
-        return self>>2 & 0x3fffffff
-
     @property
     def data_size(self):
         return self>>32 & 0xffff
@@ -81,8 +91,11 @@ class PtrStruct(int):
     def ptrs_size(self):
         return self>>48 & 0xffff
 
+    def get_size(self):
+        return self.data_size, self.ptrs_size
 
-class PtrList(int):
+
+class PtrList(Ptr):
     ## lsb                       list pointer                        msb
     ## +-+-----------------------------+--+----------------------------+
     ## |A|             B               |C |             D              |
@@ -113,19 +126,6 @@ class PtrList(int):
         ptr |= cls.KIND
         return cls(ptr)
 
-    @classmethod
-    def from_bytes(cls, s):
-        ptr = struct.unpack('q', s)[0]
-        return cls(ptr)
-
-    @property
-    def kind(self):
-        return self & 0x3
-
-    @property
-    def offset(self):
-        return self>>2 & 0x3fffffff
-
     @property
     def size_tag(self):
         return self>>32 & 0x7
@@ -133,3 +133,6 @@ class PtrList(int):
     @property
     def item_count(self):
         return self>>35
+
+    def get_size(self):
+        raise NotImplementedError # XXX implement me
