@@ -117,6 +117,19 @@ class PtrList(Ptr):
 
     KIND = 1
 
+    # size tag
+    SIZE_BIT = 1
+    SIZE_8 = 2
+    SIZE_16 = 3
+    SIZE_32 = 4
+    SIZE_64 = 5
+    SIZE_PTR = 6
+    SIZE_COMPOSITE = 7
+
+    # map each size tag to the corresponding length in bytes. SIZE_BIT is
+    # None, as it is handled specially
+    _SIZE_LENGTH = (None, None, 1, 2, 4, 8, 8)
+
     @classmethod
     def new(cls, ptr_offset, size_tag, item_count):
         ptr = 0

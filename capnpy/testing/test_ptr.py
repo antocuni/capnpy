@@ -59,4 +59,4 @@ def test_PtrList_new():
     assert ptr.size_tag == 7
     assert ptr.item_count == 200
     assert ptr == 0x0000064700000101
-
+    

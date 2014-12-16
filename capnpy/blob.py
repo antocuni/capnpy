@@ -24,23 +24,7 @@ class Blob(object):
 
       2) instantiate GenericBlob, and pass them to the constructor
     """
-
-    # pointer kind
-    PTR_STRUCT = PtrStruct.KIND
-    PTR_LIST = 1
-
-    # list item size tag
-    LIST_BIT = 1
-    LIST_8 = 2
-    LIST_16 = 3
-    LIST_32 = 4
-    LIST_64 = 5
-    LIST_PTR = 6
-    LIST_COMPOSITE = 7
-    # map each LIST size tag to the corresponding length in bytes. LIST_BIT is None, as
-    # it is handled specially
-    LIST_ITEM_LENGTH = (None, None, 1, 2, 4, 8, 8)
-
+    
     def __init__(self):
         raise NotImplementedError('Cannot instantiate Blob directly; '
                                   'use Blob.from_buffer instead')
@@ -108,16 +92,16 @@ class Blob(object):
         offset = ptr.deref(offset)
         item_size_tag = ptr.size_tag
         item_count = ptr.item_count
-        if item_size_tag == self.LIST_COMPOSITE:
+        if item_size_tag == PtrList.SIZE_COMPOSITE:
             tag = self._read_primitive(offset, Types.Int64)
             tag = PtrStruct(tag)
             item_count = tag.offset
             item_length = (tag.data_size+tag.ptrs_size)*8
             offset += 8
-        elif item_size_tag == self.LIST_BIT:
+        elif item_size_tag == PtrList.SIZE_BIT:
             raise ValueError('Lists of bits are not supported')
         else:
-            item_length = self.LIST_ITEM_LENGTH[item_size_tag]
+            item_length = PtrList._SIZE_LENGTH[item_size_tag]
         return offset, item_length, item_count
 
 

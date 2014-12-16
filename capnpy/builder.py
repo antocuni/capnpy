@@ -1,5 +1,4 @@
 import struct
-from capnpy.blob import Blob
 from capnpy.ptr import PtrStruct, PtrList
 
 class AbstractBuilder(object):
@@ -43,12 +42,12 @@ class AbstractBuilder(object):
             return 0 # NULL
         value += '\0'
         ptr_offset = self._calc_relative_offset(offset)
-        ptr = PtrList.new(ptr_offset, Blob.LIST_8, len(value))
+        ptr = PtrList.new(ptr_offset, PtrList.SIZE_8, len(value))
         self._alloc(value)
         return ptr
 
     def _new_ptrlist(self, size_tag, ptr_offset, item_type, item_count):
-        if size_tag != Blob.LIST_COMPOSITE:
+        if size_tag != PtrList.SIZE_COMPOSITE:
             # a plain ptr
             return PtrList.new(ptr_offset, size_tag, item_count)
         #
@@ -61,7 +60,7 @@ class AbstractBuilder(object):
         # emit the tag
         tag = PtrStruct.new(item_count, data_size, ptrs_size)
         self._alloc(struct.pack('<q', tag))
-        return PtrList.new(ptr_offset/8, Blob.LIST_COMPOSITE, total_words)
+        return PtrList.new(ptr_offset/8, PtrList.SIZE_COMPOSITE, total_words)
 
     def alloc_list(self, offset, listcls, item_type, lst):
         if lst is None:
