@@ -63,13 +63,14 @@ class AbstractBuilder(object):
         return ListPtr.new(ptr_offset/8, ListPtr.SIZE_COMPOSITE, total_words)
 
     def alloc_list(self, offset, listcls, item_type, lst):
+        from capnpy.listbuilder import ListBuilder
         if lst is None:
             return 0 # NULL
         # build the list, using a separate listbuilder
         item_count = len(lst)
-        listbuilder = ListBuilder(listcls, item_type, item_count)
+        listbuilder = ListBuilder(listcls.ItemBuilder, item_type, item_count)
         for i, item in enumerate(lst):
-            s = listcls.pack_item(listbuilder, i, item)
+            s = listcls.ItemBuilder.pack_item(listbuilder, i, item)
             listbuilder.append(s)
         #
         # create the ptrlist, and allocate the list body itself
@@ -90,25 +91,3 @@ class StructBuilder(AbstractBuilder):
     def build(self, *items):
         s = struct.pack(self._fmt, *items)
         return s + ''.join(self._extra)
-
-
-class ListBuilder(AbstractBuilder):
-
-    def __init__(self, listcls, item_type, item_count):
-        self.listcls = listcls
-        self.item_type = item_type
-        self.item_length, self.size_tag = listcls.get_item_length(item_type)
-        self.item_count = item_count
-        self._items = []
-        length = self.item_length * self.item_count
-        AbstractBuilder.__init__(self, length)
-        self._force_alignment()
-
-    def append(self, item):
-        self._items.append(item)
-
-    def build(self):
-        assert len(self._items) == self.item_count
-        listbody = ''.join(self._items)
-        assert len(listbody) == self._length
-        return listbody + ''.join(self._extra)
