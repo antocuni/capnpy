@@ -82,7 +82,8 @@ def test_get_body_extra_ranges():
     ##   a @1 :Point;
     ##   b @2 :Point;
     ## }
-    buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+    buf = ('garbage0'
+           '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
            '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
            '\x10\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
            'garbage1'
@@ -91,11 +92,12 @@ def test_get_body_extra_ranges():
            '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
            '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
-    rect = GenericBlob.from_buffer_and_size(buf, 0, data_size=1, ptrs_size=2)
+    rect = GenericBlob.from_buffer_and_size(buf, 8, data_size=1, ptrs_size=2)
     body_start, body_end = rect._get_body_range()
-    assert body_start == 0
-    assert body_end == 24
+    assert body_start == 8
+    assert body_end == 32
     #
     extra_start, extra_end = rect._get_extra_range()
-    assert extra_start == 40
-    assert extra_end == 72
+    assert extra_start == 48
+    assert extra_end == 80
+    
