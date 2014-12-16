@@ -57,8 +57,6 @@ class Ptr(int):
         else:
             raise ValueError("Unknown ptr kind: %d" % kind)
 
-    def get_size(self):
-        return self.specialize().get_size()
 
 class StructPtr(Ptr):
     ## lsb                      struct pointer                       msb
@@ -90,9 +88,6 @@ class StructPtr(Ptr):
     @property
     def ptrs_size(self):
         return self>>48 & 0xffff
-
-    def get_size(self):
-        return self.data_size, self.ptrs_size
 
 
 class ListPtr(Ptr):
@@ -128,7 +123,7 @@ class ListPtr(Ptr):
 
     # map each size tag to the corresponding length in bytes. SIZE_BIT is
     # None, as it is handled specially
-    _SIZE_LENGTH = (None, None, 1, 2, 4, 8, 8)
+    SIZE_LENGTH = (None, None, 1, 2, 4, 8, 8)
 
     @classmethod
     def new(cls, ptr_offset, size_tag, item_count):
@@ -146,6 +141,3 @@ class ListPtr(Ptr):
     @property
     def item_count(self):
         return self>>35
-
-    def get_size(self):
-        raise NotImplementedError # XXX implement me

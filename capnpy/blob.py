@@ -101,50 +101,5 @@ class Blob(object):
         elif item_size_tag == ListPtr.SIZE_BIT:
             raise ValueError('Lists of bits are not supported')
         else:
-            item_length = ListPtr._SIZE_LENGTH[item_size_tag]
+            item_length = ListPtr.SIZE_LENGTH[item_size_tag]
         return offset, item_length, item_count
-
-
-    def _ptr_by_index(self, i):
-        offset = (self.__data_size__ + i) * 8
-        return offset, self._read_ptr(offset)
-
-    def _get_body_range(self):
-        return self._get_body_start(), self._get_body_end()
-
-    def _get_extra_range(self):
-        return self._get_extra_start(), self._get_extra_end()
-
-    def _get_body_start(self):
-        return self._offset
-
-    def _get_body_end(self):
-        return self._offset + (self.__data_size__ + self.__ptrs_size__) * 8
-
-    def _get_extra_start(self):
-        if self.__ptrs_size__ == 0:
-            return self._get_body_end()
-        ptr_offset, ptr = self._ptr_by_index(0)
-        return self._offset + ptr.deref(ptr_offset)
-
-    def _get_extra_end(self):
-        # see doc/normalize.rst for an explanation of why we can compute the
-        # extra range this way
-        if self.__ptrs_size__ == 0:
-            return self._get_body_end()
-        ptr_offset, ptr = self._ptr_by_index(self.__ptrs_size__ - 1)
-        blob_offet = ptr.deref(ptr_offset)
-        data_size, ptrs_size = ptr.get_size()
-        blob = GenericBlob.from_buffer_and_size(self._buf, self._offset+blob_offet,
-                                                data_size, ptrs_size)
-        return blob._get_extra_end()
-        
-
-class GenericBlob(Blob):
-
-    @classmethod
-    def from_buffer_and_size(cls, buf, offset, data_size, ptrs_size):
-        self = cls.from_buffer(buf, offset)
-        self.__data_size__ = data_size
-        self.__ptrs_size__ = ptrs_size
-        return self

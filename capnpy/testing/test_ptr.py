@@ -29,7 +29,6 @@ def test_StructPtr():
     assert ptr.offset == 100
     assert ptr.data_size == 2
     assert ptr.ptrs_size == 4
-    assert ptr.get_size() == (2, 4)
 
 def test_StructPtr_new():
     ptr = StructPtr.new(100, 2, 4)

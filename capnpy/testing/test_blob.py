@@ -1,5 +1,5 @@
 import py
-from capnpy.blob import Blob, GenericBlob, Types
+from capnpy.blob import Blob, Types
 
 def test_Blob():
     # buf is an array of int64 == [1, 2]
@@ -69,44 +69,3 @@ def test_null_pointers():
     assert blob._read_struct(0, Blob) is None
     assert blob._read_list(0, None, None) is None
     assert blob._read_string(0) is None
-
-
-def test_get_body_extra_ranges():
-    ## struct Point {
-    ##   x @0 :Int64;
-    ##   y @1 :Int64;
-    ## }
-    ##
-    ## struct Rectangle {
-    ##   color @0 :Int64;
-    ##   a @1 :Point;
-    ##   b @2 :Point;
-    ## }
-    buf = ('garbage0'
-           '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
-           '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
-           '\x10\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
-           'garbage1'
-           'garbage2'
-           '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
-           '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
-           '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
-           '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
-    rect = GenericBlob.from_buffer_and_size(buf, 8, data_size=1, ptrs_size=2)
-    body_start, body_end = rect._get_body_range()
-    assert body_start == 8
-    assert body_end == 32
-    #
-    extra_start, extra_end = rect._get_extra_range()
-    assert extra_start == 48
-    assert extra_end == 80
-    #
-    a = rect._read_struct(8, GenericBlob)
-    a.__data_size__ = 2
-    a.__ptrs_size__ = 0
-    body_start, body_end = a._get_body_range()
-    assert body_start == 48
-    assert body_end == 64
-    extra_start, extra_end = a._get_extra_range()
-    assert extra_start == 64
-    assert extra_end == 64
