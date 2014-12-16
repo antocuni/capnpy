@@ -50,17 +50,17 @@ class Blob(object):
         return structcls.from_buffer(self._buf, self._offset+struct_offset)
 
     def _read_list(self, offset, listcls, item_type):
-        offset, item_length, item_count = self._deref_ptrlist(offset)
+        offset, size_tag, item_count = self._deref_ptrlist(offset)
         if offset is None:
             return None
         return listcls.from_buffer(self._buf, self._offset+offset,
-                                   item_length, item_count, item_type)
+                                   size_tag, item_count, item_type)
 
     def _read_string(self, offset):
-        offset, item_length, item_count = self._deref_ptrlist(offset)
+        offset, size_tag, item_count = self._deref_ptrlist(offset)
         if offset is None:
             return None
-        assert item_length == 1
+        assert size_tag == ListPtr.SIZE_8
         start = self._offset + offset
         end = start + item_count - 1
         return self._buf[start:end]
@@ -90,16 +90,4 @@ class Blob(object):
             return None, None, None
         ptr = ListPtr(ptr)
         offset = ptr.deref(offset)
-        item_size_tag = ptr.size_tag
-        item_count = ptr.item_count
-        if item_size_tag == ListPtr.SIZE_COMPOSITE:
-            tag = self._read_primitive(offset, Types.Int64)
-            tag = StructPtr(tag)
-            item_count = tag.offset
-            item_length = (tag.data_size+tag.ptrs_size)*8
-            offset += 8
-        elif item_size_tag == ListPtr.SIZE_BIT:
-            raise ValueError('Lists of bits are not supported')
-        else:
-            item_length = ListPtr.SIZE_LENGTH[item_size_tag]
-        return offset, item_length, item_count
+        return offset, ptr.size_tag, ptr.item_count

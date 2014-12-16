@@ -1,12 +1,12 @@
 import struct
 from capnpy.blob import Blob, Types
-from capnpy.ptr import Ptr, ListPtr
+from capnpy.ptr import Ptr, StructPtr, ListPtr
 from capnpy import listbuilder
 
 class List(Blob):
 
     @classmethod
-    def from_buffer(cls, buf, offset, item_length, item_count, item_type):
+    def from_buffer(cls, buf, offset, size_tag, item_count, item_type):
         """
         buf, offset: the underlying buffer and the offset where the list starts
 
@@ -17,10 +17,25 @@ class List(Blob):
         or a Types.*
         """
         self = super(List, cls).from_buffer(buf, offset)
-        self._item_length = item_length
-        self._item_count = item_count
         self._item_type = item_type
+        self._set_list_tag(size_tag, item_count)
         return self
+
+    def _set_list_tag(self, size_tag, item_count):
+        self._size_tag = size_tag
+        if size_tag == ListPtr.SIZE_COMPOSITE:
+            tag = self._read_primitive(0, Types.Int64)
+            tag = StructPtr(tag)
+            self._item_count = tag.offset
+            self._item_length = (tag.data_size+tag.ptrs_size)*8
+            self._item_offset = 8
+        elif size_tag == ListPtr.SIZE_BIT:
+            raise ValueError('Lists of bits are not supported')
+        else:
+            self._item_count = item_count
+            self._item_length = ListPtr.SIZE_LENGTH[size_tag]
+            self._item_offset = 0
+
 
     def _read_list_item(self, offset):
         raise NotImplementedError
@@ -32,7 +47,7 @@ class List(Blob):
         if i < 0:
             i += self._item_count
         if 0 <= i < self._item_count:
-            offset = (i*self._item_length)
+            offset = self._item_offset + (i*self._item_length)
             return self._read_list_item(offset)
         raise IndexError
 

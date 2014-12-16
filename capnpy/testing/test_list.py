@@ -12,6 +12,7 @@ def test_read_list():
     lst = blob._read_list(0, PrimitiveList, Types.Int64)
     assert lst._buf is blob._buf
     assert lst._offset == 8
+    assert lst._item_offset == 0
     assert lst._item_count == 4
     assert lst._item_length == 8
     assert lst._read_list_item(0) == 1
@@ -67,7 +68,8 @@ def test_list_of_structs():
     blob = Blob.from_buffer(buf, 0)
     lst = blob._read_list(0, StructList, Blob)
     assert lst._buf is blob._buf
-    assert lst._offset == 16
+    assert lst._offset == 8
+    assert lst._item_offset == 8
     assert lst._item_count == 4
     assert lst._item_length == 16
     #
