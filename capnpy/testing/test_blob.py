@@ -100,4 +100,13 @@ def test_get_body_extra_ranges():
     extra_start, extra_end = rect._get_extra_range()
     assert extra_start == 48
     assert extra_end == 80
-    
+    #
+    a = rect._read_struct(8, GenericBlob)
+    a.__data_size__ = 2
+    a.__ptrs_size__ = 0
+    body_start, body_end = a._get_body_range()
+    assert body_start == 48
+    assert body_end == 64
+    extra_start, extra_end = a._get_extra_range()
+    assert extra_start == 64
+    assert extra_end == 64
