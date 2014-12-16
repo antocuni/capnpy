@@ -35,6 +35,12 @@ class List(Blob):
             return self._read_list_item(offset)
         raise IndexError
 
+    def _get_body_range(self):
+        start = self._offset
+        end = self._offset + self._item_length*self._item_count
+        # XXX: handle SIZE_COMPOSITE case
+        return start, end
+
 
 class PrimitiveList(List):
 

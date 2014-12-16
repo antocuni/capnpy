@@ -110,6 +110,15 @@ def test_Float64List():
     assert list(lst) == [1.234, 2.345, 3.456, 4.567]
 
 
+def test_Int8List():
+    buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
+           'hello capnproto\0')                 # string
+    blob = Blob.from_buffer(buf, 0)
+    lst = blob._read_list(0, PrimitiveList, Types.Int8)
+    assert len(lst) == 16
+    assert list(lst) == map(ord, 'hello capnproto\0')
+
+
 def test_list_of_strings():
     buf = ('\x01\x00\x00\x00\x26\x00\x00\x00'   # ptrlist
            '\x0d\x00\x00\x00\x12\x00\x00\x00'   # ptr item 1
@@ -123,3 +132,13 @@ def test_list_of_strings():
     blob = Blob.from_buffer(buf, 0)
     lst = blob._read_list(0, StringList, None)
     assert list(lst) == ['A', 'BC', 'DEF', 'GHIJ']
+
+
+def test_list_nostruct_body_range():
+    buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
+           'hello capnproto\0')                 # string
+    blob = Blob.from_buffer(buf, 0)
+    lst = blob._read_list(0, PrimitiveList, Types.Int8)
+    body_start, body_end = lst._get_body_range()
+    assert body_start == 8
+    assert body_end == 24
