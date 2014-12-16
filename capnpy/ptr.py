@@ -47,20 +47,20 @@ class Ptr(int):
 
     def specialize(self):
         """
-        Return a PtrStruct or PtrList, depending on self.kind
+        Return a StructPtr or ListPtr, depending on self.kind
         """
         kind = self.kind
-        if kind == PtrStruct.KIND:
-            return PtrStruct(self)
-        elif kind == PtrList.KIND:
-            return PtrList(self)
+        if kind == StructPtr.KIND:
+            return StructPtr(self)
+        elif kind == ListPtr.KIND:
+            return ListPtr(self)
         else:
             raise ValueError("Unknown ptr kind: %d" % kind)
 
     def get_size(self):
         return self.specialize().get_size()
 
-class PtrStruct(Ptr):
+class StructPtr(Ptr):
     ## lsb                      struct pointer                       msb
     ## +-+-----------------------------+---------------+---------------+
     ## |A|             B               |       C       |       D       |
@@ -95,7 +95,7 @@ class PtrStruct(Ptr):
         return self.data_size, self.ptrs_size
 
 
-class PtrList(Ptr):
+class ListPtr(Ptr):
     ## lsb                       list pointer                        msb
     ## +-+-----------------------------+--+----------------------------+
     ## |A|             B               |C |             D              |

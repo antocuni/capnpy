@@ -5,7 +5,7 @@
 
 
 import struct
-from capnpy.ptr import Ptr, PtrStruct, PtrList
+from capnpy.ptr import Ptr, StructPtr, ListPtr
 
 class Types(object):
     Int8 = 'b'
@@ -73,7 +73,7 @@ class Blob(object):
         ptr = self._read_primitive(offset, Types.Int64)
         if ptr == 0:
             return None
-        ptr = PtrStruct(ptr)
+        ptr = StructPtr(ptr)
         return ptr.deref(offset)
 
     def _deref_ptrlist(self, offset):
@@ -88,20 +88,20 @@ class Blob(object):
         ptr = self._read_primitive(offset, Types.Int64)
         if ptr == 0:
             return None, None, None
-        ptr = PtrList(ptr)
+        ptr = ListPtr(ptr)
         offset = ptr.deref(offset)
         item_size_tag = ptr.size_tag
         item_count = ptr.item_count
-        if item_size_tag == PtrList.SIZE_COMPOSITE:
+        if item_size_tag == ListPtr.SIZE_COMPOSITE:
             tag = self._read_primitive(offset, Types.Int64)
-            tag = PtrStruct(tag)
+            tag = StructPtr(tag)
             item_count = tag.offset
             item_length = (tag.data_size+tag.ptrs_size)*8
             offset += 8
-        elif item_size_tag == PtrList.SIZE_BIT:
+        elif item_size_tag == ListPtr.SIZE_BIT:
             raise ValueError('Lists of bits are not supported')
         else:
-            item_length = PtrList._SIZE_LENGTH[item_size_tag]
+            item_length = ListPtr._SIZE_LENGTH[item_size_tag]
         return offset, item_length, item_count
 
 

@@ -1,5 +1,5 @@
 import struct
-from capnpy.ptr import PtrStruct, PtrList
+from capnpy.ptr import StructPtr, ListPtr
 
 class AbstractBuilder(object):
 
@@ -34,7 +34,7 @@ class AbstractBuilder(object):
         ptrs_size = struct_type.__ptrs_size__           # in words
         ptr_offset = self._calc_relative_offset(offset) # in words
         self._alloc(value._buf)
-        ptr = PtrStruct.new(ptr_offset, data_size, ptrs_size)
+        ptr = StructPtr.new(ptr_offset, data_size, ptrs_size)
         return ptr
 
     def alloc_string(self, offset, value):
@@ -42,14 +42,14 @@ class AbstractBuilder(object):
             return 0 # NULL
         value += '\0'
         ptr_offset = self._calc_relative_offset(offset)
-        ptr = PtrList.new(ptr_offset, PtrList.SIZE_8, len(value))
+        ptr = ListPtr.new(ptr_offset, ListPtr.SIZE_8, len(value))
         self._alloc(value)
         return ptr
 
     def _new_ptrlist(self, size_tag, ptr_offset, item_type, item_count):
-        if size_tag != PtrList.SIZE_COMPOSITE:
+        if size_tag != ListPtr.SIZE_COMPOSITE:
             # a plain ptr
-            return PtrList.new(ptr_offset, size_tag, item_count)
+            return ListPtr.new(ptr_offset, size_tag, item_count)
         #
         # if size is composite, ptr contains the total size in words, and
         # we also need to emit a "list tag"
@@ -58,9 +58,9 @@ class AbstractBuilder(object):
         total_words = (data_size+ptrs_size) * item_count
         #
         # emit the tag
-        tag = PtrStruct.new(item_count, data_size, ptrs_size)
+        tag = StructPtr.new(item_count, data_size, ptrs_size)
         self._alloc(struct.pack('<q', tag))
-        return PtrList.new(ptr_offset/8, PtrList.SIZE_COMPOSITE, total_words)
+        return ListPtr.new(ptr_offset/8, ListPtr.SIZE_COMPOSITE, total_words)
 
     def alloc_list(self, offset, listcls, item_type, lst):
         if lst is None:

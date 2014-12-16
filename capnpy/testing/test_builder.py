@@ -112,7 +112,7 @@ def test_null_pointers():
     assert buf == NULL*3
 
 def test_alloc_list_of_strings():
-    from capnpy.ptr import PtrList
+    from capnpy.ptr import ListPtr
     
     builder = StructBuilder('q')
     ptr = builder.alloc_list(0, StringList, None, ['A', 'BC', 'DEF', 'GHIJ'])

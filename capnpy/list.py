@@ -1,6 +1,6 @@
 import struct
 from capnpy.blob import Blob, Types
-from capnpy.ptr import Ptr, PtrList
+from capnpy.ptr import Ptr, ListPtr
 
 class List(Blob):
 
@@ -10,7 +10,7 @@ class List(Blob):
         buf, offset: the underlying buffer and the offset where the list starts
 
         item_length: the length of each list item, in BYTES. Note: this is NOT the
-        value of the PtrList.SIZE_* tag, although it's obviously based on it
+        value of the ListPtr.SIZE_* tag, although it's obviously based on it
 
         item_type: the type of each list item. Either a Blob/Struct subclass,
         or a Types.*
@@ -42,13 +42,13 @@ class PrimitiveList(List):
     def get_item_length(cls, item_type):
         length = struct.calcsize(item_type)
         if length == 1:
-            return length, PtrList.SIZE_8
+            return length, ListPtr.SIZE_8
         elif length == 2:
-            return length, PtrList.SIZE_16
+            return length, ListPtr.SIZE_16
         elif length == 4:
-            return length, PtrList.SIZE_32
+            return length, ListPtr.SIZE_32
         elif length == 8:
-            return length, PtrList.SIZE_64
+            return length, ListPtr.SIZE_64
         else:
             raise ValueError('Unsupported size: %d' % length)
 
@@ -67,7 +67,7 @@ class StructList(List):
         total_size = item_type.__data_size__ + item_type.__ptrs_size__ # in words
         total_length = total_size*8 # in bytes
         if total_length > 8:
-            return total_length, PtrList.SIZE_COMPOSITE
+            return total_length, ListPtr.SIZE_COMPOSITE
         assert False, 'XXX'
 
     @classmethod
@@ -131,7 +131,7 @@ class StringList(List):
 
     @classmethod
     def get_item_length(cls, item_type):
-        return 8, PtrList.SIZE_PTR
+        return 8, ListPtr.SIZE_PTR
 
     @classmethod
     def pack_item(cls, listbuilder, i, item):
