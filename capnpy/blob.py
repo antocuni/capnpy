@@ -15,14 +15,6 @@ class Types(object):
 class Blob(object):
     """
     Base class to read a generic capnp object.
-
-    Some features cannot be used directly, because you need to specify
-    __data_size__ and __ptrs_size__. You can either:
-
-      1) subclass Blob and add __data_size__, __ptrs_size__ as class
-         attributes
-
-      2) instantiate GenericBlob, and pass them to the constructor
     """
     
     def __init__(self):
@@ -79,10 +71,10 @@ class Blob(object):
     def _deref_ptrlist(self, offset):
         """
         Dereference a list pointer at the given offset.  It returns a tuple
-        (offset, item_length, item_count):
+        (offset, size_tag, item_count):
 
         - offset is where the list items start, from the start of the blob
-        - item_length: the length IN BYTES of each element
+        - size_tag: specifies the size of each element
         - item_count: the total number of elements
         """
         ptr = self._read_ptr(offset)

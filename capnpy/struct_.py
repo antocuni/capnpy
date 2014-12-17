@@ -1,5 +1,7 @@
+import capnpy
 from capnpy.ptr import StructPtr, ListPtr
 from capnpy.blob import Blob
+
 
 class Struct(Blob):
     """
@@ -43,12 +45,17 @@ class Struct(Blob):
         if self.__ptrs_size__ == 0:
             return self._get_body_end()
         ptr_offset, ptr = self._ptr_by_index(self.__ptrs_size__ - 1)
+        ptr = ptr.specialize()
         blob_offet = ptr.deref(ptr_offset)
         if ptr.kind == StructPtr.KIND:
-            ptr = ptr.specialize()
-            blob = GenericStruct.from_buffer_and_size(self._buf, self._offset+blob_offet,
-                                                  ptr.data_size, ptr.ptrs_size)
-            return blob._get_extra_end()
+            mystruct = GenericStruct.from_buffer_and_size(self._buf,
+                                                          self._offset+blob_offet,
+                                                          ptr.data_size, ptr.ptrs_size)
+            return mystruct._get_extra_end()
+        elif ptr.kind == ListPtr.KIND:
+            mylist = capnpy.list.List.from_buffer(self._buf, self._offset+blob_offet,
+                                                  ptr.size_tag, ptr.item_count, Blob)
+            return mylist._get_body_end()
         else:
             assert False
 
@@ -61,3 +68,4 @@ class GenericStruct(Struct):
         self.__data_size__ = data_size
         self.__ptrs_size__ = ptrs_size
         return self
+
