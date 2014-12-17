@@ -70,10 +70,10 @@ class Blob(object):
         return Ptr(ptr)
 
     def _deref_ptrstruct(self, offset):
-        ptr = self._read_primitive(offset, Types.Int64)
+        ptr = self._read_ptr(offset)
         if ptr == 0:
             return None
-        ptr = StructPtr(ptr)
+        assert ptr.kind == StructPtr.KIND
         return ptr.deref(offset)
 
     def _deref_ptrlist(self, offset):
@@ -85,9 +85,10 @@ class Blob(object):
         - item_length: the length IN BYTES of each element
         - item_count: the total number of elements
         """
-        ptr = self._read_primitive(offset, Types.Int64)
+        ptr = self._read_ptr(offset)
         if ptr == 0:
             return None, None, None
-        ptr = ListPtr(ptr)
+        assert ptr.kind == ListPtr.KIND
+        ptr = ptr.specialize()
         offset = ptr.deref(offset)
         return offset, ptr.size_tag, ptr.item_count
