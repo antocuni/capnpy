@@ -175,3 +175,23 @@ def test_list_composite_body_range():
     assert end == 120
 
 
+def test_list_of_pointers():
+    buf = ('garbage0'
+           '\x01\x00\x00\x00\x1e\x00\x00\x00'   # ptr to list
+           '\x09\x00\x00\x00\x32\x00\x00\x00'   # strings[0] == ptr to #0
+           '\x09\x00\x00\x00\x52\x00\x00\x00'   # strings[1] == ptr to #1
+           '\x0d\x00\x00\x00\xb2\x00\x00\x00'   # strings[2] == ptr to #2
+           'h' 'e' 'l' 'l' 'o' '\x00\x00\x00'   # #0
+           'c' 'a' 'p' 'n' 'p' 'r' 'o' 't'      # #1...
+           'o' '\x00\x00\x00\x00\x00\x00\x00'
+           't' 'h' 'i' 's' ' ' 'i' 's' ' '      # #2...
+           'a' ' ' 'l' 'o' 'n' 'g' ' ' 's' 
+           't' 'r' 'i' 'n' 'g' '\x00\x00\x00')
+    
+    blob = Blob.from_buffer(buf, 8)
+    points = blob._read_list(0, StringList, None)
+    start, end = points._get_body_range()
+    assert start == 16
+    # note that the end if 88, not 86: the last two \x00\x00 are not counted,
+    # because they are padding, not actual data
+    assert end == 86

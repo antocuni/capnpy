@@ -75,10 +75,14 @@ class List(Blob):
                                                           self._tag.ptrs_size)
             return mystruct._get_extra_end()
         elif self._size_tag == ListPtr.SIZE_PTR:
-            assert False, 'Implement me'
+            ptr_offset = self._get_offset_for_item(self._item_count-1)
+            blob = self._follow_generic_pointer(ptr_offset)
+            return blob._get_end()
         else:
             return self._offset + self._item_length*self._item_count
 
+    def _get_end(self):
+        return self._get_body_end()
 
 
 class PrimitiveList(List):

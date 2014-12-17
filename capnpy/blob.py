@@ -5,6 +5,7 @@
 
 
 import struct
+import capnpy
 from capnpy.ptr import Ptr, StructPtr, ListPtr
 
 class Types(object):
@@ -60,6 +61,23 @@ class Blob(object):
     def _read_ptr(self, offset):
         ptr = self._read_primitive(offset, Types.Int64)
         return Ptr(ptr)
+
+    def _follow_generic_pointer(self, ptr_offset):
+        ptr = self._read_ptr(ptr_offset)
+        ptr = ptr.specialize()
+        blob_offet = ptr.deref(ptr_offset)
+        if ptr.kind == StructPtr.KIND:
+            GenericStruct = capnpy.struct_.GenericStruct
+            return GenericStruct.from_buffer_and_size(self._buf,
+                                                      self._offset+blob_offet,
+                                                      ptr.data_size, ptr.ptrs_size)
+        elif ptr.kind == ListPtr.KIND:
+            List = capnpy.list.List
+            return List.from_buffer(self._buf,
+                                    self._offset+blob_offet,
+                                    ptr.size_tag,ptr.item_count, Blob)
+        else:
+            assert False, 'Unkwown pointer kind: %s' % ptr.kind
 
     def _deref_ptrstruct(self, offset):
         ptr = self._read_ptr(offset)

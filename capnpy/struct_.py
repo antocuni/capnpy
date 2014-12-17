@@ -1,4 +1,3 @@
-import capnpy
 from capnpy.ptr import StructPtr, ListPtr
 from capnpy.blob import Blob
 
@@ -17,9 +16,8 @@ class Struct(Blob):
        without knowing the schema
     """
 
-    def _ptr_by_index(self, i):
-        offset = (self.__data_size__ + i) * 8
-        return offset, self._read_ptr(offset)
+    def _ptr_offset_by_index(self, i):
+        return (self.__data_size__ + i) * 8
 
     def _get_body_range(self):
         return self._get_body_start(), self._get_body_end()
@@ -36,29 +34,23 @@ class Struct(Blob):
     def _get_extra_start(self):
         if self.__ptrs_size__ == 0:
             return self._get_body_end()
-        ptr_offset, ptr = self._ptr_by_index(0)
+        ptr_offset = self._ptr_offset_by_index(0)
+        ptr = self._read_ptr(ptr_offset)
         return self._offset + ptr.deref(ptr_offset)
 
     def _get_extra_end(self):
-        # see doc/normalize.rst for an explanation of why we can compute the
-        # extra range this way
         if self.__ptrs_size__ == 0:
             return self._get_body_end()
-        ptr_offset, ptr = self._ptr_by_index(self.__ptrs_size__ - 1)
-        ptr = ptr.specialize()
-        blob_offet = ptr.deref(ptr_offset)
-        if ptr.kind == StructPtr.KIND:
-            mystruct = GenericStruct.from_buffer_and_size(self._buf,
-                                                          self._offset+blob_offet,
-                                                          ptr.data_size, ptr.ptrs_size)
-            return mystruct._get_extra_end()
-        elif ptr.kind == ListPtr.KIND:
-            mylist = capnpy.list.List.from_buffer(self._buf, self._offset+blob_offet,
-                                                  ptr.size_tag, ptr.item_count, Blob)
-            return mylist._get_body_end()
-        else:
-            assert False
+        #
+        # the end of our extra correspond to the end of our last pointer: see
+        # doc/normalize.rst for an explanation of why we can compute the extra
+        # range this way
+        ptr_offset = self._ptr_offset_by_index(self.__ptrs_size__ - 1)
+        blob = self._follow_generic_pointer(ptr_offset)
+        return blob._get_end()
 
+    def _get_end(self):
+        return self._get_extra_end()
 
 class GenericStruct(Struct):
 
