@@ -87,9 +87,10 @@ class StructItemBuilder(object):
         #
         # 1) data section
         parts = []
+        body_start = item._get_body_start()
         data_size = item_type.__data_size__
         ptrs_size = item_type.__ptrs_size__
-        data_buf = item._buf[:data_size*8]
+        data_buf = item._buf[body_start:body_start+data_size*8]
         parts.append(data_buf)
         #
         # 2) ptrs section

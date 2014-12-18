@@ -140,15 +140,16 @@ def test_alloc_list_of_structs_with_pointers():
              'J' 'o' 'h' 'n' '\x00\x00\x00\x00')   # John
 
     # emily is a "split struct", with garbage between the body and the extra
-    emily = ('\x18\x00\x00\x00\x00\x00\x00\x00'    # age=24
+    emily = ('garbage0'
+             '\x18\x00\x00\x00\x00\x00\x00\x00'    # age=24
              '\x09\x00\x00\x00\x32\x00\x00\x00'    # name=ptr
-             'garbage0'
              'garbage1'
+             'garbage2'
              '\x45\x6d\x69\x6c\x79\x00\x00\x00'    # Emily
-             'garbage2')
+             'garbage3')
 
     john = Person.from_buffer(john, 0)
-    emily = Person.from_buffer(emily, 0)
+    emily = Person.from_buffer(emily, 8)
     #
     builder = StructBuilder('q')
     ptr = builder.alloc_list(0, StructList, Person, [john, emily])
