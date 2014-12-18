@@ -1,7 +1,8 @@
 import py
 from capnpy.builder import StructBuilder
-from capnpy.blob import Blob, Types
+from capnpy.blob import Blob, Types, format_buffer
 from capnpy.list import PrimitiveList, StructList, StringList
+from capnpy.struct_ import Struct
 
 def test_primitive():
     builder = StructBuilder('qqd')
@@ -130,7 +131,7 @@ def test_alloc_list_of_strings():
 
 
 def test_alloc_list_of_structs_with_pointers():
-    class Person(Blob):
+    class Person(Struct):
         __data_size__ = 1
         __ptrs_size__ = 1
 
@@ -138,9 +139,13 @@ def test_alloc_list_of_structs_with_pointers():
              '\x01\x00\x00\x00\x2a\x00\x00\x00'    # name=ptr
              'J' 'o' 'h' 'n' '\x00\x00\x00\x00')   # John
 
+    # emily is a "split struct", with garbage between the body and the extra
     emily = ('\x18\x00\x00\x00\x00\x00\x00\x00'    # age=24
-             '\x01\x00\x00\x00\x32\x00\x00\x00'    # name=ptr
-             '\x45\x6d\x69\x6c\x79\x00\x00\x00')   # Emily
+             '\x09\x00\x00\x00\x32\x00\x00\x00'    # name=ptr
+             'garbage0'
+             'garbage1'
+             '\x45\x6d\x69\x6c\x79\x00\x00\x00'    # Emily
+             'garbage2')
 
     john = Person.from_buffer(john, 0)
     emily = Person.from_buffer(emily, 0)

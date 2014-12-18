@@ -85,28 +85,39 @@ class StructItemBuilder(object):
         #    will be moved to the end of the list
         # 3) extra must be allocated at the end of the list
         #
+        # 1) data section
+        parts = []
         data_size = item_type.__data_size__
         ptrs_size = item_type.__ptrs_size__
         data_buf = item._buf[:data_size*8]
-
-        # XXX: there might be other stuff after extra: we need a way to
-        # compute the lenght of extra
-        extra_offset = (data_size+ptrs_size)*8
-        extra_buf = item._buf[extra_offset:]
+        parts.append(data_buf)
         #
-        parts = [data_buf]
-        offset = i * listbuilder.item_length + data_size*8
-        additional_offset = listbuilder._calc_relative_offset(offset)
+        # 2) ptrs section
+        #    for each ptr:
+        #        ptr.offset += new_extra_offset - old_extra_offset
+        #
+        #    old_extra_offset is the offset of the first extra object in item,
+        #    i.e. the ptr.offset of the first ptr
+        #
+        #    new_extra_offset is the offset of the extra section of the
+        #    to-be-written object
+        first_ptr = item._read_ptr(item._ptr_offset_by_index(0))
+        old_extra_offset = first_ptr.offset
+        item_offset = i * listbuilder.item_length + data_size*8
+        new_extra_offset = listbuilder._calc_relative_offset(item_offset)
+        additional_offset = new_extra_offset - old_extra_offset
         #
         # iterate over and fix the pointers
         for j in range(ptrs_size):
             # read pointer, update its offset, and pack it
             ptrstart = (data_size+j) * 8
-            ptr = Ptr(item._read_primitive(ptrstart, Types.Int64))
+            ptr = item._read_ptr(ptrstart)
             ptr = Ptr.new(ptr.kind, ptr.offset+additional_offset, ptr.extra)
             s = struct.pack('q', ptr)
             parts.append(s)
         #
+        extra_start, extra_end = item._get_extra_range()
+        extra_buf = item._buf[extra_start:extra_end]
         listbuilder._alloc(extra_buf)
         return ''.join(parts)
 

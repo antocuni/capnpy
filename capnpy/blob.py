@@ -102,3 +102,19 @@ class Blob(object):
         ptr = ptr.specialize()
         offset = ptr.deref(offset)
         return offset, ptr.size_tag, ptr.item_count
+
+
+def format_buffer(buf):
+    def repr_for_line(s):
+        ch = s[0]
+        if ch.isalnum():
+            return repr(s)
+        else:
+            body = ''.join((r'\x%02x' % ord(ch)) for ch in s)
+            return "'%s'" % body
+
+    lines = []
+    for i in range(len(buf)/8):
+        line = buf[i*8:i*8+8]
+        lines.append(repr_for_line(line))
+    return '\n'.join(lines)
