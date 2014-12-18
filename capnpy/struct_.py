@@ -52,6 +52,21 @@ class Struct(Blob):
     def _get_end(self):
         return self._get_extra_end()
 
+    def _get_key(self):
+        a, b = self._get_body_range()
+        return self._buf[a:b]
+
+    def __eq__(self, other):
+        if not isinstance(other, Struct):
+            return False
+        return self._get_key() == other._get_key()
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        return hash(self._get_key())
+
 class GenericStruct(Struct):
 
     @classmethod

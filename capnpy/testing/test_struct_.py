@@ -41,3 +41,21 @@ def test_rect_range():
     extra_start, extra_end = rect._get_extra_range()
     assert extra_start == 48
     assert extra_end == 80
+
+
+def test_equality_noptr():
+    buf1 = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+    buf2 = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+            '\x03\x00\x00\x00\x00\x00\x00\x00') # 3
+    buf3 = 'garbage0' + buf1 + 'garbage1'
+
+    point1 = GenericStruct.from_buffer_and_size(buf1, 0, data_size=2, ptrs_size=0)
+    point2 = GenericStruct.from_buffer_and_size(buf2, 0, data_size=2, ptrs_size=0)
+    point3 = GenericStruct.from_buffer_and_size(buf3, 8, data_size=2, ptrs_size=0)
+
+    assert not point1 == point2
+    assert point1 != point2
+    assert point1 == point3
+    assert not point1 != point3
+    assert hash(point1) == hash(point3) != hash(point2)
