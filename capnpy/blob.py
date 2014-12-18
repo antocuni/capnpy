@@ -118,3 +118,10 @@ def format_buffer(buf):
         line = buf[i*8:i*8+8]
         lines.append(repr_for_line(line))
     return '\n'.join(lines)
+
+
+# make sure that these two modules are imported, they are used by
+# _follow_generic_pointer. We need to put them at the end because of circular
+# references
+import capnpy.struct_
+import capnpy.list

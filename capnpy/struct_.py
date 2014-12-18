@@ -53,8 +53,21 @@ class Struct(Blob):
         return self._get_extra_end()
 
     def _get_key(self):
-        a, b = self._get_body_range()
-        return self._buf[a:b]
+        # we take the whole data section, and the non-offset part of the ptrs
+        # section
+        start, end = self._get_body_range()
+        data_end = start + self.__data_size__*8
+
+        data_key = self._buf[start:data_end]
+        ptrs_key = ''
+        i = data_end
+        for _ in range(self.__ptrs_size__):
+            ptrs_key += self._buf[i+4:i+8]
+
+        extra_start, extra_end = self._get_extra_range()
+        extra_key = self._buf[extra_start:extra_end]
+
+        return (data_key, ptrs_key, extra_key)
 
     def __eq__(self, other):
         if not isinstance(other, Struct):

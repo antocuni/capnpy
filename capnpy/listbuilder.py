@@ -89,7 +89,6 @@ class StructItemBuilder(object):
         parts = []
         body_start = item._get_body_start()
         data_size = item_type.__data_size__
-        ptrs_size = item_type.__ptrs_size__
         data_buf = item._buf[body_start:body_start+data_size*8]
         parts.append(data_buf)
         #
@@ -109,7 +108,7 @@ class StructItemBuilder(object):
         additional_offset = new_extra_offset - old_extra_offset
         #
         # iterate over and fix the pointers
-        for j in range(ptrs_size):
+        for j in range(item_type.__ptrs_size__):
             # read pointer, update its offset, and pack it
             ptrstart = (data_size+j) * 8
             ptr = item._read_ptr(ptrstart)

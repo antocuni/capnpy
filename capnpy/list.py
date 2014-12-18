@@ -104,5 +104,3 @@ class StringList(List):
     def _read_list_item(self, offset):
         return self._read_string(offset)
 
-
-from capnpy import support
