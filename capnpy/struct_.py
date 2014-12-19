@@ -69,6 +69,7 @@ class Struct(Blob):
         i = ptrs_start
         for _ in range(self.__ptrs_size__):
             ptrs_key += self._buf[i+4:i+8]
+            i += 8
         return ptrs_key
 
     def _get_extra_key(self):

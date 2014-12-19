@@ -81,3 +81,34 @@ def test_equality_ptr():
     assert hash(j1) == hash(j2)
     assert j1 != p1
     assert hash(j1) != hash(p1)
+
+
+def test_equality_many_ptrs():
+    buf1 = ('\x09\x00\x00\x00\x42\x00\x00\x00'    # ptr1
+            '\x09\x00\x00\x00\x42\x00\x00\x00'    # ptr2
+            '\x09\x00\x00\x00\x82\x00\x00\x00'    # ptr3
+            'ABCDEFG\x00'                         # ptr1 == ABCDEFG
+            '1234567\x00'                         # ptr2 == 1234567
+            '1234567\x00'                         # ptr3 == 1234567\x00ABCDEFG
+            'ABCDEFG\x00')
+
+    buf2 = ('\x09\x00\x00\x00\x42\x00\x00\x00'    # ptr1
+            '\x09\x00\x00\x00\x82\x00\x00\x00'    # ptr2
+            '\x0d\x00\x00\x00\x42\x00\x00\x00'    # ptr3
+            'ABCDEFG\x00'                         # ptr1 == ABCDEFG
+            '1234567\x00'                         # ptr2 == 1234567\x001234567
+            '1234567\x00'
+            'ABCDEFG\x00')                        # ptr3 == ABCDEFG
+
+    x = GenericStruct.from_buffer_and_size(buf1, 0, data_size=0, ptrs_size=3)
+    y = GenericStruct.from_buffer_and_size(buf2, 0, data_size=0, ptrs_size=3)
+    
+    assert x._read_string(0) == 'ABCDEFG'
+    assert x._read_string(8) == '1234567'
+    assert x._read_string(16) == '1234567\x00ABCDEFG'
+
+    assert y._read_string(0) == 'ABCDEFG'
+    assert y._read_string(8) == '1234567\x001234567'
+    assert y._read_string(16) == 'ABCDEFG'
+
+    assert x != y # this is the whole point of the test :)

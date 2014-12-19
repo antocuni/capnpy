@@ -103,6 +103,8 @@ class Blob(object):
         offset = ptr.deref(offset)
         return offset, ptr.size_tag, ptr.item_count
 
+    def _print_buf(self):
+        print format_buffer(self._buf)
 
 def format_buffer(buf):
     def repr_for_line(s):
