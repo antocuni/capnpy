@@ -1,3 +1,4 @@
+import struct
 from capnpy.ptr import StructPtr, ListPtr
 from capnpy.blob import Blob
 
@@ -53,8 +54,16 @@ class Struct(Blob):
         return self._get_extra_end()
 
     def _get_key(self):
-        # we take the whole data section, and the non-offset part of the ptrs
-        # section
+        """
+        The _key is used to implement __eq__, __ne__ and __hash__.
+        It's a 3-tuple:
+
+          - the data section (copied verbatim)
+
+          - the non-offset part of the ptrs section
+
+          - the extra section (copied verbatim)
+        """
         return self._get_data_key(), self._get_ptrs_key(), self._get_extra_key()
 
     def _get_data_key(self):
@@ -63,14 +72,34 @@ class Struct(Blob):
         return self._buf[start:data_end]
 
     def _get_ptrs_key(self):
+        """
+        Return a tuple containing the 16 most significant bits of each ptr.
+
+        In other words, we explicitly ignore the "offset" part of each ptr,
+        becuase it might differ even if the structs are equal: in particular,
+        if the struct has a "garbage" section, the offsets in the ptrs change.
+        See doc/normalize.rst for a more detailed explanation.
+
+        The most significant 16 bits of each ptr are read using
+        struct.unpack_from: in microbenchmarks, this has been measured to be
+        ~5x faster than taking string slices, on PyPy.
+
+        NOTE: this is a general implementation which works for every struct,
+        but it's not the fastest possible. Subclasses are expected to override
+        this this method, like this::
+
+            return (struct.unpack_from('i', self._buf,  4),
+                    struct.unpack_from('i', self._buf, 12),
+                    ...)
+        """
         start = self._get_body_start()
         ptrs_start = start + self.__data_size__*8
-        ptrs_key = ''
-        i = ptrs_start
-        for _ in range(self.__ptrs_size__):
-            ptrs_key += self._buf[i+4:i+8]
-            i += 8
-        return ptrs_key
+        ptrs_key = [''] * self.__ptrs_size__ # pre-allocate list
+        offset = ptrs_start + 4
+        for i in range(self.__ptrs_size__):
+            ptrs_key[i] = struct.unpack_from('i', self._buf, offset)
+            offset += 8
+        return tuple(ptrs_key)
 
     def _get_extra_key(self):
         extra_start, extra_end = self._get_extra_range()
@@ -95,4 +124,3 @@ class GenericStruct(Struct):
         self.__data_size__ = data_size
         self.__ptrs_size__ = ptrs_size
         return self
-

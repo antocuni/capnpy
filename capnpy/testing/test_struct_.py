@@ -1,4 +1,4 @@
-from capnpy.struct_ import GenericStruct
+from capnpy.struct_ import Struct, GenericStruct
 
 ## struct Point {
 ##   x @0 :Int64;
