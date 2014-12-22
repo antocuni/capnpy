@@ -90,6 +90,8 @@ class List(Blob):
         return (self._item_count, self._item_type, body)
 
     def __eq__(self, other):
+        if isinstance(other, list):
+            return list(self) == other
         if self.__class__ is not other.__class__:
             return False
         return self._get_key() == other._get_key()

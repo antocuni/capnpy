@@ -219,3 +219,13 @@ def test_list_comparisons():
     py.test.raises(TypeError, "lst1 <= lst2")
     py.test.raises(TypeError, "lst1 >  lst2")
     py.test.raises(TypeError, "lst1 >= lst2")
+
+def test_compare_with_py_list():
+    buf = ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
+           '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
+           '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
+           '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
+    blob = Blob.from_buffer(buf, 0)
+    lst = blob._read_list(0, PrimitiveList, Types.Int64)
+    assert lst == [1, 2, 3, 4]
