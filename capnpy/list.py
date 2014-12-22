@@ -96,7 +96,14 @@ class List(Blob):
 
     def __ne__(self, other):
         return not self.__eq__(other)
-        
+
+    def __lt__(self, other):
+        raise TypeError, "capnpy lists can be compared only for equality"
+
+    __le__ = __lt__
+    __gt__ = __lt__
+    __ge__ = __lt__
+
 
 class PrimitiveList(List):
     ItemBuilder = listbuilder.PrimitiveItemBuilder

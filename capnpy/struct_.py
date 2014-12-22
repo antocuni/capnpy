@@ -117,7 +117,7 @@ class Struct(Blob):
         return hash(self._get_key())
 
     def __lt__(self, other):
-        raise TypeError, "Structs can be compared only for equality"
+        raise TypeError, "capnpy structs can be compared only for equality"
 
     __le__ = __lt__
     __gt__ = __lt__

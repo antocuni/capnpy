@@ -198,7 +198,7 @@ def test_list_of_pointers():
     assert end == 86
 
 
-def test_list_equality():
+def test_list_comparisons():
     buf1 = ('\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
             '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
             '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
@@ -214,3 +214,8 @@ def test_list_equality():
     #
     assert not lst1 == lst3 # different item_count
     assert lst1 != lst3
+    #
+    py.test.raises(TypeError, "lst1 <  lst2")
+    py.test.raises(TypeError, "lst1 <= lst2")
+    py.test.raises(TypeError, "lst1 >  lst2")
+    py.test.raises(TypeError, "lst1 >= lst2")
