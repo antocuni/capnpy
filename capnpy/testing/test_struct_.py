@@ -112,3 +112,20 @@ def test_equality_many_ptrs():
     assert y._read_string(16) == 'ABCDEFG'
 
     assert x != y # this is the whole point of the test :)
+
+
+def test_equality_different_classes():
+    class A(Struct):
+        __data_size__ = 2
+        __ptrs_size__ = 0
+
+    class B(Struct):
+        __data_size__ = 2
+        __ptrs_size__ = 0
+
+    buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+
+    a = A.from_buffer(buf)
+    b = B.from_buffer(buf)
+    assert a != b

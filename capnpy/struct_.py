@@ -106,7 +106,7 @@ class Struct(Blob):
         return self._buf[extra_start:extra_end]
 
     def __eq__(self, other):
-        if not isinstance(other, Struct):
+        if self.__class__ is not other.__class__:
             return False
         return self._get_key() == other._get_key()
 
