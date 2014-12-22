@@ -116,6 +116,13 @@ class Struct(Blob):
     def __hash__(self):
         return hash(self._get_key())
 
+    def __lt__(self, other):
+        raise TypeError, "Structs can be compared only for equality"
+
+    __le__ = __lt__
+    __gt__ = __lt__
+    __ge__ = __lt__
+
 class GenericStruct(Struct):
 
     @classmethod

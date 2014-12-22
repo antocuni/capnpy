@@ -1,3 +1,4 @@
+import py
 from capnpy.struct_ import Struct, GenericStruct
 
 ## struct Point {
@@ -129,3 +130,15 @@ def test_equality_different_classes():
     a = A.from_buffer(buf)
     b = B.from_buffer(buf)
     assert a != b
+
+def test_no_cmp():
+    buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+
+    p1 = GenericStruct.from_buffer_and_size(buf, 0, data_size=2, ptrs_size=0)
+    p2 = GenericStruct.from_buffer_and_size(buf, 0, data_size=2, ptrs_size=0)
+
+    py.test.raises(TypeError, "p1 <  p2")
+    py.test.raises(TypeError, "p1 <= p2")
+    py.test.raises(TypeError, "p1 >  p2")
+    py.test.raises(TypeError, "p1 >= p2")
