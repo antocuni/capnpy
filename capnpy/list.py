@@ -84,6 +84,19 @@ class List(Blob):
     def _get_end(self):
         return self._get_body_end()
 
+    def _get_key(self):
+        start, end = self._get_body_range()
+        body = self._buf[start:end]
+        return (self._item_count, self._item_type, body)
+
+    def __eq__(self, other):
+        if self.__class__ is not other.__class__:
+            return False
+        return self._get_key() == other._get_key()
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+        
 
 class PrimitiveList(List):
     ItemBuilder = listbuilder.PrimitiveItemBuilder

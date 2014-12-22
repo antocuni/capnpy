@@ -1,5 +1,6 @@
 import py
 from capnpy.blob import Blob, Types
+from capnpy.ptr import ListPtr
 from capnpy.list import PrimitiveList, StructList, StringList
 
 def test_read_list():
@@ -195,3 +196,21 @@ def test_list_of_pointers():
     # note that the end if 88, not 86: the last two \x00\x00 are not counted,
     # because they are padding, not actual data
     assert end == 86
+
+
+def test_list_equality():
+    buf1 = ('\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
+            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
+            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
+    buf2 = 'garbage0' + buf1
+    #
+    lst1 = PrimitiveList.from_buffer(buf1, 0, ListPtr.SIZE_64, 4, Types.Int64)
+    lst2 = PrimitiveList.from_buffer(buf2, 8, ListPtr.SIZE_64, 4, Types.Int64)
+    lst3 = PrimitiveList.from_buffer(buf1, 0, ListPtr.SIZE_64, 3, Types.Int64)
+    #
+    assert lst1 == lst2
+    assert not lst1 != lst2
+    #
+    assert not lst1 == lst3 # different item_count
+    assert lst1 != lst3
