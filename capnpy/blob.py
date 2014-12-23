@@ -10,6 +10,7 @@ from capnpy.ptr import Ptr, StructPtr, ListPtr
 
 class Types(object):
     Int8 = 'b'
+    Int16 = 'h'
     Int64 = 'q'
     Float64 = 'd'
 
@@ -31,6 +32,10 @@ class Blob(object):
 
     def _read_primitive(self, offset, fmt):
         return struct.unpack_from('<' + fmt, self._buf, self._offset+offset)[0]
+
+    def _read_enum(self, offset, enumtype):
+        val = self._read_primitive(offset, Types.Int16)
+        return enumtype(val)
 
     def _read_struct(self, offset, structcls):
         """
