@@ -123,6 +123,7 @@ class Struct(Blob):
     __gt__ = __lt__
     __ge__ = __lt__
 
+
 class GenericStruct(Struct):
 
     @classmethod
