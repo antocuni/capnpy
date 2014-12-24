@@ -67,6 +67,9 @@ class Blob(object):
         ptr = self._read_primitive(offset, Types.Int64)
         return Ptr(ptr)
 
+    def _read_group(self, groupcls):
+        return groupcls.from_buffer(self._buf, self._offset)
+
     def _follow_generic_pointer(self, ptr_offset):
         ptr = self._read_ptr(ptr_offset)
         ptr = ptr.specialize()

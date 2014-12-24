@@ -69,3 +69,38 @@ def test_null_pointers():
     assert blob._read_struct(0, Blob) is None
     assert blob._read_list(0, None, None) is None
     assert blob._read_string(0) is None
+
+
+def test_read_group():
+    ## struct Rectangle {
+    ##     a @0 :group {
+    ##         x @1 :Int64;
+    ##         y @2 :Int64;
+    ##     }
+    ##     b @3 :group {
+    ##         x @4 :Int64;
+    ##         y @5 :Int64;
+    ##     }
+    ## }
+    class GroupA(Blob):
+        pass
+    class GroupB(Blob):
+        pass
+    buf = ('garbage0'
+           '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
+           '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
+           '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
+    #
+    # Note that the offsets inside groups are always "absolute" from the
+    # beginning of the struct. So, a.x has offset 0, b.x has offset 3.
+    #
+    blob = Blob.from_buffer(buf, 8)
+    a = blob._read_group(GroupA)
+    assert isinstance(a, GroupA)
+    assert a._read_primitive(0, Types.Int64) == 1  # a.x
+    #
+    b = blob._read_group(GroupB)
+    assert isinstance(b, GroupB)
+    assert b._read_primitive(16, Types.Int64) == 3 # b.x
+    
