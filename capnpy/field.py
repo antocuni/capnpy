@@ -60,7 +60,6 @@ class Struct(object):
                 (self.offset, self.structcls.__name__))
 
 
-
 class Enum(object):
 
     def __init__(self, offset, enumcls):
@@ -75,3 +74,20 @@ class Enum(object):
     def __repr__(self):
         return ('<Field +%d: Enum, enumcls=%s>' %
                 (self.offset, self.enumcls.__name__))
+
+
+class Union(object):
+
+    def __init__(self, tag, field):
+        self.tag = tag
+        self.field = field
+
+    def __get__(self, blob, cls):
+        if blob is None:
+            return self
+        blob._ensure_union(self.tag)
+        return self.field.__get__(blob, cls)
+
+    def __repr__(self):
+        return '<Union %s: %s>' % (self.tag.name, self.field)
+

@@ -1,3 +1,4 @@
+import py
 from capnpy import field
 from capnpy.struct_ import Struct, Types
 from capnpy.list import PrimitiveList, StructList, StringList
@@ -81,3 +82,30 @@ def test_enum():
     assert f.color == Color.blue
     assert f.gender == Gender.female
     assert repr(Foo.color) == "<Field +0: Enum, enumcls=Color>"
+
+
+def test_union():
+    ## struct Shape {
+    ##   area @0 :Int64;
+    ##   union {
+    ##     circle @1 :Int64;      # radius
+    ##     square @2 :Int64;      # width
+    ##   }
+    ## }
+    class Shape(Struct):
+        __union_tag_offset__ = 16
+        __union_tag__ = enum('Shape.__union_tag__', ('circle', 'square'))
+
+        area = field.Primitive(0, Types.Int64)
+        circle = field.Union(__union_tag__.circle, field.Primitive(8, Types.Int64))
+        square = field.Union(__union_tag__.square, field.Primitive(8, Types.Int64))
+
+    buf = ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
+           '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
+           '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
+    shape = Shape.from_buffer(buf, 0)
+    assert shape.area == 64
+    assert shape.which() == Shape.__union_tag__.square
+    assert shape.square == 8
+    py.test.raises(ValueError, "shape.circle")
+    assert repr(Shape.square) == "<Union square: <Field +8: Primitive, type='q'>>"
