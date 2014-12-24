@@ -87,6 +87,8 @@ def test_union():
     buf = ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
            '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
            '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
-
     shape = Shape.from_buffer(buf, 0)
     assert shape.which() == Shape.__union_tag__.square
+    #
+    shape._ensure_union(Shape.__union_tag__.square)
+    py.test.raises(ValueError, "shape._ensure_union(Shape.__union_tag__.circle)")

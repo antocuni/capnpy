@@ -39,9 +39,15 @@ class Blob(object):
         is an union
         """
         if self.__union_tag_offset__ is None:
-            raise TypeError, "Cannot call which() on a non-union type"
+            raise TypeError("Cannot call which() on a non-union type")
         val = self._read_primitive(self.__union_tag_offset__, Types.Int16)
         return self.__union_tag__(val)
+
+    def _ensure_union(self, expected_tag):
+        tag = self.which()
+        if tag != expected_tag:
+            raise ValueError("Tried to read an union field which is not currently "
+                             "initialized. Expected %s, got %s" % (expected_tag, tag))
 
     def _read_primitive(self, offset, fmt):
         return struct.unpack_from('<' + fmt, self._buf, self._offset+offset)[0]
