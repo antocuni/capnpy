@@ -1,6 +1,7 @@
 from capnpy import field
 from capnpy.struct_ import Struct, Types
 from capnpy.list import PrimitiveList, StructList, StringList
+from capnpy.enum import enum
 
 def test_primitive():
     class Point(Struct):
@@ -42,6 +43,7 @@ def test_list():
     assert f.items == [1, 2, 3, 4]
     assert repr(Foo.items) == "<Field +0: List, listcls=PrimitiveList, item_type='q'>"
 
+
 def test_struct():
     class Point(Struct):
         x = field.Primitive(0, Types.Int64)
@@ -64,3 +66,18 @@ def test_struct():
     assert r.b.x == 3
     assert r.b.y == 4
     assert repr(Rectangle.a) == "<Field +0: Struct, structcls=Point>"
+
+
+def test_enum():
+    Color = enum('Color', ('red', 'green', 'blue', 'yellow'))
+    Gender = enum('Gender', ('male', 'female', 'unknown'))
+    class Foo(Struct):
+        color = field.Enum(0, Color)
+        gender = field.Enum(2, Gender)
+    
+    #      color      gender     padding
+    buf = '\x02\x00' '\x01\x00' '\x00\x00\x00\x00'
+    f = Foo.from_buffer(buf)
+    assert f.color == Color.blue
+    assert f.gender == Gender.female
+    assert repr(Foo.color) == "<Field +0: Enum, enumcls=Color>"

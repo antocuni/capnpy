@@ -58,3 +58,20 @@ class Struct(object):
     def __repr__(self):
         return ('<Field +%d: Struct, structcls=%s>' %
                 (self.offset, self.structcls.__name__))
+
+
+
+class Enum(object):
+
+    def __init__(self, offset, enumcls):
+        self.offset = offset
+        self.enumcls = enumcls
+
+    def __get__(self, blob, cls):
+        if blob is None:
+            return self
+        return blob._read_enum(self.offset, self.enumcls)
+
+    def __repr__(self):
+        return ('<Field +%d: Enum, enumcls=%s>' %
+                (self.offset, self.enumcls.__name__))
