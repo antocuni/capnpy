@@ -24,5 +24,21 @@ class String(object):
         return blob._read_string(self.offset)
 
     def __repr__(self):
-        return '<Field: String, offset=%d' % (self.offset,)
+        return '<Field: String, offset=%d>' % (self.offset,)
 
+
+class List(object):
+
+    def __init__(self, offset, listcls, item_type):
+        self.offset = offset
+        self.listcls = listcls
+        self.item_type = item_type
+
+    def __get__(self, blob, cls):
+        if blob is None:
+            return self
+        return blob._read_list(self.offset, self.listcls, self.item_type)
+
+    def __repr__(self):
+        return ('<Field: List, offset=%d, listcls=%s, item_type=%r>' %
+                (self.offset, self.listcls.__name__, self.item_type))
