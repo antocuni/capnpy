@@ -91,3 +91,17 @@ class Union(object):
     def __repr__(self):
         return '<Union %s: %s>' % (self.tag.name, self.field)
 
+
+class Group(object):
+
+    def __init__(self, groupcls):
+        self.groupcls = groupcls
+
+    def __get__(self, blob, cls):
+        if blob is None:
+            return self
+        return blob._read_group(self.groupcls)
+
+    def __repr__(self):
+        return '<Group %s>' % self.groupcls.__name__
+
