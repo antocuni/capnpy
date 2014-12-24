@@ -1,6 +1,6 @@
 import struct
 from capnpy.ptr import StructPtr, ListPtr
-from capnpy.blob import Blob
+from capnpy.blob import Blob, Types
 
 
 class Struct(Blob):
@@ -16,6 +16,26 @@ class Struct(Blob):
        less space-efficient, but it's handy if you need to walk the buffer
        without knowing the schema
     """
+
+    __union_tag_offset__ = None
+    __union_tag__ = None
+
+    def which(self):
+        """
+        Return the value of the union tag, if the struct has an anonimous union or
+        is an union
+        """
+        if self.__union_tag_offset__ is None:
+            raise TypeError("Cannot call which() on a non-union type")
+        val = self._read_primitive(self.__union_tag_offset__, Types.Int16)
+        return self.__union_tag__(val)
+
+    def _ensure_union(self, expected_tag):
+        tag = self.which()
+        if tag != expected_tag:
+            raise ValueError("Tried to read an union field which is not currently "
+                             "initialized. Expected %s, got %s" % (expected_tag, tag))
+
 
     def _ptr_offset_by_index(self, i):
         return (self.__data_size__ + i) * 8

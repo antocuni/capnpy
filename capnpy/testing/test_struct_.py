@@ -1,5 +1,6 @@
 import py
 from capnpy.struct_ import Struct, GenericStruct
+from capnpy.enum import enum
 
 ## struct Point {
 ##   x @0 :Int64;
@@ -142,3 +143,25 @@ def test_no_cmp():
     py.test.raises(TypeError, "p1 <= p2")
     py.test.raises(TypeError, "p1 >  p2")
     py.test.raises(TypeError, "p1 >= p2")
+
+
+def test_union():
+    ## struct Shape {
+    ##   area @0 :Int64;
+    ##   union {
+    ##     circle @1 :Int64;      # radius
+    ##     square @2 :Int64;      # width
+    ##   }
+    ## }
+    class Shape(Struct):
+        __union_tag_offset__ = 16
+        __union_tag__ = enum('Shape.__union_tag__', ('circle', 'square'))
+    
+    buf = ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
+           '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
+           '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
+    shape = Shape.from_buffer(buf, 0)
+    assert shape.which() == Shape.__union_tag__.square
+    #
+    shape._ensure_union(Shape.__union_tag__.square)
+    py.test.raises(ValueError, "shape._ensure_union(Shape.__union_tag__.circle)")
