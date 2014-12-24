@@ -14,5 +14,14 @@ def test_primitive():
     assert isinstance(Point.x, field.Primitive)
     assert Point.x.offset == 0
     assert Point.x.type == Types.Int64
-    assert repr(Point.x) == "Primitive(offset=0, type='q')"
-    
+    assert repr(Point.x) == "<Field: Primitive, offset=0, type='q'>"
+   
+def test_string():
+    class Foo(Struct):
+        name = field.String(0)
+
+    buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
+           'hello capnproto\0')                 # string
+
+    f = Foo.from_buffer(buf)
+    assert f.name == 'hello capnproto'
