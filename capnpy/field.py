@@ -42,3 +42,19 @@ class List(object):
     def __repr__(self):
         return ('<Field +%d: List, listcls=%s, item_type=%r>' %
                 (self.offset, self.listcls.__name__, self.item_type))
+
+
+class Struct(object):
+
+    def __init__(self, offset, structcls):
+        self.offset = offset
+        self.structcls = structcls
+
+    def __get__(self, blob, cls):
+        if blob is None:
+            return self
+        return blob._read_struct(self.offset, self.structcls)
+
+    def __repr__(self):
+        return ('<Field +%d: Struct, structcls=%s>' %
+                (self.offset, self.structcls.__name__))

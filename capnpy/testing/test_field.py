@@ -42,3 +42,25 @@ def test_list():
     assert f.items == [1, 2, 3, 4]
     assert repr(Foo.items) == "<Field +0: List, listcls=PrimitiveList, item_type='q'>"
 
+def test_struct():
+    class Point(Struct):
+        x = field.Primitive(0, Types.Int64)
+        y = field.Primitive(8, Types.Int64)
+
+    class Rectangle(Struct):
+        a = field.Struct(0, Point)
+        b = field.Struct(8, Point)
+
+    buf = ('\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+           '\x08\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
+           '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
+           '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
+           '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
+
+    r = Rectangle.from_buffer(buf)
+    assert r.a.x == 1
+    assert r.a.y == 2
+    assert r.b.x == 3
+    assert r.b.y == 4
+    assert repr(Rectangle.a) == "<Field +0: Struct, structcls=Point>"
