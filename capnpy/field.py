@@ -10,7 +10,7 @@ class Primitive(object):
         return blob._read_primitive(self.offset, self.type)
 
     def __repr__(self):
-        return '<Field: Primitive, offset=%d, type=%r>' % (self.offset, self.type)
+        return '<Field +%d: Primitive, type=%r>' % (self.offset, self.type)
         
 
 class String(object):
@@ -24,7 +24,7 @@ class String(object):
         return blob._read_string(self.offset)
 
     def __repr__(self):
-        return '<Field: String, offset=%d>' % (self.offset,)
+        return '<Field +%d: String>' % (self.offset,)
 
 
 class List(object):
@@ -40,5 +40,5 @@ class List(object):
         return blob._read_list(self.offset, self.listcls, self.item_type)
 
     def __repr__(self):
-        return ('<Field: List, offset=%d, listcls=%s, item_type=%r>' %
+        return ('<Field +%d: List, listcls=%s, item_type=%r>' %
                 (self.offset, self.listcls.__name__, self.item_type))

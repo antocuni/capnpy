@@ -15,7 +15,7 @@ def test_primitive():
     assert isinstance(Point.x, field.Primitive)
     assert Point.x.offset == 0
     assert Point.x.type == Types.Int64
-    assert repr(Point.x) == "<Field: Primitive, offset=0, type='q'>"
+    assert repr(Point.x) == "<Field +0: Primitive, type='q'>"
    
 def test_string():
     class Foo(Struct):
@@ -26,7 +26,7 @@ def test_string():
 
     f = Foo.from_buffer(buf)
     assert f.name == 'hello capnproto'
-    assert repr(Foo.name) == '<Field: String, offset=0>'
+    assert repr(Foo.name) == '<Field +0: String>'
 
 
 def test_list():
@@ -40,5 +40,5 @@ def test_list():
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     f = Foo.from_buffer(buf, 0)
     assert f.items == [1, 2, 3, 4]
-    assert repr(Foo.items) == "<Field: List, offset=0, listcls=PrimitiveList, item_type='q'>"
+    assert repr(Foo.items) == "<Field +0: List, listcls=PrimitiveList, item_type='q'>"
 
