@@ -149,3 +149,41 @@ def test_read_group():
     assert r.b.x == 3
     assert r.b.y == 4
     assert repr(Rectangle.a) == '<Group a>'
+
+
+def test_group_union():
+    ## struct Shape {
+    ##   union {
+    ##     circle :group {
+    ##       radius @0 :Int64;
+    ##     }
+    ##     rectangle :group {
+    ##       width @1 :Int64;
+    ##       height @2 :Int64;
+    ##     }
+    ##   }
+    ## }
+    class Shape(Struct):
+        __union_tag_offset__ = 8
+        __union_tag__ = enum('Shape.__union_tag__', ('circle', 'rectangle'))
+
+        @field.Group
+        class circle(Struct):
+            radius = field.Primitive(0, Types.Int64)
+        circle = field.Union(__union_tag__.circle, circle)
+
+        @field.Group
+        class rectangle(Struct):
+            width = field.Primitive(0, Types.Int64)
+            height = field.Primitive(16, Types.Int64)
+        rectangle = field.Union(__union_tag__.rectangle, rectangle)
+
+    buf = ('\x04\x00\x00\x00\x00\x00\x00\x00'    # rectangle.width == 4
+           '\x01\x00\x00\x00\x00\x00\x00\x00'    # which() == rectangle, padding
+           '\x05\x00\x00\x00\x00\x00\x00\x00')   # rectangle.height == 5
+
+    shape = Shape.from_buffer(buf)
+    assert shape.which() == Shape.__union_tag__.rectangle
+    assert shape.rectangle.width == 4
+    assert shape.rectangle.height == 5
+    py.test.raises(ValueError, "shape.circle.radius")
