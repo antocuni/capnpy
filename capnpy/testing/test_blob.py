@@ -6,11 +6,11 @@ def test_Blob():
     buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
     b1 = Blob.from_buffer(buf, 0)
-    assert b1._read_primitive(0, Types.Int64) == 1
-    assert b1._read_primitive(8, Types.Int64) == 2
+    assert b1._read_primitive(0, Types.int64) == 1
+    assert b1._read_primitive(8, Types.int64) == 2
     #
     b2 = Blob.from_buffer(buf, 8)
-    assert b2._read_primitive(0, Types.Int64) == 2
+    assert b2._read_primitive(0, Types.int64) == 2
 
 def test_Blob_ctor():
     py.test.raises(NotImplementedError, "Blob()")
@@ -19,7 +19,7 @@ def test_Blob_ctor():
 def test_float64():
     buf = '\x58\x39\xb4\xc8\x76\xbe\xf3\x3f'   # 1.234
     blob = Blob.from_buffer(buf, 0)
-    assert blob._read_primitive(0, Types.Float64) == 1.234
+    assert blob._read_primitive(0, Types.float64) == 1.234
 
 def test_deref_ptrstruct():
     buf = '\x90\x01\x00\x00\x02\x00\x04\x00'
@@ -40,8 +40,8 @@ def test_read_struct():
     p = blob._read_struct(0, Blob)
     assert p._buf is blob._buf
     assert p._offset == 8
-    assert p._read_primitive(0, Types.Int64) == 1
-    assert p._read_primitive(8, Types.Int64) == 2
+    assert p._read_primitive(0, Types.int64) == 1
+    assert p._read_primitive(8, Types.int64) == 2
 
 def test_nested_struct():
     ## struct Rectangle {
@@ -57,10 +57,10 @@ def test_nested_struct():
     rect = Blob.from_buffer(buf, 0)
     p1 = rect._read_struct(0, Blob)
     p2 = rect._read_struct(8, Blob)
-    assert p1._read_primitive(0, Types.Int64) == 1
-    assert p1._read_primitive(8, Types.Int64) == 2
-    assert p2._read_primitive(0, Types.Int64) == 3
-    assert p2._read_primitive(8, Types.Int64) == 4
+    assert p1._read_primitive(0, Types.int64) == 1
+    assert p1._read_primitive(8, Types.int64) == 2
+    assert p2._read_primitive(0, Types.int64) == 3
+    assert p2._read_primitive(8, Types.int64) == 4
     
 
 def test_null_pointers():
@@ -98,9 +98,9 @@ def test_read_group():
     blob = Blob.from_buffer(buf, 8)
     a = blob._read_group(GroupA)
     assert isinstance(a, GroupA)
-    assert a._read_primitive(0, Types.Int64) == 1  # a.x
+    assert a._read_primitive(0, Types.int64) == 1  # a.x
     #
     b = blob._read_group(GroupB)
     assert isinstance(b, GroupB)
-    assert b._read_primitive(16, Types.Int64) == 3 # b.x
+    assert b._read_primitive(16, Types.int64) == 3 # b.x
     

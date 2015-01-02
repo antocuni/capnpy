@@ -10,7 +10,7 @@ def test_read_list():
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     blob = Blob.from_buffer(buf, 0)
-    lst = blob._read_list(0, PrimitiveList, Types.Int64)
+    lst = blob._read_list(0, PrimitiveList, Types.int64)
     assert lst._buf is blob._buf
     assert lst._offset == 8
     assert lst._item_offset == 0
@@ -29,7 +29,7 @@ def test_read_list_offset():
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     blob = Blob.from_buffer(buf, 4)
-    lst = blob._read_list(0, PrimitiveList, Types.Int64)
+    lst = blob._read_list(0, PrimitiveList, Types.int64)
     assert lst._buf is blob._buf
     assert lst._offset == 12
     assert lst._item_count == 4
@@ -46,7 +46,7 @@ def test_pythonic():
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     blob = Blob.from_buffer(buf, 0)
-    lst = blob._read_list(0, PrimitiveList, Types.Int64)
+    lst = blob._read_list(0, PrimitiveList, Types.int64)
     assert len(lst) == 4
     assert lst[0] == 1
     assert lst[3] == 4
@@ -77,8 +77,8 @@ def test_list_of_structs():
     assert len(lst) == 4
     def read_point(i):
         p = lst[i]
-        x = p._read_primitive(0, Types.Int64)
-        y = p._read_primitive(8, Types.Int64)
+        x = p._read_primitive(0, Types.int64)
+        y = p._read_primitive(8, Types.int64)
         return x, y
     assert read_point(0) == (10, 100)
     assert read_point(1) == (20, 200)
@@ -109,7 +109,7 @@ def test_Float64List():
            '\xd9\xce\xf7\x53\xe3\xa5\x0b\x40'   # 3.456
            '\xf8\x53\xe3\xa5\x9b\x44\x12\x40')  # 4.567
     blob = Blob.from_buffer(buf, 0)
-    lst = blob._read_list(0, PrimitiveList, Types.Float64)
+    lst = blob._read_list(0, PrimitiveList, Types.float64)
     assert list(lst) == [1.234, 2.345, 3.456, 4.567]
 
 
@@ -117,7 +117,7 @@ def test_Int8List():
     buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
            'hello capnproto\0')                 # string
     blob = Blob.from_buffer(buf, 0)
-    lst = blob._read_list(0, PrimitiveList, Types.Int8)
+    lst = blob._read_list(0, PrimitiveList, Types.int8)
     assert len(lst) == 16
     assert list(lst) == map(ord, 'hello capnproto\0')
 
@@ -141,7 +141,7 @@ def test_list_primitive_body_range():
     buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
            'hello capnproto\0')                 # string
     blob = Blob.from_buffer(buf, 0)
-    lst = blob._read_list(0, PrimitiveList, Types.Int8)
+    lst = blob._read_list(0, PrimitiveList, Types.int8)
     body_start, body_end = lst._get_body_range()
     assert body_start == 8
     assert body_end == 24
@@ -205,9 +205,9 @@ def test_list_comparisons():
             '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     buf2 = 'garbage0' + buf1
     #
-    lst1 = PrimitiveList.from_buffer(buf1, 0, ListPtr.SIZE_64, 4, Types.Int64)
-    lst2 = PrimitiveList.from_buffer(buf2, 8, ListPtr.SIZE_64, 4, Types.Int64)
-    lst3 = PrimitiveList.from_buffer(buf1, 0, ListPtr.SIZE_64, 3, Types.Int64)
+    lst1 = PrimitiveList.from_buffer(buf1, 0, ListPtr.SIZE_64, 4, Types.int64)
+    lst2 = PrimitiveList.from_buffer(buf2, 8, ListPtr.SIZE_64, 4, Types.int64)
+    lst3 = PrimitiveList.from_buffer(buf1, 0, ListPtr.SIZE_64, 3, Types.int64)
     #
     assert lst1 == lst2
     assert not lst1 != lst2
@@ -227,5 +227,5 @@ def test_compare_with_py_list():
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     blob = Blob.from_buffer(buf, 0)
-    lst = blob._read_list(0, PrimitiveList, Types.Int64)
+    lst = blob._read_list(0, PrimitiveList, Types.int64)
     assert lst == [1, 2, 3, 4]

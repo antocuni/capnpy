@@ -25,7 +25,7 @@ class List(Blob):
     def _set_list_tag(self, size_tag, item_count):
         self._size_tag = size_tag
         if size_tag == ListPtr.SIZE_COMPOSITE:
-            tag = self._read_primitive(0, Types.Int64)
+            tag = self._read_primitive(0, Types.int64)
             tag = StructPtr(tag)
             self._tag = tag
             self._item_count = tag.offset

@@ -9,10 +9,10 @@ import capnpy
 from capnpy.ptr import Ptr, StructPtr, ListPtr
 
 class Types(object):
-    Int8 = 'b'
-    Int16 = 'h'
-    Int64 = 'q'
-    Float64 = 'd'
+    int8 = 'b'
+    int16 = 'h'
+    int64 = 'q'
+    float64 = 'd'
 
 class Blob(object):
     """
@@ -34,7 +34,7 @@ class Blob(object):
         return struct.unpack_from('<' + fmt, self._buf, self._offset+offset)[0]
 
     def _read_enum(self, offset, enumtype):
-        val = self._read_primitive(offset, Types.Int16)
+        val = self._read_primitive(offset, Types.int16)
         return enumtype(val)
 
     def _read_struct(self, offset, structcls):
@@ -64,7 +64,7 @@ class Blob(object):
         return self._buf[start:end]
 
     def _read_ptr(self, offset):
-        ptr = self._read_primitive(offset, Types.Int64)
+        ptr = self._read_primitive(offset, Types.int64)
         return Ptr(ptr)
 
     def _read_group(self, groupcls):

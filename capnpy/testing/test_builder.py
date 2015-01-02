@@ -43,7 +43,7 @@ def test_alloc_string():
 
 def test_alloc_list_int64():
     builder = StructBuilder('q')
-    ptr = builder.alloc_list(0, PrimitiveList, Types.Int64, [1, 2, 3, 4])
+    ptr = builder.alloc_list(0, PrimitiveList, Types.int64, [1, 2, 3, 4])
     buf = builder.build(ptr)
     assert buf == ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
                    '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
@@ -53,7 +53,7 @@ def test_alloc_list_int64():
 
 def test_alloc_list_int8():
     builder = StructBuilder('q')
-    ptr = builder.alloc_list(0, PrimitiveList, Types.Int8, [1, 2, 3, 4])
+    ptr = builder.alloc_list(0, PrimitiveList, Types.int8, [1, 2, 3, 4])
     buf = builder.build(ptr)
     assert buf == ('\x01\x00\x00\x00\x22\x00\x00\x00'   # ptrlist
                    '\x01\x02\x03\x04\x00\x00\x00\x00')  # 1,2,3,4 + padding
@@ -61,7 +61,7 @@ def test_alloc_list_int8():
 
 def test_alloc_list_float64():
     builder = StructBuilder('q')
-    ptr = builder.alloc_list(0, PrimitiveList, Types.Float64,
+    ptr = builder.alloc_list(0, PrimitiveList, Types.float64,
                              [1.234, 2.345, 3.456, 4.567])
     buf = builder.build(ptr)
     assert buf == ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
@@ -108,7 +108,7 @@ def test_null_pointers():
     builder = StructBuilder('qqq')
     ptr1 = builder.alloc_struct(0, Blob, None)
     ptr2 = builder.alloc_string(8, None)
-    ptr3 = builder.alloc_list(16, PrimitiveList, Types.Int64, None)
+    ptr3 = builder.alloc_list(16, PrimitiveList, Types.int64, None)
     buf = builder.build(ptr1, ptr2, ptr3)
     assert buf == NULL*3
 

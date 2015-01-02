@@ -33,8 +33,8 @@ class CodeBuilder(object):
 class FileGenerator(object):
 
     PRIMITIVE_TYPES = {
-        'int64': ('Types.Int64', 8),
-        'float64': ('Types.Float64', 8),
+        'int64': ('Types.int64', 8),
+        'float64': ('Types.float64', 8),
     }
 
     def __init__(self, request):

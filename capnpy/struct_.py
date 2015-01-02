@@ -27,7 +27,7 @@ class Struct(Blob):
         """
         if self.__union_tag_offset__ is None:
             raise TypeError("Cannot call which() on a non-union type")
-        val = self._read_primitive(self.__union_tag_offset__, Types.Int16)
+        val = self._read_primitive(self.__union_tag_offset__, Types.int16)
         return self.__union_tag__(val)
 
     def _ensure_union(self, expected_tag):

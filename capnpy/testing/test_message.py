@@ -8,10 +8,10 @@ def test_Message():
            '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
     m = Message(buf)
     p = m.get_struct(Blob)
-    assert p._read_primitive(0, Types.Int64) == 1
-    assert p._read_primitive(8, Types.Int64) == 2
+    assert p._read_primitive(0, Types.int64) == 1
+    assert p._read_primitive(8, Types.int64) == 2
     #
     p = loads(buf, Blob)
     assert isinstance(p, Blob)
-    assert p._read_primitive(0, Types.Int64) == 1
-    assert p._read_primitive(8, Types.Int64) == 2
+    assert p._read_primitive(0, Types.int64) == 1
+    assert p._read_primitive(8, Types.int64) == 2

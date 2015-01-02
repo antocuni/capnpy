@@ -6,8 +6,8 @@ from capnpy.enum import enum
 
 def test_primitive():
     class Point(Struct):
-        x = field.Primitive(0, Types.Int64)
-        y = field.Primitive(8, Types.Int64)
+        x = field.Primitive(0, Types.int64)
+        y = field.Primitive(8, Types.int64)
     
     buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
@@ -16,7 +16,7 @@ def test_primitive():
     assert p.y == 2
     assert isinstance(Point.x, field.Primitive)
     assert Point.x.offset == 0
-    assert Point.x.type == Types.Int64
+    assert Point.x.type == Types.int64
     assert repr(Point.x) == "<Field +0: Primitive, type='q'>"
    
 def test_string():
@@ -33,7 +33,7 @@ def test_string():
 
 def test_list():
     class Foo(Struct):
-        items = field.List(0, PrimitiveList, Types.Int64)
+        items = field.List(0, PrimitiveList, Types.int64)
     
     buf = ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
            '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
@@ -47,8 +47,8 @@ def test_list():
 
 def test_struct():
     class Point(Struct):
-        x = field.Primitive(0, Types.Int64)
-        y = field.Primitive(8, Types.Int64)
+        x = field.Primitive(0, Types.int64)
+        y = field.Primitive(8, Types.int64)
 
     class Rectangle(Struct):
         a = field.Struct(0, Point)
@@ -96,9 +96,9 @@ def test_union():
         __union_tag_offset__ = 16
         __union_tag__ = enum('Shape.__union_tag__', ('circle', 'square'))
 
-        area = field.Primitive(0, Types.Int64)
-        circle = field.Union(__union_tag__.circle, field.Primitive(8, Types.Int64))
-        square = field.Union(__union_tag__.square, field.Primitive(8, Types.Int64))
+        area = field.Primitive(0, Types.int64)
+        circle = field.Union(__union_tag__.circle, field.Primitive(8, Types.int64))
+        square = field.Union(__union_tag__.square, field.Primitive(8, Types.int64))
 
     buf = ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
            '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
@@ -126,13 +126,13 @@ def test_read_group():
 
         @field.Group
         class a(Struct):
-            x = field.Primitive(0, Types.Int64)
-            y = field.Primitive(8, Types.Int64)
+            x = field.Primitive(0, Types.int64)
+            y = field.Primitive(8, Types.int64)
 
         @field.Group
         class b(Struct):
-            x = field.Primitive(16, Types.Int64)
-            y = field.Primitive(24, Types.Int64)
+            x = field.Primitive(16, Types.int64)
+            y = field.Primitive(24, Types.int64)
 
     buf = ('garbage0'
            '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
@@ -169,13 +169,13 @@ def test_group_union():
 
         @field.Group
         class circle(Struct):
-            radius = field.Primitive(0, Types.Int64)
+            radius = field.Primitive(0, Types.int64)
         circle = field.Union(__union_tag__.circle, circle)
 
         @field.Group
         class rectangle(Struct):
-            width = field.Primitive(0, Types.Int64)
-            height = field.Primitive(16, Types.Int64)
+            width = field.Primitive(0, Types.int64)
+            height = field.Primitive(16, Types.int64)
         rectangle = field.Union(__union_tag__.rectangle, rectangle)
 
     buf = ('\x04\x00\x00\x00\x00\x00\x00\x00'    # rectangle.width == 4
