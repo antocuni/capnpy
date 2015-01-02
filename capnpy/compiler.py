@@ -60,8 +60,11 @@ class FileGenerator(object):
         self.w("from capnpy import field")
         self.w("from capnpy.blob import Types")
         self.w("")
-        
-        for node in request.nodes:
+
+        # apparently, request.nodes seems to be in reversed order of
+        # dependency, i.e. the earlier nodes may depend on the later ones. Not
+        # sure if this is guaranteed, though.
+        for node in reversed(request.nodes):
             self.visit_node(node)
 
     def visit_node(self, node):
@@ -145,6 +148,7 @@ def compile_file(filename):
     src = py.code.Source(src)
     mod = types.ModuleType(filename.purebasename)
     mod.__file__ = str(filename)
+    mod.__source__ = str(src)
     exec src.compile() in mod.__dict__
     return mod
 
