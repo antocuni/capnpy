@@ -11,8 +11,15 @@ class PrimitiveType(object):
     def calcsize(self):
         return struct.calcsize(self.fmt)
 
+
 class Types(object):
-    pass
+
+    @classmethod
+    def from_which(cls, which):
+        # XXX: this is temporary: to bootstrap, we use pycapnp, whose which()
+        # returns a string. After bootstrap, which() result will be an Enum.
+        return getattr(cls, which)
+
 
 def make_type(name, fmt):
     t = PrimitiveType(name, fmt)

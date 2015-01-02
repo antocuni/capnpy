@@ -3,6 +3,7 @@ import types
 from datetime import datetime
 import subprocess
 from contextlib import contextmanager
+from capnpy.type import Types
 
 # XXX: this is temporarily using pycapnp to bootstrap: we will kill the
 # dependency as soon as we can generate our own schema_capnp.py
@@ -31,11 +32,6 @@ class CodeBuilder(object):
 
 
 class FileGenerator(object):
-
-    PRIMITIVE_TYPES = {
-        'int64': ('Types.int64', 8),
-        'float64': ('Types.float64', 8),
-    }
 
     def __init__(self, request):
         self.builder = CodeBuilder()
@@ -98,22 +94,23 @@ class FileGenerator(object):
         assert field.which() == 'slot'
         assert not field.slot.hadExplicitDefault
         kwds = {}
-        type = field.slot.type.which()
-        if type == 'text':
+        which = field.slot.type.which()
+        if which == 'text':
             size = 8
             delta = data_size*8 # it's a pointer
             decl = 'field.String({offset})'
-        elif type == 'struct':
+        elif which == 'struct':
             size = 8
             delta = data_size*8 # it's a pointer
             kwds['structname'] = self.structs[field.slot.type.struct.typeId]
             decl = 'field.Struct({offset}, {structname})'
         else:
             # we assume it's a primitive
+            t = Types.from_which(which)
+            size = t.calcsize()
             delta = 0
-            primtype, size = self.PRIMITIVE_TYPES[type]
-            kwds['primtype'] = primtype
-            decl = 'field.Primitive({offset}, {primtype})'
+            kwds['typename'] = t.name
+            decl = 'field.Primitive({offset}, Types.{typename})'
         #
         kwds['offset'] = delta + field.slot.offset*size
         kwds['name'] = field.name
