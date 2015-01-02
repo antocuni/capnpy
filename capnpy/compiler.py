@@ -110,8 +110,15 @@ class FileGenerator(object):
         elif which == 'struct':
             size = 8
             delta = data_size*8 # it's a pointer
-            kwds['structname'] = self.structs[field.slot.type.struct.typeId]
+            kwds['structname'] = self._get_typename(field.slot.type)
             decl = 'field.Struct({offset}, {structname})'
+        #
+        elif which == 'list':
+            size = 8
+            delta = data_size*8 # it's a pointer
+            kwds['itemtype'] = self._get_typename(field.slot.type.list.elementType)
+            decl = 'field.List({offset}, {itemtype})'
+        #
         else:
             raise ValueError('Unknown type: %s' % field.slot.type)
         #
@@ -119,6 +126,15 @@ class FileGenerator(object):
         kwds['name'] = field.name
         line = '{name} = ' + decl
         self.w(line.format(**kwds))
+
+    def _get_typename(self, t):
+        which = t.which()
+        if hasattr(Types, which):
+            return 'Types.%s' % which
+        elif which == 'struct':
+            return self.structs[t.struct.typeId]
+        else:
+            assert False
 
 
 def compile_file(filename):
