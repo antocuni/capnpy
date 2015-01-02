@@ -1,3 +1,7 @@
+from capnpy.type import Types, PrimitiveType
+from capnpy.list import PrimitiveList, StructList, StringList
+from capnpy.struct_ import Struct
+
 class Primitive(object):
 
     def __init__(self, offset, type):
@@ -29,10 +33,17 @@ class String(object):
 
 class List(object):
 
-    def __init__(self, offset, listcls, item_type):
+    def __init__(self, offset, item_type):
         self.offset = offset
-        self.listcls = listcls
         self.item_type = item_type
+        if isinstance(item_type, PrimitiveType):
+            self.listcls = PrimitiveList
+        elif item_type == Types.text:
+            self.listcls = StringList
+        elif isinstance(item_type, Struct):
+            self.listcls = StructList
+        else:
+            raise ValueError('Unkwon item type: %s' % item_type)
 
     def __get__(self, blob, cls):
         if blob is None:

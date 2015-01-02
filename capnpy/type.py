@@ -15,10 +15,11 @@ class PrimitiveType(object):
 class Types(object):
 
     @classmethod
-    def from_which(cls, which):
+    def is_primitive(cls, which):
         # XXX: this is temporary: to bootstrap, we use pycapnp, whose which()
         # returns a string. After bootstrap, which() result will be an Enum.
-        return getattr(cls, which)
+        t = getattr(cls, which, None)
+        return isinstance(t, PrimitiveType)
 
 
 def make_type(name, fmt):
@@ -29,3 +30,4 @@ make_type('int8',  'b')
 make_type('int16', 'h')
 make_type('int64', 'q')
 make_type('float64', 'd')
+Types.text = 'text'

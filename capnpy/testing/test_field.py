@@ -33,7 +33,7 @@ def test_string():
 
 def test_list():
     class Foo(Struct):
-        items = field.List(0, PrimitiveList, Types.int64)
+        items = field.List(0, Types.int64)
     
     buf = ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
            '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1

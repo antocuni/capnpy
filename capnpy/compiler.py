@@ -95,22 +95,25 @@ class FileGenerator(object):
         assert not field.slot.hadExplicitDefault
         kwds = {}
         which = field.slot.type.which()
-        if which == 'text':
+        if Types.is_primitive(which):
+            t = getattr(Types, which)
+            size = t.calcsize()
+            delta = 0
+            kwds['typename'] = t.name
+            decl = 'field.Primitive({offset}, Types.{typename})'
+        #
+        elif which == 'text':
             size = 8
             delta = data_size*8 # it's a pointer
             decl = 'field.String({offset})'
+        #
         elif which == 'struct':
             size = 8
             delta = data_size*8 # it's a pointer
             kwds['structname'] = self.structs[field.slot.type.struct.typeId]
             decl = 'field.Struct({offset}, {structname})'
         else:
-            # we assume it's a primitive
-            t = Types.from_which(which)
-            size = t.calcsize()
-            delta = 0
-            kwds['typename'] = t.name
-            decl = 'field.Primitive({offset}, Types.{typename})'
+            raise ValueError('Unknown type: %s' % field.slot.type)
         #
         kwds['offset'] = delta + field.slot.offset*size
         kwds['name'] = field.name
