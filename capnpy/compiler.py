@@ -37,6 +37,7 @@ class FileGenerator(object):
         self.builder = CodeBuilder()
         self.request = request
         self.structs = {} # id -> structName
+        self.enums = {} # id -> enumName
 
     def generate(self):
         self.visit_request(self.request)
@@ -58,6 +59,7 @@ class FileGenerator(object):
         self.w("")
         self.w("from capnpy.struct_ import Struct")
         self.w("from capnpy import field")
+        self.w("from capnpy.enum import enum")
         self.w("from capnpy.blob import Types")
         self.w("")
 
@@ -71,6 +73,8 @@ class FileGenerator(object):
         which = node.which()
         if which == 'struct':
             self.visit_struct(node)
+        elif which == 'enum':
+            self.visit_enum(node)
         elif which == 'file':
             pass
         else:
@@ -122,6 +126,12 @@ class FileGenerator(object):
             kwds['itemtype'] = self._get_typename(field.slot.type.list.elementType)
             decl = 'field.List({offset}, {itemtype})'
         #
+        elif which == 'enum':
+            size = 2
+            delta = 0
+            kwds['enumname'] = self._get_typename(field.slot.type)
+            decl = 'field.Enum({offset}, {enumname})'
+        #
         else:
             raise ValueError('Unknown type: %s' % field.slot.type)
         #
@@ -130,12 +140,21 @@ class FileGenerator(object):
         line = '{name} = ' + decl
         self.w(line.format(**kwds))
 
+    def visit_enum(self, node):
+        name = node.displayName[node.displayNamePrefixLength:]
+        self.enums[node.id] = name
+        items = ["%r" % item.name for item in node.enum.enumerants]
+        decl = "%s = enum(%r, (%s))" % (name, name, ', '.join(items))
+        self.w(decl)
+
     def _get_typename(self, t):
         which = t.which()
         if hasattr(Types, which):
             return 'Types.%s' % which
         elif which == 'struct':
             return self.structs[t.struct.typeId]
+        elif which == 'enum':
+            return self.enums[t.enum.typeId]
         else:
             assert False
 

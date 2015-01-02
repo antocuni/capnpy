@@ -73,7 +73,6 @@ def test_struct(tmpdir):
     }
     """
     mod = compile_string(tmpdir, schema)
-    import pdb;pdb.set_trace()
     buf = ('\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
            '\x08\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
            '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
@@ -86,3 +85,28 @@ def test_struct(tmpdir):
     assert r.a.y == 2
     assert r.b.x == 3
     assert r.b.y == 4
+
+def test_enum(tmpdir):
+    schema = """
+    @0xbf5147cbbecf40c1;
+    enum Color {
+        red @0;
+        green @1;
+        blue @2;
+        yellow @3;
+    }
+    enum Gender {
+        male @0;
+        female @1;
+        unknown @2;
+    }
+    struct Foo {
+        color @0 :Color;
+        gender @1 :Gender;
+    }
+    """
+    mod = compile_string(tmpdir, schema)
+    buf = '\x02\x00' '\x01\x00' '\x00\x00\x00\x00'
+    f = mod.Foo.from_buffer(buf)
+    assert f.color == mod.Color.blue
+    assert f.gender == mod.Gender.female
