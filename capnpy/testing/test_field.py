@@ -17,7 +17,7 @@ def test_primitive():
     assert isinstance(Point.x, field.Primitive)
     assert Point.x.offset == 0
     assert Point.x.type == Types.int64
-    assert repr(Point.x) == "<Field +0: Primitive, type='q'>"
+    assert repr(Point.x) == "<Field +0: Primitive, type=int64>"
    
 def test_string():
     class Foo(Struct):
@@ -42,7 +42,7 @@ def test_list():
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     f = Foo.from_buffer(buf, 0)
     assert f.items == [1, 2, 3, 4]
-    assert repr(Foo.items) == "<Field +0: List, listcls=PrimitiveList, item_type='q'>"
+    assert repr(Foo.items) == "<Field +0: List, listcls=PrimitiveList, item_type=int64>"
 
 
 def test_struct():
@@ -108,7 +108,7 @@ def test_union():
     assert shape.which() == Shape.__union_tag__.square
     assert shape.square == 8
     py.test.raises(ValueError, "shape.circle")
-    assert repr(Shape.square) == "<Union square: <Field +8: Primitive, type='q'>>"
+    assert repr(Shape.square) == "<Union square: <Field +8: Primitive, type=int64>>"
 
 
 def test_read_group():

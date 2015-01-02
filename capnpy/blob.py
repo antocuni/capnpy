@@ -7,12 +7,7 @@
 import struct
 import capnpy
 from capnpy.ptr import Ptr, StructPtr, ListPtr
-
-class Types(object):
-    int8 = 'b'
-    int16 = 'h'
-    int64 = 'q'
-    float64 = 'd'
+from capnpy.type import Types
 
 class Blob(object):
     """
@@ -30,8 +25,8 @@ class Blob(object):
         self._offset = offset
         return self
 
-    def _read_primitive(self, offset, fmt):
-        return struct.unpack_from('<' + fmt, self._buf, self._offset+offset)[0]
+    def _read_primitive(self, offset, t):
+        return struct.unpack_from('<' + t.fmt, self._buf, self._offset+offset)[0]
 
     def _read_enum(self, offset, enumtype):
         val = self._read_primitive(offset, Types.int16)

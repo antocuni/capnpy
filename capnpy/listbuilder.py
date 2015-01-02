@@ -29,7 +29,7 @@ class PrimitiveItemBuilder(object):
 
     @classmethod
     def get_item_length(cls, item_type):
-        length = struct.calcsize(item_type)
+        length = item_type.calcsize()
         if length == 1:
             return length, ListPtr.SIZE_8
         elif length == 2:
@@ -44,7 +44,7 @@ class PrimitiveItemBuilder(object):
     @classmethod
     def pack_item(cls, listbuilder, i, item):
         item_type = listbuilder.item_type
-        return struct.pack('<'+item_type, item)
+        return struct.pack('<'+item_type.fmt, item)
 
 
 class StructItemBuilder(object):

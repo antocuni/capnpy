@@ -10,7 +10,7 @@ class Primitive(object):
         return blob._read_primitive(self.offset, self.type)
 
     def __repr__(self):
-        return '<Field +%d: Primitive, type=%r>' % (self.offset, self.type)
+        return '<Field +%d: Primitive, type=%s>' % (self.offset, self.type.name)
         
 
 class String(object):
@@ -40,8 +40,8 @@ class List(object):
         return blob._read_list(self.offset, self.listcls, self.item_type)
 
     def __repr__(self):
-        return ('<Field +%d: List, listcls=%s, item_type=%r>' %
-                (self.offset, self.listcls.__name__, self.item_type))
+        return ('<Field +%d: List, listcls=%s, item_type=%s>' %
+                (self.offset, self.listcls.__name__, self.item_type.name))
 
 
 class Struct(object):
