@@ -69,6 +69,9 @@ class FileGenerator(object):
         for node in reversed(request.nodes):
             self.visit_node(node)
 
+    def _shortname(self, node):
+        return node.displayName[node.displayNamePrefixLength:]
+        
     def visit_node(self, node):
         which = node.which()
         if which == 'struct':
@@ -81,7 +84,7 @@ class FileGenerator(object):
             assert False, 'Unkown node type: %s' % which
 
     def visit_struct(self, node):
-        name = node.displayName[node.displayNamePrefixLength:]
+        name = self._shortname(node)
         self.structs[node.id] = name
         with self.block("class %s(Struct):" % name):
             data_size = node.struct.dataWordCount
@@ -90,12 +93,25 @@ class FileGenerator(object):
             self.w("__ptrs_size__ = %d" % ptrs_size)            
             self.w("")
             if node.struct.discriminantCount:
-                pass # XXX
+                self._emit_union_tag(node)
             if node.struct.isGroup:
                 pass # XXX
             for field in node.struct.fields:
                 self.visit_field(field, data_size, ptrs_size)
         self.w("")
+
+    def _emit_union_tag(self, node):
+        # union tags are 16 bits, so *2
+        union_tag_offset = node.struct.discriminantOffset * 2
+        enum_items = [None] * node.struct.discriminantCount
+        for field in node.struct.fields:
+            i = field.discriminantValue
+            if i != schema_capnp.Field.noDiscriminant:
+                enum_items[i] = field.name
+        enum_name = '%s.__union_tag__' % self._shortname(node)
+        #
+        self.w("__union_tag_offset__ = %s" % union_tag_offset)
+        self._emit_enum('__union_tag__', enum_name, enum_items)
 
     def visit_field(self, field, data_size, ptrs_size):
         assert field.which() == 'slot'
@@ -137,14 +153,22 @@ class FileGenerator(object):
         #
         kwds['offset'] = delta + field.slot.offset*size
         kwds['name'] = field.name
-        line = '{name} = ' + decl
+        if field.discriminantValue != schema_capnp.Field.noDiscriminant:
+            kwds['discriminantValue'] = field.discriminantValue
+            line = '{name} = field.Union({discriminantValue}, %s)' % decl
+        else:
+            line = '{name} = %s' % decl
         self.w(line.format(**kwds))
 
     def visit_enum(self, node):
-        name = node.displayName[node.displayNamePrefixLength:]
+        name = self._shortname(node)
         self.enums[node.id] = name
-        items = ["%r" % item.name for item in node.enum.enumerants]
-        decl = "%s = enum(%r, (%s))" % (name, name, ', '.join(items))
+        items = [item.name for item in node.enum.enumerants]
+        self._emit_enum(name, name, items)
+
+    def _emit_enum(self, var_name, enum_name, items):
+        items = map(repr, items)
+        decl = "%s = enum(%r, (%s))" % (var_name, enum_name, ', '.join(items))
         self.w(decl)
 
     def _get_typename(self, t):

@@ -1,3 +1,4 @@
+import py
 from capnpy.compiler import compile_file
 
 def compile_string(tmpdir, s):
@@ -110,3 +111,25 @@ def test_enum(tmpdir):
     f = mod.Foo.from_buffer(buf)
     assert f.color == mod.Color.blue
     assert f.gender == mod.Gender.female
+
+
+def test_union(tmpdir):
+    schema = """
+    @0xbf5147cbbecf40c1;
+    struct Shape {
+      area @0 :Int64;
+      union {
+        circle @1 :Int64;      # radius
+        square @2 :Int64;      # width
+      }
+    }
+    """
+    mod = compile_string(tmpdir, schema)
+    buf = ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
+           '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
+           '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
+    shape = mod.Shape.from_buffer(buf, 0)
+    assert shape.area == 64
+    assert shape.which() == mod.Shape.__union_tag__.square
+    assert shape.square == 8
+    py.test.raises(ValueError, "shape.circle")
