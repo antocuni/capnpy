@@ -218,3 +218,11 @@ def test_group_union():
     assert shape.rectangle.width == 4
     assert shape.rectangle.height == 5
     py.test.raises(ValueError, "shape.circle.radius")
+
+def test_anyPointer():
+    class Foo(Struct):
+        x = field.AnyPointer(0)
+
+    f = Foo.from_buffer('')
+    py.test.raises(ValueError, "f.x")
+    assert repr(Foo.x) == '<Field +0: AnyPointer>'

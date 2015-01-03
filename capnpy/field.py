@@ -153,3 +153,16 @@ class Group(object):
     def __repr__(self):
         return '<Group %s>' % self.groupcls.__name__
 
+
+class AnyPointer(object):
+
+    def __init__(self, offset):
+        self.offset = offset
+
+    def __get__(self, blob, cls):
+        if blob is None:
+            return self
+        raise ValueError("Cannot get fields of type AnyPointer")
+
+    def __repr__(self):
+        return '<Field +%d: AnyPointer>' % self.offset
