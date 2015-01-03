@@ -44,6 +44,19 @@ class String(object):
     def __repr__(self):
         return '<Field +%d: String>' % (self.offset,)
 
+class Data(object):
+
+    def __init__(self, offset):
+        self.offset = offset
+
+    def __get__(self, blob, cls):
+        if blob is None:
+            return self
+        return blob._read_data(self.offset)
+
+    def __repr__(self):
+        return '<Field +%d: Data>' % (self.offset,)
+
 
 class List(object):
 

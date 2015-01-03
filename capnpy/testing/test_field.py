@@ -43,6 +43,17 @@ def test_string():
     assert f.name == 'hello capnproto'
     assert repr(Foo.name) == '<Field +0: String>'
 
+def test_data():
+    class Foo(Struct):
+        data = field.Data(0)
+
+    buf = ('\x01\x00\x00\x00\x42\x00\x00\x00'   # ptrlist
+           'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H')     # data
+
+    f = Foo.from_buffer(buf)
+    assert f.data == 'ABCDEFGH'
+    assert repr(Foo.data) == '<Field +0: Data>'
+
 
 def test_list():
     class Foo(Struct):

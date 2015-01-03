@@ -62,6 +62,15 @@ class Blob(object):
         end = start + item_count - 1
         return self._buf[start:end]
 
+    def _read_data(self, offset):
+        offset, size_tag, item_count = self._deref_ptrlist(offset)
+        if offset is None:
+            return None
+        assert size_tag == ListPtr.SIZE_8
+        start = self._offset + offset
+        end = start + item_count
+        return self._buf[start:end]
+
     def _read_ptr(self, offset):
         ptr = self._read_primitive(offset, Types.int64)
         return Ptr(ptr)
