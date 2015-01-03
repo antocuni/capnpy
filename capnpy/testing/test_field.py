@@ -107,6 +107,13 @@ def test_enum():
     assert f.gender == Gender.female
     assert repr(Foo.color) == "<Field +0: Enum, enumcls=Color>"
 
+def test_void():
+    class Foo(Struct):
+        myvoid = field.Void()
+    
+    f = Foo.from_buffer('')
+    assert f.myvoid is None
+    assert repr(Foo.myvoid) == "<Field: Void>"
 
 def test_union():
     ## struct Shape {

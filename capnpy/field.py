@@ -2,6 +2,16 @@ from capnpy.type import Types, PrimitiveType
 from capnpy.list import PrimitiveList, StructList, StringList
 from capnpy.struct_ import Struct
 
+class Void(object):
+
+    def __get__(self, blob, cls):
+        if blob is None:
+            return self
+        return None
+
+    def __repr__(self):
+        return '<Field: Void>'
+
 class Primitive(object):
 
     def __init__(self, offset, type):
