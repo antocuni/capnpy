@@ -1,4 +1,5 @@
 import py
+import sys
 import types
 from datetime import datetime
 import subprocess
@@ -79,6 +80,8 @@ class FileGenerator(object):
                     self.visit_struct(node)
             elif which == 'enum':
                 self.visit_enum(node)
+            elif which == 'const':
+                print 'WARNING: ignoring const', node
             elif which == 'file':
                 pass
             else:
@@ -137,10 +140,20 @@ class FileGenerator(object):
             kwds['typename'] = t.name
             decl = 'field.Primitive({offset}, Types.{typename})'
         #
+        elif which == 'bool':
+            size = 0
+            delta = 0
+            kwds['bitoffset'] = field.slot.offset
+            decl = 'field.Bool({bitoffset})'
         elif which == 'text':
             size = 8
             delta = data_size*8 # it's a pointer
             decl = 'field.String({offset})'
+        #
+        elif which == 'data':
+            size = 8
+            delta = data_size*8 # it's a pointer
+            decl = 'field.Data({offset})'
         #
         elif which == 'struct':
             size = 8
@@ -160,6 +173,15 @@ class FileGenerator(object):
             kwds['enumname'] = self._get_typename(field.slot.type)
             decl = 'field.Enum({offset}, {enumname})'
         #
+        elif which == 'void':
+            size = 0
+            delta = 0
+            decl = 'field.Void({offset})'
+        #
+        elif which == 'anyPointer':
+            size = 8
+            delta = data_size*8
+            decl = 'field.AnyPointer({offset})'
         else:
             raise ValueError('Unknown type: %s' % field.slot.type)
         #
@@ -194,13 +216,15 @@ class FileGenerator(object):
         else:
             assert False
 
-
-def compile_file(filename):
-    data = _capnp_compile(filename)
+def generate_py_source(data):
     request = schema_capnp.CodeGeneratorRequest.from_bytes(data)
     gen = FileGenerator(request)
     src = gen.generate()
-    src = py.code.Source(src)
+    return request, py.code.Source(src)
+
+def compile_file(filename):
+    data = _capnp_compile(filename)
+    request, src = generate_py_source(data)
     mod = types.ModuleType(filename.purebasename)
     mod.__file__ = str(filename)
     mod.__source__ = str(src)
@@ -217,3 +241,12 @@ def _capnp_compile(filename):
     if ret != 0:
         raise ValueError(stderr)
     return stdout
+
+def main():
+    #data = sys.stdin.read()
+    data = open(sys.argv[1]).read()
+    request, src = generate_py_source(data)
+    print src
+
+if __name__ == '__main__':
+    main()
