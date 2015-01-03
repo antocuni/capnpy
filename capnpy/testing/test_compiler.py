@@ -185,3 +185,14 @@ def test_group(tmpdir):
     assert shape.which() == mod.Shape.__union_tag__.rectangle
     assert shape.rectangle.width == 4
     assert shape.rectangle.height == 5
+
+
+def test_const(tmpdir):
+    schema = """
+    @0xbf5147cbbecf40c1;
+    struct Foo {
+        const bar :UInt16 = 42;
+    }
+    """
+    mod = compile_string(tmpdir, schema)
+    assert mod.Foo.bar == 42

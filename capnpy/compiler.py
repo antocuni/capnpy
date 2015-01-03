@@ -1,6 +1,7 @@
 import py
 import sys
 import types
+from collections import defaultdict
 from datetime import datetime
 import subprocess
 from contextlib import contextmanager
@@ -38,6 +39,7 @@ class FileGenerator(object):
         self.builder = CodeBuilder()
         self.request = request
         self.allnodes = {} # id -> node
+        self.consts = defaultdict(set) # scopeId -> consts
 
     def generate(self):
         self.visit_request(self.request)
@@ -70,6 +72,9 @@ class FileGenerator(object):
     def visit_all_nodes(self, nodes):
         for node in nodes:
             self.allnodes[node.id] = node
+            if node.which() == 'const':
+                self.consts[node.scopeId].add(node)
+
         # apparently, request.nodes seems to be in reversed order of
         # dependency, i.e. the earlier nodes may depend on the later ones. Not
         # sure if this is guaranteed, though.
@@ -81,8 +86,12 @@ class FileGenerator(object):
             elif which == 'enum':
                 self.visit_enum(node)
             elif which == 'const':
+                # consts are handled directly inside structs
                 print 'WARNING: ignoring const', node
             elif which == 'file':
+                pass
+            elif which == 'annotation':
+                # annotations are simply ignored for now
                 pass
             else:
                 assert False, 'Unkown node type: %s' % which
@@ -95,10 +104,10 @@ class FileGenerator(object):
             self.w("__data_size__ = %d" % data_size)
             self.w("__ptrs_size__ = %d" % ptrs_size)            
             self.w("")
+            for const in self.consts[node.id]:
+                self.visit_const(const)
             if node.struct.discriminantCount:
                 self._emit_union_tag(node)
-            if node.struct.isGroup:
-                pass # XXX
             for field in node.struct.fields:
                 self.visit_field(field, data_size, ptrs_size)
         self.w("")
@@ -115,6 +124,12 @@ class FileGenerator(object):
         #
         self.w("__union_tag_offset__ = %s" % union_tag_offset)
         self._emit_enum('__union_tag__', enum_name, enum_items)
+
+    def visit_const(self, const):
+        name = self._shortname(const)
+        val_type = const.const.value.which()
+        val = getattr(const.const.value, val_type)
+        self.w("%s = %s" % (name, val))
 
     def visit_field(self, field, data_size, ptrs_size):
         if field.which() == 'group':
