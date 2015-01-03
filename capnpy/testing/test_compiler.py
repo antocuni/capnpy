@@ -160,3 +160,28 @@ def test_group(tmpdir):
     assert r.a.y == 2
     assert r.b.x == 3
     assert r.b.y == 4
+
+def test_group(tmpdir):
+    schema = """
+    @0xbf5147cbbecf40c1;
+    struct Shape {
+      union {
+        circle :group {
+          radius @0 :Int64;
+        }
+        rectangle :group {
+          width @1 :Int64;
+          height @2 :Int64;
+        }
+      }
+    }
+    """
+    mod = compile_string(tmpdir, schema)
+    buf = ('\x04\x00\x00\x00\x00\x00\x00\x00'    # rectangle.width == 4
+           '\x01\x00\x00\x00\x00\x00\x00\x00'    # which() == rectangle, padding
+           '\x05\x00\x00\x00\x00\x00\x00\x00')   # rectangle.height == 5
+
+    shape = mod.Shape.from_buffer(buf)
+    assert shape.which() == mod.Shape.__union_tag__.rectangle
+    assert shape.rectangle.width == 4
+    assert shape.rectangle.height == 5

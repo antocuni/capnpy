@@ -120,6 +120,11 @@ class FileGenerator(object):
             self.visit_field_slot(field, data_size, ptrs_size)
         else:
             assert False, 'Unkown field kind: %s' % field.which()
+        #
+        if field.discriminantValue != schema_capnp.Field.noDiscriminant:
+            line = '{name} = field.Union({discriminantValue}, {name})'
+            line = line.format(name=field.name, discriminantValue=field.discriminantValue)
+            self.w(line)
 
     def visit_field_slot(self, field, data_size, ptrs_size):
         assert not field.slot.hadExplicitDefault
@@ -160,11 +165,7 @@ class FileGenerator(object):
         #
         kwds['offset'] = delta + field.slot.offset*size
         kwds['name'] = field.name
-        if field.discriminantValue != schema_capnp.Field.noDiscriminant:
-            kwds['discriminantValue'] = field.discriminantValue
-            line = '{name} = field.Union({discriminantValue}, %s)' % decl
-        else:
-            line = '{name} = %s' % decl
+        line = '{name} = ' + decl
         self.w(line.format(**kwds))
 
     def visit_field_group(self, field, data_size, ptrs_size):
