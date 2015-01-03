@@ -133,3 +133,30 @@ def test_union(tmpdir):
     assert shape.which() == mod.Shape.__union_tag__.square
     assert shape.square == 8
     py.test.raises(ValueError, "shape.circle")
+
+
+def test_group(tmpdir):
+    schema = """
+    @0xbf5147cbbecf40c1;
+    struct Rectangle {
+        a :group {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        b :group {
+            x @2 :Int64;
+            y @3 :Int64;
+        }
+    }
+    """
+    mod = compile_string(tmpdir, schema)
+    buf = ('garbage0'
+           '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
+           '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
+           '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
+    r = mod.Rectangle.from_buffer(buf, 8)
+    assert r.a.x == 1
+    assert r.a.y == 2
+    assert r.b.x == 3
+    assert r.b.y == 4

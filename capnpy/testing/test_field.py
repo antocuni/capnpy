@@ -113,13 +113,13 @@ def test_union():
 
 def test_read_group():
     ## struct Rectangle {
-    ##     a @0 :group {
-    ##         x @1 :Int64;
-    ##         y @2 :Int64;
+    ##     a :group {
+    ##         x @0 :Int64;
+    ##         y @1 :Int64;
     ##     }
-    ##     b @3 :group {
-    ##         x @4 :Int64;
-    ##         y @5 :Int64;
+    ##     b :group {
+    ##         x @2 :Int64;
+    ##         y @3 :Int64;
     ##     }
     ## }
     class Rectangle(Struct):

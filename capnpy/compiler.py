@@ -36,8 +36,7 @@ class FileGenerator(object):
     def __init__(self, request):
         self.builder = CodeBuilder()
         self.request = request
-        self.structs = {} # id -> structName
-        self.enums = {} # id -> enumName
+        self.allnodes = {} # id -> node
 
     def generate(self):
         self.visit_request(self.request)
@@ -62,30 +61,31 @@ class FileGenerator(object):
         self.w("from capnpy.enum import enum")
         self.w("from capnpy.blob import Types")
         self.w("")
-
-        # apparently, request.nodes seems to be in reversed order of
-        # dependency, i.e. the earlier nodes may depend on the later ones. Not
-        # sure if this is guaranteed, though.
-        for node in reversed(request.nodes):
-            self.visit_node(node)
+        self.visit_all_nodes(request.nodes)
 
     def _shortname(self, node):
         return node.displayName[node.displayNamePrefixLength:]
-        
-    def visit_node(self, node):
-        which = node.which()
-        if which == 'struct':
-            self.visit_struct(node)
-        elif which == 'enum':
-            self.visit_enum(node)
-        elif which == 'file':
-            pass
-        else:
-            assert False, 'Unkown node type: %s' % which
+
+    def visit_all_nodes(self, nodes):
+        for node in nodes:
+            self.allnodes[node.id] = node
+        # apparently, request.nodes seems to be in reversed order of
+        # dependency, i.e. the earlier nodes may depend on the later ones. Not
+        # sure if this is guaranteed, though.
+        for node in reversed(nodes):
+            which = node.which()
+            if which == 'struct':
+                if not node.struct.isGroup:
+                    self.visit_struct(node)
+            elif which == 'enum':
+                self.visit_enum(node)
+            elif which == 'file':
+                pass
+            else:
+                assert False, 'Unkown node type: %s' % which
 
     def visit_struct(self, node):
         name = self._shortname(node)
-        self.structs[node.id] = name
         with self.block("class %s(Struct):" % name):
             data_size = node.struct.dataWordCount
             ptrs_size = node.struct.pointerCount
@@ -114,7 +114,14 @@ class FileGenerator(object):
         self._emit_enum('__union_tag__', enum_name, enum_items)
 
     def visit_field(self, field, data_size, ptrs_size):
-        assert field.which() == 'slot'
+        if field.which() == 'group':
+            self.visit_field_group(field, data_size, ptrs_size)
+        elif field.which() == 'slot':
+            self.visit_field_slot(field, data_size, ptrs_size)
+        else:
+            assert False, 'Unkown field kind: %s' % field.which()
+
+    def visit_field_slot(self, field, data_size, ptrs_size):
         assert not field.slot.hadExplicitDefault
         kwds = {}
         which = field.slot.type.which()
@@ -160,9 +167,13 @@ class FileGenerator(object):
             line = '{name} = %s' % decl
         self.w(line.format(**kwds))
 
+    def visit_field_group(self, field, data_size, ptrs_size):
+        group = self.allnodes[field.group.typeId]
+        self.w('@field.Group')
+        self.visit_struct(group)
+
     def visit_enum(self, node):
         name = self._shortname(node)
-        self.enums[node.id] = name
         items = [item.name for item in node.enum.enumerants]
         self._emit_enum(name, name, items)
 
@@ -176,9 +187,9 @@ class FileGenerator(object):
         if hasattr(Types, which):
             return 'Types.%s' % which
         elif which == 'struct':
-            return self.structs[t.struct.typeId]
+            return self._shortname(self.allnodes[t.struct.typeId])
         elif which == 'enum':
-            return self.enums[t.enum.typeId]
+            return self._shortname(self.allnodes[t.enum.typeId])
         else:
             assert False
 
