@@ -28,6 +28,10 @@ class Blob(object):
     def _read_primitive(self, offset, t):
         return struct.unpack_from('<' + t.fmt, self._buf, self._offset+offset)[0]
 
+    def _read_bit(self, offset, bitmask):
+        val = self._read_primitive(offset, Types.uint8)
+        return bool(val & bitmask)
+
     def _read_enum(self, offset, enumtype):
         val = self._read_primitive(offset, Types.int16)
         return enumtype(val)

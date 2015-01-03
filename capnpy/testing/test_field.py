@@ -18,7 +18,20 @@ def test_primitive():
     assert Point.x.offset == 0
     assert Point.x.type == Types.int64
     assert repr(Point.x) == "<Field +0: Primitive, type=int64>"
-   
+
+def test_bool():
+    class Foo(Struct):
+        a = field.Bool(0, 0)
+        b = field.Bool(0, 1)
+        c = field.Bool(0, 2)
+
+    buf = '\x05\x00\x00\x00\x00\x00\x00\x00'   # True, False, True, padding
+    p = Foo.from_buffer(buf)
+    assert p.a == True
+    assert p.b == False
+    assert p.c == True
+
+
 def test_string():
     class Foo(Struct):
         name = field.String(0)

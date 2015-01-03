@@ -27,7 +27,13 @@ def make_type(name, fmt):
     setattr(Types, name, t)
 
 make_type('int8',  'b')
+make_type('uint8', 'B')
 make_type('int16', 'h')
+make_type('uint16', 'H')
+make_type('int32', 'i')
+make_type('uint32', 'I')
 make_type('int64', 'q')
+make_type('uint64', 'Q')
+make_type('float32', 'f')
 make_type('float64', 'd')
 Types.text = 'text'

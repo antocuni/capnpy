@@ -15,7 +15,21 @@ class Primitive(object):
 
     def __repr__(self):
         return '<Field +%d: Primitive, type=%s>' % (self.offset, self.type.name)
-        
+
+class Bool(object):
+
+    def __init__(self, offset, bitno):
+        self.offset = offset
+        self.bitno = bitno
+        self.bitmask = 1 << bitno
+
+    def __get__(self, blob, cls):
+        if blob is None:
+            return self
+        return blob._read_bit(self.offset, self.bitmask)
+
+    def __repr__(self):
+        return '<Field +%d: Bool, bitno=%d>' % (self.offset, self.bitno)
 
 class String(object):
 
