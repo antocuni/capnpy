@@ -39,78 +39,118 @@ class FileGenerator(object):
         self.builder = CodeBuilder()
         self.request = request
         self.allnodes = {} # id -> node
-        self.consts = defaultdict(set) # scopeId -> consts
-
-    def generate(self):
-        self.visit_request(self.request)
-        return self.builder.build()
-
+        self.children = defaultdict(set) # nodeId -> nested nodes
+ 
     def w(self, s):
         self.builder.writeline(s)
 
     def block(self, s):
         return self.builder.indent(s)
 
+    def _shortname(self, node):
+        return node.displayName[node.displayNamePrefixLength:]
+
+    def _pyname(self, node):
+        if node.scopeId == 0:
+            return self._shortname(node)
+        parent = self.allnodes[node.scopeId]
+        if parent.which() == 'file':
+            # we don't need to use fully qualified names for children of files
+            return self._shortname(node)
+        else:
+            return '%s.%s' % (self._pyname(parent), self._shortname(node))
+
+    def generate(self):
+        self.visit_request(self.request)
+        return self.builder.build()
+
     def visit_request(self, request):
+        roots = []
+        for node in request.nodes:
+            self.allnodes[node.id] = node
+            if node.scopeId == 0:
+                roots.append(node)
+            else:
+                self.children[node.scopeId].add(node)
+        #
+        for root in roots:
+            assert root.which() == 'file'
+            if root.displayName == 'capnp/c++.capnp':
+                continue # ignore this for now
+            self.visit_file(root)
+
+    def _dump_node(self, node):
+        def visit(node, deep=0):
+            print '%s%s: %s' % (' ' * deep, node.which(), self._shortname(node))
+            for child in self.scopes[node.id]:
+                visit(child, deep+2)
+        visit(node)
+
+    def visit_file(self, node):
         self.w("# THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy")
         self.w("# do not edit by hand")
         self.w("# generated on %s" % datetime.now().strftime("%Y-%m-%d %H:%M"))
         self.w("# input files: ")
-        for f in request.requestedFiles:
+        for f in self.request.requestedFiles:
             self.w("#   - %s" % f.filename)
         self.w("")
         self.w("from capnpy.struct_ import Struct")
         self.w("from capnpy import field")
         self.w("from capnpy.enum import enum")
         self.w("from capnpy.blob import Types")
+        self.w("from capnpy.util import extend")
         self.w("")
-        self.visit_all_nodes(request.nodes)
-
-    def _shortname(self, node):
-        return node.displayName[node.displayNamePrefixLength:]
-
-    def visit_all_nodes(self, nodes):
-        for node in nodes:
-            self.allnodes[node.id] = node
-            if node.which() == 'const':
-                self.consts[node.scopeId].add(node)
-
-        # apparently, request.nodes seems to be in reversed order of
-        # dependency, i.e. the earlier nodes may depend on the later ones. Not
-        # sure if this is guaranteed, though.
-        for node in reversed(nodes):
-            which = node.which()
+        #
+        # first of all, we emit all the non-structs and "predeclare" all the
+        # structs
+        structs = []
+        children = self.children[node.id]
+        for child in children:
+            which = child.which()
             if which == 'struct':
-                if not node.struct.isGroup:
-                    self.visit_struct(node)
+                self.declare_struct(child)
+                structs.append(child)
             elif which == 'enum':
-                self.visit_enum(node)
-            elif which == 'const':
-                # consts are handled directly inside structs
-                print 'WARNING: ignoring const', node
-            elif which == 'file':
-                pass
+                self.visit_enum(child)
             elif which == 'annotation':
                 # annotations are simply ignored for now
                 pass
             else:
                 assert False, 'Unkown node type: %s' % which
+        #
+        # then, we emit the body of all the structs we declared earlier
+        for child in structs:
+            self.visit_struct(child)
 
-    def visit_struct(self, node):
+    def declare_struct(self, node):
         name = self._shortname(node)
         with self.block("class %s(Struct):" % name):
+            for child in self.children[node.id]:
+                if child.which() == 'struct':
+                    self.declare_struct(child)
+            self.w("pass")
+
+    def visit_struct(self, node):
+        name = self._pyname(node)
+        self.w("")
+        self.w("@extend(%s)" % name)
+        with self.block("class _:"):
             data_size = node.struct.dataWordCount
             ptrs_size = node.struct.pointerCount
             self.w("__data_size__ = %d" % data_size)
-            self.w("__ptrs_size__ = %d" % ptrs_size)            
-            self.w("")
-            for const in self.consts[node.id]:
-                self.visit_const(const)
+            self.w("__ptrs_size__ = %d" % ptrs_size)
+            for child in self.children[node.id]:
+                which = child.which()
+                if which == 'const':
+                    self.visit_const(child)
+                elif which == 'struct' and child.struct.isGroup:
+                    pass # ignore, it is handled in visit_field
+                else:
+                    assert False
             if node.struct.discriminantCount:
                 self._emit_union_tag(node)
             for field in node.struct.fields:
                 self.visit_field(field, data_size, ptrs_size)
-        self.w("")
 
     def _emit_union_tag(self, node):
         # union tags are 16 bits, so *2
@@ -126,6 +166,7 @@ class FileGenerator(object):
         self._emit_enum('__union_tag__', enum_name, enum_items)
 
     def visit_const(self, const):
+        # XXX: this works only for integer consts so far
         name = self._shortname(const)
         val_type = const.const.value.which()
         val = getattr(const.const.value, val_type)
@@ -145,7 +186,8 @@ class FileGenerator(object):
             self.w(line)
 
     def visit_field_slot(self, field, data_size, ptrs_size):
-        assert not field.slot.hadExplicitDefault
+        if not field.slot.hadExplicitDefault:
+            print 'WARNING: ignoring explicit default for field %s' % field.name
         kwds = {}
         which = field.slot.type.which()
         if Types.is_primitive(which):
@@ -207,8 +249,8 @@ class FileGenerator(object):
 
     def visit_field_group(self, field, data_size, ptrs_size):
         group = self.allnodes[field.group.typeId]
-        self.w('@field.Group')
         self.visit_struct(group)
+        self.w('%s = field.Group(%s)' % (field.name, self._pyname(group)))
 
     def visit_enum(self, node):
         name = self._shortname(node)
