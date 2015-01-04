@@ -187,6 +187,25 @@ def test_group(tmpdir):
     assert shape.rectangle.height == 5
 
 
+def test_nested_struct(tmpdir):
+    schema = """
+    @0xbf5147cbbecf40c1;
+    struct Outer {
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+    }
+    """
+    mod = compile_string(tmpdir, schema)
+    #
+    buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+    p = mod.Outer.Point.from_buffer(buf)
+    assert p.x == 1
+    assert p.y == 2
+
+
 def test_const(tmpdir):
     schema = """
     @0xbf5147cbbecf40c1;

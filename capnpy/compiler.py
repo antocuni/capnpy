@@ -143,8 +143,9 @@ class FileGenerator(object):
                 which = child.which()
                 if which == 'const':
                     self.visit_const(child)
-                elif which == 'struct' and child.struct.isGroup:
-                    pass # ignore, it is handled in visit_field
+                elif which == 'struct':
+                    if not child.struct.isGroup:
+                        self.visit_struct(child)
                 else:
                     assert False
             if node.struct.discriminantCount:
