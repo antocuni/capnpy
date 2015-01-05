@@ -163,10 +163,10 @@ class FileGenerator(object):
             i = field.discriminantValue
             if i != schema_capnp.Field.noDiscriminant:
                 enum_items[i] = field.name
-        enum_name = '%s.__union_tag__' % self._shortname(node)
+        enum_name = '%s.__tag__' % self._shortname(node)
         #
-        self.w("__union_tag_offset__ = %s" % union_tag_offset)
-        self._emit_enum('__union_tag__', enum_name, enum_items)
+        self.w("__tag_offset__ = %s" % union_tag_offset)
+        self._emit_enum('__tag__', enum_name, enum_items)
 
     def visit_const(self, node):
         # XXX: this works only for numerical consts so far
