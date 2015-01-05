@@ -168,12 +168,15 @@ class FileGenerator(object):
         self.w("__union_tag_offset__ = %s" % union_tag_offset)
         self._emit_enum('__union_tag__', enum_name, enum_items)
 
-    def visit_const(self, const):
-        # XXX: this works only for integer consts so far
-        name = self._shortname(const)
-        val_type = const.const.value.which()
-        val = getattr(const.const.value, val_type)
+    def visit_const(self, node):
+        # XXX: this works only for numerical consts so far
+        name = self._shortname(node)
+        val = self._get_value(node.const.value)
         self.w("%s = %s" % (name, val))
+
+    def _get_value(self, value):
+        val_type = value.which()
+        return getattr(value, val_type)
 
     def visit_field(self, field, data_size, ptrs_size):
         if field.which() == 'group':
@@ -198,7 +201,8 @@ class FileGenerator(object):
             size = t.calcsize()
             delta = 0
             kwds['typename'] = t.name
-            decl = 'field.Primitive({offset}, Types.{typename})'
+            kwds['default'] = self._get_value(field.slot.defaultValue)
+            decl = 'field.Primitive({offset}, Types.{typename}, default={default})'
         #
         elif which == 'bool':
             size = 0
@@ -206,7 +210,8 @@ class FileGenerator(object):
             byteoffset, bitoffset = divmod(field.slot.offset, 8)
             kwds['byteoffset'] = byteoffset
             kwds['bitoffset'] = bitoffset
-            decl = 'field.Bool({byteoffset}, {bitoffset})'
+            kwds['default'] = self._get_value(field.slot.defaultValue)
+            decl = 'field.Bool({byteoffset}, {bitoffset}, default={default})'
         elif which == 'text':
             size = 8
             delta = data_size*8 # it's a pointer
@@ -247,6 +252,8 @@ class FileGenerator(object):
         else:
             raise ValueError('Unknown type: %s' % field.slot.type)
         #
+        if field.slot.hadExplicitDefault and 'default' not in kwds:
+            raise ValueError("explicit defaults not supported for field %s" % field)
         kwds['offset'] = delta + field.slot.offset*size
         kwds['name'] = field.name
         line = '{name} = ' + decl

@@ -24,6 +24,23 @@ def test_primitive(tmpdir):
     assert p.y == 2
 
 
+def test_primitive_default(tmpdir):
+    schema = """
+    @0xbf5147cbbecf40c1;
+    struct Foo {
+        x @0 :Int64 = 42;
+        y @1 :Bool = true;
+    }
+    """
+    mod = compile_string(tmpdir, schema)
+    #
+    buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'
+           '\x00\x00\x00\x00\x00\x00\x00\x00')
+    p = mod.Foo.from_buffer(buf)
+    assert p.x == 42
+    assert p.y is True
+
+
 def test_string(tmpdir):
     schema = """
     @0xbf5147cbbecf40c1;
