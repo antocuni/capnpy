@@ -243,3 +243,21 @@ def test_list_of_structs(tmpdir):
     assert len(poly.points) == 4
     assert poly.points[0].x == 10
     assert poly.points[0].y == 100
+
+def test_bool(tmpdir):
+    schema = """
+    @0xbf5147cbbecf40c1;
+    struct Foo {
+        padding @0 :Int64;
+        a @1 :Bool;
+        b @2 :Bool;
+        c @3 :Bool;
+    }
+    """
+    mod = compile_string(tmpdir, schema)
+    buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'   # padding
+           '\x05\x00\x00\x00\x00\x00\x00\x00')  # True, False, True, padding
+    p = mod.Foo.from_buffer(buf)
+    assert p.a == True
+    assert p.b == False
+    assert p.c == True

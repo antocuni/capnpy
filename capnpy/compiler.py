@@ -189,7 +189,7 @@ class FileGenerator(object):
             self.w(line)
 
     def visit_field_slot(self, field, data_size, ptrs_size):
-        if not field.slot.hadExplicitDefault:
+        if field.slot.hadExplicitDefault:
             print 'WARNING: ignoring explicit default for field %s' % field.name
         kwds = {}
         which = field.slot.type.which()
@@ -203,8 +203,10 @@ class FileGenerator(object):
         elif which == 'bool':
             size = 0
             delta = 0
-            kwds['bitoffset'] = field.slot.offset
-            decl = 'field.Bool({bitoffset})'
+            byteoffset, bitoffset = divmod(field.slot.offset, 8)
+            kwds['byteoffset'] = byteoffset
+            kwds['bitoffset'] = bitoffset
+            decl = 'field.Bool({byteoffset}, {bitoffset})'
         elif which == 'text':
             size = 8
             delta = data_size*8 # it's a pointer
