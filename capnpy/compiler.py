@@ -192,8 +192,6 @@ class FileGenerator(object):
             self.w(line)
 
     def visit_field_slot(self, field, data_size, ptrs_size):
-        if field.slot.hadExplicitDefault:
-            print 'WARNING: ignoring explicit default for field %s' % field.name
         kwds = {}
         which = field.slot.type.which()
         if Types.is_primitive(which):
