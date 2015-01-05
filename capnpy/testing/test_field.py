@@ -89,7 +89,8 @@ def test_list():
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     f = Foo.from_buffer(buf, 0)
     assert f.items == [1, 2, 3, 4]
-    assert repr(Foo.items) == "<Field +0: List, listcls=PrimitiveList, item_type=int64>"
+    assert repr(Foo.items) == ("<Field +0: List, listcls=PrimitiveList, "
+                               "item_type=<capnp type int64>>")
 
 
 def test_struct():

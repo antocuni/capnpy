@@ -101,7 +101,7 @@ class List(object):
 
     def __repr__(self):
         return ('<Field +%d: List, listcls=%s, item_type=%s>' %
-                (self.offset, self.listcls.__name__, self.item_type.name))
+                (self.offset, self.listcls.__name__, self.item_type))
 
 
 class Struct(object):
