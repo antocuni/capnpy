@@ -7,12 +7,23 @@ import subprocess
 from contextlib import contextmanager
 from capnpy.type import Types
 
-# XXX: this is temporarily using pycapnp to bootstrap: we will kill the
-# dependency as soon as we can generate our own schema_capnp.py
-import capnp
-import schema_capnp
+# pycapnp will be supported only until the boostrap is completed
+USE_PYCAPNP = True
 
-## from capnpy import schema as schema_capnp
+if USE_PYCAPNP:
+    import capnp
+    import schema_capnp
+    def loads(buf, payload_type):
+        return payload_type.from_bytes(buf)
+    def mywhich(node):
+        return node.which()
+        
+else:
+    from capnpy import schema as schema_capnp
+    from capnpy.message import loads
+    def mywhich(node):
+        return node.which().name
+
 
 class CodeBuilder(object):
 
@@ -56,7 +67,7 @@ class FileGenerator(object):
         if node.scopeId == 0:
             return self._shortname(node)
         parent = self.allnodes[node.scopeId]
-        if parent.which() == 'file':
+        if mywhich(parent) == 'file':
             # we don't need to use fully qualified names for children of files
             return self._shortname(node)
         else:
@@ -76,15 +87,15 @@ class FileGenerator(object):
                 self.children[node.scopeId].add(node)
         #
         for root in roots:
-            assert root.which() == 'file'
+            assert mywhich(root) == 'file'
             if root.displayName == 'capnp/c++.capnp':
                 continue # ignore this for now
             self.visit_file(root)
 
     def _dump_node(self, node):
         def visit(node, deep=0):
-            print '%s%s: %s' % (' ' * deep, node.which(), self._shortname(node))
-            for child in self.scopes[node.id]:
+            print '%s%s: %s' % (' ' * deep, mywhich(node), self._shortname(node))
+            for child in self.children[node.id]:
                 visit(child, deep+2)
         visit(node)
 
@@ -108,7 +119,7 @@ class FileGenerator(object):
         structs = []
         children = self.children[node.id]
         for child in children:
-            which = child.which()
+            which = mywhich(child)
             if which == 'struct':
                 self.declare_struct(child)
                 structs.append(child)
@@ -128,7 +139,7 @@ class FileGenerator(object):
         name = self._shortname(node)
         with self.block("class %s(Struct):" % name):
             for child in self.children[node.id]:
-                if child.which() == 'struct':
+                if mywhich(child) == 'struct':
                     self.declare_struct(child)
             self.w("pass")
 
@@ -142,7 +153,7 @@ class FileGenerator(object):
             self.w("__data_size__ = %d" % data_size)
             self.w("__ptrs_size__ = %d" % ptrs_size)
             for child in self.children[node.id]:
-                which = child.which()
+                which = mywhich(child)
                 if which == 'const':
                     self.visit_const(child)
                 elif which == 'struct':
@@ -151,21 +162,20 @@ class FileGenerator(object):
                 else:
                     assert False
             if node.struct.discriminantCount:
-                self._emit_union_tag(node)
+                self._emit_tag(node)
             for field in node.struct.fields:
                 self.visit_field(field, data_size, ptrs_size)
 
-    def _emit_union_tag(self, node):
+    def _emit_tag(self, node):
         # union tags are 16 bits, so *2
-        union_tag_offset = node.struct.discriminantOffset * 2
+        tag_offset = node.struct.discriminantOffset * 2
         enum_items = [None] * node.struct.discriminantCount
         for field in node.struct.fields:
             i = field.discriminantValue
             if i != schema_capnp.Field.noDiscriminant:
                 enum_items[i] = field.name
         enum_name = '%s.__tag__' % self._shortname(node)
-        #
-        self.w("__tag_offset__ = %s" % union_tag_offset)
+        self.w("__tag_offset__ = %s" % tag_offset)
         self._emit_enum('__tag__', enum_name, enum_items)
 
     def visit_const(self, node):
@@ -175,13 +185,14 @@ class FileGenerator(object):
         self.w("%s = %s" % (name, val))
 
     def _get_value(self, value):
-        val_type = value.which()
+        val_type = mywhich(value)
         return getattr(value, val_type)
 
     def visit_field(self, field, data_size, ptrs_size):
-        if field.which() == 'group':
+        which = mywhich(field)
+        if which == 'group':
             self.visit_field_group(field, data_size, ptrs_size)
-        elif field.which() == 'slot':
+        elif which == 'slot':
             self.visit_field_slot(field, data_size, ptrs_size)
         else:
             assert False, 'Unkown field kind: %s' % field.which()
@@ -193,7 +204,7 @@ class FileGenerator(object):
 
     def visit_field_slot(self, field, data_size, ptrs_size):
         kwds = {}
-        which = field.slot.type.which()
+        which = mywhich(field.slot.type)
         if Types.is_primitive(which):
             t = getattr(Types, which)
             size = t.calcsize()
@@ -241,7 +252,7 @@ class FileGenerator(object):
         elif which == 'void':
             size = 0
             delta = 0
-            decl = 'field.Void({offset})'
+            decl = 'field.Void()'
         #
         elif which == 'anyPointer':
             size = 8
@@ -273,7 +284,7 @@ class FileGenerator(object):
         self.w(decl)
 
     def _get_typename(self, t):
-        which = t.which()
+        which = mywhich(t)
         if hasattr(Types, which):
             return 'Types.%s' % which
         elif which == 'struct':
@@ -284,7 +295,7 @@ class FileGenerator(object):
             assert False
 
 def generate_py_source(data):
-    request = schema_capnp.CodeGeneratorRequest.from_bytes(data)
+    request = loads(data, schema_capnp.CodeGeneratorRequest)
     gen = FileGenerator(request)
     src = gen.generate()
     return request, py.code.Source(src)
