@@ -36,17 +36,22 @@ def test_bool():
 def test_default_value():
     class Foo(Struct):
         x = field.Primitive(0, Types.int64, default=42)
+        y = field.Bool(8, 0, default=True)
     
     buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'
            '\x00\x00\x00\x00\x00\x00\x00\x00')
     p = Foo.from_buffer(buf)
     assert p.x == 42
-    assert repr(Foo.x) == "<Field +0: Primitive, type=int64, default=42>"
+    assert p.y is True
     #
     buf = ('\x2a\x00\x00\x00\x00\x00\x00\x00'
-           '\x00\x00\x00\x00\x00\x00\x00\x00')
+           '\x01\x00\x00\x00\x00\x00\x00\x00')
     p = Foo.from_buffer(buf)
     assert p.x == 0
+    assert p.y is False
+    #
+    assert repr(Foo.x) == "<Field +0: Primitive, type=int64, default=42>"
+    assert repr(Foo.y) == "<Field +8: Bool, bitno=0, default=True>"
     
 
 

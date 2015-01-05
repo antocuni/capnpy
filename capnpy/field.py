@@ -34,18 +34,24 @@ class Primitive(object):
 
 class Bool(object):
 
-    def __init__(self, offset, bitno):
+    def __init__(self, offset, bitno, default=0):
         self.offset = offset
         self.bitno = bitno
         self.bitmask = 1 << bitno
+        self.default = default
 
     def __get__(self, blob, cls):
         if blob is None:
             return self
-        return blob._read_bit(self.offset, self.bitmask)
+        return bool(blob._read_bit(self.offset, self.bitmask) ^ self.default)
 
     def __repr__(self):
-        return '<Field +%d: Bool, bitno=%d>' % (self.offset, self.bitno)
+        s = '<Field +%d: Bool, bitno=%d' % (self.offset, self.bitno)
+        if self.default == 0:
+            s += '>'
+        else:
+            s += ', default=%s>' % self.default
+        return s
 
 class String(object):
 
