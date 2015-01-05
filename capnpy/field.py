@@ -14,17 +14,23 @@ class Void(object):
 
 class Primitive(object):
 
-    def __init__(self, offset, type):
+    def __init__(self, offset, type, default=0):
         self.offset = offset
         self.type = type
+        self.default = default
 
     def __get__(self, blob, cls):
         if blob is None:
             return self
-        return blob._read_primitive(self.offset, self.type)
+        return blob._read_primitive(self.offset, self.type) ^ self.default
 
     def __repr__(self):
-        return '<Field +%d: Primitive, type=%s>' % (self.offset, self.type.name)
+        s = '<Field +%d: Primitive, type=%s' % (self.offset, self.type.name)
+        if self.default == 0:
+            s += '>'
+        else:
+            s += ', default=%s>' % self.default
+        return s
 
 class Bool(object):
 

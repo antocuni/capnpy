@@ -19,6 +19,7 @@ def test_primitive():
     assert Point.x.type == Types.int64
     assert repr(Point.x) == "<Field +0: Primitive, type=int64>"
 
+
 def test_bool():
     class Foo(Struct):
         a = field.Bool(0, 0)
@@ -30,6 +31,23 @@ def test_bool():
     assert p.a == True
     assert p.b == False
     assert p.c == True
+
+
+def test_default_value():
+    class Foo(Struct):
+        x = field.Primitive(0, Types.int64, default=42)
+    
+    buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'
+           '\x00\x00\x00\x00\x00\x00\x00\x00')
+    p = Foo.from_buffer(buf)
+    assert p.x == 42
+    assert repr(Foo.x) == "<Field +0: Primitive, type=int64, default=42>"
+    #
+    buf = ('\x2a\x00\x00\x00\x00\x00\x00\x00'
+           '\x00\x00\x00\x00\x00\x00\x00\x00')
+    p = Foo.from_buffer(buf)
+    assert p.x == 0
+    
 
 
 def test_string():
