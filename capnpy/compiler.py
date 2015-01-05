@@ -163,8 +163,9 @@ class FileGenerator(object):
                     assert False
             if node.struct.discriminantCount:
                 self._emit_tag(node)
-            for field in node.struct.fields:
-                self.visit_field(field, data_size, ptrs_size)
+            if node.struct.fields is not None:
+                for field in node.struct.fields:
+                    self.visit_field(field, data_size, ptrs_size)
 
     def _emit_tag(self, node):
         # union tags are 16 bits, so *2
