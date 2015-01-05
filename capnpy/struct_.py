@@ -17,18 +17,18 @@ class Struct(Blob):
        without knowing the schema
     """
 
-    __union_tag_offset__ = None
-    __union_tag__ = None
+    __tag_offset__ = None
+    __tag__ = None
 
     def which(self):
         """
         Return the value of the union tag, if the struct has an anonimous union or
         is an union
         """
-        if self.__union_tag_offset__ is None:
+        if self.__tag_offset__ is None:
             raise TypeError("Cannot call which() on a non-union type")
-        val = self._read_primitive(self.__union_tag_offset__, Types.int16)
-        return self.__union_tag__(val)
+        val = self._read_primitive(self.__tag_offset__, Types.int16)
+        return self.__tag__(val)
 
     def _ensure_union(self, expected_tag):
         tag = self.which()

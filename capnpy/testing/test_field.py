@@ -124,19 +124,19 @@ def test_union():
     ##   }
     ## }
     class Shape(Struct):
-        __union_tag_offset__ = 16
-        __union_tag__ = enum('Shape.__union_tag__', ('circle', 'square'))
+        __tag_offset__ = 16
+        __tag__ = enum('Shape.__tag__', ('circle', 'square'))
 
         area = field.Primitive(0, Types.int64)
-        circle = field.Union(__union_tag__.circle, field.Primitive(8, Types.int64))
-        square = field.Union(__union_tag__.square, field.Primitive(8, Types.int64))
+        circle = field.Union(__tag__.circle, field.Primitive(8, Types.int64))
+        square = field.Union(__tag__.square, field.Primitive(8, Types.int64))
 
     buf = ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
            '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
            '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
     shape = Shape.from_buffer(buf, 0)
     assert shape.area == 64
-    assert shape.which() == Shape.__union_tag__.square
+    assert shape.which() == Shape.__tag__.square
     assert shape.square == 8
     py.test.raises(ValueError, "shape.circle")
     assert repr(Shape.square) == "<Union square: <Field +8: Primitive, type=int64>>"
@@ -195,26 +195,26 @@ def test_group_union():
     ##   }
     ## }
     class Shape(Struct):
-        __union_tag_offset__ = 8
-        __union_tag__ = enum('Shape.__union_tag__', ('circle', 'rectangle'))
+        __tag_offset__ = 8
+        __tag__ = enum('Shape.__tag__', ('circle', 'rectangle'))
 
         @field.Group
         class circle(Struct):
             radius = field.Primitive(0, Types.int64)
-        circle = field.Union(__union_tag__.circle, circle)
+        circle = field.Union(__tag__.circle, circle)
 
         @field.Group
         class rectangle(Struct):
             width = field.Primitive(0, Types.int64)
             height = field.Primitive(16, Types.int64)
-        rectangle = field.Union(__union_tag__.rectangle, rectangle)
+        rectangle = field.Union(__tag__.rectangle, rectangle)
 
     buf = ('\x04\x00\x00\x00\x00\x00\x00\x00'    # rectangle.width == 4
            '\x01\x00\x00\x00\x00\x00\x00\x00'    # which() == rectangle, padding
            '\x05\x00\x00\x00\x00\x00\x00\x00')   # rectangle.height == 5
 
     shape = Shape.from_buffer(buf)
-    assert shape.which() == Shape.__union_tag__.rectangle
+    assert shape.which() == Shape.__tag__.rectangle
     assert shape.rectangle.width == 4
     assert shape.rectangle.height == 5
     py.test.raises(ValueError, "shape.circle.radius")

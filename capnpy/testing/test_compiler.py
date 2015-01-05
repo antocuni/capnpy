@@ -130,7 +130,7 @@ def test_union(tmpdir):
            '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
     shape = mod.Shape.from_buffer(buf, 0)
     assert shape.area == 64
-    assert shape.which() == mod.Shape.__union_tag__.square
+    assert shape.which() == mod.Shape.__tag__.square
     assert shape.square == 8
     py.test.raises(ValueError, "shape.circle")
 
@@ -182,7 +182,7 @@ def test_group(tmpdir):
            '\x05\x00\x00\x00\x00\x00\x00\x00')   # rectangle.height == 5
 
     shape = mod.Shape.from_buffer(buf)
-    assert shape.which() == mod.Shape.__union_tag__.rectangle
+    assert shape.which() == mod.Shape.__tag__.rectangle
     assert shape.rectangle.width == 4
     assert shape.rectangle.height == 5
 
