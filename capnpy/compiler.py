@@ -12,6 +12,8 @@ from capnpy.type import Types
 import capnp
 import schema_capnp
 
+## from capnpy import schema as schema_capnp
+
 class CodeBuilder(object):
 
     def __init__(self):
@@ -268,9 +270,9 @@ class FileGenerator(object):
         if hasattr(Types, which):
             return 'Types.%s' % which
         elif which == 'struct':
-            return self._shortname(self.allnodes[t.struct.typeId])
+            return self._pyname(self.allnodes[t.struct.typeId])
         elif which == 'enum':
-            return self._shortname(self.allnodes[t.enum.typeId])
+            return self._pyname(self.allnodes[t.enum.typeId])
         else:
             assert False
 

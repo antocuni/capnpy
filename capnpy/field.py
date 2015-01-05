@@ -1,6 +1,6 @@
 from capnpy.type import Types, PrimitiveType
 from capnpy.list import PrimitiveList, StructList, StringList
-from capnpy.struct_ import Struct
+from capnpy import struct_
 
 class Void(object):
 
@@ -77,7 +77,7 @@ class List(object):
             self.listcls = PrimitiveList
         elif item_type == Types.text:
             self.listcls = StringList
-        elif isinstance(item_type, Struct):
+        elif issubclass(item_type, struct_.Struct):
             self.listcls = StructList
         else:
             raise ValueError('Unkwon item type: %s' % item_type)

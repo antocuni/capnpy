@@ -215,3 +215,31 @@ def test_const(tmpdir):
     """
     mod = compile_string(tmpdir, schema)
     assert mod.Foo.bar == 42
+
+
+def test_list_of_structs(tmpdir):
+    schema = """
+    @0xbf5147cbbecf40c1;
+    struct Polygon {
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        points @0 :List(Point);
+    }
+    """
+    mod = compile_string(tmpdir, schema)
+    buf = ('\x01\x00\x00\x00\x47\x00\x00\x00'    # ptrlist
+           '\x10\x00\x00\x00\x02\x00\x00\x00'    # list tag
+           '\x0a\x00\x00\x00\x00\x00\x00\x00'    # 10
+           '\x64\x00\x00\x00\x00\x00\x00\x00'    # 100
+           '\x14\x00\x00\x00\x00\x00\x00\x00'    # 20
+           '\xc8\x00\x00\x00\x00\x00\x00\x00'    # 200
+           '\x1e\x00\x00\x00\x00\x00\x00\x00'    # 30
+           '\x2c\x01\x00\x00\x00\x00\x00\x00'    # 300
+           '\x28\x00\x00\x00\x00\x00\x00\x00'    # 40
+           '\x90\x01\x00\x00\x00\x00\x00\x00')   # 400
+    poly = mod.Polygon.from_buffer(buf)
+    assert len(poly.points) == 4
+    assert poly.points[0].x == 10
+    assert poly.points[0].y == 100
