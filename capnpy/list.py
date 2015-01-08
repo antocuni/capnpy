@@ -7,7 +7,7 @@ from capnpy import listbuilder
 class List(Blob):
 
     @classmethod
-    def from_buffer(cls, buf, offset, size_tag, item_count, item_type):
+    def from_buffer(cls, buf, offset, segment_offsets, size_tag, item_count, item_type):
         """
         buf, offset: the underlying buffer and the offset where the list starts
 
@@ -17,7 +17,7 @@ class List(Blob):
         item_type: the type of each list item. Either a Blob/Struct subclass,
         or a Types.*
         """
-        self = super(List, cls).from_buffer(buf, offset)
+        self = super(List, cls).from_buffer(buf, offset, segment_offsets)
         self._item_type = item_type
         self._set_list_tag(size_tag, item_count)
         return self
@@ -71,6 +71,7 @@ class List(Blob):
             struct_offset += self._offset
             mystruct = GenericStruct.from_buffer_and_size(self._buf,
                                                           struct_offset,
+                                                          self._segment_offsets,
                                                           self._tag.data_size,
                                                           self._tag.ptrs_size)
             return mystruct._get_extra_end()
@@ -117,7 +118,9 @@ class StructList(List):
     ItemBuilder = listbuilder.StructItemBuilder
 
     def _read_list_item(self, offset):
-        return self._item_type.from_buffer(self._buf, self._offset+offset)
+        return self._item_type.from_buffer(self._buf,
+                                           self._offset+offset,
+                                           self._segment_offsets)
 
 
 class StringList(List):

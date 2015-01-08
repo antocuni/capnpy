@@ -19,7 +19,7 @@ def test_primitive(tmpdir):
     #
     buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
-    p = mod.Point.from_buffer(buf)
+    p = mod.Point.from_buffer(buf, 0, None)
     assert p.x == 1
     assert p.y == 2
 
@@ -36,7 +36,7 @@ def test_primitive_default(tmpdir):
     #
     buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'
            '\x00\x00\x00\x00\x00\x00\x00\x00')
-    p = mod.Foo.from_buffer(buf)
+    p = mod.Foo.from_buffer(buf, 0, None)
     assert p.x == 42
     assert p.y is True
 
@@ -55,7 +55,7 @@ def test_string(tmpdir):
            '\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
            'hello capnproto\0')                 # string
 
-    f = mod.Foo.from_buffer(buf)
+    f = mod.Foo.from_buffer(buf, 0, None)
     assert f.x == 1
     assert f.name == 'hello capnproto'
 
@@ -74,7 +74,7 @@ def test_list(tmpdir):
            '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
-    f = mod.Foo.from_buffer(buf, 0)
+    f = mod.Foo.from_buffer(buf, 0, None)
     assert f.items == [1, 2, 3, 4]
 
 
@@ -98,7 +98,7 @@ def test_struct(tmpdir):
            '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
 
-    r = mod.Rectangle.from_buffer(buf)
+    r = mod.Rectangle.from_buffer(buf, 0, None)
     assert r.a.x == 1
     assert r.a.y == 2
     assert r.b.x == 3
@@ -125,7 +125,7 @@ def test_enum(tmpdir):
     """
     mod = compile_string(tmpdir, schema)
     buf = '\x02\x00' '\x01\x00' '\x00\x00\x00\x00'
-    f = mod.Foo.from_buffer(buf)
+    f = mod.Foo.from_buffer(buf, 0, None)
     assert f.color == mod.Color.blue
     assert f.gender == mod.Gender.female
 
@@ -145,7 +145,7 @@ def test_union(tmpdir):
     buf = ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
            '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
            '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
-    shape = mod.Shape.from_buffer(buf, 0)
+    shape = mod.Shape.from_buffer(buf, 0, None)
     assert shape.area == 64
     assert shape.which() == mod.Shape.__tag__.square
     assert shape.square == 8
@@ -198,7 +198,7 @@ def test_group(tmpdir):
            '\x01\x00\x00\x00\x00\x00\x00\x00'    # which() == rectangle, padding
            '\x05\x00\x00\x00\x00\x00\x00\x00')   # rectangle.height == 5
 
-    shape = mod.Shape.from_buffer(buf)
+    shape = mod.Shape.from_buffer(buf, 0, None)
     assert shape.which() == mod.Shape.__tag__.rectangle
     assert shape.rectangle.width == 4
     assert shape.rectangle.height == 5
@@ -218,7 +218,7 @@ def test_nested_struct(tmpdir):
     #
     buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
-    p = mod.Outer.Point.from_buffer(buf)
+    p = mod.Outer.Point.from_buffer(buf, 0, None)
     assert p.x == 1
     assert p.y == 2
 
@@ -256,7 +256,7 @@ def test_list_of_structs(tmpdir):
            '\x2c\x01\x00\x00\x00\x00\x00\x00'    # 300
            '\x28\x00\x00\x00\x00\x00\x00\x00'    # 40
            '\x90\x01\x00\x00\x00\x00\x00\x00')   # 400
-    poly = mod.Polygon.from_buffer(buf)
+    poly = mod.Polygon.from_buffer(buf, 0, None)
     assert len(poly.points) == 4
     assert poly.points[0].x == 10
     assert poly.points[0].y == 100
@@ -274,7 +274,7 @@ def test_bool(tmpdir):
     mod = compile_string(tmpdir, schema)
     buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'   # padding
            '\x05\x00\x00\x00\x00\x00\x00\x00')  # True, False, True, padding
-    p = mod.Foo.from_buffer(buf)
+    p = mod.Foo.from_buffer(buf, 0, None)
     assert p.a == True
     assert p.b == False
     assert p.c == True

@@ -24,7 +24,7 @@ BUF = ('garbage0'
        '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
 
 def test_point_range():
-    point = GenericStruct.from_buffer_and_size(BUF, 48, data_size=2, ptrs_size=0)
+    point = GenericStruct.from_buffer_and_size(BUF, 48, None, data_size=2, ptrs_size=0)
     body_start, body_end = point._get_body_range()
     assert body_start == 48
     assert body_end == 64
@@ -35,7 +35,7 @@ def test_point_range():
     
 
 def test_rect_range():
-    rect = GenericStruct.from_buffer_and_size(BUF, 8, data_size=1, ptrs_size=2)
+    rect = GenericStruct.from_buffer_and_size(BUF, 8, None, data_size=1, ptrs_size=2)
     body_start, body_end = rect._get_body_range()
     assert body_start == 8
     assert body_end == 32
@@ -52,9 +52,9 @@ def test_equality_noptr():
             '\x03\x00\x00\x00\x00\x00\x00\x00') # 3
     buf3 = 'garbage0' + buf1 + 'garbage1'
 
-    point1 = GenericStruct.from_buffer_and_size(buf1, 0, data_size=2, ptrs_size=0)
-    point2 = GenericStruct.from_buffer_and_size(buf2, 0, data_size=2, ptrs_size=0)
-    point3 = GenericStruct.from_buffer_and_size(buf3, 8, data_size=2, ptrs_size=0)
+    point1 = GenericStruct.from_buffer_and_size(buf1, 0, None, data_size=2, ptrs_size=0)
+    point2 = GenericStruct.from_buffer_and_size(buf2, 0, None, data_size=2, ptrs_size=0)
+    point3 = GenericStruct.from_buffer_and_size(buf3, 8, None, data_size=2, ptrs_size=0)
 
     assert not point1 == point2
     assert point1 != point2
@@ -76,9 +76,9 @@ def test_equality_ptr():
               '\x01\x00\x00\x00\x2a\x00\x00\x00'   # name=ptr
               'P' 'a' 'u' 'l' '\x00\x00\x00\x00')  # Paul
 
-    j1 = GenericStruct.from_buffer_and_size(john1, 0, data_size=1, ptrs_size=1)
-    j2 = GenericStruct.from_buffer_and_size(john2, 0, data_size=1, ptrs_size=1)
-    p1 = GenericStruct.from_buffer_and_size(paul1, 0, data_size=1, ptrs_size=1)
+    j1 = GenericStruct.from_buffer_and_size(john1, 0, None, data_size=1, ptrs_size=1)
+    j2 = GenericStruct.from_buffer_and_size(john2, 0, None, data_size=1, ptrs_size=1)
+    p1 = GenericStruct.from_buffer_and_size(paul1, 0, None, data_size=1, ptrs_size=1)
     assert j1 == j2
     assert hash(j1) == hash(j2)
     assert j1 != p1
@@ -102,8 +102,8 @@ def test_equality_many_ptrs():
             '1234567\x00'
             'ABCDEFG\x00')                        # ptr3 == ABCDEFG
 
-    x = GenericStruct.from_buffer_and_size(buf1, 0, data_size=0, ptrs_size=3)
-    y = GenericStruct.from_buffer_and_size(buf2, 0, data_size=0, ptrs_size=3)
+    x = GenericStruct.from_buffer_and_size(buf1, 0, None, data_size=0, ptrs_size=3)
+    y = GenericStruct.from_buffer_and_size(buf2, 0, None, data_size=0, ptrs_size=3)
     
     assert x._read_string(0) == 'ABCDEFG'
     assert x._read_string(8) == '1234567'
@@ -128,16 +128,16 @@ def test_equality_different_classes():
     buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
 
-    a = A.from_buffer(buf)
-    b = B.from_buffer(buf)
+    a = A.from_buffer(buf, 0, None)
+    b = B.from_buffer(buf, 0, None)
     assert a != b
 
 def test_no_cmp():
     buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
 
-    p1 = GenericStruct.from_buffer_and_size(buf, 0, data_size=2, ptrs_size=0)
-    p2 = GenericStruct.from_buffer_and_size(buf, 0, data_size=2, ptrs_size=0)
+    p1 = GenericStruct.from_buffer_and_size(buf, 0, None, data_size=2, ptrs_size=0)
+    p2 = GenericStruct.from_buffer_and_size(buf, 0, None, data_size=2, ptrs_size=0)
 
     py.test.raises(TypeError, "p1 <  p2")
     py.test.raises(TypeError, "p1 <= p2")
@@ -160,7 +160,7 @@ def test_union():
     buf = ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
            '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
            '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
-    shape = Shape.from_buffer(buf, 0)
+    shape = Shape.from_buffer(buf, 0, None)
     assert shape.which() == Shape.__tag__.square
     #
     shape._ensure_union(Shape.__tag__.square)

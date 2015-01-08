@@ -19,7 +19,7 @@ class Blob(object):
                                   'use Blob.from_buffer instead')
 
     @classmethod
-    def from_buffer(cls, buf, offset=0, segment_offsets=None):
+    def from_buffer(cls, buf, offset, segment_offsets):
         self = cls.__new__(cls)
         self._buf = buf
         self._offset = offset
@@ -54,6 +54,7 @@ class Blob(object):
         if offset is None:
             return None
         return listcls.from_buffer(self._buf, self._offset+offset,
+                                   self._segment_offsets,
                                    size_tag, item_count, item_type)
 
     def _read_string(self, offset):
@@ -79,7 +80,8 @@ class Blob(object):
         return Ptr(ptr)
 
     def _read_group(self, groupcls):
-        return groupcls.from_buffer(self._buf, self._offset)
+        return groupcls.from_buffer(self._buf, self._offset,
+                                    self._segment_offsets)
 
     def _follow_generic_pointer(self, ptr_offset):
         ptr = self._read_ptr(ptr_offset)
@@ -89,11 +91,13 @@ class Blob(object):
             GenericStruct = capnpy.struct_.GenericStruct
             return GenericStruct.from_buffer_and_size(self._buf,
                                                       self._offset+blob_offet,
+                                                      self._segment_offsets,
                                                       ptr.data_size, ptr.ptrs_size)
         elif ptr.kind == ListPtr.KIND:
             List = capnpy.list.List
             return List.from_buffer(self._buf,
                                     self._offset+blob_offet,
+                                    self._segment_offsets,
                                     ptr.size_tag,ptr.item_count, Blob)
         else:
             assert False, 'Unkwown pointer kind: %s' % ptr.kind

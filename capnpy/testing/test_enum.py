@@ -22,7 +22,7 @@ def test_read_enum():
     #      color      gender     padding
     buf = '\x02\x00' '\x01\x00' '\x00\x00\x00\x00'
     
-    blob = Blob.from_buffer(buf, 0)
+    blob = Blob.from_buffer(buf, 0, None)
     color = blob._read_enum(0, Color)
     gender = blob._read_enum(2, Gender)
     assert color == Color.blue

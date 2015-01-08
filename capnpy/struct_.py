@@ -148,8 +148,8 @@ class Struct(Blob):
 class GenericStruct(Struct):
 
     @classmethod
-    def from_buffer_and_size(cls, buf, offset, data_size, ptrs_size):
-        self = cls.from_buffer(buf, offset)
+    def from_buffer_and_size(cls, buf, offset, segment_offsets, data_size, ptrs_size):
+        self = cls.from_buffer(buf, offset, segment_offsets)
         self.__data_size__ = data_size
         self.__ptrs_size__ = ptrs_size
         return self
