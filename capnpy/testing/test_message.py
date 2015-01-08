@@ -30,4 +30,5 @@ def test_segments():
               '\x00\x00\x00\x00') # padding
     buf = header + '\x00'*16*8 + '\x00'*32*8 + '\x00'*64*8 + '\x00'*16*8
     msg = _load_message(buf)
+    assert msg._offset == 24
     assert msg._segment_offsets == (24, 24+16*8, 24+(16+32)*8, 24+(16+32+64)*8)

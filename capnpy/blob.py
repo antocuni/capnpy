@@ -6,7 +6,7 @@
 
 import struct
 import capnpy
-from capnpy.ptr import Ptr, StructPtr, ListPtr
+from capnpy.ptr import Ptr, StructPtr, ListPtr, FarPtr
 from capnpy.type import Types
 
 class Blob(object):
@@ -45,7 +45,9 @@ class Blob(object):
         struct_offset = self._deref_ptrstruct(offset)
         if struct_offset is None:
             return None
-        return structcls.from_buffer(self._buf, self._offset+struct_offset)
+        return structcls.from_buffer(self._buf,
+                                     self._offset+struct_offset,
+                                     self._segment_offsets)
 
     def _read_list(self, offset, listcls, item_type):
         offset, size_tag, item_count = self._deref_ptrlist(offset)
@@ -100,6 +102,10 @@ class Blob(object):
         ptr = self._read_ptr(offset)
         if ptr == 0:
             return None
+        if ptr.kind == FarPtr.KIND:
+            ptr = ptr.specialize()
+            offset, ptr = ptr.follow(self)
+        #
         assert ptr.kind == StructPtr.KIND
         return ptr.deref(offset)
 
@@ -115,8 +121,12 @@ class Blob(object):
         ptr = self._read_ptr(offset)
         if ptr == 0:
             return None, None, None
-        ptr = ptr.specialize()
+        if ptr.kind == FarPtr.KIND:
+            ptr = ptr.specialize()
+            offset, ptr = ptr.follow(self)
+        #
         assert ptr.kind == ListPtr.KIND
+        ptr = ptr.specialize()
         offset = ptr.deref(offset)
         return offset, ptr.size_tag, ptr.item_count
 
@@ -135,7 +145,7 @@ def format_buffer(buf):
     lines = []
     for i in range(len(buf)/8):
         line = buf[i*8:i*8+8]
-        lines.append(repr_for_line(line))
+        lines.append('%3d: %s' % (i*8, repr_for_line(line)))
     return '\n'.join(lines)
 
 

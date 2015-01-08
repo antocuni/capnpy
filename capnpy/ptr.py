@@ -54,6 +54,8 @@ class Ptr(int):
             return StructPtr(self)
         elif kind == ListPtr.KIND:
             return ListPtr(self)
+        elif kind == FarPtr.KIND:
+            return FarPtr(self)
         else:
             raise ValueError("Unknown ptr kind: %d" % kind)
 
@@ -141,3 +143,53 @@ class ListPtr(Ptr):
     @property
     def item_count(self):
         return self>>35
+
+
+class FarPtr(Ptr):
+    ## lsb                        far pointer                        msb
+    ## +-+-+---------------------------+-------------------------------+
+    ## |A|B|            C              |               D               |
+    ## +-+-+---------------------------+-------------------------------+
+
+    ## A (2 bits) = 2, to indicate that this is a far pointer.
+    ## B (1 bit) = 0 if the landing pad is one word, 1 if it is two words.
+    ## C (29 bits) = Offset, in words, from the start of the target segment
+    ##     to the location of the far-pointer landing-pad within that
+    ##     segment.  Unsigned.
+    ## D (32 bits) = ID of the target segment.  (Segments are numbered
+    ##     sequentially starting from zero.)
+
+    KIND = 2
+
+    @classmethod
+    def new(cls, landing_pad, offset, target):
+        ptr = 0
+        ptr |= target << 32
+        ptr |= offset << 3
+        ptr |= landing_pad << 2
+        ptr |= cls.KIND
+        return cls(ptr)
+
+    @property
+    def landing_pad(self):
+        return self>>2 & 1
+
+    @property
+    def offset(self):
+        return self>>3 & 0x1fffffff
+
+    @property
+    def target(self):
+        return self>>32
+
+    def follow(self, blob):
+        """
+        Read and return the ptr referenced by this far pointer
+        """
+        if blob._segment_offsets is None:
+            raise ValueError("Cannot follow a far pointer if there is no segment data")
+        segment_start = blob._segment_offsets[self.target] # in bytes
+        abs_offset  = segment_start + self.offset*8
+        rel_offset = abs_offset - blob._offset
+        ptr = blob._read_ptr(rel_offset)
+        return rel_offset, ptr

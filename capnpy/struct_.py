@@ -1,5 +1,5 @@
 import struct
-from capnpy.ptr import StructPtr, ListPtr
+from capnpy.ptr import StructPtr, ListPtr, FarPtr
 from capnpy.blob import Blob, Types
 
 
@@ -57,6 +57,7 @@ class Struct(Blob):
             return self._get_body_end()
         ptr_offset = self._ptr_offset_by_index(0)
         ptr = self._read_ptr(ptr_offset)
+        assert ptr.kind != FarPtr.KIND
         return self._offset + ptr.deref(ptr_offset)
 
     def _get_extra_end(self):

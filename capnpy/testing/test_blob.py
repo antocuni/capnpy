@@ -103,4 +103,19 @@ def test_read_group():
     b = blob._read_group(GroupB)
     assert isinstance(b, GroupB)
     assert b._read_primitive(16, Types.int64) == 3 # b.x
-    
+
+
+def test_far_pointer():
+    # see also test_list.test_far_pointer
+    seg0 = ('\x00\x00\x00\x00\x00\x00\x00\x00'    # some garbage
+            '\x0a\x00\x00\x00\x01\x00\x00\x00')   # far pointer: segment=1, offset=1
+    seg1 = ('\x00\x00\x00\x00\x00\x00\x00\x00'    # random data
+            '\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
+            '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
+    #
+    buf = seg0+seg1
+    blob = Blob.from_buffer(buf, 8, segment_offsets=(0, 16))
+    p = blob._read_struct(0, Blob)
+    assert p._read_primitive(0, Types.int64) == 1
+    assert p._read_primitive(8, Types.int64) == 2

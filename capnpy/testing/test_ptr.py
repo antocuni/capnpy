@@ -1,5 +1,5 @@
 import struct
-from capnpy.ptr import Ptr, StructPtr, ListPtr
+from capnpy.ptr import Ptr, StructPtr, ListPtr, FarPtr
 
 def test_Ptr_generic():
     ptr = Ptr(0x0004000200000190)
@@ -11,6 +11,7 @@ def test_Ptr_generic():
     ptr = Ptr(0x0000064700000101)
     ptr2 = ptr.specialize()
     assert isinstance(ptr2, ListPtr)
+
 
 def test_Ptr_deref():
     ptr = Ptr(0x0004000200000190)
@@ -59,3 +60,23 @@ def test_ListPtr_new():
     assert ptr.item_count == 200
     assert ptr == 0x0000064700000101
     
+
+def test_FarPtr():
+    #       00000001         target
+    #               000016aa offset
+    #                      a landing
+    #                      a kind
+    ptr = 0x00000001000016aa
+    ptr = FarPtr(ptr)
+    assert ptr.kind == FarPtr.KIND
+    assert ptr.landing_pad == 0
+    assert ptr.offset == 725
+    assert ptr.target == 1
+
+def test_FarPtr_new():
+    ptr = FarPtr.new(0, 725, 1)
+    assert ptr.kind == FarPtr.KIND
+    assert ptr.landing_pad == 0
+    assert ptr.offset == 725
+    assert ptr.target == 1
+    assert ptr == 0x00000001000016aa

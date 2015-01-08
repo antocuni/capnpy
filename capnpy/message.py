@@ -49,5 +49,5 @@ def _load_message(buf):
         offset += size*8
         segment_offsets.append(offset)
 
-    return Blob.from_buffer(buf, offset, tuple(segment_offsets))
+    return Blob.from_buffer(buf, message_offset, tuple(segment_offsets))
 

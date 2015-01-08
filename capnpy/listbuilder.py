@@ -1,5 +1,5 @@
 import struct
-from capnpy.ptr import Ptr, ListPtr
+from capnpy.ptr import Ptr, ListPtr, FarPtr
 from capnpy.blob import Types
 from capnpy.builder import AbstractBuilder
 
@@ -102,6 +102,7 @@ class StructItemBuilder(object):
         #    new_extra_offset is the offset of the extra section of the
         #    to-be-written object
         first_ptr = item._read_ptr(item._ptr_offset_by_index(0))
+        assert first_ptr.kind != FarPtr.KIND
         old_extra_offset = first_ptr.offset
         item_offset = i * listbuilder.item_length + data_size*8
         new_extra_offset = listbuilder._calc_relative_offset(item_offset)
@@ -112,6 +113,7 @@ class StructItemBuilder(object):
             # read pointer, update its offset, and pack it
             ptrstart = (data_size+j) * 8
             ptr = item._read_ptr(ptrstart)
+            assert ptr.kind != FarPtr.KIND
             ptr = Ptr.new(ptr.kind, ptr.offset+additional_offset, ptr.extra)
             s = struct.pack('q', ptr)
             parts.append(s)

@@ -236,3 +236,18 @@ def test_compare_with_py_list():
     blob = Blob.from_buffer(buf, 0)
     lst = blob._read_list(0, PrimitiveList, Types.int64)
     assert lst == [1, 2, 3, 4]
+
+def test_far_pointer():
+    # see also test_blob.test_far_pointer
+    seg0 = ('\x00\x00\x00\x00\x00\x00\x00\x00'    # some garbage
+            '\x0a\x00\x00\x00\x01\x00\x00\x00')   # far pointer: segment=1, offset=1
+    seg1 = ('\x00\x00\x00\x00\x00\x00\x00\x00'    # random data
+            '\x01\x00\x00\x00\x25\x00\x00\x00'    # ptrlist
+            '\x01\x00\x00\x00\x00\x00\x00\x00'    # 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00'    # 2
+            '\x03\x00\x00\x00\x00\x00\x00\x00'    # 3
+            '\x04\x00\x00\x00\x00\x00\x00\x00')   # 4
+    buf = seg0+seg1
+    blob = Blob.from_buffer(buf, 8, segment_offsets=(0, 16))
+    lst = blob._read_list(0, PrimitiveList, Types.int64)
+    assert lst == [1, 2, 3, 4]
