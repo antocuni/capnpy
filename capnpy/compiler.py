@@ -52,7 +52,7 @@ class FileGenerator(object):
         self.builder = CodeBuilder()
         self.request = request
         self.allnodes = {} # id -> node
-        self.children = defaultdict(set) # nodeId -> nested nodes
+        self.children = defaultdict(list) # nodeId -> nested nodes
  
     def w(self, s):
         self.builder.writeline(s)
@@ -84,7 +84,7 @@ class FileGenerator(object):
             if node.scopeId == 0:
                 roots.append(node)
             else:
-                self.children[node.scopeId].add(node)
+                self.children[node.scopeId].append(node)
         #
         for root in roots:
             assert mywhich(root) == 'file'
@@ -323,7 +323,7 @@ def _capnp_compile(filename):
 
 def main():
     #data = sys.stdin.read()
-    data = open(sys.argv[1]).read()
+    data = _capnp_compile(sys.argv[1])
     request, src = generate_py_source(data)
     print src
 
