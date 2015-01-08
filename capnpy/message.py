@@ -1,6 +1,7 @@
 import struct
 from capnpy.blob import Blob
 
+
 def loads(buf, payload_type):
     """
     Load a message of type ``payload_type`` from buf.
@@ -17,6 +18,10 @@ def loads(buf, payload_type):
 
       - The content of each segment, in order.
     """
+    msg = _load_message(buf)
+    return msg._read_struct(0, payload_type)
+
+def _load_message(buf):
     offset = 0
     # total number of segments
     n = struct.unpack_from('<I', buf, offset)[0] + 1
@@ -30,10 +35,19 @@ def loads(buf, payload_type):
         padding = 8-(offset % 8)
         offset += padding
     #
-    total_size = sum(segments)*8 + offset
+    message_offset = offset
+    total_size = sum(segments)*8 + message_offset
     if len(buf) != total_size:
         raise ValueError("The length of the buffer does not correspond to the length of "
                          "the segments %s: expected %s, got %s" %
                          (segments, total_size, len(buf)))
-    msg = Blob.from_buffer(buf, offset)
-    return msg._read_struct(0, payload_type)
+
+    # precompute the offset of each segment starting from the beginning of buf
+    segment_offsets = []
+    segment_offsets.append(message_offset)
+    for size in segments[:-1]:
+        offset += size*8
+        segment_offsets.append(offset)
+
+    return Blob.from_buffer(buf, offset, tuple(segment_offsets))
+

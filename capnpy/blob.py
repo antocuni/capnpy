@@ -19,10 +19,11 @@ class Blob(object):
                                   'use Blob.from_buffer instead')
 
     @classmethod
-    def from_buffer(cls, buf, offset=0):
+    def from_buffer(cls, buf, offset=0, segment_offsets=None):
         self = cls.__new__(cls)
         self._buf = buf
         self._offset = offset
+        self._segment_offsets = segment_offsets
         return self
 
     def _read_primitive(self, offset, t):
@@ -114,8 +115,8 @@ class Blob(object):
         ptr = self._read_ptr(offset)
         if ptr == 0:
             return None, None, None
-        assert ptr.kind == ListPtr.KIND
         ptr = ptr.specialize()
+        assert ptr.kind == ListPtr.KIND
         offset = ptr.deref(offset)
         return offset, ptr.size_tag, ptr.item_count
 
