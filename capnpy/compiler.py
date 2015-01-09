@@ -8,7 +8,7 @@ from contextlib import contextmanager
 from capnpy.type import Types
 
 # pycapnp will be supported only until the boostrap is completed
-USE_PYCAPNP = True
+USE_PYCAPNP = False
 
 if USE_PYCAPNP:
     import capnp
@@ -78,19 +78,13 @@ class FileGenerator(object):
         return self.builder.build()
 
     def visit_request(self, request):
-        roots = []
         for node in request.nodes:
             self.allnodes[node.id] = node
-            if node.scopeId == 0:
-                roots.append(node)
-            else:
-                self.children[node.scopeId].append(node)
+            # roots have scopeId == 0, so children[0] will contain them
+            self.children[node.scopeId].append(node)
         #
-        for root in roots:
-            assert mywhich(root) == 'file'
-            if root.displayName == 'capnp/c++.capnp':
-                continue # ignore this for now
-            self.visit_file(root)
+        for f in request.requestedFiles:
+            self.visit_file(f)
 
     def _dump_node(self, node):
         def visit(node, deep=0):
@@ -99,7 +93,8 @@ class FileGenerator(object):
                 visit(child, deep+2)
         visit(node)
 
-    def visit_file(self, node):
+    def visit_file(self, f):
+        node = self.allnodes[f.id]
         self.w("# THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy")
         self.w("# do not edit by hand")
         self.w("# generated on %s" % datetime.now().strftime("%Y-%m-%d %H:%M"))
