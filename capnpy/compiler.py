@@ -124,6 +124,14 @@ class FileGenerator(object):
         # then, we emit the body of all the structs we declared earlier
         for child in structs:
             self.visit_struct(child)
+        #
+        modname = py.path.local(f.filename).purebasename
+        self.w("")
+        self.w("try:")
+        self.w("    import %s_extended # side effects" % modname)
+        self.w("except ImportError:")
+        self.w("    pass")
+        
 
     def declare_struct(self, node):
         name = self._shortname(node)

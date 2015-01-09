@@ -436,3 +436,8 @@ class _:
     annotation = field.Union(5, annotation)
     parameters = field.List(80, Node.Parameter)
     isGeneric = field.Bool(36, 0, default=False)
+
+try:
+    import schema_extended # side effects
+except ImportError:
+    pass
