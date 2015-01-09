@@ -13,7 +13,7 @@ class BaseEnum(int):
         return '<%s.%s: %d>' % (self.__class__.__name__, self.name, self)
 
     def __str__(self):
-        return '%s.%s' % (self.__class__.__name__, self.name)
+        return self.name
 
 
 def enum(name, members):
