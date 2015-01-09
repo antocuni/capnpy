@@ -22,7 +22,10 @@ class Primitive(object):
     def __get__(self, blob, cls):
         if blob is None:
             return self
-        return blob._read_primitive(self.offset, self.type) ^ self.default
+        val = blob._read_primitive(self.offset, self.type)
+        if self.default:
+            val ^= self.default
+        return val
 
     def __repr__(self):
         s = '<Field +%d: Primitive, type=%s' % (self.offset, self.type.name)
