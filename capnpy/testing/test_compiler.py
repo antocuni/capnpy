@@ -22,7 +22,11 @@ def test_primitive(tmpdir):
     p = mod.Point.from_buffer(buf, 0, None)
     assert p.x == 1
     assert p.y == 2
-
+    #
+    p = mod.Point(1, 2)
+    assert p.x == 1
+    assert p.y == 2
+    assert p._buf == buf
 
 def test_primitive_default(tmpdir):
     schema = """
