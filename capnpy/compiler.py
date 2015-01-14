@@ -244,8 +244,9 @@ class FileGenerator(object):
 
     def visit_field_slot(self, field, data_size, ptrs_size):
         kwds = {}
-        which = str(field.slot.type.which()) # XXX
-        if Types.is_primitive(which):
+        t = field.slot.type
+        which = str(t.which()) # XXX
+        if t.is_primitive():
             t = getattr(Types, which)
             size = t.calcsize()
             delta = 0
@@ -325,7 +326,7 @@ class FileGenerator(object):
 
     def _get_typename(self, t):
         which = str(t.which()) # XXX
-        if hasattr(Types, which):
+        if t.is_builtin():
             return 'Types.%s' % which
         elif which == 'struct':
             return self._pyname(self.allnodes[t.struct.typeId])
