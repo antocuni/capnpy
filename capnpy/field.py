@@ -1,4 +1,4 @@
-from capnpy.type import Types, PrimitiveType
+from capnpy.type import Types, BuiltinType
 from capnpy.list import PrimitiveList, StructList, StringList
 from capnpy import struct_
 
@@ -88,10 +88,13 @@ class List(object):
     def __init__(self, offset, item_type):
         self.offset = offset
         self.item_type = item_type
-        if isinstance(item_type, PrimitiveType):
-            self.listcls = PrimitiveList
-        elif item_type == Types.text:
-            self.listcls = StringList
+        if isinstance(item_type, BuiltinType):
+            if item_type.is_primitive():
+                self.listcls = PrimitiveList
+            elif item_type == Types.text:
+                self.listcls = StringList
+            else:
+                raise ValueError('Unkwon item type: %s' % item_type)
         elif issubclass(item_type, struct_.Struct):
             self.listcls = StructList
         else:

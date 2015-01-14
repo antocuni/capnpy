@@ -1,33 +1,39 @@
 import struct
 
-class PrimitiveType(object):
-    def __init__(self, name, fmt):
+class BuiltinType(object):
+    def __init__(self, name, fmt=None):
         self.name = name
         self.fmt = fmt
 
     def __repr__(self):
         return '<capnp type %s>' % self.name
 
+    def is_primitive(self):
+        return self.fmt is not None
+
     def calcsize(self):
         return struct.calcsize(self.fmt)
 
 
 class Types(object):
-    pass
+
+    @classmethod
+    def _make(cls, name, fmt=None):
+        t = BuiltinType(name, fmt)
+        setattr(cls, name, t)
 
 
-def make_type(name, fmt):
-    t = PrimitiveType(name, fmt)
-    setattr(Types, name, t)
-
-make_type('int8',  'b')
-make_type('uint8', 'B')
-make_type('int16', 'h')
-make_type('uint16', 'H')
-make_type('int32', 'i')
-make_type('uint32', 'I')
-make_type('int64', 'q')
-make_type('uint64', 'Q')
-make_type('float32', 'f')
-make_type('float64', 'd')
-Types.text = 'text'
+Types._make('void')
+Types._make('bool')
+Types._make('int8',    'b')
+Types._make('uint8',   'B')
+Types._make('int16',   'h')
+Types._make('uint16',  'H')
+Types._make('int32',   'i')
+Types._make('uint32',  'I')
+Types._make('int64',   'q')
+Types._make('uint64',  'Q')
+Types._make('float32', 'f')
+Types._make('float64', 'd')
+Types._make('text')
+Types._make('data')
