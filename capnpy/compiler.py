@@ -196,9 +196,7 @@ class FileGenerator(object):
                 return self._emit_struct_init_notsupported('non-slot fields')
             args.append(varname)
             typename = f.slot.type.which().name
-            if typename == 'bool':
-                return self._emit_struct_init_notsupported('bool fields')
-            if not hasattr(Types, typename) or typename == 'text':
+            if not f.slot.type.is_primitive():
                 return self._emit_struct_init_notsupported('%s fields' % typename)
             t = getattr(Types, typename)
             format += t.fmt
