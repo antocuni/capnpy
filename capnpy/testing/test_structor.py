@@ -31,6 +31,16 @@ def test_primitive():
     assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                    '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
 
+
+def test_void():
+    fields = [field.Primitive(0, Types.int64),
+              field.Primitive(8, Types.int64),
+              field.Void()]
+    ctor = structor('ctor', data_size=2, ptrs_size=0, fields=fields)
+    buf = ctor(FakeBlob, 1, 2)
+    assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+                   '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+
 def test_string():
     fields = [field.Primitive(0, Types.int64),
               field.String(8)]

@@ -8,6 +8,7 @@ from capnpy import field
 from capnpy.builder import StructBuilder
 
 def structor(name, data_size, ptrs_size, fields):
+    fields = [f for f in fields if not isinstance(f, field.Void)]
     fmt = compute_format(data_size, ptrs_size, fields)
     return make_structor(name, fields, fmt)
 
