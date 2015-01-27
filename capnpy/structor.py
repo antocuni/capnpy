@@ -14,11 +14,18 @@ def structor(name, data_size, ptrs_size, fields):
 def compute_format(data_size, ptrs_size, fields):
     total_length = (data_size+ptrs_size)*8
     fmt = ['x'] * total_length
+
+    def set(offset, t):
+        fmt[offset] = t
+        size = struct.calcsize(t)
+        for i in range(offset+1, offset+size):
+            fmt[i] = None
+
     for f in fields:
         if isinstance(f, field.Primitive):
-            fmt[f.offset] = f.type.fmt
-            for i in range(f.offset+1, f.offset+f.type.calcsize()):
-                fmt[i] = None
+            set(f.offset, f.type.fmt)
+        elif isinstance(f, field.String):
+            set(f.offset, 'q')
         else:
             assert False
     #
@@ -34,6 +41,13 @@ def make_structor(name, fields, fmt):
     code['StructBuilder'] = StructBuilder
     with code.def_(name, ['cls'] + argnames):
         code.w('builder = StructBuilder({fmt})', fmt=repr(fmt))
+        for f, arg in zip(fields, argnames):
+            if isinstance(f, field.String):
+                code.w('{arg} = builder.alloc_string({offset}, {arg})',
+                       arg=arg, offset=f.offset)
+            else:
+                assert isinstance(f, field.Primitive)
+            #
         code.w('buf =', code.call('builder.build', argnames))
         code.w('return cls.from_buffer(buf, 0, None)')
     code.compile()

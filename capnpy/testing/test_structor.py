@@ -31,3 +31,12 @@ def test_simple():
     assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                    '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
 
+def test_string():
+    fields = [field.Primitive(0, Types.int64),
+              field.String(8)]
+    ctor = structor('ctor', data_size=1, ptrs_size=1, fields=fields)
+    buf = ctor(FakeBlob, 1, 'hello capnp')
+    assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'
+                   '\x01\x00\x00\x00\x62\x00\x00\x00'
+                   'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
+                   'p' 'n' 'p' '\x00\x00\x00\x00\x00')
