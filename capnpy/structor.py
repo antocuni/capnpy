@@ -3,7 +3,7 @@ Structor -> struct ctor -> struct construtor :)
 """
 
 import struct
-from pypytools.unroll import unroll
+from pypytools.codegen import Code
 from capnpy import field
 from capnpy.builder import StructBuilder
 
@@ -34,28 +34,15 @@ class Structor(object):
         return fmt
 
     def make_call(self):
-        # PyPy-specific optimization: we want "fmt" to be constant-folded:
-        # however, as of PyPy 2.5, the JIT is not able to constant-fold
-        # closure variables. The workaround is to put fmt inside a class: the
-        # lookup of class attribute is always guarded by an out-of-line guard,
-        # so Vars.fmt is correctly seen as a constant by the JIT.
-        class Vars(object):
-            fmt = self.fmt
+        argnames = ['arg%d' % i for i in range(len(self.fields))]
+        code = Code()
+        code['StructBuilder'] = StructBuilder
+        with code.def_('call', argnames):
+            code.w('builder = StructBuilder({fmt})', fmt=repr(self.fmt))
+            code.w('return', code.call('builder.build', argnames))
+        code.compile()
+        return code['call']
 
-        fields = enumerate(self.fields)
-        @unroll(fields=fields)
-        def call(*args):
-            builder = StructBuilder(Vars.fmt)
-            newargs = ()
-            for i, f in fields:
-                arg = args[i]
-                if isinstance(f, field.Primitive):
-                    newargs += (arg,)
-                else:
-                    assert False
-            return builder.build(*newargs)
-
-        return call
 
     def __call__(self, *args):
         return self._call(*args)
