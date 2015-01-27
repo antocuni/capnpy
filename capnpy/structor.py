@@ -24,7 +24,7 @@ def compute_format(data_size, ptrs_size, fields):
     for f in fields:
         if isinstance(f, field.Primitive):
             set(f.offset, f.type.fmt)
-        elif isinstance(f, field.String):
+        elif isinstance(f, (field.String, field.Struct)):
             set(f.offset, 'q')
         else:
             assert False
@@ -45,6 +45,11 @@ def make_structor(name, fields, fmt):
             if isinstance(f, field.String):
                 code.w('{arg} = builder.alloc_string({offset}, {arg})',
                        arg=arg, offset=f.offset)
+            elif isinstance(f, field.Struct):
+                structname = f.structcls.__name__
+                code.w('{arg} = builder.alloc_struct({offset}, {structname}, {arg})',
+                       arg=arg, offset=f.offset, structname=structname)
+                code[structname] = f.structcls
             else:
                 assert isinstance(f, field.Primitive)
             #

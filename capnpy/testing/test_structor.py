@@ -23,7 +23,7 @@ def test_compute_format_holes():
     assert fmt == 'ixxxxq'
 
 
-def test_simple():
+def test_primitive():
     fields = [field.Primitive(0, Types.int64),
               field.Primitive(8, Types.int64)]
     ctor = structor('ctor', data_size=2, ptrs_size=0, fields=fields)
@@ -40,3 +40,20 @@ def test_string():
                    '\x01\x00\x00\x00\x62\x00\x00\x00'
                    'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
                    'p' 'n' 'p' '\x00\x00\x00\x00\x00')
+
+def test_struct():
+    from capnpy.blob import Blob
+    
+    class MyStruct(Blob):
+        __data_size__ = 2
+        __ptrs_size__ = 0
+
+    mybuf = ('\x01\x00\x00\x00\x00\x00\x00\x00'
+             '\x02\x00\x00\x00\x00\x00\x00\x00')
+    mystruct = MyStruct.from_buffer(mybuf, 0, None)
+    #
+    fields = [field.Struct(0, MyStruct)]
+    ctor = structor('ctor', data_size=0, ptrs_size=1, fields=fields)
+    buf = ctor(FakeBlob, mystruct)
+    assert buf == ('\x00\x00\x00\x00\x02\x00\x00\x00'  # ptr to mystruct
+                   + mybuf)
