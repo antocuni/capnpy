@@ -2,6 +2,14 @@ from capnpy.structor import structor, compute_format
 from capnpy import field
 from capnpy.type import Types
 
+class FakeBlob(object):
+
+    @classmethod
+    def from_buffer(cls, buf, offset, segment_offsets):
+        return buf
+
+
+
 def test_compute_format_simple():
     fields = [field.Primitive(0, Types.int64),
               field.Primitive(8, Types.int64)]
@@ -19,7 +27,7 @@ def test_simple():
     fields = [field.Primitive(0, Types.int64),
               field.Primitive(8, Types.int64)]
     ctor = structor('ctor', data_size=2, ptrs_size=0, fields=fields)
-    buf = ctor(1, 2)
+    buf = ctor(FakeBlob, 1, 2)
     assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                    '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
 

@@ -32,8 +32,9 @@ def make_structor(name, fields, fmt):
     argnames = ['arg%d' % i for i in range(len(fields))]
     code = Code()
     code['StructBuilder'] = StructBuilder
-    with code.def_(name, argnames):
+    with code.def_(name, ['cls'] + argnames):
         code.w('builder = StructBuilder({fmt})', fmt=repr(fmt))
-        code.w('return', code.call('builder.build', argnames))
+        code.w('buf =', code.call('builder.build', argnames))
+        code.w('return cls.from_buffer(buf, 0, None)')
     code.compile()
     return code[name]
