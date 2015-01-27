@@ -4,7 +4,7 @@ import types
 from collections import defaultdict
 from datetime import datetime
 import subprocess
-from contextlib import contextmanager
+from pypytools.codegen import Code
 from capnpy.type import Types
 
 ## # pycapnp will be supported only until the boostrap is completed
@@ -20,40 +20,19 @@ from capnpy import schema
 from capnpy.message import loads
 
 
-class CodeBuilder(object):
-
-    def __init__(self):
-        self.lines = []
-        self.indentation = 0
-
-    def build(self):
-        return '\n'.join(self.lines)
-
-    def writeline(self, s):
-        self.lines.append(' ' * self.indentation + s)
-
-    @contextmanager
-    def indent(self, s=None):
-        if s is not None:
-            self.writeline(s)
-        self.indentation += 4
-        yield
-        self.indentation -= 4
-
-
 class FileGenerator(object):
 
     def __init__(self, request):
-        self.builder = CodeBuilder()
+        self.code = Code()
         self.request = request
         self.allnodes = {} # id -> node
         self.children = defaultdict(list) # nodeId -> nested nodes
  
     def w(self, s):
-        self.builder.writeline(s)
+        self.code.w(s)
 
     def block(self, s):
-        return self.builder.indent(s)
+        return self.code.block(s)
 
     def _shortname(self, node):
         return node.displayName[node.displayNamePrefixLength:]
@@ -70,7 +49,7 @@ class FileGenerator(object):
 
     def generate(self):
         self.visit_request(self.request)
-        return self.builder.build()
+        return self.code.build()
 
     def visit_request(self, request):
         for node in request.nodes:
