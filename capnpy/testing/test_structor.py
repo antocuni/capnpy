@@ -1,3 +1,4 @@
+from capnpy.blob import Blob
 from capnpy.structor import structor, compute_format
 from capnpy import field
 from capnpy.type import Types

@@ -18,6 +18,7 @@ class Primitive(object):
         self.offset = offset
         self.type = type
         self.default = default
+        self.fmt = type.fmt
 
     def __get__(self, blob, cls):
         if blob is None:
@@ -58,6 +59,8 @@ class Bool(object):
 
 class String(object):
 
+    fmt = 'q'
+
     def __init__(self, offset):
         self.offset = offset
 
@@ -70,6 +73,8 @@ class String(object):
         return '<Field +%d: String>' % (self.offset,)
 
 class Data(object):
+
+    fmt = 'q'
 
     def __init__(self, offset):
         self.offset = offset
@@ -84,6 +89,8 @@ class Data(object):
 
 
 class List(object):
+
+    fmt = 'q'
 
     def __init__(self, offset, item_type):
         self.offset = offset
@@ -112,6 +119,8 @@ class List(object):
 
 class Struct(object):
 
+    fmt = 'q'
+
     def __init__(self, offset, structcls):
         self.offset = offset
         self.structcls = structcls
@@ -127,6 +136,8 @@ class Struct(object):
 
 
 class Enum(object):
+
+    fmt = Types.int16.fmt
 
     def __init__(self, offset, enumcls):
         self.offset = offset

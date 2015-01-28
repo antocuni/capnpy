@@ -23,13 +23,9 @@ def compute_format(data_size, ptrs_size, fields):
             fmt[i] = None
 
     for f in fields:
-        if isinstance(f, field.Primitive):
-            set(f.offset, f.type.fmt)
-        elif isinstance(f, (field.String, field.Struct, field.List)):
-            # it's a pointer
-            set(f.offset, 'q')
-        else:
-            assert False
+        if not hasattr(f, 'fmt'):
+            raise ValueError('Unsupported field type: %s' % f)
+        set(f.offset, f.fmt)
     #
     # remove all the Nones
     fmt = [ch for ch in fmt if ch is not None]
