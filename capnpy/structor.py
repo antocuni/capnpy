@@ -25,7 +25,8 @@ def compute_format(data_size, ptrs_size, fields):
     for f in fields:
         if isinstance(f, field.Primitive):
             set(f.offset, f.type.fmt)
-        elif isinstance(f, (field.String, field.Struct)):
+        elif isinstance(f, (field.String, field.Struct, field.List)):
+            # it's a pointer
             set(f.offset, 'q')
         else:
             assert False
@@ -47,10 +48,14 @@ def make_structor(name, fields, fmt):
                 code.w('{arg} = builder.alloc_string({offset}, {arg})',
                        arg=arg, offset=f.offset)
             elif isinstance(f, field.Struct):
-                structname = f.structcls.__name__
+                structname = code.new_global(f.structcls.__name__, f.structcls)
                 code.w('{arg} = builder.alloc_struct({offset}, {structname}, {arg})',
                        arg=arg, offset=f.offset, structname=structname)
-                code[structname] = f.structcls
+            elif isinstance(f, field.List):
+                listcls = code.new_global(f.listcls.__name__, f.listcls)
+                itemtype = code.new_global('item_type', f.item_type)
+                code.w('{arg} = builder.alloc_list({offset}, {listcls}, {itemtype}, {arg})',
+                       arg=arg, offset=f.offset, listcls=listcls, itemtype=itemtype)
             else:
                 assert isinstance(f, field.Primitive)
             #

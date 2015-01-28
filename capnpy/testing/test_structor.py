@@ -52,8 +52,6 @@ def test_string():
                    'p' 'n' 'p' '\x00\x00\x00\x00\x00')
 
 def test_struct():
-    from capnpy.blob import Blob
-    
     class MyStruct(Blob):
         __data_size__ = 2
         __ptrs_size__ = 0
@@ -67,3 +65,11 @@ def test_struct():
     buf = ctor(FakeBlob, mystruct)
     assert buf == ('\x00\x00\x00\x00\x02\x00\x00\x00'  # ptr to mystruct
                    + mybuf)
+
+
+def test_list():
+    fields = [field.List(0, Types.int8)]
+    ctor = structor('ctor', data_size=0, ptrs_size=1, fields=fields)
+    buf = ctor(FakeBlob, [1, 2, 3, 4])
+    assert buf == ('\x01\x00\x00\x00\x22\x00\x00\x00'   # ptrlist
+                   '\x01\x02\x03\x04\x00\x00\x00\x00')  # 1,2,3,4 + padding
