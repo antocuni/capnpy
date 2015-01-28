@@ -7,6 +7,9 @@ from pypytools.codegen import Code
 from capnpy import field
 from capnpy.builder import StructBuilder
 
+class Unsupported(Exception):
+    pass
+
 def structor(name, data_size, ptrs_size, fields):
     fields = [f for f in fields if not isinstance(f, field.Void)]
     fmt = compute_format(data_size, ptrs_size, fields)
@@ -24,7 +27,7 @@ def compute_format(data_size, ptrs_size, fields):
 
     for f in fields:
         if not hasattr(f, 'fmt'):
-            raise ValueError('Unsupported field type: %s' % f)
+            raise Unsupported('Unsupported field type: %s' % f)
         set(f.offset, f.fmt)
     #
     # remove all the Nones
@@ -40,7 +43,9 @@ def make_structor(name, fields, fmt):
     with code.def_(name, ['cls'] + argnames):
         code.w('builder = StructBuilder({fmt})', fmt=repr(fmt))
         for f, arg in zip(fields, argnames):
-            if isinstance(f, field.String):
+            if isinstance(f, field.Primitive):
+                pass # nothing to do
+            elif isinstance(f, field.String):
                 code.w('{arg} = builder.alloc_string({offset}, {arg})',
                        arg=arg, offset=f.offset)
             elif isinstance(f, field.Struct):
@@ -53,7 +58,7 @@ def make_structor(name, fields, fmt):
                 code.w('{arg} = builder.alloc_list({offset}, {listcls}, {itemtype}, {arg})',
                        arg=arg, offset=f.offset, listcls=listcls, itemtype=itemtype)
             else:
-                assert isinstance(f, field.Primitive)
+                raise Unsupported('Unsupported field type: %s' % f)
             #
         code.w('buf =', code.call('builder.build', argnames))
         code.w('return cls.from_buffer(buf, 0, None)')
