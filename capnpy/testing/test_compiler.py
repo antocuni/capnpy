@@ -319,3 +319,11 @@ def test_ctor_union(tmpdir):
     assert s.area == 1
     assert s.square == 2
     assert s.perimeter == 3
+    #
+    # test the __new__
+    s = mod.Shape(area=1, square=2, perimeter=3)
+    assert s.which() == mod.Shape.__tag__.square
+    assert s.area == 1
+    assert s.square == 2
+    assert s.perimeter == 3
+    

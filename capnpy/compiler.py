@@ -31,8 +31,8 @@ class FileGenerator(object):
     def w(self, *args, **kwargs):
         self.code.w(*args, **kwargs)
 
-    def block(self, s):
-        return self.code.block(s)
+    def block(self, *args, **kwargs):
+        return self.code.block(*args, **kwargs)
 
     def _shortname(self, node):
         return node.displayName[node.displayNamePrefixLength:]
@@ -82,6 +82,7 @@ class FileGenerator(object):
         self.w("from capnpy.blob import Types")
         self.w("from capnpy.structor import structor")
         self.w("from capnpy.util import extend")
+        self.w("undefined = object()")
         self.w("")
         #
         # first of all, we emit all the non-structs and "predeclare" all the
@@ -164,7 +165,6 @@ class FileGenerator(object):
         else:
             self._emit_ctor_nounion(node)
 
-
     def _emit_ctor_nounion(self, node):
         fnames = [f.name for f in node.struct.fields]
         flist = "[%s]" % ', '.join(fnames)
@@ -176,6 +176,19 @@ class FileGenerator(object):
         self.w("__new__ = staticmethod(__new__)")
 
     def _emit_ctors_union(self, node):
+        # suppose we have a tag whose members are 'circle' and 'square': we
+        # create three ctors:
+        #
+        #     def __new__(cls, x, y, square=undefined, circle=undefined):  ...
+        #
+        #     @classmethod
+        #     def new_square(cls, x, y): ...
+        #
+        #     @classmethod
+        #     def new_circle(cls, x, y): ...
+        #
+        # when calling __new__, one and only one of square and circle must be given. 
+        #
         std_fields = [] # non-union fields
         tag_fields = [] # union fields
         for f in node.struct.fields:
@@ -192,6 +205,20 @@ class FileGenerator(object):
             self.w("new_{name} = classmethod(structor('new_{name}', __data_size__, "
                    "__ptrs_size__, {flist}, __tag_offset__, __tag__.{name}))",
                    name=tag_field.name, flist=flist)
+        #
+        # finally, create the __new__
+        args = [f.name for f in std_fields]
+        for f in tag_fields:
+            args.append('%s=undefined' % f.name)
+        self.w('@staticmethod')
+        with self.block('def __new__(cls, {arglist}):', arglist=self.code.args(args)):
+            for tag_field in tag_fields:
+                with self.block('if {name} is not undefined:', name=tag_field.name):
+                    args = [f.name for f in std_fields]
+                    args.append(tag_field.name)
+                    args = ['%s=%s' % (arg, arg) for arg in args]
+                    self.w('return cls.new_{ctor}({args})',
+                           ctor=tag_field.name, args=self.code.args(args))
 
     def visit_const(self, node):
         # XXX: this works only for numerical consts so far
