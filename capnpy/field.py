@@ -176,7 +176,7 @@ class Union(object):
         return self.field.__get__(blob, cls)
 
     def __repr__(self):
-        return '<Union %s: %s>' % (self.tag.name, self.field)
+        return '<Union %s: %s>' % (self.tag, self.field)
 
 
 class Group(object):

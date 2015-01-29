@@ -12,8 +12,15 @@ class Unsupported(Exception):
 
 def structor(name, data_size, ptrs_size, fields):
     fields = [f for f in fields if not isinstance(f, field.Void)]
-    fmt = compute_format(data_size, ptrs_size, fields)
-    return make_structor(name, fields, fmt)
+    try:
+        fmt = compute_format(data_size, ptrs_size, fields)
+        return make_structor(name, fields, fmt)
+    except Unsupported, e:
+        msg = str(e)
+        def fn(*args, **kwargs):
+            raise NotImplementedError(msg)
+        fn.__name__ = name
+        return fn
 
 def compute_format(data_size, ptrs_size, fields):
     total_length = (data_size+ptrs_size)*8
@@ -37,6 +44,13 @@ def compute_format(data_size, ptrs_size, fields):
     return fmt
 
 def make_structor(name, fields, fmt):
+    ## create a constructor which looks like this
+    ## def ctor(cls, x, y, z):
+    ##     builder = StructBuilder('qqq')
+    ##     z = builder.alloc_string(16, z)
+    ##     buf = builder.build(x, y)
+    ##     return cls.from_buffer(buf, 0, None)
+    #
     argnames = [f.name for f in fields]
     if len(argnames) != len(set(argnames)):
         raise ValueError("Duplicate field name(s): %s" % argnames)

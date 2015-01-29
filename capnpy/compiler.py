@@ -80,7 +80,7 @@ class FileGenerator(object):
         self.w("from capnpy import field")
         self.w("from capnpy.enum import enum")
         self.w("from capnpy.blob import Types")
-        self.w("from capnpy.builder import StructBuilder")
+        self.w("from capnpy.structor import structor")
         self.w("from capnpy.util import extend")
         self.w("")
         #
@@ -142,9 +142,9 @@ class FileGenerator(object):
             if node.struct.discriminantCount:
                 self._emit_tag(node)
             if node.struct.fields is not None:
-                self._emit_struct_init(node)
                 for field in node.struct.fields:
                     self.visit_field(field, data_size, ptrs_size)
+                self._emit_struct_ctors(node)
 
     def _emit_tag(self, node):
         # union tags are 16 bits, so *2
@@ -158,38 +158,15 @@ class FileGenerator(object):
         self.w("__tag_offset__ = %s" % tag_offset)
         self._emit_enum('__tag__', enum_name, enum_items)
 
-    def _emit_struct_init(self, node):
-        ## emit an __init__ which looks like this:
-        ## def __init__(self, x, y):
-        ##     builder = StructBuilder('qq')
-        ##     self._buf = builder.build(x, y)
-        ##     self._offset = 0
-        ##     self._segment_offsets = None
-        #
-        args = []
-        buildvars = []
-        format = ''
-        for f in node.struct.fields:
-            varname = f.name
-            if f.which() != schema.Field.__tag__.slot:
-                return self._emit_struct_init_notsupported('non-slot fields')
-            args.append(varname)
-            typename = f.slot.type.which().name
-            if not f.slot.type.is_primitive():
-                return self._emit_struct_init_notsupported('%s fields' % typename)
-            t = getattr(Types, typename)
-            format += t.fmt
-            buildvars.append(f.name)
-        #
-        arglist = ', '.join(args)
-        buildlist = ', '.join(buildvars)
-        self.w('')
-        with self.block('def __init__(self, %s):' % arglist):
-            self.w('builder = StructBuilder(%r)' % format)
-            self.w('self._buf = builder.build(%s)' % buildlist)
-            self.w('self._offset = 0')
-            self.w('self._segment_offsets = None')
-        self.w('')
+    def _emit_struct_ctors(self, node):
+        fnames = [f.name for f in node.struct.fields]
+        flist = "[%s]" % ', '.join(fnames)
+        # normally, __new__ is special-cased at class creation time and
+        # automatically turned into a staticmethod; however, here we are
+        # inside an @extend body, so we need to call it manually
+        self.w("__new__ = structor('__new__', __data_size__, __ptrs_size__, %s)" % flist)
+        self.w("__new__ = staticmethod(__new__)")
+
 
     def _emit_struct_init_notsupported(self, why):
         with self.block('def __init__(self, *args, **kwds):'):
