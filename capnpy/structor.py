@@ -37,7 +37,9 @@ def compute_format(data_size, ptrs_size, fields):
     return fmt
 
 def make_structor(name, fields, fmt):
-    argnames = ['arg%d' % i for i in range(len(fields))]
+    argnames = [f.name for f in fields]
+    if len(argnames) != len(set(argnames)):
+        raise ValueError("Duplicate field name(s): %s" % argnames)
     code = Code()
     code['StructBuilder'] = StructBuilder
     with code.def_(name, ['cls'] + argnames):
