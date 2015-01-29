@@ -67,7 +67,7 @@ def make_structor(name, fields, fmt, tag_value):
     with code.def_(name, ['cls'] + argnames):
         code.w('builder = StructBuilder({fmt})', fmt=repr(fmt))
         if tag_value is not None:
-            code.w('__which__ = {tag_value}', tag_value=tag_value)
+            code.w('__which__ = {tag_value}', tag_value=int(tag_value))
         for f, arg in zip(fields, argnames):
             if isinstance(f, field.Primitive):
                 pass # nothing to do

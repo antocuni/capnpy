@@ -22,11 +22,6 @@ def test_primitive(tmpdir):
     p = mod.Point.from_buffer(buf, 0, None)
     assert p.x == 1
     assert p.y == 2
-    #
-    p = mod.Point(1, 2)
-    assert p.x == 1
-    assert p.y == 2
-    assert p._buf == buf
 
 def test_primitive_default(tmpdir):
     schema = """
@@ -282,3 +277,45 @@ def test_bool(tmpdir):
     assert p.a == True
     assert p.b == False
     assert p.c == True
+
+def test_ctor_simple(tmpdir):
+    schema = """
+    @0xbf5147cbbecf40c1;
+    struct Point {
+        x @0 :Int64;
+        y @1 :Int64;
+    }
+    """
+    mod = compile_string(tmpdir, schema)
+    buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+    #
+    p = mod.Point(1, 2)
+    assert p.x == 1
+    assert p.y == 2
+    assert p._buf == buf
+
+def test_ctor_union(tmpdir):
+    schema = """
+    @0xbf5147cbbecf40c1;
+    struct Shape {
+      area @0 :Int64;
+      perimeter @1 :Int64;
+      union {
+        circle @2 :Int64;      # radius
+        square @3 :Int64;      # width
+      }
+    }
+    """
+    mod = compile_string(tmpdir, schema)
+    s = mod.Shape.new_circle(area=1, circle=2, perimeter=3)
+    assert s.which() == mod.Shape.__tag__.circle
+    assert s.area == 1
+    assert s.circle == 2
+    assert s.perimeter == 3
+    #
+    s = mod.Shape.new_square(area=1, square=2, perimeter=3)
+    assert s.which() == mod.Shape.__tag__.square
+    assert s.area == 1
+    assert s.square == 2
+    assert s.perimeter == 3

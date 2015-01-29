@@ -28,8 +28,8 @@ class FileGenerator(object):
         self.allnodes = {} # id -> node
         self.children = defaultdict(list) # nodeId -> nested nodes
  
-    def w(self, s):
-        self.code.w(s)
+    def w(self, *args, **kwargs):
+        self.code.w(*args, **kwargs)
 
     def block(self, s):
         return self.code.block(s)
@@ -159,18 +159,39 @@ class FileGenerator(object):
         self._emit_enum('__tag__', enum_name, enum_items)
 
     def _emit_struct_ctors(self, node):
+        if node.struct.discriminantCount:
+            self._emit_ctors_union(node)
+        else:
+            self._emit_ctor_nounion(node)
+
+
+    def _emit_ctor_nounion(self, node):
         fnames = [f.name for f in node.struct.fields]
         flist = "[%s]" % ', '.join(fnames)
         # normally, __new__ is special-cased at class creation time and
         # automatically turned into a staticmethod; however, here we are
         # inside an @extend body, so we need to call it manually
-        self.w("__new__ = structor('__new__', __data_size__, __ptrs_size__, %s)" % flist)
+        self.w("__new__ = structor('__new__', __data_size__, __ptrs_size__, {flist})",
+               flist=flist)
         self.w("__new__ = staticmethod(__new__)")
 
-
-    def _emit_struct_init_notsupported(self, why):
-        with self.block('def __init__(self, *args, **kwds):'):
-            self.w('raise NotImplementedError("Not supported: %s")' % why)
+    def _emit_ctors_union(self, node):
+        std_fields = [] # non-union fields
+        tag_fields = [] # union fields
+        for f in node.struct.fields:
+            if f.discriminantValue == schema.Field.noDiscriminant:
+                std_fields.append(f)
+            else:
+                tag_fields.append(f)
+        #
+        # now, we create a separate ctor for each tag value
+        for tag_field in tag_fields:
+            fnames = ['%s.field' % tag_field.name]
+            fnames += [f.name for f in std_fields]
+            flist = "[%s]" % ', '.join(fnames)
+            self.w("new_{name} = classmethod(structor('new_{name}', __data_size__, "
+                   "__ptrs_size__, {flist}, __tag_offset__, __tag__.{name}))",
+                   name=tag_field.name, flist=flist)
 
     def visit_const(self, node):
         # XXX: this works only for numerical consts so far
