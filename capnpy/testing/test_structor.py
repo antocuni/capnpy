@@ -32,12 +32,19 @@ def test_primitive():
     assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                    '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
 
-
 def test_argnames():
     fields = [field.Primitive('x', 0, Types.int64),
               field.Primitive('y', 8, Types.int64)]
     ctor = structor('ctor', data_size=2, ptrs_size=0, fields=fields)
     buf = ctor(FakeBlob, y=2, x=1)
+    assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+                   '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+
+def test_unordered():
+    fields = [field.Primitive('y', 8, Types.int64),
+              field.Primitive('x', 0, Types.int64)]
+    ctor = structor('ctor', data_size=2, ptrs_size=0, fields=fields)
+    buf = ctor(FakeBlob, x=1, y=2)
     assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                    '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
 
@@ -83,3 +90,22 @@ def test_list():
     buf = ctor(FakeBlob, [1, 2, 3, 4])
     assert buf == ('\x01\x00\x00\x00\x22\x00\x00\x00'   # ptrlist
                    '\x01\x02\x03\x04\x00\x00\x00\x00')  # 1,2,3,4 + padding
+
+def test_tag_offset():
+    ## struct Shape {
+    ##   area @0 :Int64;
+    ##   union {
+    ##     circle @1 :Int64;      # radius
+    ##     square @2 :Int64;      # width
+    ##   }
+    ## }
+    #
+    fields = [field.Primitive('area', 0, Types.int64),
+              field.Primitive('square', 8, Types.int64)]
+    new_square = structor('new_square', data_size=3, ptrs_size=0,
+                          fields=fields,
+                          tag_offset=16, tag_value=1)
+    buf = new_square(FakeBlob, area=64, square=8)
+    assert buf == ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
+                   '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
+                   '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding

@@ -5,16 +5,21 @@ Structor -> struct ctor -> struct construtor :)
 import struct
 from pypytools.codegen import Code
 from capnpy import field
+from capnpy.type import Types
 from capnpy.builder import StructBuilder
 
 class Unsupported(Exception):
     pass
 
-def structor(name, data_size, ptrs_size, fields):
+def structor(name, data_size, ptrs_size, fields, tag_offset=None, tag_value=None):
     fields = [f for f in fields if not isinstance(f, field.Void)]
+    if tag_offset is not None:
+        tag_field = field.Primitive('__which__', tag_offset, Types.int16)
+        fields.append(tag_field)
+    fields.sort(key=lambda f: f.offset) # sort the field in offset ascending order
     try:
         fmt = compute_format(data_size, ptrs_size, fields)
-        return make_structor(name, fields, fmt)
+        return make_structor(name, fields, fmt, tag_value)
     except Unsupported, e:
         msg = str(e)
         def fn(*args, **kwargs):
@@ -43,7 +48,7 @@ def compute_format(data_size, ptrs_size, fields):
     assert struct.calcsize(fmt) == total_length
     return fmt
 
-def make_structor(name, fields, fmt):
+def make_structor(name, fields, fmt, tag_value):
     ## create a constructor which looks like this
     ## def ctor(cls, x, y, z):
     ##     builder = StructBuilder('qqq')
@@ -52,12 +57,17 @@ def make_structor(name, fields, fmt):
     ##     return cls.from_buffer(buf, 0, None)
     #
     argnames = [f.name for f in fields]
+    buildnames = argnames[:]
+    if tag_value is not None:
+        argnames.remove('__which__')
     if len(argnames) != len(set(argnames)):
         raise ValueError("Duplicate field name(s): %s" % argnames)
     code = Code()
     code['StructBuilder'] = StructBuilder
     with code.def_(name, ['cls'] + argnames):
         code.w('builder = StructBuilder({fmt})', fmt=repr(fmt))
+        if tag_value is not None:
+            code.w('__which__ = {tag_value}', tag_value=tag_value)
         for f, arg in zip(fields, argnames):
             if isinstance(f, field.Primitive):
                 pass # nothing to do
@@ -76,7 +86,7 @@ def make_structor(name, fields, fmt):
             else:
                 raise Unsupported('Unsupported field type: %s' % f)
             #
-        code.w('buf =', code.call('builder.build', argnames))
+        code.w('buf =', code.call('builder.build', buildnames))
         code.w('return cls.from_buffer(buf, 0, None)')
     code.compile()
     return code[name]
