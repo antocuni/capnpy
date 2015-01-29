@@ -229,7 +229,8 @@ class FileGenerator(object):
             delta = 0
             kwds['typename'] = t.name
             kwds['default'] = self._get_value(field.slot.defaultValue)
-            decl = 'field.Primitive({offset}, Types.{typename}, default={default})'
+            decl = ('field.Primitive("{name}", {offset}, '
+                    'Types.{typename}, default={default})')
         #
         elif which == 'bool':
             size = 0
@@ -238,44 +239,44 @@ class FileGenerator(object):
             kwds['byteoffset'] = byteoffset
             kwds['bitoffset'] = bitoffset
             kwds['default'] = self._get_value(field.slot.defaultValue)
-            decl = 'field.Bool({byteoffset}, {bitoffset}, default={default})'
+            decl = 'field.Bool("{name}", {byteoffset}, {bitoffset}, default={default})'
         elif which == 'text':
             size = 8
             delta = data_size*8 # it's a pointer
-            decl = 'field.String({offset})'
+            decl = 'field.String("{name}", {offset})'
         #
         elif which == 'data':
             size = 8
             delta = data_size*8 # it's a pointer
-            decl = 'field.Data({offset})'
+            decl = 'field.Data("{name}", {offset})'
         #
         elif which == 'struct':
             size = 8
             delta = data_size*8 # it's a pointer
             kwds['structname'] = self._get_typename(field.slot.type)
-            decl = 'field.Struct({offset}, {structname})'
+            decl = 'field.Struct("{name}", {offset}, {structname})'
         #
         elif which == 'list':
             size = 8
             delta = data_size*8 # it's a pointer
             kwds['itemtype'] = self._get_typename(field.slot.type.list.elementType)
-            decl = 'field.List({offset}, {itemtype})'
+            decl = 'field.List("{name}", {offset}, {itemtype})'
         #
         elif which == 'enum':
             size = 2
             delta = 0
             kwds['enumname'] = self._get_typename(field.slot.type)
-            decl = 'field.Enum({offset}, {enumname})'
+            decl = 'field.Enum("{name}", {offset}, {enumname})'
         #
         elif which == 'void':
             size = 0
             delta = 0
-            decl = 'field.Void()'
+            decl = 'field.Void("{name}")'
         #
         elif which == 'anyPointer':
             size = 8
             delta = data_size*8
-            decl = 'field.AnyPointer({offset})'
+            decl = 'field.AnyPointer("{name}", {offset})'
         else:
             raise ValueError('Unknown type: %s' % field.slot.type)
         #

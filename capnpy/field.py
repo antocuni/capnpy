@@ -4,17 +4,21 @@ from capnpy import struct_
 
 class Void(object):
 
+    def __init__(self, name):
+        self.name = name
+
     def __get__(self, blob, cls):
         if blob is None:
             return self
         return None
 
     def __repr__(self):
-        return '<Field: Void>'
+        return '<Field %s: Void>' % self.name
 
 class Primitive(object):
 
-    def __init__(self, offset, type, default=0):
+    def __init__(self, name, offset, type, default=0):
+        self.name = name
         self.offset = offset
         self.type = type
         self.default = default
@@ -29,7 +33,7 @@ class Primitive(object):
         return val
 
     def __repr__(self):
-        s = '<Field +%d: Primitive, type=%s' % (self.offset, self.type.name)
+        s = '<Field %s +%d: Primitive, type=%s' % (self.name, self.offset, self.type.name)
         if self.default == 0:
             s += '>'
         else:
@@ -38,7 +42,8 @@ class Primitive(object):
 
 class Bool(object):
 
-    def __init__(self, offset, bitno, default=0):
+    def __init__(self, name, offset, bitno, default=0):
+        self.name = name
         self.offset = offset
         self.bitno = bitno
         self.bitmask = 1 << bitno
@@ -50,7 +55,7 @@ class Bool(object):
         return bool(blob._read_bit(self.offset, self.bitmask) ^ self.default)
 
     def __repr__(self):
-        s = '<Field +%d: Bool, bitno=%d' % (self.offset, self.bitno)
+        s = '<Field %s +%d: Bool, bitno=%d' % (self.name, self.offset, self.bitno)
         if self.default == 0:
             s += '>'
         else:
@@ -61,7 +66,8 @@ class String(object):
 
     fmt = 'q'
 
-    def __init__(self, offset):
+    def __init__(self, name, offset):
+        self.name = name
         self.offset = offset
 
     def __get__(self, blob, cls):
@@ -70,13 +76,14 @@ class String(object):
         return blob._read_string(self.offset)
 
     def __repr__(self):
-        return '<Field +%d: String>' % (self.offset,)
+        return '<Field %s +%d: String>' % (self.name, self.offset)
 
 class Data(object):
 
     fmt = 'q'
 
-    def __init__(self, offset):
+    def __init__(self, name, offset):
+        self.name = name
         self.offset = offset
 
     def __get__(self, blob, cls):
@@ -85,14 +92,15 @@ class Data(object):
         return blob._read_data(self.offset)
 
     def __repr__(self):
-        return '<Field +%d: Data>' % (self.offset,)
+        return '<Field %s +%d: Data>' % (self.name, self.offset)
 
 
 class List(object):
 
     fmt = 'q'
 
-    def __init__(self, offset, item_type):
+    def __init__(self, name, offset, item_type):
+        self.name = name
         self.offset = offset
         self.item_type = item_type
         if isinstance(item_type, BuiltinType):
@@ -113,15 +121,16 @@ class List(object):
         return blob._read_list(self.offset, self.listcls, self.item_type)
 
     def __repr__(self):
-        return ('<Field +%d: List, listcls=%s, item_type=%s>' %
-                (self.offset, self.listcls.__name__, self.item_type))
+        return ('<Field %s +%d: List, listcls=%s, item_type=%s>' %
+                (self.name, self.offset, self.listcls.__name__, self.item_type))
 
 
 class Struct(object):
 
     fmt = 'q'
 
-    def __init__(self, offset, structcls):
+    def __init__(self, name, offset, structcls):
+        self.name = name
         self.offset = offset
         self.structcls = structcls
 
@@ -131,15 +140,16 @@ class Struct(object):
         return blob._read_struct(self.offset, self.structcls)
 
     def __repr__(self):
-        return ('<Field +%d: Struct, structcls=%s>' %
-                (self.offset, self.structcls.__name__))
+        return ('<Field %s +%d: Struct, structcls=%s>' %
+                (self.name, self.offset, self.structcls.__name__))
 
 
 class Enum(object):
 
     fmt = Types.int16.fmt
 
-    def __init__(self, offset, enumcls):
+    def __init__(self, name, offset, enumcls):
+        self.name = name
         self.offset = offset
         self.enumcls = enumcls
 
@@ -149,8 +159,8 @@ class Enum(object):
         return blob._read_enum(self.offset, self.enumcls)
 
     def __repr__(self):
-        return ('<Field +%d: Enum, enumcls=%s>' %
-                (self.offset, self.enumcls.__name__))
+        return ('<Field %s +%d: Enum, enumcls=%s>' %
+                (self.name, self.offset, self.enumcls.__name__))
 
 
 class Union(object):
@@ -185,7 +195,8 @@ class Group(object):
 
 class AnyPointer(object):
 
-    def __init__(self, offset):
+    def __init__(self, name, offset):
+        self.name = name
         self.offset = offset
 
     def __get__(self, blob, cls):
@@ -194,4 +205,4 @@ class AnyPointer(object):
         raise ValueError("Cannot get fields of type AnyPointer")
 
     def __repr__(self):
-        return '<Field +%d: AnyPointer>' % self.offset
+        return '<Field %s +%d: AnyPointer>' % (self.name, self.offset)
