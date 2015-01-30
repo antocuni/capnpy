@@ -76,13 +76,12 @@ class FileGenerator(object):
         for f in self.request.requestedFiles:
             self.w("#   - %s" % f.filename)
         self.w("")
-        self.w("from capnpy.struct_ import Struct")
+        self.w("from capnpy.struct_ import Struct, undefined")
         self.w("from capnpy import field")
         self.w("from capnpy.enum import enum")
         self.w("from capnpy.blob import Types")
         self.w("from capnpy.structor import structor")
         self.w("from capnpy.util import extend")
-        self.w("undefined = object()")
         self.w("")
         #
         # first of all, we emit all the non-structs and "predeclare" all the
@@ -207,6 +206,14 @@ class FileGenerator(object):
                    name=tag_field.name, flist=flist)
         #
         # finally, create the __new__
+        # def __new__(cls, x, y, square=undefined, circle=undefined):
+        #     if square is not undefined:
+        #         self._assert_undefined(circle, 'circle', 'square')
+        #         return cls.new_square(x=x, y=y)
+        #     if circle is not undefined:
+        #         self._assert_undefined(square, 'square', 'circle')
+        #         return cls.new_circle(x=x, y=y)
+        #     raise TypeError("one of the following args is required: square, circle")
         args = [f.name for f in std_fields]
         for f in tag_fields:
             args.append('%s=undefined' % f.name)
@@ -214,11 +221,24 @@ class FileGenerator(object):
         with self.block('def __new__(cls, {arglist}):', arglist=self.code.args(args)):
             for tag_field in tag_fields:
                 with self.block('if {name} is not undefined:', name=tag_field.name):
+                    # emit the series of _assert_undefined, for each other tag field
+                    for other_tag_field in tag_fields:
+                        if other_tag_field is tag_field:
+                            continue
+                        self.w('cls._assert_undefined({fname}, "{fname}", "{myname}")',
+                               fname=other_tag_field.name, myname=tag_field.name)
+                    #
+                    # return cls.new_square(x=x, y=y)
                     args = [f.name for f in std_fields]
                     args.append(tag_field.name)
                     args = ['%s=%s' % (arg, arg) for arg in args]
                     self.w('return cls.new_{ctor}({args})',
                            ctor=tag_field.name, args=self.code.args(args))
+            #
+            tags = [f.name for f in tag_fields]
+            tags = ', '.join(tags)
+            self.w('raise TypeError("one of the following args is required: {tags}")',
+                   tags=tags)
 
     def visit_const(self, node):
         # XXX: this works only for numerical consts so far

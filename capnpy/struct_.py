@@ -2,6 +2,7 @@ import struct
 from capnpy.ptr import StructPtr, ListPtr, FarPtr
 from capnpy.blob import Blob, Types
 
+undefined = object()
 
 class Struct(Blob):
     """
@@ -29,6 +30,12 @@ class Struct(Blob):
             raise TypeError("Cannot call which() on a non-union type")
         val = self._read_primitive(self.__tag_offset__, Types.int16)
         return self.__tag__(val)
+
+    @classmethod
+    def _assert_undefined(cls, val, name, other_name):
+        if val is not undefined:
+            raise TypeError("got multiple values for the union tag: %s, %s" %
+                            (name, other_name))
 
     def _ensure_union(self, expected_tag):
         tag = self.which()
