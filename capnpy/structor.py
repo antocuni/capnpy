@@ -12,6 +12,9 @@ class Unsupported(Exception):
     pass
 
 def structor(name, data_size, ptrs_size, fields, tag_offset=None, tag_value=None):
+    if field.Group in [type(f) for f in fields]:
+        return make_unsupported(name, "Group fields not supported yet")
+    #
     fields = [f for f in fields if not isinstance(f, field.Void)]
     if tag_offset is not None:
         tag_field = field.Primitive('__which__', tag_offset, Types.int16)
@@ -21,11 +24,13 @@ def structor(name, data_size, ptrs_size, fields, tag_offset=None, tag_value=None
         fmt = compute_format(data_size, ptrs_size, fields)
         return make_structor(name, fields, fmt, tag_value)
     except Unsupported, e:
-        msg = str(e)
-        def fn(*args, **kwargs):
-            raise NotImplementedError(msg)
-        fn.__name__ = name
-        return fn
+        return make_unsupported(name, str(e))
+
+def make_unsupported(name, msg):
+    def fn(*args, **kwargs):
+        raise NotImplementedError(msg)
+    fn.__name__ = name
+    return fn
 
 def compute_format(data_size, ptrs_size, fields):
     total_length = (data_size+ptrs_size)*8
