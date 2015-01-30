@@ -47,6 +47,9 @@ def test_unordered():
     buf = ctor(FakeBlob, x=1, y=2)
     assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                    '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+    buf = ctor(FakeBlob, 2, 1) # y must come first
+    assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+                   '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
 
 
 def test_void():

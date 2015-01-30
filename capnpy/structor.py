@@ -19,7 +19,6 @@ def structor(name, data_size, ptrs_size, fields, tag_offset=None, tag_value=None
     if tag_offset is not None:
         tag_field = field.Primitive('__which__', tag_offset, Types.int16)
         fields.append(tag_field)
-    fields.sort(key=lambda f: f.offset) # sort the field in offset ascending order
     try:
         fmt = compute_format(data_size, ptrs_size, fields)
         return make_structor(name, fields, fmt, tag_value)
@@ -61,8 +60,13 @@ def make_structor(name, fields, fmt, tag_value):
     ##     buf = builder.build(x, y)
     ##     return cls.from_buffer(buf, 0, None)
     #
+    # the parameters have the same order as fields
     argnames = [f.name for f in fields]
-    buildnames = argnames[:]
+
+    # for for building, we sort them by offset
+    fields.sort(key=lambda f: f.offset)
+    buildnames = [f.name for f in fields]
+    
     if tag_value is not None:
         argnames.remove('__which__')
     if len(argnames) != len(set(argnames)):
@@ -73,7 +77,8 @@ def make_structor(name, fields, fmt, tag_value):
         code.w('builder = StructBuilder({fmt})', fmt=repr(fmt))
         if tag_value is not None:
             code.w('__which__ = {tag_value}', tag_value=int(tag_value))
-        for f, arg in zip(fields, argnames):
+        for f in fields:
+            arg = f.name
             if isinstance(f, field.Primitive):
                 pass # nothing to do
             elif isinstance(f, field.String):
