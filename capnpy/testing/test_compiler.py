@@ -360,3 +360,16 @@ class TestUnionConstructors(object):
     def test_no_tags(self, mod):
         einfo = py.test.raises(TypeError, "mod.Shape(area=0, perimeter=0)")
         assert str(einfo.value) == "one of the following args is required: circle, square"
+
+
+def test_convert_case(tmpdir):
+    schema = """
+    @0xbf5147cbbecf40c1;
+    struct MyStruct {
+        firstAttr @0 :Int64;
+        secondAttr @1 :Int64;
+    }
+    """
+    mod = compile_string(tmpdir, schema)
+    assert mod.MyStruct.first_attr.name == 'first_attr'
+    assert mod.MyStruct.second_attr.name == 'second_attr'

@@ -6,6 +6,7 @@ from datetime import datetime
 import subprocess
 from pypytools.codegen import Code
 from capnpy.type import Types
+from capnpy.convert_case import from_camel_case
 
 ## # pycapnp will be supported only until the boostrap is completed
 ## USE_PYCAPNP = False
@@ -22,9 +23,10 @@ from capnpy.message import loads
 
 class FileGenerator(object):
 
-    def __init__(self, request):
+    def __init__(self, request, convert_case=True):
         self.code = Code()
         self.request = request
+        self.convert_case = convert_case
         self.allnodes = {} # id -> node
         self.children = defaultdict(list) # nodeId -> nested nodes
  
@@ -153,7 +155,7 @@ class FileGenerator(object):
         for field in node.struct.fields:
             i = field.discriminantValue
             if i != schema.Field.noDiscriminant:
-                enum_items[i] = field.name
+                enum_items[i] = self._field_name(field)
         enum_name = '%s.__tag__' % self._shortname(node)
         self.w("__tag_offset__ = %s" % tag_offset)
         self._emit_enum('__tag__', enum_name, enum_items)
@@ -165,7 +167,7 @@ class FileGenerator(object):
             self._emit_ctor_nounion(node)
 
     def _emit_ctor_nounion(self, node):
-        fnames = [f.name for f in node.struct.fields]
+        fnames = [self._field_name(f) for f in node.struct.fields]
         flist = "[%s]" % ', '.join(fnames)
         # normally, __new__ is special-cased at class creation time and
         # automatically turned into a staticmethod; however, here we are
@@ -198,12 +200,12 @@ class FileGenerator(object):
         #
         # now, we create a separate ctor for each tag value
         for tag_field in tag_fields:
-            fnames = ['%s.field' % tag_field.name]
-            fnames += [f.name for f in std_fields]
+            fnames = ['%s.field' % self._field_name(tag_field)]
+            fnames += [self._field_name(f) for f in std_fields]
             flist = "[%s]" % ', '.join(fnames)
             self.w("new_{name} = classmethod(structor('new_{name}', __data_size__, "
                    "__ptrs_size__, {flist}, __tag_offset__, __tag__.{name}))",
-                   name=tag_field.name, flist=flist)
+                   name=self._field_name(tag_field), flist=flist)
         #
         # finally, create the __new__
         # def __new__(cls, x, y, square=undefined, circle=undefined):
@@ -214,28 +216,30 @@ class FileGenerator(object):
         #         self._assert_undefined(square, 'square', 'circle')
         #         return cls.new_circle(x=x, y=y)
         #     raise TypeError("one of the following args is required: square, circle")
-        args = [f.name for f in std_fields]
+        args = [self._field_name(f) for f in std_fields]
         for f in tag_fields:
-            args.append('%s=undefined' % f.name)
+            args.append('%s=undefined' % self._field_name(f))
         self.w('@staticmethod')
         with self.block('def __new__(cls, {arglist}):', arglist=self.code.args(args)):
             for tag_field in tag_fields:
-                with self.block('if {name} is not undefined:', name=tag_field.name):
+                tag_field_name = self._field_name(tag_field)
+                with self.block('if {name} is not undefined:', name=tag_field_name):
                     # emit the series of _assert_undefined, for each other tag field
                     for other_tag_field in tag_fields:
                         if other_tag_field is tag_field:
                             continue
                         self.w('cls._assert_undefined({fname}, "{fname}", "{myname}")',
-                               fname=other_tag_field.name, myname=tag_field.name)
+                               fname=self._field_name(other_tag_field),
+                               myname=tag_field_name)
                     #
                     # return cls.new_square(x=x, y=y)
-                    args = [f.name for f in std_fields]
-                    args.append(tag_field.name)
+                    args = [self._field_name(f) for f in std_fields]
+                    args.append(self._field_name(tag_field))
                     args = ['%s=%s' % (arg, arg) for arg in args]
                     self.w('return cls.new_{ctor}({args})',
-                           ctor=tag_field.name, args=self.code.args(args))
+                           ctor=tag_field_name, args=self.code.args(args))
             #
-            tags = [f.name for f in tag_fields]
+            tags = [self._field_name(f) for f in tag_fields]
             tags = ', '.join(tags)
             self.w('raise TypeError("one of the following args is required: {tags}")',
                    tags=tags)
@@ -250,21 +254,28 @@ class FileGenerator(object):
         val_type = str(value.which())
         return getattr(value, val_type)
 
+    def _field_name(self, field):
+        if self.convert_case:
+            return from_camel_case(field.name)
+        else:
+            return field.name
+
     def visit_field(self, field, data_size, ptrs_size):
+        fname = self._field_name(field)
         which = field.which()
         if which == schema.Field.__tag__.group:
-            self.visit_field_group(field, data_size, ptrs_size)
+            self.visit_field_group(fname, field, data_size, ptrs_size)
         elif which == schema.Field.__tag__.slot:
-            self.visit_field_slot(field, data_size, ptrs_size)
+            self.visit_field_slot(fname, field, data_size, ptrs_size)
         else:
             assert False, 'Unkown field kind: %s' % field.which()
         #
         if field.discriminantValue != schema.Field.noDiscriminant:
             line = '{name} = field.Union({discriminantValue}, {name})'
-            line = line.format(name=field.name, discriminantValue=field.discriminantValue)
+            line = line.format(name=fname, discriminantValue=field.discriminantValue)
             self.w(line)
 
-    def visit_field_slot(self, field, data_size, ptrs_size):
+    def visit_field_slot(self, fname, field, data_size, ptrs_size):
         kwds = {}
         t = field.slot.type
         which = str(t.which()) # XXX
@@ -328,14 +339,14 @@ class FileGenerator(object):
         if field.slot.hadExplicitDefault and 'default' not in kwds:
             raise ValueError("explicit defaults not supported for field %s" % field)
         kwds['offset'] = delta + field.slot.offset*size
-        kwds['name'] = field.name
+        kwds['name'] = fname
         line = '{name} = ' + decl
         self.w(line.format(**kwds))
 
-    def visit_field_group(self, field, data_size, ptrs_size):
+    def visit_field_group(self, fname, field, data_size, ptrs_size):
         group = self.allnodes[field.group.typeId]
         self.visit_struct(group)
-        self.w('%s = field.Group(%s)' % (field.name, self._pyname(group)))
+        self.w('%s = field.Group(%s)' % (fname, self._pyname(group)))
 
     def visit_enum(self, node):
         name = self._shortname(node)
@@ -358,15 +369,16 @@ class FileGenerator(object):
         else:
             assert False
 
-def generate_py_source(data):
+
+def generate_py_source(data, convert_case=True):
     request = loads(data, schema.CodeGeneratorRequest)
-    gen = FileGenerator(request)
+    gen = FileGenerator(request, convert_case)
     src = gen.generate()
     return request, py.code.Source(src)
 
-def compile_file(filename):
+def compile_file(filename, convert_case=True):
     data = _capnp_compile(filename)
-    request, src = generate_py_source(data)
+    request, src = generate_py_source(data, convert_case)
     mod = types.ModuleType(filename.purebasename)
     mod.__file__ = str(filename)
     mod.__source__ = str(src)
