@@ -362,7 +362,7 @@ class TestUnionConstructors(object):
         assert str(einfo.value) == "one of the following args is required: circle, square"
 
 
-def test_convert_case(tmpdir):
+def test_convert_case_fields(tmpdir):
     schema = """
     @0xbf5147cbbecf40c1;
     struct MyStruct {
@@ -373,3 +373,16 @@ def test_convert_case(tmpdir):
     mod = compile_string(tmpdir, schema)
     assert mod.MyStruct.first_attr.name == 'first_attr'
     assert mod.MyStruct.second_attr.name == 'second_attr'
+
+def test_convert_case_enum(tmpdir):
+    schema = """
+    @0xbf5147cbbecf40c1;
+    enum Foo {
+        firstItem @0;
+        secondItem @1;
+    }
+    
+    """
+    mod = compile_string(tmpdir, schema)
+    assert mod.Foo.first_item == 0
+    assert mod.Foo.second_item == 1

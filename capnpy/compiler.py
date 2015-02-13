@@ -350,7 +350,7 @@ class FileGenerator(object):
 
     def visit_enum(self, node):
         name = self._shortname(node)
-        items = [item.name for item in node.enum.enumerants]
+        items = [self._field_name(item) for item in node.enum.enumerants]
         self._emit_enum(name, name, items)
 
     def _emit_enum(self, var_name, enum_name, items):
