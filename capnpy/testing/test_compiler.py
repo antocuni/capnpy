@@ -1,10 +1,11 @@
 import py
-from capnpy.compiler import compile_file
+from capnpy.compiler import Compiler
 
 def compile_string(tmpdir, s):
+    comp = Compiler([tmpdir])
     tmp_capnp = tmpdir.join('tmp.capnp')
     tmp_capnp.write(s)
-    return compile_file(tmp_capnp)
+    return comp.load('tmp.capnp')
 
 
 def test_primitive(tmpdir):
@@ -381,8 +382,22 @@ def test_convert_case_enum(tmpdir):
         firstItem @0;
         secondItem @1;
     }
-    
     """
     mod = compile_string(tmpdir, schema)
     assert mod.Foo.first_item == 0
     assert mod.Foo.second_item == 1
+
+
+def test_dont_load_twice(tmpdir):
+    schema = """
+    @0xbf5147cbbecf40c1;
+    struct Point {
+        x @0 :Int64;
+        y @1 :Int64;
+    }
+    """
+    tmpdir.join("tmp.capnp").write(schema)
+    comp = Compiler([tmpdir])
+    mod1 = comp.load("tmp.capnp")
+    mod2 = comp.load("tmp.capnp")
+    assert mod1 is mod2

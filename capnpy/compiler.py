@@ -370,31 +370,60 @@ class FileGenerator(object):
             assert False
 
 
-def generate_py_source(data, convert_case=True):
-    request = loads(data, schema.CodeGeneratorRequest)
-    gen = FileGenerator(request, convert_case)
-    src = gen.generate()
-    return request, py.code.Source(src)
+class Compiler(object):
 
-def compile_file(filename, convert_case=True):
-    data = _capnp_compile(filename)
-    request, src = generate_py_source(data, convert_case)
-    mod = types.ModuleType(filename.purebasename)
-    mod.__file__ = str(filename)
-    mod.__source__ = str(src)
-    exec src.compile() in mod.__dict__
-    return mod
+    def __init__(self, path, convert_case=True):
+        self.path = [py.path.local(dirname) for dirname in path]
+        self.convert_case = convert_case
+        self.modules = {}
 
-def _capnp_compile(filename):
-    # this is a hack: we use cat as a plugin of capnp compile to get the
-    # CodeGeneratorRequest bytes. There MUST be a more proper way to do that
-    proc = subprocess.Popen(['capnp', 'compile', '-o', '/bin/cat', str(filename)],
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = proc.communicate()
-    ret = proc.wait()
-    if ret != 0:
-        raise ValueError(stderr)
-    return stdout
+    def load(self, filename):
+        try:
+            return self.modules[filename]
+        except KeyError:
+            mod = self.compile_file(filename)
+            self.modules[filename] = mod
+            return mod
+
+    def generate_py_source(self, data):
+        request = loads(data, schema.CodeGeneratorRequest)
+        gen = FileGenerator(request, self.convert_case)
+        src = gen.generate()
+        return request, py.code.Source(src)
+
+    def compile_file(self, filename):
+        filename = self._find_file(filename)
+        data = self._capnp_compile(filename)
+        request, src = self.generate_py_source(data)
+        mod = types.ModuleType(filename.purebasename)
+        mod.__file__ = str(filename)
+        mod.__source__ = str(src)
+        exec src.compile() in mod.__dict__
+        return mod
+
+    def _find_file(self, filename):
+        for dirpath in self.path:
+            f = dirpath.join(filename)
+            if f.check(file=True):
+                return f
+        raise ValueError("Cannot find %s in the given path" % filename)
+
+    def _capnp_compile(self, filename):
+        # this is a hack: we use cat as a plugin of capnp compile to get the
+        # CodeGeneratorRequest bytes. There MUST be a more proper way to do that
+        cmd = ['capnp', 'compile', '-o', '/bin/cat']
+        for dirname in self.path:
+            cmd.append('-I%s' % dirname)
+        cmd.append(str(filename))
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = proc.communicate()
+        ret = proc.wait()
+        if ret != 0:
+            raise ValueError(stderr)
+        return stdout
+
+_compiler = Compiler(sys.path)
+load = _compiler.load
 
 def main():
     #data = sys.stdin.read()
