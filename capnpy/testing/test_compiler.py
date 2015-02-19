@@ -401,3 +401,24 @@ def test_dont_load_twice(tmpdir):
     mod1 = comp.load("tmp.capnp")
     mod2 = comp.load("tmp.capnp")
     assert mod1 is mod2
+    
+
+def test_import(tmpdir):
+    comp = Compiler([tmpdir])
+    tmpdir.join("p.capnp").write("""
+    @0xbf5147cbbecf40c1;
+    struct Point {
+        x @0 :Int64;
+        y @1 :Int64;
+    }
+    """)
+    tmpdir.join("tmp.capnp").write("""
+    @0xbf5147cbbecf40c2;
+    using P = import "p.capnp";
+        struct Rectangle {
+        a @0 :P.Point;
+        b @1 :P.Point;
+    }
+    """)
+    mod = comp.load("tmp.capnp")
+

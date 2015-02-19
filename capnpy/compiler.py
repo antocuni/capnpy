@@ -29,6 +29,7 @@ class FileGenerator(object):
         self.convert_case = convert_case
         self.allnodes = {} # id -> node
         self.children = defaultdict(list) # nodeId -> nested nodes
+        self.allfiles = []
  
     def w(self, *args, **kwargs):
         self.code.w(*args, **kwargs)
@@ -39,13 +40,20 @@ class FileGenerator(object):
     def _shortname(self, node):
         return node.displayName[node.displayNamePrefixLength:]
 
+    def _pyname_for_file(self, fname):
+        return '__%s' % py.path.local(fname).purebasename
+
     def _pyname(self, node):
         if node.scopeId == 0:
             return self._shortname(node)
         parent = self.allnodes[node.scopeId]
         if parent.which() == schema.Node.__tag__.file:
-            # we don't need to use fully qualified names for children of files
-            return self._shortname(node)
+            if self.current_scope == parent:
+                # no need for fully qualified names for children of the current file
+                return self._shortname(node)
+            else:
+                return '%s.%s' % (self._pyname_for_file(parent.displayName),
+                                  self._shortname(node))
         else:
             return '%s.%s' % (self._pyname(parent), self._shortname(node))
 
@@ -58,19 +66,22 @@ class FileGenerator(object):
             self.allnodes[node.id] = node
             # roots have scopeId == 0, so children[0] will contain them
             self.children[node.scopeId].append(node)
+            if node.which() == schema.Node.__tag__.file:
+                self.allfiles.append(node.displayName)
         #
         for f in request.requestedFiles:
             self.visit_file(f)
 
     def _dump_node(self, node):
         def visit(node, deep=0):
-            print '%s%s: %s' % (' ' * deep, mywhich(node), self._shortname(node))
+            print '%s%s: %s' % (' ' * deep, node.which(), self._shortname(node))
             for child in self.children[node.id]:
                 visit(child, deep+2)
         visit(node)
 
     def visit_file(self, f):
         node = self.allnodes[f.id]
+        self.current_scope = node
         self.w("# THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy")
         self.w("# do not edit by hand")
         self.w("# generated on %s" % datetime.now().strftime("%Y-%m-%d %H:%M"))
@@ -84,6 +95,8 @@ class FileGenerator(object):
         self.w("from capnpy.blob import Types")
         self.w("from capnpy.structor import structor")
         self.w("from capnpy.util import extend")
+        self.w("")
+        self.declare_imports(f)
         self.w("")
         #
         # first of all, we emit all the non-structs and "predeclare" all the
@@ -113,7 +126,13 @@ class FileGenerator(object):
         self.w("    import %s_extended # side effects" % modname)
         self.w("except ImportError:")
         self.w("    pass")
-        
+
+    def declare_imports(self, f):
+        for fname in self.allfiles:
+            if fname != f.filename:
+                self.w('{decl_name} = __compiler.load("{fname}")',
+                       decl_name = self._pyname_for_file(fname),
+                       fname = fname)
 
     def declare_struct(self, node):
         name = self._shortname(node)
@@ -378,6 +397,7 @@ class Compiler(object):
         self.modules = {}
 
     def load(self, filename):
+        filename = self._find_file(filename)
         try:
             return self.modules[filename]
         except KeyError:
@@ -392,16 +412,18 @@ class Compiler(object):
         return request, py.code.Source(src)
 
     def compile_file(self, filename):
-        filename = self._find_file(filename)
         data = self._capnp_compile(filename)
         request, src = self.generate_py_source(data)
         mod = types.ModuleType(filename.purebasename)
         mod.__file__ = str(filename)
         mod.__source__ = str(src)
+        mod.__dict__['__compiler'] = self
         exec src.compile() in mod.__dict__
         return mod
 
     def _find_file(self, filename):
+        if filename.startswith('/'):
+            return py.path.local(filename)
         for dirpath in self.path:
             f = dirpath.join(filename)
             if f.check(file=True):
