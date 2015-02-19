@@ -10,6 +10,6 @@ def test_extend():
         def foo(self):
             return 123
 
-    assert Bar is None
+    assert Bar is Foo
     assert Foo.a == 42
     assert Foo().foo() == 123
