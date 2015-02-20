@@ -5,7 +5,7 @@ def compile_string(tmpdir, s):
     comp = Compiler([tmpdir])
     tmp_capnp = tmpdir.join('tmp.capnp')
     tmp_capnp.write(s)
-    return comp.load('tmp.capnp')
+    return comp.load_schema('tmp.capnp')
 
 
 def test_primitive(tmpdir):
@@ -398,8 +398,8 @@ def test_dont_load_twice(tmpdir):
     """
     tmpdir.join("tmp.capnp").write(schema)
     comp = Compiler([tmpdir])
-    mod1 = comp.load("tmp.capnp")
-    mod2 = comp.load("tmp.capnp")
+    mod1 = comp.load_schema("tmp.capnp")
+    mod2 = comp.load_schema("tmp.capnp")
     assert mod1 is mod2
     
 
@@ -420,5 +420,5 @@ def test_import(tmpdir):
         b @1 :P.Point;
     }
     """)
-    mod = comp.load("tmp.capnp")
+    mod = comp.load_schema("tmp.capnp")
 

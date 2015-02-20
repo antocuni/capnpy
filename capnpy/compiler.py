@@ -130,7 +130,7 @@ class FileGenerator(object):
     def declare_imports(self, f):
         for fname in self.allfiles:
             if fname != f.filename:
-                self.w('{decl_name} = __compiler.load("{fname}")',
+                self.w('{decl_name} = __compiler.load_schema("{fname}")',
                        decl_name = self._pyname_for_file(fname),
                        fname = fname)
 
@@ -396,7 +396,7 @@ class Compiler(object):
         self.convert_case = convert_case
         self.modules = {}
 
-    def load(self, filename):
+    def load_schema(self, filename):
         filename = self._find_file(filename)
         try:
             return self.modules[filename]
@@ -445,7 +445,7 @@ class Compiler(object):
         return stdout
 
 _compiler = Compiler(sys.path)
-load = _compiler.load
+load_schema = _compiler.load_schema
 
 def main():
     #data = sys.stdin.read()
