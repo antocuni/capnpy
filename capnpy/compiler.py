@@ -89,12 +89,16 @@ class FileGenerator(object):
         for f in self.request.requestedFiles:
             self.w("#   - %s" % f.filename)
         self.w("")
-        self.w("from capnpy.struct_ import Struct, undefined")
-        self.w("from capnpy import field")
-        self.w("from capnpy.enum import enum")
-        self.w("from capnpy.blob import Types")
-        self.w("from capnpy.structor import structor")
-        self.w("from capnpy.util import extend")
+        with self.block("class __(object):"):
+            self.w("from capnpy.struct_ import Struct, undefined")
+            self.w("from capnpy import field")
+            self.w("from capnpy.enum import enum")
+            self.w("from capnpy.blob import Types")
+            self.w("from capnpy.structor import structor")
+            self.w("from capnpy.util import extend")
+            self.w("enum = staticmethod(enum)")
+            self.w("structor = staticmethod(structor)")
+            self.w("extend = staticmethod(extend)")
         self.w("")
         self.declare_imports(f)
         self.w("")
@@ -136,7 +140,7 @@ class FileGenerator(object):
 
     def declare_struct(self, node):
         name = self._shortname(node)
-        with self.block("class %s(Struct):" % name):
+        with self.block("class %s(__.Struct):" % name):
             for child in self.children[node.id]:
                 if child.which() == schema.Node.__tag__.struct:
                     self.declare_struct(child)
@@ -145,7 +149,7 @@ class FileGenerator(object):
     def visit_struct(self, node):
         name = self._pyname(node)
         self.w("")
-        self.w("@extend(%s)" % name)
+        self.w("@__.extend(%s)" % name)
         with self.block("class _:"):
             data_size = node.struct.dataWordCount
             ptrs_size = node.struct.pointerCount
@@ -191,7 +195,7 @@ class FileGenerator(object):
         # normally, __new__ is special-cased at class creation time and
         # automatically turned into a staticmethod; however, here we are
         # inside an @extend body, so we need to call it manually
-        self.w("__new__ = structor('__new__', __data_size__, __ptrs_size__, {flist})",
+        self.w("__new__ = __.structor('__new__', __data_size__, __ptrs_size__, {flist})",
                flist=flist)
         self.w("__new__ = staticmethod(__new__)")
 
@@ -222,7 +226,7 @@ class FileGenerator(object):
             fnames = ['%s.field' % self._field_name(tag_field)]
             fnames += [self._field_name(f) for f in std_fields]
             flist = "[%s]" % ', '.join(fnames)
-            self.w("new_{name} = classmethod(structor('new_{name}', __data_size__, "
+            self.w("new_{name} = classmethod(__.structor('new_{name}', __data_size__, "
                    "__ptrs_size__, {flist}, __tag_offset__, __tag__.{name}))",
                    name=self._field_name(tag_field), flist=flist)
         #
@@ -237,12 +241,12 @@ class FileGenerator(object):
         #     raise TypeError("one of the following args is required: square, circle")
         args = [self._field_name(f) for f in std_fields]
         for f in tag_fields:
-            args.append('%s=undefined' % self._field_name(f))
+            args.append('%s=__.undefined' % self._field_name(f))
         self.w('@staticmethod')
         with self.block('def __new__(cls, {arglist}):', arglist=self.code.args(args)):
             for tag_field in tag_fields:
                 tag_field_name = self._field_name(tag_field)
-                with self.block('if {name} is not undefined:', name=tag_field_name):
+                with self.block('if {name} is not __.undefined:', name=tag_field_name):
                     # emit the series of _assert_undefined, for each other tag field
                     for other_tag_field in tag_fields:
                         if other_tag_field is tag_field:
@@ -290,7 +294,7 @@ class FileGenerator(object):
             assert False, 'Unkown field kind: %s' % field.which()
         #
         if field.discriminantValue != schema.Field.noDiscriminant:
-            line = '{name} = field.Union({discriminantValue}, {name})'
+            line = '{name} = __.field.Union({discriminantValue}, {name})'
             line = line.format(name=fname, discriminantValue=field.discriminantValue)
             self.w(line)
 
@@ -304,8 +308,8 @@ class FileGenerator(object):
             delta = 0
             kwds['typename'] = t.name
             kwds['default'] = self._get_value(field.slot.defaultValue)
-            decl = ('field.Primitive("{name}", {offset}, '
-                    'Types.{typename}, default={default})')
+            decl = ('__.field.Primitive("{name}", {offset}, '
+                    '__.Types.{typename}, default={default})')
         #
         elif which == 'bool':
             size = 0
@@ -314,44 +318,44 @@ class FileGenerator(object):
             kwds['byteoffset'] = byteoffset
             kwds['bitoffset'] = bitoffset
             kwds['default'] = self._get_value(field.slot.defaultValue)
-            decl = 'field.Bool("{name}", {byteoffset}, {bitoffset}, default={default})'
+            decl = '__.field.Bool("{name}", {byteoffset}, {bitoffset}, default={default})'
         elif which == 'text':
             size = 8
             delta = data_size*8 # it's a pointer
-            decl = 'field.String("{name}", {offset})'
+            decl = '__.field.String("{name}", {offset})'
         #
         elif which == 'data':
             size = 8
             delta = data_size*8 # it's a pointer
-            decl = 'field.Data("{name}", {offset})'
+            decl = '__.field.Data("{name}", {offset})'
         #
         elif which == 'struct':
             size = 8
             delta = data_size*8 # it's a pointer
             kwds['structname'] = self._get_typename(field.slot.type)
-            decl = 'field.Struct("{name}", {offset}, {structname})'
+            decl = '__.field.Struct("{name}", {offset}, {structname})'
         #
         elif which == 'list':
             size = 8
             delta = data_size*8 # it's a pointer
             kwds['itemtype'] = self._get_typename(field.slot.type.list.elementType)
-            decl = 'field.List("{name}", {offset}, {itemtype})'
+            decl = '__.field.List("{name}", {offset}, {itemtype})'
         #
         elif which == 'enum':
             size = 2
             delta = 0
             kwds['enumname'] = self._get_typename(field.slot.type)
-            decl = 'field.Enum("{name}", {offset}, {enumname})'
+            decl = '__.field.Enum("{name}", {offset}, {enumname})'
         #
         elif which == 'void':
             size = 0
             delta = 0
-            decl = 'field.Void("{name}")'
+            decl = '__.field.Void("{name}")'
         #
         elif which == 'anyPointer':
             size = 8
             delta = data_size*8
-            decl = 'field.AnyPointer("{name}", {offset})'
+            decl = '__.field.AnyPointer("{name}", {offset})'
         else:
             raise ValueError('Unknown type: %s' % field.slot.type)
         #
@@ -365,7 +369,7 @@ class FileGenerator(object):
     def visit_field_group(self, fname, field, data_size, ptrs_size):
         group = self.allnodes[field.group.typeId]
         self.visit_struct(group)
-        self.w('%s = field.Group(%s)' % (fname, self._pyname(group)))
+        self.w('%s = __.field.Group(%s)' % (fname, self._pyname(group)))
 
     def visit_enum(self, node):
         name = self._shortname(node)
@@ -374,13 +378,13 @@ class FileGenerator(object):
 
     def _emit_enum(self, var_name, enum_name, items):
         items = map(repr, items)
-        decl = "%s = enum(%r, (%s))" % (var_name, enum_name, ', '.join(items))
+        decl = "%s = __.enum(%r, (%s))" % (var_name, enum_name, ', '.join(items))
         self.w(decl)
 
     def _get_typename(self, t):
         which = str(t.which()) # XXX
         if t.is_builtin():
-            return 'Types.%s' % which
+            return '__.Types.%s' % which
         elif which == 'struct':
             return self._pyname(self.allnodes[t.struct.typeId])
         elif which == 'enum':

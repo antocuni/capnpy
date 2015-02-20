@@ -388,6 +388,25 @@ def test_convert_case_enum(tmpdir):
     assert mod.Foo.second_item == 1
 
 
+def test_name_clash(tmpdir):
+    schema = """
+    @0xbf5147cbbecf40c1;
+    struct Types {
+    }
+    struct Point {
+        x @0 :Int64;
+        y @1 :Int64;
+    }
+    """
+    mod = compile_string(tmpdir, schema)
+    #
+    buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+    p = mod.Point.from_buffer(buf, 0, None)
+    assert p.x == 1
+    assert p.y == 2
+
+
 def test_dont_load_twice(tmpdir):
     schema = """
     @0xbf5147cbbecf40c1;
