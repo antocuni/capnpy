@@ -41,7 +41,7 @@ class FileGenerator(object):
         return node.displayName[node.displayNamePrefixLength:]
 
     def _pyname_for_file(self, fname):
-        return '__%s' % py.path.local(fname).purebasename
+        return '_%s' % py.path.local(fname).purebasename
 
     def _pyname(self, node):
         if node.scopeId == 0:
@@ -99,7 +99,7 @@ class FileGenerator(object):
             self.w("enum = staticmethod(enum)")
             self.w("structor = staticmethod(structor)")
             self.w("extend = staticmethod(extend)")
-        self.w("")
+
         self.declare_imports(f)
         self.w("")
         #
@@ -148,9 +148,10 @@ class FileGenerator(object):
 
     def visit_struct(self, node):
         name = self._pyname(node)
+        shortname = self._shortname(node)
         self.w("")
-        self.w("@__.extend(%s)" % name)
-        with self.block("class _:"):
+        self.w("@__.extend({name})", name=name)
+        with self.block("class {shortname}:", shortname=shortname):
             data_size = node.struct.dataWordCount
             ptrs_size = node.struct.pointerCount
             self.w("__data_size__ = %d" % data_size)
