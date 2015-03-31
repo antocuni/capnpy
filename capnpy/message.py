@@ -1,5 +1,6 @@
 import struct
 from capnpy.blob import Blob
+from capnpy.ptr import StructPtr
 
 
 def loads(buf, payload_type):
@@ -50,4 +51,22 @@ def _load_message(buf):
         segment_offsets.append(offset)
 
     return Blob.from_buffer(buf, message_offset, tuple(segment_offsets))
+
+def dumps(obj):
+    """
+    Dump a struct into a message, returned as a string of bytes.
+
+    The message is encoded using the recommended capnp format for serializing
+    messages over a stream. It always uses a single segment.
+    """
+    a = obj._get_body_start()
+    b = obj._get_extra_end()
+    buf = obj._buf[a:b]
+    ptr = StructPtr.new(0, obj.__data_size__, obj.__ptrs_size__)
+    #
+    segment_count = 1
+    assert len(buf) % 8 == 0
+    segment_size = len(buf)/8 + 1 # +1 is for the ptr
+    header = struct.pack('iil', segment_count-1, segment_size, ptr)
+    return header + buf
 

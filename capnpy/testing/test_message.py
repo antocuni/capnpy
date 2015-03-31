@@ -1,10 +1,11 @@
 import py
-from capnpy.message import loads, _load_message
-from capnpy.blob import Blob, Types
+from capnpy.message import loads, _load_message, dumps
+from capnpy.blob import Blob, Types, format_buffer
+from capnpy.struct_ import Struct
 
 def test_loads():
     buf = ('\x00\x00\x00\x00\x03\x00\x00\x00'   # message header: 1 segment, size 3 words
-           '\x00\x00\x00\x00\x02\x00\x01\x00'   # ptr to payload (Point {x, y})
+           '\x00\x00\x00\x00\x02\x00\x00\x00'   # ptr to payload (Point {x, y})
            '\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
            '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
 
@@ -32,3 +33,18 @@ def test_segments():
     msg = _load_message(buf)
     assert msg._offset == 24
     assert msg._segment_offsets == (24, 24+16*8, 24+(16+32)*8, 24+(16+32+64)*8)
+
+def test_dumps():
+    class Point(Struct):
+        __data_size__ = 2
+        __ptrs_size__ = 0
+    
+    buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
+    p = Point.from_buffer(buf, 0, None)
+    msg = dumps(p)
+    exp = ('\x00\x00\x00\x00\x03\x00\x00\x00'   # message header: 1 segment, size 3 words
+           '\x00\x00\x00\x00\x02\x00\x00\x00'   # ptr to payload (Point {x, y})
+           '\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
+    assert msg == exp
