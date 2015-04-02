@@ -65,7 +65,9 @@ def dumps(obj):
     ptr = StructPtr.new(0, obj.__data_size__, obj.__ptrs_size__)
     #
     segment_count = 1
-    assert len(buf) % 8 == 0
+    if len(buf) % 8 != 0:
+        padding = 8 - (len(buf) % 8)
+        buf += '\x00' * padding
     segment_size = len(buf)/8 + 1 # +1 is for the ptr
     header = struct.pack('iil', segment_count-1, segment_size, ptr)
     return header + buf

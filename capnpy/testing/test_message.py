@@ -48,3 +48,21 @@ def test_dumps():
            '\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
            '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
     assert msg == exp
+
+def test_dumps_alignment():
+    class Person(Struct):
+        __data_size__ = 1
+        __ptrs_size__ = 1
+
+    buf = ('\x20\x00\x00\x00\x00\x00\x00\x00'   # age=32
+           '\x01\x00\x00\x00\x2a\x00\x00\x00'   # name=ptr
+           'J' 'o' 'h' 'n' '\x00\x00\x00\x00')  # John
+
+    p = Person.from_buffer(buf, 0, None)
+    msg = dumps(p)
+    exp = ('\x00\x00\x00\x00\x04\x00\x00\x00'   # message header: 1 segment, size 3 words
+           '\x00\x00\x00\x00\x01\x00\x01\x00'   # ptr to payload
+           '\x20\x00\x00\x00\x00\x00\x00\x00'   # age=32
+           '\x01\x00\x00\x00\x2a\x00\x00\x00'   # name=ptr
+           'J' 'o' 'h' 'n' '\x00\x00\x00\x00')  # John
+    assert msg == exp
