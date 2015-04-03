@@ -29,7 +29,6 @@ class FileGenerator(object):
         self.convert_case = convert_case
         self.allnodes = {} # id -> node
         self.children = defaultdict(list) # nodeId -> nested nodes
-        self.allfiles = []
  
     def w(self, *args, **kwargs):
         self.code.w(*args, **kwargs)
@@ -66,8 +65,6 @@ class FileGenerator(object):
             self.allnodes[node.id] = node
             # roots have scopeId == 0, so children[0] will contain them
             self.children[node.scopeId].append(node)
-            if node.which() == schema.Node.__tag__.file:
-                self.allfiles.append(node.displayName)
         #
         for f in request.requestedFiles:
             self.visit_file(f)
@@ -132,11 +129,11 @@ class FileGenerator(object):
         self.w("    pass")
 
     def declare_imports(self, f):
-        for fname in self.allfiles:
-            if fname != f.filename:
-                self.w('{decl_name} = __compiler.load_schema("{fname}")',
-                       decl_name = self._pyname_for_file(fname),
-                       fname = fname)
+        for imp in f.imports:
+            fname = imp.name
+            self.w('{decl_name} = __compiler.load_schema("{fname}")',
+                   decl_name = self._pyname_for_file(fname),
+                   fname = fname)
 
     def declare_struct(self, node):
         name = self._shortname(node)
@@ -427,8 +424,8 @@ class Compiler(object):
         return mod
 
     def _find_file(self, filename):
-        if filename.startswith('/'):
-            return py.path.local(filename)
+        if not filename.startswith('/'):
+            raise ValueError("schema paths must be absolute: %s" % filename)
         for dirpath in self.path:
             f = dirpath.join(filename)
             if f.check(file=True):
