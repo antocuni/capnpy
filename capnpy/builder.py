@@ -60,7 +60,7 @@ class AbstractBuilder(object):
         # emit the tag
         tag = StructPtr.new(item_count, data_size, ptrs_size)
         self._alloc(struct.pack('<q', tag))
-        return ListPtr.new(ptr_offset/8, ListPtr.SIZE_COMPOSITE, total_words)
+        return ListPtr.new(ptr_offset, ListPtr.SIZE_COMPOSITE, total_words)
 
     def alloc_list(self, offset, listcls, item_type, lst):
         from capnpy.listbuilder import ListBuilder
