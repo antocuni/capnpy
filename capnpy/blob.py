@@ -85,6 +85,8 @@ class Blob(object):
 
     def _follow_generic_pointer(self, ptr_offset):
         ptr = self._read_ptr(ptr_offset)
+        if ptr == 0:
+            return None
         ptr = ptr.specialize()
         blob_offet = ptr.deref(ptr_offset)
         if ptr.kind == StructPtr.KIND:

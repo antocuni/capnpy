@@ -62,21 +62,36 @@ class Struct(Blob):
     def _get_extra_start(self):
         if self.__ptrs_size__ == 0:
             return self._get_body_end()
-        ptr_offset = self._ptr_offset_by_index(0)
-        ptr = self._read_ptr(ptr_offset)
-        assert ptr.kind != FarPtr.KIND
-        return self._offset + ptr.deref(ptr_offset)
+        for i in range(self.__ptrs_size__):
+            ptr_offset = self._ptr_offset_by_index(i)
+            ptr = self._read_ptr(ptr_offset)
+            assert ptr.kind != FarPtr.KIND
+            if ptr != 0:
+                return self._offset + ptr.deref(ptr_offset)
+        #
+        # if we are here, it means that all ptrs are null
+        return self._get_body_end()
 
     def _get_extra_end(self):
         if self.__ptrs_size__ == 0:
             return self._get_body_end()
         #
-        # the end of our extra correspond to the end of our last pointer: see
-        # doc/normalize.rst for an explanation of why we can compute the extra
-        # range this way
-        ptr_offset = self._ptr_offset_by_index(self.__ptrs_size__ - 1)
-        blob = self._follow_generic_pointer(ptr_offset)
-        return blob._get_end()
+        # the end of our extra correspond to the end of our last non-null
+        # pointer: see doc/normalize.rst for an explanation of why we can
+        # compute the extra range this way
+        #
+        # XXX: we should probably unroll this loop
+        i = self.__ptrs_size__ - 1 # start from the last ptr
+        while i >= 0:
+            ptr_offset = self._ptr_offset_by_index(i)
+            blob = self._follow_generic_pointer(ptr_offset)
+            if blob is not None:
+                return blob._get_end()
+            i -= 1
+        #
+        # if we are here, it means that ALL ptrs are NULL, so we don't have
+        # any extra section
+        return self._get_body_end()
 
     def _get_end(self):
         return self._get_extra_end()
