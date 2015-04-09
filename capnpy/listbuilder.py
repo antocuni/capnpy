@@ -113,8 +113,9 @@ class StructItemBuilder(object):
             # read pointer, update its offset, and pack it
             ptrstart = (data_size+j) * 8
             ptr = item._read_ptr(ptrstart)
-            assert ptr.kind != FarPtr.KIND
-            ptr = Ptr.new(ptr.kind, ptr.offset+additional_offset, ptr.extra)
+            if ptr != 0:
+                assert ptr.kind != FarPtr.KIND
+                ptr = Ptr.new(ptr.kind, ptr.offset+additional_offset, ptr.extra)
             s = struct.pack('q', ptr)
             parts.append(s)
         #
