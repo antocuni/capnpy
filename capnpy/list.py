@@ -65,22 +65,55 @@ class List(Blob):
 
     def _get_body_end(self):
         if self._size_tag == ListPtr.SIZE_COMPOSITE:
-            # lazy access to GenericStruct to avoid circular imports
-            GenericStruct = capnpy.struct_.GenericStruct
-            struct_offset = self._get_offset_for_item(self._item_count-1)
+            return self._get_body_end_composite()
+        elif self._size_tag == ListPtr.SIZE_PTR:
+            return self._get_body_end_ptr()
+        else:
+            return self._get_body_end_scalar()
+
+    def _get_body_end_composite(self):
+        # lazy access to GenericStruct to avoid circular imports
+        GenericStruct = capnpy.struct_.GenericStruct
+        #
+        # to calculate the end the of the list, there are three cases
+        #
+        # 1) if the items has no pointers, the end of the list correspond
+        #    to the end of the items
+        #
+        # 2) if they HAVE pointers but they are ALL null, it's the same as (1)
+        #
+        # 3) if they have pointers, the end of the list is at the end of
+        #    the extra of the latest item having a pointer field set
+
+        if self._tag.ptrs_size == 0:
+            # case 1
+            return self._get_body_end_scalar() # +8 is for the tag
+
+        i = self._item_count-1
+        while i >= 0:
+            struct_offset = self._get_offset_for_item(i)
             struct_offset += self._offset
             mystruct = GenericStruct.from_buffer_and_size(self._buf,
                                                           struct_offset,
                                                           self._segment_offsets,
                                                           self._tag.data_size,
                                                           self._tag.ptrs_size)
-            return mystruct._get_extra_end()
-        elif self._size_tag == ListPtr.SIZE_PTR:
-            ptr_offset = self._get_offset_for_item(self._item_count-1)
-            blob = self._follow_generic_pointer(ptr_offset)
-            return blob._get_end()
-        else:
-            return self._offset + self._item_length*self._item_count
+            end = mystruct._get_extra_end_maybe()
+            if end is not None:
+                # case 3
+                return end
+            i -= 1
+
+        # case 2
+        return self._get_body_end_scalar()+8 # +8 is for the tag
+
+    def _get_body_end_ptr(self):
+        ptr_offset = self._get_offset_for_item(self._item_count-1)
+        blob = self._follow_generic_pointer(ptr_offset)
+        return blob._get_end()
+
+    def _get_body_end_scalar(self):
+        return self._offset + self._item_length*self._item_count
 
     def _get_end(self):
         return self._get_body_end()

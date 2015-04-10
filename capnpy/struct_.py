@@ -72,9 +72,9 @@ class Struct(Blob):
         # if we are here, it means that all ptrs are null
         return self._get_body_end()
 
-    def _get_extra_end(self):
+    def _get_extra_end_maybe(self):
         if self.__ptrs_size__ == 0:
-            return self._get_body_end()
+            return None # no extra
         #
         # the end of our extra correspond to the end of our last non-null
         # pointer: see doc/normalize.rst for an explanation of why we can
@@ -91,7 +91,13 @@ class Struct(Blob):
         #
         # if we are here, it means that ALL ptrs are NULL, so we don't have
         # any extra section
-        return self._get_body_end()
+        return None
+
+    def _get_extra_end(self):
+        end = self._get_extra_end_maybe()
+        if end is None:
+            return self._get_body_end()
+        return end
 
     def _get_end(self):
         return self._get_extra_end()

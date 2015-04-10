@@ -183,6 +183,103 @@ def test_list_composite_body_range():
     assert end == 120
 
 
+def test_list_composite_body_range():
+    ## struct Point {
+    ##   x @0 :Int64;
+    ##   y @1 :Int64;
+    ##   name @2 :Text;
+    ## }
+    buf = ('garbage0'
+           '\x01\x00\x00\x00\x4f\x00\x00\x00'   # ptr to list
+           '\x0c\x00\x00\x00\x02\x00\x01\x00'   # list tag
+           '\x01\x00\x00\x00\x00\x00\x00\x00'   # points[0].x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00'   # points[0].y == 2
+           '\x19\x00\x00\x00\x42\x00\x00\x00'   # points[0].name == ptr
+           '\x03\x00\x00\x00\x00\x00\x00\x00'   # points[1].x == 3
+           '\x04\x00\x00\x00\x00\x00\x00\x00'   # points[1].y == 4     
+           '\x11\x00\x00\x00\x42\x00\x00\x00'   # points[1].name == ptr
+           '\x05\x00\x00\x00\x00\x00\x00\x00'   # points[2].x == 5
+           '\x06\x00\x00\x00\x00\x00\x00\x00'   # points[2].y == 6
+           '\x09\x00\x00\x00\x42\x00\x00\x00'   # points[2].name == ptr
+           'P' 'o' 'i' 'n' 't' ' ' 'A' '\x00'
+           'P' 'o' 'i' 'n' 't' ' ' 'B' '\x00'
+           'P' 'o' 'i' 'n' 't' ' ' 'C' '\x00')
+
+    blob = Blob.from_buffer(buf, 8, None)
+    points = blob._read_list(0, StructList, Blob)
+    start, end = points._get_body_range()
+    assert start == 16
+    assert end == 120
+
+def test_list_composite_nullptr_body_range():
+    ## struct Point {
+    ##   x @0 :Int64;
+    ##   y @1 :Int64;
+    ##   name @2 :Text;
+    ## }
+    buf = ('garbage0'
+           '\x01\x00\x00\x00\x4f\x00\x00\x00'   # ptr to list
+           '\x0c\x00\x00\x00\x02\x00\x01\x00'   # list tag
+           '\x01\x00\x00\x00\x00\x00\x00\x00'   # points[0].x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00'   # points[0].y == 2
+           '\x19\x00\x00\x00\x42\x00\x00\x00'   # points[0].name == ptr
+           '\x03\x00\x00\x00\x00\x00\x00\x00'   # points[1].x == 3
+           '\x04\x00\x00\x00\x00\x00\x00\x00'   # points[1].y == 4     
+           '\x11\x00\x00\x00\x42\x00\x00\x00'   # points[1].name == ptr
+           '\x05\x00\x00\x00\x00\x00\x00\x00'   # points[2].x == 5
+           '\x06\x00\x00\x00\x00\x00\x00\x00'   # points[2].y == 6
+           '\x00\x00\x00\x00\x00\x00\x00\x00'   # points[2].name == NULL
+           'P' 'o' 'i' 'n' 't' ' ' 'A' '\x00'
+           'P' 'o' 'i' 'n' 't' ' ' 'B' '\x00')
+
+    blob = Blob.from_buffer(buf, 8, None)
+    points = blob._read_list(0, StructList, Blob)
+    start, end = points._get_body_range()
+    assert start == 16
+    assert end == 112
+
+
+def test_list_composite_all_nullptr_body_range():
+    ## struct Point {
+    ##   x @0 :Int64;
+    ##   y @1 :Int64;
+    ##   name @2 :Text;
+    ## }
+    buf = ('garbage0'
+           '\x01\x00\x00\x00\x4f\x00\x00\x00'   # ptr to list
+           '\x0c\x00\x00\x00\x02\x00\x01\x00'   # list tag
+           '\x01\x00\x00\x00\x00\x00\x00\x00'   # points[0].x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00'   # points[0].y == 2
+           '\x00\x00\x00\x00\x00\x00\x00\x00'   # points[0].name == NULL
+           '\x03\x00\x00\x00\x00\x00\x00\x00'   # points[1].x == 3
+           '\x04\x00\x00\x00\x00\x00\x00\x00'   # points[1].y == 4     
+           '\x00\x00\x00\x00\x00\x00\x00\x00'   # points[1].name == NULL
+           '\x05\x00\x00\x00\x00\x00\x00\x00'   # points[2].x == 5
+           '\x06\x00\x00\x00\x00\x00\x00\x00'   # points[2].y == 6
+           '\x00\x00\x00\x00\x00\x00\x00\x00')  # points[2].name == NULL
+
+    blob = Blob.from_buffer(buf, 8, None)
+    points = blob._read_list(0, StructList, Blob)
+    start, end = points._get_body_range()
+    assert start == 16
+    assert end == 96
+
+def test_list_composite_noptr_body_range():
+    buf = ('garbage0'
+           '\x01\x00\x00\x00\x27\x00\x00\x00'   # ptr to list
+           '\x08\x00\x00\x00\x02\x00\x00\x00'   # list tag
+           '\x01\x00\x00\x00\x00\x00\x00\x00'   # p[0].x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00'   # p[0].y == 2
+           '\x03\x00\x00\x00\x00\x00\x00\x00'   # p[1].x == 3
+           '\x04\x00\x00\x00\x00\x00\x00\x00'   # p[1].y == 4
+           'garbage1'
+           'garbage2')
+    blob = Blob.from_buffer(buf, 8, None)
+    points = blob._read_list(0, StructList, Blob)
+    start, end = points._get_body_range()
+    assert start == 16
+    assert end == 48
+
 def test_list_of_pointers():
     buf = ('garbage0'
            '\x01\x00\x00\x00\x1e\x00\x00\x00'   # ptr to list
