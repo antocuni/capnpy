@@ -1,6 +1,6 @@
 import struct
 from capnpy.ptr import Ptr, ListPtr, FarPtr
-from capnpy.blob import Types
+from capnpy.blob import Types, format_buffer
 from capnpy.builder import AbstractBuilder
 
 class ListBuilder(AbstractBuilder):
@@ -23,6 +23,9 @@ class ListBuilder(AbstractBuilder):
         listbody = ''.join(self._items)
         assert len(listbody) == self._length
         return listbody + ''.join(self._extra)
+
+    def _print_buf(self):
+        print format_buffer(self.build())
 
 
 class PrimitiveItemBuilder(object):

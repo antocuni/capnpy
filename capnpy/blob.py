@@ -23,6 +23,7 @@ class Blob(object):
         self = object.__new__(cls)
         self._buf = buf
         self._offset = offset
+        assert self._offset < len(self._buf)
         self._segment_offsets = segment_offsets
         return self
 
