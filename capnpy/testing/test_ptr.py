@@ -60,6 +60,14 @@ def test_ListPtr_new():
     assert ptr.item_count == 200
     assert ptr == 0x0000064700000101
     
+def test_signedness():
+    #       0000001          item_count<<1
+    #              7         item_size
+    #               ffffffe0 offset<<2
+    #                      1 kind
+    ptr = 0x00000017ffffffe1
+    ptr = ListPtr(ptr)
+    assert ptr.offset == -8
 
 def test_FarPtr():
     #       00000001         target

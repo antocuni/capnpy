@@ -1,4 +1,5 @@
 import struct
+from pypytools import cast
 
 class Ptr(int):
     ## lsb                      generic pointer                      msb
@@ -30,8 +31,8 @@ class Ptr(int):
 
     @property
     def offset(self):
-        return self>>2 & 0x3fffffff
-
+        return cast.as_signed(self>>2 & 0x3fffffff, 30)
+        
     @property
     def extra(self):
         return self>>32
@@ -188,6 +189,7 @@ class FarPtr(Ptr):
         """
         if blob._segment_offsets is None:
             raise ValueError("Cannot follow a far pointer if there is no segment data")
+        assert self.landing_pad == 0
         segment_start = blob._segment_offsets[self.target] # in bytes
         abs_offset  = segment_start + self.offset*8
         rel_offset = abs_offset - blob._offset
