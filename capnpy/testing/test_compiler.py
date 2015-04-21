@@ -1,8 +1,11 @@
 import py
+import capnpy
 from capnpy.compiler import Compiler
 
 def compile_string(tmpdir, s):
-    comp = Compiler([tmpdir])
+    # root is needed to be able to import capnpy/py.capnp
+    root = py.path.local(capnpy.__file__).dirpath('..')
+    comp = Compiler([root, tmpdir])
     tmp_capnp = tmpdir.join('tmp.capnp')
     tmp_capnp.write(s)
     return comp.load_schema('/tmp.capnp')
@@ -463,3 +466,18 @@ def test_import_absolute(tmpdir):
     """)
     mod = comp.load_schema("/two/tmp.capnp")
 
+def test_annotation(tmpdir):
+    schema = """
+    @0xbf5147cbbecf40c1;
+    using Py = import "/capnpy/py.capnp";
+    struct Foo {
+        xIsNull @0 :Int8;
+        x @1 :Int64 $Py.nullable("xIsNull");
+    }
+    """
+    mod = compile_string(tmpdir, schema)
+    buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+    foo = mod.Foo.from_buffer(buf, 0, None)
+    assert foo.x_is_null
+    assert foo.x is None

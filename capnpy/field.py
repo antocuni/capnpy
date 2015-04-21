@@ -206,3 +206,21 @@ class AnyPointer(object):
 
     def __repr__(self):
         return '<Field %s +%d: AnyPointer>' % (self.name, self.offset)
+
+
+class Nullable(object):
+
+    def __init__(self, data_field, isnull_field):
+        self.data_field = data_field
+        self.isnull_field = isnull_field
+
+    def __get__(self, blob, cls):
+        if blob is None:
+            return self
+        isnull = self.isnull_field.__get__(blob, cls)
+        if isnull:
+            return None
+        return self.data_field.__get__(blob, cls)
+
+    def __repr__(self):
+        return '<%s, NULL when %s>' % (self.data_field, self.isnull_field)

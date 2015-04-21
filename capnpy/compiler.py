@@ -275,11 +275,14 @@ class FileGenerator(object):
         val_type = str(value.which())
         return getattr(value, val_type)
 
-    def _field_name(self, field):
+    def _convert_name(self, name):
         if self.convert_case:
-            return from_camel_case(field.name)
+            return from_camel_case(name)
         else:
-            return field.name
+            return name
+
+    def _field_name(self, field):
+        return self._convert_name(field.name)
 
     def visit_field(self, field, data_size, ptrs_size):
         fname = self._field_name(field)
@@ -295,6 +298,19 @@ class FileGenerator(object):
             line = '{name} = __.field.Union({discriminantValue}, {name})'
             line = line.format(name=fname, discriminantValue=field.discriminantValue)
             self.w(line)
+        #
+        isnull_field = self._is_nullable(field)
+        if isnull_field:
+            line = '{name} = __.field.Nullable({name}, {isnull_field})'
+            line = line.format(name=fname, isnull_field=isnull_field)
+            self.w(line)
+
+    def _is_nullable(self, field):
+        for ann in field.annotations or []:
+            ann_node = self.allnodes[ann.id]
+            if ann_node.displayName == "capnpy/py.capnp:nullable":
+                return self._convert_name(ann.value.text)
+        return None
 
     def visit_field_slot(self, fname, field, data_size, ptrs_size):
         kwds = {}
@@ -439,6 +455,7 @@ class Compiler(object):
         for dirname in self.path:
             cmd.append('-I%s' % dirname)
         cmd.append(str(filename))
+        #print ' '.join(cmd)
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = proc.communicate()
         ret = proc.wait()
