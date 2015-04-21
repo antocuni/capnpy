@@ -47,7 +47,7 @@ class FileGenerator(object):
             return self._shortname(node)
         parent = self.allnodes[node.scopeId]
         if parent.which() == schema.Node.__tag__.file:
-            if self.current_scope == parent:
+            if self.current_scope.id == parent.id:
                 # no need for fully qualified names for children of the current file
                 return self._shortname(node)
             else:
