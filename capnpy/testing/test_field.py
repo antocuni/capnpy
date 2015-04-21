@@ -135,7 +135,7 @@ def test_void():
     class Foo(Struct):
         myvoid = field.Void('myvoid')
     
-    f = Foo.from_buffer('', 0, None)
+    f = Foo.from_buffer('somedata', 0, None)
     assert f.myvoid is None
     assert repr(Foo.myvoid) == "<Field myvoid: Void>"
 
@@ -247,6 +247,6 @@ def test_anyPointer():
     class Foo(Struct):
         x = field.AnyPointer('x', 0)
 
-    f = Foo.from_buffer('', 0, None)
+    f = Foo.from_buffer('somedata', 0, None)
     py.test.raises(ValueError, "f.x")
     assert repr(Foo.x) == '<Field x +0: AnyPointer>'
