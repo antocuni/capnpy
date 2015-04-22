@@ -112,3 +112,17 @@ def test_tag_offset():
     assert buf == ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
                    '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
                    '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
+
+
+def test_nullable():
+    isnull = field.Primitive('isnull', 0, Types.int64)
+    value = field.NullablePrimitive('value', 8, Types.int64, 0, isnull)
+    fields = [isnull, value]
+    ctor = structor('ctor', data_size=2, ptrs_size=0, fields=fields)
+    buf = ctor(FakeBlob, value=42)
+    assert buf == ('\x00\x00\x00\x00\x00\x00\x00\x00'  # NOT isnull
+                   '\x2a\x00\x00\x00\x00\x00\x00\x00') # 42
+    #
+    buf = ctor(FakeBlob, value=None)
+    assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # isnull == 1
+                   '\x00\x00\x00\x00\x00\x00\x00\x00') # 0

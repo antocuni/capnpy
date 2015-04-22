@@ -40,6 +40,27 @@ class Primitive(object):
             s += ', default=%s>' % self.default
         return s
 
+class NullablePrimitive(Primitive):
+
+    def __init__(self, name, offset, type, default, isnull_field):
+        Primitive.__init__(self, name, offset, type, default)
+        self.isnull_field = isnull_field
+
+    def __get__(self, blob, cls):
+        if blob is None:
+            return self
+        isnull = self.isnull_field.__get__(blob, cls)
+        if isnull:
+            return None
+        return Primitive.__get__(self, blob, cls)
+
+    def __repr__(self):
+        r = Primitive.__repr__(self)
+        r = r[:-1] # remove the last '>'
+        r += ', NULL when %s>' % self.isnull_field
+        return r
+
+
 class Bool(object):
 
     def __init__(self, name, offset, bitno, default=0):
@@ -206,21 +227,3 @@ class AnyPointer(object):
 
     def __repr__(self):
         return '<Field %s +%d: AnyPointer>' % (self.name, self.offset)
-
-
-class Nullable(object):
-
-    def __init__(self, data_field, isnull_field):
-        self.data_field = data_field
-        self.isnull_field = isnull_field
-
-    def __get__(self, blob, cls):
-        if blob is None:
-            return self
-        isnull = self.isnull_field.__get__(blob, cls)
-        if isnull:
-            return None
-        return self.data_field.__get__(blob, cls)
-
-    def __repr__(self):
-        return '<%s, NULL when %s>' % (self.data_field, self.isnull_field)

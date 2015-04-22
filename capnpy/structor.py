@@ -52,6 +52,16 @@ def compute_format(data_size, ptrs_size, fields):
     assert struct.calcsize(fmt) == total_length
     return fmt
 
+def get_argnames(fields):
+    # get the names of all fields, except those which are used as "check
+    # condition" for nullable fields
+    ignored = set()
+    for f in fields:
+        if isinstance(f, field.NullablePrimitive):
+            ignored.add(f.isnull_field)
+    #
+    return [f.name for f in fields if f not in ignored]
+
 def make_structor(name, fields, fmt, tag_value):
     ## create a constructor which looks like this
     ## def ctor(cls, x, y, z):
@@ -61,7 +71,7 @@ def make_structor(name, fields, fmt, tag_value):
     ##     return cls.from_buffer(buf, 0, None)
     #
     # the parameters have the same order as fields
-    argnames = [f.name for f in fields]
+    argnames = get_argnames(fields)
 
     # for for building, we sort them by offset
     fields.sort(key=lambda f: f.offset)
@@ -79,7 +89,13 @@ def make_structor(name, fields, fmt, tag_value):
             code.w('__which__ = {tag_value}', tag_value=int(tag_value))
         for f in fields:
             arg = f.name
-            if isinstance(f, field.Primitive):
+            if isinstance(f, field.NullablePrimitive):
+                with code.block('if {arg} is None:', arg=arg):
+                    code.w('{isnull} = 1', isnull=f.isnull_field.name)
+                    code.w('{arg} = 0', arg=arg)
+                with code.block('else:'):
+                    code.w('{isnull} = 0', isnull=f.isnull_field.name)
+            elif isinstance(f, field.Primitive):
                 pass # nothing to do
             elif isinstance(f, field.String):
                 code.w('{arg} = builder.alloc_string({offset}, {arg})',

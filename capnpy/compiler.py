@@ -298,12 +298,6 @@ class FileGenerator(object):
             line = '{name} = __.field.Union({discriminantValue}, {name})'
             line = line.format(name=fname, discriminantValue=field.discriminantValue)
             self.w(line)
-        #
-        isnull_field = self._is_nullable(field)
-        if isnull_field:
-            line = '{name} = __.field.Nullable({name}, {isnull_field})'
-            line = line.format(name=fname, isnull_field=isnull_field)
-            self.w(line)
 
     def _is_nullable(self, field):
         for ann in field.annotations or []:
@@ -322,8 +316,15 @@ class FileGenerator(object):
             delta = 0
             kwds['typename'] = t.name
             kwds['default'] = self._get_value(field.slot.defaultValue)
-            decl = ('__.field.Primitive("{name}", {offset}, '
-                    '__.Types.{typename}, default={default})')
+            isnull_field = self._is_nullable(field)
+            if isnull_field:
+                kwds['isnull_field'] = isnull_field
+                decl = ('__.field.NullablePrimitive("{name}", {offset}, '
+                        '__.Types.{typename}, default={default}, '
+                        'isnull_field={isnull_field})')
+            else:
+                decl = ('__.field.Primitive("{name}", {offset}, '
+                        '__.Types.{typename}, default={default})')
         #
         elif which == 'bool':
             size = 0
