@@ -1,6 +1,6 @@
 import py
 from capnpy.builder import StructBuilder
-from capnpy.blob import Blob, Types, format_buffer
+from capnpy.blob import Blob, Types
 from capnpy.list import PrimitiveList, StructList, StringList
 from capnpy.struct_ import Struct
 

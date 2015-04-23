@@ -1,6 +1,6 @@
 import py
 from capnpy.message import loads, _load_message, dumps
-from capnpy.blob import Blob, Types, format_buffer
+from capnpy.blob import Blob, Types
 from capnpy.struct_ import Struct
 
 def test_loads():
