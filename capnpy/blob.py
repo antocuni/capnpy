@@ -138,13 +138,15 @@ class Blob(object):
         offset = ptr.deref(offset)
         return offset, ptr.size_tag, ptr.item_count
 
-    def _print_buf(self, start=None, end=None):
+    def _print_buf(self, start=None, end='auto', **kwds):
         if start is None:
             start = self._offset
-        if end is None:
+        if end == 'auto':
             end = self._get_body_end()
+        elif end is None:
+            end = len(self._buf)
         p = BufferPrinter(self._buf)
-        p.printbuf(start=start, end=end)
+        p.printbuf(start=start, end=end, **kwds)
 
 
 # make sure that these two modules are imported, they are used by

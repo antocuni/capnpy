@@ -25,9 +25,9 @@ class ListBuilder(AbstractBuilder):
         assert len(listbody) == self._length
         return listbody + ''.join(self._extra)
 
-    def _print_buf(self):
+    def _print_buf(self, **kwds):
         p = BufferPrinter(self.build())
-        p.printbuf()
+        p.printbuf(**kwds)
 
 
 class PrimitiveItemBuilder(object):
