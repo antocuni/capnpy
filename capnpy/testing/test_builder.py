@@ -27,6 +27,23 @@ def test_alloc_struct():
                    + mybuf)
 
 
+def test_alloc_struct_with_offset():
+    class MyStruct(Struct):
+        __data_size__ = 2
+        __ptrs_size__ = 0
+
+    mybuf = ('garbage0'
+             '\x01\x00\x00\x00\x00\x00\x00\x00'
+             '\x02\x00\x00\x00\x00\x00\x00\x00')
+    mystruct = MyStruct.from_buffer(mybuf, 8, None)
+    #
+    builder = StructBuilder('q')
+    ptr = builder.alloc_struct(0, MyStruct, mystruct)
+    buf = builder.build(ptr)
+    assert buf == ('\x00\x00\x00\x00\x02\x00\x00\x00'  # ptr to mystruct
+                   + mybuf[8:])
+
+
 def test_alloc_string():
     builder = StructBuilder('qq')
     ptr1 = builder.alloc_string(0, 'hello capnp')

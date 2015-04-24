@@ -46,3 +46,28 @@ def test_listbuilder_null_ptrs(tmpdir):
     assert a1.x == 1
     assert a1.y == 2
     assert a1.name is None
+
+
+def test_pack_unpack_structs(tmpdir):
+    schema = """
+        @0xbf5147cbbecf40c1;
+        struct Person {
+            name @0 :Text;
+        }
+
+        struct Foo {
+            key @0 :Person;
+        }
+    """
+    mod = compile_string(tmpdir, schema)
+    buf = ('garbage0'
+           '\x05\x00\x00\x00\x32\x00\x00\x00'  # ptr to name
+           'garbage1'
+           'dummy\x00\x00\x00')
+    p = mod.Person.from_buffer(buf, 8, None)
+    foo = mod.Foo(p)
+    assert foo.key.name == 'dummy'
+    # we check that the structure has been packed
+    assert foo.key._buf == ('\x01\x00\x00\x00\x32\x00\x00\x00'  # ptr to dummy
+                            'dummy\x00\x00\x00')
+
