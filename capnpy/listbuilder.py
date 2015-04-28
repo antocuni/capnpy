@@ -68,66 +68,24 @@ class StructItemBuilder(object):
         if not isinstance(item, item_type):
             raise TypeError("Expected an object of type %s, got %s instead" %
                             (item_type.__name__, item.__class__.__name__))
-        if item_type.__ptrs_size__ == 0:
-            # easy case, just copy the buffer
-            return item._buf
         #
-        # hard case. The layout of item._buf is like this, where the length of
-        # extra might be different for each item
+        # In general, the layout of item._buf is like this:
         # +------+------+-------------+
         # | data | ptrs |    extra    |
         # +------+------+-------------+
         #
-        # ptrs contains pointers pointing somewhere inside extra. The layout
-        # of the list looks like this:
+        # The layout of the list looks like this:
         # +------+------+------+------+....+-------------+----------+....
         # |  D1  |  P1  |  D2  |  P2  |    |    extra1   |  extra2  |
         # +------+------+------+------+....+-------------+----------+....
         #
-        # So, to pack an item:
-        # 1) the data section is copied verbatim
-        # 2) the offset of pointers in ptrs need to be adjusted because extra
-        #    will be moved to the end of the list
-        # 3) extra must be allocated at the end of the list
-        #
-        # 1) data section
-        parts = []
-        body_start = item._get_body_start()
+        # Struct._split takes care to split the body and the extra
         data_size = item_type.__data_size__
-        data_buf = item._buf[body_start:body_start+data_size*8]
-        parts.append(data_buf)
-        #
-        # 2) ptrs section
-        #    for each ptr:
-        #        ptr.offset += new_extra_offset - old_extra_offset
-        #
-        #    old_extra_offset is the offset of the first extra object in item,
-        #    i.e. the ptr.offset of the first ptr
-        #
-        #    new_extra_offset is the offset of the extra section of the
-        #    to-be-written object
-        first_ptr = item._read_ptr(item._ptr_offset_by_index(0))
-        assert first_ptr.kind != FarPtr.KIND
-        old_extra_offset = first_ptr.offset
         item_offset = i * listbuilder.item_length + data_size*8
         new_extra_offset = listbuilder._calc_relative_offset(item_offset)
-        additional_offset = new_extra_offset - old_extra_offset
-        #
-        # iterate over and fix the pointers
-        for j in range(item_type.__ptrs_size__):
-            # read pointer, update its offset, and pack it
-            ptrstart = (data_size+j) * 8
-            ptr = item._read_ptr(ptrstart)
-            if ptr != 0:
-                assert ptr.kind != FarPtr.KIND
-                ptr = Ptr.new(ptr.kind, ptr.offset+additional_offset, ptr.extra)
-            s = struct.pack('q', ptr)
-            parts.append(s)
-        #
-        extra_start, extra_end = item._get_extra_range()
-        extra_buf = item._buf[extra_start:extra_end]
-        listbuilder._alloc(extra_buf)
-        return ''.join(parts)
+        body, extra = item._split(new_extra_offset)
+        listbuilder._alloc(extra)
+        return body
 
 
 class StringItemBuilder(object):

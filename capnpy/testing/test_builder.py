@@ -88,7 +88,7 @@ def test_alloc_list_float64():
                    '\xf8\x53\xe3\xa5\x9b\x44\x12\x40')  # 4.567
 
 def test_alloc_list_of_structs():
-    class Point(Blob):
+    class Point(Struct):
         __data_size__ = 2
         __ptrs_size__ = 0
 

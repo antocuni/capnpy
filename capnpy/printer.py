@@ -5,6 +5,10 @@ from capnpy.ptr import Ptr, StructPtr, ListPtr, FarPtr
 COLORS = [Color.darkred, Color.darkgreen, Color.brown,
           Color.darkblue, Color.purple, Color.teal]
 
+def print_buffer(buf, **kwds):
+    p = BufferPrinter(buf)
+    p.printbuf(end=None, **kwds)
+
 class BufferPrinter(object):
 
     def __init__(self, buf):
@@ -70,6 +74,8 @@ class BufferPrinter(object):
             else:
                 return '?'
         #
+        if p == 0:
+            return  'NULL'.ljust(23)
         if p.kind == StructPtr.KIND:
             descr = 'struct {:>3} {:>2}'.format(if_in_range(p.data_size, 0, 100),
                                                 if_in_range(p.ptrs_size, 0, 100))

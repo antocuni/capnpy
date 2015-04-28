@@ -1,5 +1,5 @@
 import struct
-from capnpy.ptr import StructPtr, ListPtr, FarPtr
+from capnpy.ptr import Ptr, StructPtr, ListPtr, FarPtr
 from capnpy.blob import Blob, Types
 
 undefined = object()
@@ -171,6 +171,64 @@ class Struct(Blob):
     __le__ = __lt__
     __gt__ = __lt__
     __ge__ = __lt__
+
+    def _split(self, extra_offset):
+        """
+        Split the body and the extra part.  The extra part must be placed at the
+        specified offset, in words. The ptrs in the body will be adjusted
+        accordingly.
+        """
+        if self.__ptrs_size__ == 0:
+            # easy case, just copy the body
+            start, end = self._get_body_range()
+            return self._buf[start:end], ''
+        #
+        # hard case. The layout of self._buf is like this:
+        # +----------+------+------+----------+-------------+
+        # | garbage0 | data | ptrs | garbage1 |    extra    |
+        # +----------+------+------+----------+-------------+
+        #                    |   |             ^     ^
+        #                    +-----------------+     |
+        #                        |                   |
+        #                        +-------------------+
+        #
+        # We recompute the pointers assumining len(garbage1) == extra_offset
+        #
+        # 1) the data section is copied verbatim
+        # 2) the offset of pointers in ptrs are adjusted
+        # 3) extra is copied verbatime
+        #
+        body_start, body_end = self._get_body_range()
+        extra_start, extra_end = self._get_extra_range()
+        #
+        # 1) data section
+        data_size = self.__data_size__
+        data_buf = self._buf[body_start:body_start+data_size*8]
+        #
+        # 2) ptrs section
+        #    for each ptr:
+        #        ptr.offset += (extra_offset - old_extra_offset)/8
+        #
+        # NOTE: ptr.offset is in words, extra_start and body_end in bytes
+        old_extra_offset = (extra_start - body_end)/8
+        additional_offset = extra_offset - old_extra_offset
+        #
+        # iterate over and fix the pointers
+        parts = [data_buf]
+        for j in range(self.__ptrs_size__):
+            # read pointer, update its offset, and pack it
+            ptr = self._read_ptr(self._ptr_offset_by_index(j))
+            if ptr != 0:
+                assert ptr.kind != FarPtr.KIND
+                ptr = Ptr.new(ptr.kind, ptr.offset+additional_offset, ptr.extra)
+            s = struct.pack('q', ptr)
+            parts.append(s)
+        #
+        body_buf = ''.join(parts)
+        # 3) extra part
+        extra_buf = self._buf[extra_start:extra_end]
+        #
+        return body_buf, extra_buf
 
 
 class GenericStruct(Struct):
