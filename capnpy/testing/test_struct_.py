@@ -224,3 +224,26 @@ def test_split_ptrs():
     #
     assert extra == ('\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
                      '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
+
+
+def test_compact():
+    class Rect(Struct):
+        __data_size__ = 1
+        __ptrs_size__ = 2
+
+    buf = ('garbage0'
+           '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+           '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+           '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
+           'garbage1'
+           'garbage2'
+           '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
+    rect = Rect.from_buffer(buf, 8, None)
+    rect2 = rect.compact()
+    assert rect2.__class__ is Rect
+    assert rect2._buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+                          '\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+                          '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
+                          '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+                          '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2

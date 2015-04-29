@@ -230,6 +230,16 @@ class Struct(Blob):
         #
         return body_buf, extra_buf
 
+    def compact(self):
+        """
+        Return a compact version of the object, removing the garbage around the
+        body and the extra parts.
+        """
+        body, extra = self._split(0)
+        buf = body+extra
+        return self.__class__.from_buffer(buf, 0, None)
+
+
 
 class GenericStruct(Struct):
 
