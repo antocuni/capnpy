@@ -33,7 +33,11 @@ class AbstractBuilder(object):
         data_size = struct_type.__data_size__           # in words
         ptrs_size = struct_type.__ptrs_size__           # in words
         ptr_offset = self._calc_relative_offset(offset) # in words
-        self._alloc(value._buf)
+        #
+        # we need to take the compact repr of the struct, else we might get
+        # garbage and wrong offsets. See
+        # test_alloc_list_of_structs_with_pointers
+        self._alloc(value.compact()._buf)
         ptr = StructPtr.new(ptr_offset, data_size, ptrs_size)
         return ptr
 

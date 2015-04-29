@@ -1,6 +1,6 @@
 import py
 from capnpy.builder import StructBuilder
-from capnpy.blob import Blob, Types
+from capnpy.blob import Types
 from capnpy.list import PrimitiveList, StructList, StringList
 from capnpy.struct_ import Struct
 
@@ -12,7 +12,7 @@ def test_primitive():
                    '\x58\x39\xb4\xc8\x76\xbe\xf3\x3f') # 1.234
 
 def test_alloc_struct():
-    class MyStruct(Blob):
+    class MyStruct(Struct):
         __data_size__ = 2
         __ptrs_size__ = 0
 
@@ -123,7 +123,7 @@ def test_alloc_list_of_structs():
 def test_null_pointers():
     NULL = '\x00\x00\x00\x00\x00\x00\x00\x00' # NULL pointer
     builder = StructBuilder('qqq')
-    ptr1 = builder.alloc_struct(0, Blob, None)
+    ptr1 = builder.alloc_struct(0, Struct, None)
     ptr2 = builder.alloc_string(8, None)
     ptr3 = builder.alloc_list(16, PrimitiveList, Types.int64, None)
     buf = builder.build(ptr1, ptr2, ptr3)

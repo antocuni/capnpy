@@ -48,7 +48,7 @@ def test_listbuilder_null_ptrs(tmpdir):
     assert a1.name is None
 
 
-def test_pack_unpack_structs(tmpdir):
+def test_compact_structs(tmpdir):
     schema = """
         @0xbf5147cbbecf40c1;
         struct Person {
@@ -68,6 +68,7 @@ def test_pack_unpack_structs(tmpdir):
     foo = mod.Foo(p)
     assert foo.key.name == 'dummy'
     # we check that the structure has been packed
-    assert foo.key._buf == ('\x01\x00\x00\x00\x32\x00\x00\x00'  # ptr to dummy
-                            'dummy\x00\x00\x00')
+    assert foo.key._offset == 8
+    assert foo.key._buf[8:] == ('\x01\x00\x00\x00\x32\x00\x00\x00'  # ptr to dummy
+                                'dummy\x00\x00\x00')
 

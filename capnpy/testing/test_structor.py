@@ -1,4 +1,4 @@
-from capnpy.blob import Blob
+from capnpy.struct_ import Struct
 from capnpy.structor import structor, compute_format
 from capnpy import field
 from capnpy.type import Types
@@ -72,7 +72,7 @@ def test_string():
                    'p' 'n' 'p' '\x00\x00\x00\x00\x00')
 
 def test_struct():
-    class MyStruct(Blob):
+    class MyStruct(Struct):
         __data_size__ = 2
         __ptrs_size__ = 0
 
