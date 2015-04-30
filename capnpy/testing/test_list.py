@@ -39,21 +39,6 @@ def test_read_list_offset():
     assert lst._read_list_item(16) == 3
     assert lst._read_list_item(24) == 4
 
-def test_pythonic():
-    buf = ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
-           '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
-           '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
-           '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
-           '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
-    blob = Blob.from_buffer(buf, 0, None)
-    lst = blob._read_list(0, PrimitiveList, Types.int64)
-    assert len(lst) == 4
-    assert lst[0] == 1
-    assert lst[3] == 4
-    assert lst[-1] == 4
-    py.test.raises(IndexError, "lst[4]")
-    py.test.raises(IndexError, "lst[-5]")
-
 def test_list_of_structs():
     # list of Point {x: Int64, y: Int64}
     buf = ('\x01\x00\x00\x00\x47\x00\x00\x00'    # ptrlist
@@ -348,3 +333,35 @@ def test_far_pointer():
     blob = Blob.from_buffer(buf, 8, segment_offsets=(0, 16))
     lst = blob._read_list(0, PrimitiveList, Types.int64)
     assert lst == [1, 2, 3, 4]
+
+
+class TestPythonicInterface(object):
+
+    @py.test.fixture
+    def mylist(self):
+        buf = ('\x01\x00\x00\x00\x2D\x00\x00\x00'   # ptrlist
+               '\x00\x00\x00\x00\x00\x00\x00\x00'   # 0
+               '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
+               '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
+               '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
+        blob = Blob.from_buffer(buf, 0, None)
+        lst = blob._read_list(0, PrimitiveList, Types.int64)
+        return lst
+
+    def test_len(self, mylist):
+        assert len(mylist) == 5
+
+    def test_getitem(self, mylist):
+        assert mylist[0] == 0
+        assert mylist[3] == 3
+        assert mylist[-1] == 4
+        py.test.raises(IndexError, "mylist[5]")
+        py.test.raises(IndexError, "mylist[-6]")
+
+    def test_slice(self, mylist):
+        assert mylist[2:4] == [2, 3]
+        assert mylist[:3] == [0, 1, 2]
+        assert mylist[3:] == [3, 4]
+        assert mylist[:] == [0, 1, 2, 3, 4]
+

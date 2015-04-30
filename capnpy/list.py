@@ -50,12 +50,22 @@ class List(Blob):
         return self._item_count
 
     def __getitem__(self, i):
+        if isinstance(i, slice):
+            idx = xrange(*i.indices(len(self)))
+            return [self._getitem_fast(j) for j in idx]
         if i < 0:
             i += self._item_count
         if 0 <= i < self._item_count:
-            offset = self._get_offset_for_item(i)
-            return self._read_list_item(offset)
+            return self._getitem_fast(i)
         raise IndexError
+
+    def _getitem_fast(self, i):
+        """
+        WARNING: no bound checks!
+        """
+        offset = self._get_offset_for_item(i)
+        return self._read_list_item(offset)
+
 
     def _get_body_range(self):
         return self._get_body_start(), self._get_body_end()
