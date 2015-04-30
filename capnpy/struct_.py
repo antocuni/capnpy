@@ -196,7 +196,7 @@ class Struct(Blob):
         #
         # 1) the data section is copied verbatim
         # 2) the offset of pointers in ptrs are adjusted
-        # 3) extra is copied verbatime
+        # 3) extra is copied verbatim
         #
         body_start, body_end = self._get_body_range()
         extra_start, extra_end = self._get_extra_range()

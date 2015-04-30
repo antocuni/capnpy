@@ -69,21 +69,29 @@ class StructItemBuilder(object):
             raise TypeError("Expected an object of type %s, got %s instead" %
                             (item_type.__name__, item.__class__.__name__))
         #
-        # In general, the layout of item._buf is like this:
-        # +------+------+-------------+
-        # | data | ptrs |    extra    |
-        # +------+------+-------------+
+        # This is the layout of the list:
         #
-        # The layout of the list looks like this:
-        # +------+------+------+------+....+-------------+----------+....
-        # |  D1  |  P1  |  D2  |  P2  |    |    extra1   |  extra2  |
-        # +------+------+------+------+....+-------------+----------+....
+        # +-------+-------+...+-------+--------+--------+...+--------+
+        # | body0 | body1 |   | bodyN | extra0 | extra1 |   | extraN |
+        # +-------+-------+...+-------+--------+--------+...+--------+
+        # |               |                    |
+        # |- body_offset -|                    |
+        # |               |--- extra_offset ---|
+        # |                                    |
+        # +------- _total_length --------------+
         #
-        # Struct._split takes care to split the body and the extra
-        data_size = item_type.__data_size__
-        item_offset = i * listbuilder.item_length + data_size*8
-        new_extra_offset = listbuilder._calc_relative_offset(item_offset)
-        body, extra = item._split(new_extra_offset)
+        # When i==1, self._total_length will contain the offset up to the end
+        # of extra0; extra1...extraN are not yet considered.
+        #
+        # The item body and extra are split by Struct._split, passing the
+        # correct extra_offset.
+        #
+        # Note that extra_offset is expressed in WORDS, while _total_length in
+        # BYTES
+        body_size = item_type.__data_size__ + item_type.__ptrs_size__
+        body_offset = body_size * (i+1)
+        extra_offset = listbuilder._total_length/8 - body_offset
+        body, extra = item._split(extra_offset)
         listbuilder._alloc(extra)
         return body
 

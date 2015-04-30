@@ -72,3 +72,24 @@ def test_compact_structs(tmpdir):
     assert foo.key._buf[8:] == ('\x01\x00\x00\x00\x32\x00\x00\x00'  # ptr to dummy
                                 'dummy\x00\x00\x00')
 
+
+def test_compact_struct_inside_list(tmpdir):
+    schema = """
+        @0xbf5147cbbecf40c1;
+        struct Person {
+            name @0 :Text;
+            surname @1 :Text;
+        }
+
+        struct Town {
+            people @0 :List(Person);
+        }
+    """
+    mod = compile_string(tmpdir, schema)
+    p1 = mod.Person('Mickey', 'Mouse')
+    p2 = mod.Person('Donald', 'Duck')
+    t = mod.Town([p1, p2])
+    assert t.people[0].name == 'Mickey'
+    assert t.people[0].surname == 'Mouse'
+    assert t.people[1].name == 'Donald'
+    assert t.people[1].surname == 'Duck'
