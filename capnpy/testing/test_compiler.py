@@ -471,19 +471,21 @@ def test_nullable(tmpdir):
     @0xbf5147cbbecf40c1;
     using Py = import "/capnpy/py.capnp";
     struct Foo {
-        xIsNull @0 :Int8;
-        x @1 :Int64 $Py.nullable("xIsNull");
+        x :group $Py.nullable {
+            isNull @0 :Int8;
+            value  @1 :Int64;
+        }
     }
     """
     mod = compile_string(tmpdir, schema)
     buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
     foo = mod.Foo.from_buffer(buf, 0, None)
-    assert foo.x_is_null
+    assert foo._x_is_null
     assert foo.x is None
     #
     buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'  # 0
            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
     foo = mod.Foo.from_buffer(buf, 0, None)
-    assert not foo.x_is_null
+    assert not foo._x_is_null
     assert foo.x == 2

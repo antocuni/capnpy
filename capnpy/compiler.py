@@ -303,10 +303,11 @@ class FileGenerator(object):
         for ann in field.annotations or []:
             ann_node = self.allnodes[ann.id]
             if ann_node.displayName == "capnpy/py.capnp:nullable":
-                return self._convert_name(ann.value.text)
+                assert ann.value.void is None
+                return True
         return None
 
-    def visit_field_slot(self, fname, field, data_size, ptrs_size):
+    def visit_field_slot(self, fname, field, data_size, ptrs_size, nullable_by=None):
         kwds = {}
         t = field.slot.type
         which = str(t.which()) # XXX
@@ -316,12 +317,11 @@ class FileGenerator(object):
             delta = 0
             kwds['typename'] = t.name
             kwds['default'] = self._get_value(field.slot.defaultValue)
-            isnull_field = self._is_nullable(field)
-            if isnull_field:
-                kwds['isnull_field'] = isnull_field
+            if nullable_by:
+                kwds['nullable_by'] = nullable_by
                 decl = ('__.field.NullablePrimitive("{name}", {offset}, '
                         '__.Types.{typename}, default={default}, '
-                        'isnull_field={isnull_field})')
+                        'nullable_by={nullable_by})')
             else:
                 decl = ('__.field.Primitive("{name}", {offset}, '
                         '__.Types.{typename}, default={default})')
@@ -383,8 +383,26 @@ class FileGenerator(object):
 
     def visit_field_group(self, fname, field, data_size, ptrs_size):
         group = self.allnodes[field.group.typeId]
-        self.visit_struct(group)
-        self.w('%s = __.field.Group(%s)' % (fname, self._pyname(group)))
+        if self._is_nullable(field):
+            self.visit_nullable_group(fname, group, field, data_size, ptrs_size)
+        else:
+            self.visit_struct(group)
+            self.w('%s = __.field.Group(%s)' % (fname, self._pyname(group)))
+
+    def visit_nullable_group(self, fname, group, field, data_size, ptrs_size):
+        msg = '%s: nullable groups must have exactly two fields: "isNull" and "value"'
+        msg = msg % fname
+        if len(group.struct.fields) != 2:
+            raise ValueError(msg)
+        is_null, value = group.struct.fields
+        if is_null.name != 'isNull':
+            raise ValueError(msg)
+        if value.name != 'value':
+            raise ValueError(msg)
+        #
+        is_null_name = '_%s_is_null' % fname
+        self.visit_field_slot(is_null_name, is_null, data_size, ptrs_size)
+        self.visit_field_slot(fname, value, data_size, ptrs_size, nullable_by=is_null_name)
 
     def visit_enum(self, node):
         name = self._shortname(node)

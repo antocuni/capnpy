@@ -42,14 +42,14 @@ class Primitive(object):
 
 class NullablePrimitive(Primitive):
 
-    def __init__(self, name, offset, type, default, isnull_field):
+    def __init__(self, name, offset, type, default, nullable_by):
         Primitive.__init__(self, name, offset, type, default)
-        self.isnull_field = isnull_field
+        self.nullable_by = nullable_by
 
     def __get__(self, blob, cls):
         if blob is None:
             return self
-        isnull = self.isnull_field.__get__(blob, cls)
+        isnull = self.nullable_by.__get__(blob, cls)
         if isnull:
             return None
         return Primitive.__get__(self, blob, cls)
@@ -57,7 +57,7 @@ class NullablePrimitive(Primitive):
     def __repr__(self):
         r = Primitive.__repr__(self)
         r = r[:-1] # remove the last '>'
-        r += ', NULL when %s>' % self.isnull_field
+        r += ', NULL when %s>' % self.nullable_by
         return r
 
 

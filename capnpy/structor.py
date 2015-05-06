@@ -58,7 +58,7 @@ def get_argnames(fields):
     ignored = set()
     for f in fields:
         if isinstance(f, field.NullablePrimitive):
-            ignored.add(f.isnull_field)
+            ignored.add(f.nullable_by)
     #
     return [f.name for f in fields if f not in ignored]
 
@@ -91,10 +91,10 @@ def make_structor(name, fields, fmt, tag_value):
             arg = f.name
             if isinstance(f, field.NullablePrimitive):
                 with code.block('if {arg} is None:', arg=arg):
-                    code.w('{isnull} = 1', isnull=f.isnull_field.name)
+                    code.w('{isnull} = 1', isnull=f.nullable_by.name)
                     code.w('{arg} = 0', arg=arg)
                 with code.block('else:'):
-                    code.w('{isnull} = 0', isnull=f.isnull_field.name)
+                    code.w('{isnull} = 0', isnull=f.nullable_by.name)
             elif isinstance(f, field.Primitive):
                 pass # nothing to do
             elif isinstance(f, field.String):
