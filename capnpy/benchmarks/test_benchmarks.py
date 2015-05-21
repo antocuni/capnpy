@@ -1,29 +1,35 @@
-import pypytools
-import time
-import capnpy
-from collections import namedtuple
 import pytest
-
-Point = namedtuple('Point', ['x', 'y'])
+import pypytools
+from collections import namedtuple
+import capnpy
 schema = capnpy.load_schema('/capnpy/benchmarks/point.capnp')
 
-@pytest.mark.benchmark(group='Primitive field')
-class TestPrimitiveField:
+class points(object):
+    capnpy = schema.Point
+    namedtuple = namedtuple('Point', ['x', 'y'])
 
+    @staticmethod
+    def c_ext(x, y):
+        if pypytools.is_pypy:
+            pytest.skip('CPython only')
+        import point
+        pp = schema.Point(x=100, y=200)
+        return point.Point(pp._buf, pp._offset)
+
+@pytest.fixture(params=["namedtuple", "capnpy", "c_ext"])
+def Point(request):
+    return getattr(points, request.param)
+
+def test_field(benchmark, Point):
     N = 2000
-
-    def do(self, p):
+    @pypytools.clonefunc
+    def sum_xs(p):
         res = 0
-        for i in range(self.N):
+        for i in range(N):
             res += p.x
         return res
+    #
+    p = Point(x=100, y=200)
+    res = benchmark(sum_xs, p)
+    assert res == 100*N
 
-    def test_capnpy(self, benchmark):
-        p = schema.Point(x=100, y=200)
-        res = benchmark(self.do, p=p)
-        assert res == 100*self.N
-
-    def test_namedtuple(self, benchmark):
-        p = Point(x=100, y=200)
-        res = benchmark(self.do, p=p)
-        assert res == 100*self.N
