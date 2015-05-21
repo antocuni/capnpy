@@ -4,9 +4,31 @@ from collections import namedtuple
 import capnpy
 schema = capnpy.load_schema('/capnpy/benchmarks/point.capnp')
 
+@pytest.fixture(params=[1, 2, 3])
+def n(request):
+    return request.param
+
+class Point(object):
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
 class points(object):
-    capnpy = schema.Point
     namedtuple = namedtuple('Point', ['x', 'y'])
+    capnpy = schema.Point
+    instance = Point
+
+    @staticmethod
+    def pycapnp(x, y):
+        if pypytools.is_pypy:
+            pytest.skip('CPython only')
+        import capnp
+        myschema = capnp.load('point.capnp')
+        p = myschema.Point.new_message()
+        p.x = x
+        p.y = y
+        return myschema.Point.from_bytes(p.to_bytes())
+
 
 @pytest.fixture(params=[key for key in vars(points) if key[0] != '_'])
 def Point(request):
