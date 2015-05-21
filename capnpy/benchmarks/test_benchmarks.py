@@ -8,19 +8,12 @@ class points(object):
     capnpy = schema.Point
     namedtuple = namedtuple('Point', ['x', 'y'])
 
-    @staticmethod
-    def c_ext(x, y):
-        if pypytools.is_pypy:
-            pytest.skip('CPython only')
-        import point
-        pp = schema.Point(x=100, y=200)
-        return point.Point(pp._buf, pp._offset)
-
-@pytest.fixture(params=["namedtuple", "capnpy", "c_ext"])
+@pytest.fixture(params=[key for key in vars(points) if key[0] != '_'])
 def Point(request):
     return getattr(points, request.param)
 
-def test_field(benchmark, Point):
+@pytest.mark.benchmark(group="getattr")
+def test_getattr(benchmark, Point):
     N = 2000
     @pypytools.clonefunc
     def sum_xs(p):
