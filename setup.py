@@ -1,5 +1,15 @@
-from distutils.core import Extension
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Extension
+from Cython.Build import cythonize
+
+files = ["capnpy/blob.py",
+         "capnpy/field.py",
+         "capnpy/unpack.pyx"]
+
+def getext(fname):
+    extname = fname.replace('/', '.').replace('.pyx', '').replace('.py', '')
+    return Extension(extname, [fname])
+
+ext_modules = cythonize(map(getext, files), gdb_debug=True)
 
 
 setup(name="capnpy",
@@ -8,4 +18,4 @@ setup(name="capnpy",
       package_data = {
           'capnpy': ['*.capnp']
           },
-      ext_modules = [])
+      ext_modules = ext_modules)
