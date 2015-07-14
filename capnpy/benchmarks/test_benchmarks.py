@@ -15,7 +15,7 @@ class Point(object):
 
 class points(object):
     namedtuple = namedtuple('Point', ['x', 'y'])
-    capnpy = schema.Point
+    capnpyx = schema.Point
     instance = Point
 
     @staticmethod
