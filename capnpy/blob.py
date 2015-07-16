@@ -16,18 +16,17 @@ class Blob(object):
     Base class to read a generic capnp object.
     """
 
-    def __new__(self):
-        raise NotImplementedError('Cannot instantiate Blob directly; '
-                                  'use Blob.from_buffer instead')
-
     @classmethod
     def from_buffer(cls, buf, offset, segment_offsets):
-        self = object.__new__(cls)
+        self = Blob.__new__(cls)
+        self._init(buf, offset, segment_offsets)
+        return self
+
+    def _init(self, buf, offset, segment_offsets):
         self._buf = buf
         self._offset = offset
         assert self._offset < len(self._buf)
         self._segment_offsets = segment_offsets
-        return self
 
     def _read_primitive(self, offset, t):
         return unpack_primitive(t.fmt, self._buf, self._offset+offset)
