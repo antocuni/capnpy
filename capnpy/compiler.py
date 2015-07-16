@@ -484,12 +484,3 @@ class Compiler(object):
 
 _compiler = Compiler(sys.path)
 load_schema = _compiler.load_schema
-
-def main():
-    #data = sys.stdin.read()
-    data = _capnp_compile(sys.argv[1])
-    request, src = generate_py_source(data)
-    print src
-
-if __name__ == '__main__':
-    main()
