@@ -1,7 +1,23 @@
+import sys
 import struct
 from pypytools import cast
 
-class Ptr(int):
+if sys.maxint == 2147483647:
+    # capnpy ptrs are 64 bit, which means that they don't fit into a plain int
+    # if we are on a 32bit system.
+    #
+    # It's unclear if it's faster to just subclass long (as we are doing) or
+    # to maintain by hand a pair of two 32bit ints to represent a pointer: in
+    # theory, a pair should be faster, but I suspect that the
+    # heavily-optimized C-coded long is faster, at least on CPython. On PyPy,
+    # it's unclear and we should write proper benchmarks to known. If you are
+    # interested in maximizing performance on 32 bit, please try :)
+    baseint = long
+else:
+    baseint = int
+
+
+class Ptr(baseint):
     ## lsb                      generic pointer                      msb
     ## +-+-----------------------------+-------------------------------+
     ## |A|             B               |               C               |
