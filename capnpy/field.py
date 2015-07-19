@@ -21,29 +21,29 @@ class Primitive(object):
         self.name = name
         self.offset = offset
         self.type = type
-        self.default = default
+        self.default_ = default
         self.fmt = type.fmt
 
     def __get__(self, blob, cls):
         if blob is None:
             return self
         val = blob._read_primitive(self.offset, self.type)
-        if self.default:
-            val ^= self.default
+        if self.default_:
+            val ^= self.default_
         return val
 
     def __repr__(self):
         s = '<Field %s +%d: Primitive, type=%s' % (self.name, self.offset, self.type.name)
-        if self.default == 0:
+        if self.default_ == 0:
             s += '>'
         else:
-            s += ', default=%s>' % self.default
+            s += ', default=%s>' % self.default_
         return s
 
 class NullablePrimitive(Primitive):
 
-    def __init__(self, name, offset, type, default, nullable_by):
-        Primitive.__init__(self, name, offset, type, default)
+    def __init__(self, name, offset, type, default_, nullable_by):
+        Primitive.__init__(self, name, offset, type, default_)
         self.nullable_by = nullable_by
 
     def __get__(self, blob, cls):
@@ -68,19 +68,19 @@ class Bool(object):
         self.offset = offset
         self.bitno = bitno
         self.bitmask = 1 << bitno
-        self.default = default
+        self.default_ = default
 
     def __get__(self, blob, cls):
         if blob is None:
             return self
-        return bool(blob._read_bit(self.offset, self.bitmask) ^ self.default)
+        return bool(blob._read_bit(self.offset, self.bitmask) ^ self.default_)
 
     def __repr__(self):
         s = '<Field %s +%d: Bool, bitno=%d' % (self.name, self.offset, self.bitno)
-        if self.default == 0:
+        if self.default_ == 0:
             s += '>'
         else:
-            s += ', default=%s>' % self.default
+            s += ', default=%s>' % self.default_
         return s
 
 class String(object):

@@ -2,8 +2,30 @@ import pytest
 import pypytools
 from collections import namedtuple
 import capnpy
-schema = capnpy.load_schema('/capnpy/benchmarks/point.capnp')
+#schema = capnpy.load_schema('/capnpy/benchmarks/point.capnp')
 
+# XXX
+from capnpy.struct_ import Struct
+from capnpy.builder import StructBuilder
+from capnpy import field
+from capnpy.enum import enum
+from capnpy.blob import Types
+class schema:    
+    class Point(Struct):
+        x = field.Primitive("x", 0, Types.uint64, default=0)
+        y = field.Primitive("y", 8, Types.uint64, default=0)
+
+        __data_size__ = 3
+        __ptrs_size__ = 1
+        
+        def __new__(cls, x, y):
+            builder = StructBuilder('QQ')
+            buf = builder.build(x, y)
+            offset = 0
+            segment_offsets = None
+            return cls.from_buffer(buf, offset, segment_offsets)
+
+        
 @pytest.fixture(params=[1, 2, 3])
 def n(request):
     return request.param
