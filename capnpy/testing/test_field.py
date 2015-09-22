@@ -35,7 +35,7 @@ def test_bool():
 
 def test_default_value():
     class Foo(Struct):
-        x = field.Primitive('x', 0, Types.int64, default=42)
+        x = field.Primitive('x', 0, Types.int64, default_=42)
         y = field.Bool('y', 8, 0, default=True)
     
     buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'

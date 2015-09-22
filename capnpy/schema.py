@@ -91,11 +91,11 @@ class _:
             __ptrs_size__ = 1
             def __init__(self, *args, **kwds):
                 raise NotImplementedError("Not supported: text fields")
-            id = field.Primitive("id", 0, Types.uint64, default=0)
+            id = field.Primitive("id", 0, Types.uint64, default_=0)
             name = field.String("name", 8)
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: text fields")
-        id = field.Primitive("id", 0, Types.uint64, default=0)
+        id = field.Primitive("id", 0, Types.uint64, default_=0)
         filename = field.String("filename", 8)
         imports = field.List("imports", 16, CodeGeneratorRequest.RequestedFile.Import)
     def __init__(self, *args, **kwds):
@@ -110,9 +110,9 @@ class _:
     def __init__(self, *args, **kwds):
         raise NotImplementedError("Not supported: text fields")
     name = field.String("name", 24)
-    codeOrder = field.Primitive("codeOrder", 0, Types.uint16, default=0)
-    paramStructType = field.Primitive("paramStructType", 8, Types.uint64, default=0)
-    resultStructType = field.Primitive("resultStructType", 16, Types.uint64, default=0)
+    codeOrder = field.Primitive("codeOrder", 0, Types.uint16, default_=0)
+    paramStructType = field.Primitive("paramStructType", 8, Types.uint64, default_=0)
+    resultStructType = field.Primitive("resultStructType", 16, Types.uint64, default_=0)
     annotations = field.List("annotations", 32, Annotation)
     paramBrand = field.Struct("paramBrand", 40, Brand)
     resultBrand = field.Struct("resultBrand", 48, Brand)
@@ -125,7 +125,7 @@ class _:
     def __init__(self, *args, **kwds):
         raise NotImplementedError("Not supported: text fields")
     name = field.String("name", 8)
-    codeOrder = field.Primitive("codeOrder", 0, Types.uint16, default=0)
+    codeOrder = field.Primitive("codeOrder", 0, Types.uint16, default_=0)
     annotations = field.List("annotations", 16, Annotation)
 
 @extend(Type)
@@ -181,7 +181,7 @@ class _:
         __ptrs_size__ = 1
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: struct fields")
-        typeId = field.Primitive("typeId", 8, Types.uint64, default=0)
+        typeId = field.Primitive("typeId", 8, Types.uint64, default_=0)
         brand = field.Struct("brand", 24, Brand)
     enum = field.Group(Type.enum)
     enum = field.Union(15, enum)
@@ -192,7 +192,7 @@ class _:
         __ptrs_size__ = 1
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: struct fields")
-        typeId = field.Primitive("typeId", 8, Types.uint64, default=0)
+        typeId = field.Primitive("typeId", 8, Types.uint64, default_=0)
         brand = field.Struct("brand", 24, Brand)
     struct = field.Group(Type.struct)
     struct = field.Union(16, struct)
@@ -203,7 +203,7 @@ class _:
         __ptrs_size__ = 1
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: struct fields")
-        typeId = field.Primitive("typeId", 8, Types.uint64, default=0)
+        typeId = field.Primitive("typeId", 8, Types.uint64, default_=0)
         brand = field.Struct("brand", 24, Brand)
     interface = field.Group(Type.interface)
     interface = field.Union(17, interface)
@@ -230,8 +230,8 @@ class _:
                 self._offset = 0
                 self._segment_offsets = None
             
-            scopeId = field.Primitive("scopeId", 16, Types.uint64, default=0)
-            parameterIndex = field.Primitive("parameterIndex", 10, Types.uint16, default=0)
+            scopeId = field.Primitive("scopeId", 16, Types.uint64, default_=0)
+            parameterIndex = field.Primitive("parameterIndex", 10, Types.uint16, default_=0)
         parameter = field.Group(Type.anyPointer.parameter)
         parameter = field.Union(1, parameter)
         
@@ -246,7 +246,7 @@ class _:
                 self._offset = 0
                 self._segment_offsets = None
             
-            parameterIndex = field.Primitive("parameterIndex", 10, Types.uint16, default=0)
+            parameterIndex = field.Primitive("parameterIndex", 10, Types.uint16, default_=0)
         implicitMethodParameter = field.Group(Type.anyPointer.implicitMethodParameter)
         implicitMethodParameter = field.Union(2, implicitMethodParameter)
     anyPointer = field.Group(Type.anyPointer)
@@ -262,9 +262,9 @@ class _:
     def __init__(self, *args, **kwds):
         raise NotImplementedError("Not supported: text fields")
     name = field.String("name", 24)
-    codeOrder = field.Primitive("codeOrder", 0, Types.uint16, default=0)
+    codeOrder = field.Primitive("codeOrder", 0, Types.uint16, default_=0)
     annotations = field.List("annotations", 32, Annotation)
-    discriminantValue = field.Primitive("discriminantValue", 2, Types.uint16, default=65535)
+    discriminantValue = field.Primitive("discriminantValue", 2, Types.uint16, default_=65535)
     
     @extend(Field.slot)
     class _:
@@ -272,7 +272,7 @@ class _:
         __ptrs_size__ = 4
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: struct fields")
-        offset = field.Primitive("offset", 4, Types.uint32, default=0)
+        offset = field.Primitive("offset", 4, Types.uint32, default_=0)
         type = field.Struct("type", 40, Type)
         defaultValue = field.Struct("defaultValue", 48, Value)
         hadExplicitDefault = field.Bool("hadExplicitDefault", 16, 0, default=False)
@@ -290,7 +290,7 @@ class _:
             self._offset = 0
             self._segment_offsets = None
         
-        typeId = field.Primitive("typeId", 16, Types.uint64, default=0)
+        typeId = field.Primitive("typeId", 16, Types.uint64, default_=0)
     group = field.Group(Field.group)
     group = field.Union(1, group)
     
@@ -304,7 +304,7 @@ class _:
             raise NotImplementedError("Not supported: void fields")
         implicit = field.Void("implicit")
         implicit = field.Union(0, implicit)
-        explicit = field.Primitive("explicit", 12, Types.uint16, default=0)
+        explicit = field.Primitive("explicit", 12, Types.uint16, default_=0)
         explicit = field.Union(1, explicit)
     ordinal = field.Group(Field.ordinal)
 
@@ -314,7 +314,7 @@ class _:
     __ptrs_size__ = 1
     def __init__(self, *args, **kwds):
         raise NotImplementedError("Not supported: struct fields")
-    id = field.Primitive("id", 0, Types.uint64, default=0)
+    id = field.Primitive("id", 0, Types.uint64, default_=0)
     brand = field.Struct("brand", 8, Brand)
 
 @extend(Value)
@@ -329,25 +329,25 @@ class _:
     void = field.Union(0, void)
     bool = field.Bool("bool", 2, 0, default=False)
     bool = field.Union(1, bool)
-    int8 = field.Primitive("int8", 2, Types.int8, default=0)
+    int8 = field.Primitive("int8", 2, Types.int8, default_=0)
     int8 = field.Union(2, int8)
-    int16 = field.Primitive("int16", 2, Types.int16, default=0)
+    int16 = field.Primitive("int16", 2, Types.int16, default_=0)
     int16 = field.Union(3, int16)
-    int32 = field.Primitive("int32", 4, Types.int32, default=0)
+    int32 = field.Primitive("int32", 4, Types.int32, default_=0)
     int32 = field.Union(4, int32)
-    int64 = field.Primitive("int64", 8, Types.int64, default=0)
+    int64 = field.Primitive("int64", 8, Types.int64, default_=0)
     int64 = field.Union(5, int64)
-    uint8 = field.Primitive("uint8", 2, Types.uint8, default=0)
+    uint8 = field.Primitive("uint8", 2, Types.uint8, default_=0)
     uint8 = field.Union(6, uint8)
-    uint16 = field.Primitive("uint16", 2, Types.uint16, default=0)
+    uint16 = field.Primitive("uint16", 2, Types.uint16, default_=0)
     uint16 = field.Union(7, uint16)
-    uint32 = field.Primitive("uint32", 4, Types.uint32, default=0)
+    uint32 = field.Primitive("uint32", 4, Types.uint32, default_=0)
     uint32 = field.Union(8, uint32)
-    uint64 = field.Primitive("uint64", 8, Types.uint64, default=0)
+    uint64 = field.Primitive("uint64", 8, Types.uint64, default_=0)
     uint64 = field.Union(9, uint64)
-    float32 = field.Primitive("float32", 4, Types.float32, default=0.0)
+    float32 = field.Primitive("float32", 4, Types.float32, default_=0.0)
     float32 = field.Union(10, float32)
-    float64 = field.Primitive("float64", 8, Types.float64, default=0.0)
+    float64 = field.Primitive("float64", 8, Types.float64, default_=0.0)
     float64 = field.Union(11, float64)
     text = field.String("text", 16)
     text = field.Union(12, text)
@@ -355,7 +355,7 @@ class _:
     data = field.Union(13, data)
     list = field.AnyPointer("list", 16)
     list = field.Union(14, list)
-    enum = field.Primitive("enum", 2, Types.uint16, default=0)
+    enum = field.Primitive("enum", 2, Types.uint16, default_=0)
     enum = field.Union(15, enum)
     struct = field.AnyPointer("struct", 16)
     struct = field.Union(16, struct)
@@ -390,7 +390,7 @@ class _:
         __tag__ = enum('Scope.__tag__', ('bind', 'inherit'))
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: list fields")
-        scopeId = field.Primitive("scopeId", 0, Types.uint64, default=0)
+        scopeId = field.Primitive("scopeId", 0, Types.uint64, default_=0)
         bind = field.List("bind", 16, Brand.Binding)
         bind = field.Union(0, bind)
         inherit = field.Void("inherit")
@@ -405,7 +405,7 @@ class _:
     __ptrs_size__ = 2
     def __init__(self, *args, **kwds):
         raise NotImplementedError("Not supported: struct fields")
-    id = field.Primitive("id", 0, Types.uint64, default=0)
+    id = field.Primitive("id", 0, Types.uint64, default_=0)
     value = field.Struct("value", 8, Value)
     brand = field.Struct("brand", 16, Brand)
 
@@ -421,7 +421,7 @@ class _:
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: text fields")
         name = field.String("name", 8)
-        id = field.Primitive("id", 0, Types.uint64, default=0)
+        id = field.Primitive("id", 0, Types.uint64, default_=0)
     
     @extend(Node.Parameter)
     class _:
@@ -434,10 +434,10 @@ class _:
     __tag__ = enum('Node.__tag__', ('file', 'struct', 'enum', 'interface', 'const', 'annotation'))
     def __init__(self, *args, **kwds):
         raise NotImplementedError("Not supported: text fields")
-    id = field.Primitive("id", 0, Types.uint64, default=0)
+    id = field.Primitive("id", 0, Types.uint64, default_=0)
     displayName = field.String("displayName", 40)
-    displayNamePrefixLength = field.Primitive("displayNamePrefixLength", 8, Types.uint32, default=0)
-    scopeId = field.Primitive("scopeId", 16, Types.uint64, default=0)
+    displayNamePrefixLength = field.Primitive("displayNamePrefixLength", 8, Types.uint32, default_=0)
+    scopeId = field.Primitive("scopeId", 16, Types.uint64, default_=0)
     nestedNodes = field.List("nestedNodes", 48, Node.NestedNode)
     annotations = field.List("annotations", 56, Annotation)
     file = field.Void("file")
@@ -449,12 +449,12 @@ class _:
         __ptrs_size__ = 6
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: enum fields")
-        dataWordCount = field.Primitive("dataWordCount", 14, Types.uint16, default=0)
-        pointerCount = field.Primitive("pointerCount", 24, Types.uint16, default=0)
+        dataWordCount = field.Primitive("dataWordCount", 14, Types.uint16, default_=0)
+        pointerCount = field.Primitive("pointerCount", 24, Types.uint16, default_=0)
         preferredListEncoding = field.Enum("preferredListEncoding", 26, ElementSize)
         isGroup = field.Bool("isGroup", 28, 0, default=False)
-        discriminantCount = field.Primitive("discriminantCount", 30, Types.uint16, default=0)
-        discriminantOffset = field.Primitive("discriminantOffset", 32, Types.uint32, default=0)
+        discriminantCount = field.Primitive("discriminantCount", 30, Types.uint16, default_=0)
+        discriminantOffset = field.Primitive("discriminantOffset", 32, Types.uint32, default_=0)
         fields = field.List("fields", 64, Field)
     struct = field.Group(Node.struct)
     struct = field.Union(1, struct)

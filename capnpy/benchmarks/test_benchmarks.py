@@ -12,8 +12,8 @@ from capnpy.enum import enum
 from capnpy.blob import Types
 class schema:    
     class Point(Struct):
-        x = field.Primitive("x", 0, Types.uint64, default=0)
-        y = field.Primitive("y", 8, Types.uint64, default=0)
+        x = field.Primitive("x", 0, Types.uint64, default_=0)
+        y = field.Primitive("y", 8, Types.uint64, default_=0)
 
         __data_size__ = 3
         __ptrs_size__ = 1
