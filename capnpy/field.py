@@ -130,11 +130,11 @@ class List(object):
             elif item_type == Types.text:
                 self.listcls = StringList
             else:
-                raise ValueError('Unkwon item type: %s' % item_type)
+                raise ValueError('Unknown item type: %s' % item_type)
         elif issubclass(item_type, struct_.Struct):
             self.listcls = StructList
         else:
-            raise ValueError('Unkwon item type: %s' % item_type)
+            raise ValueError('Unknown item type: %s' % item_type)
 
     def __get__(self, blob, cls):
         if blob is None:
