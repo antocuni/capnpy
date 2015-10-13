@@ -17,11 +17,11 @@ class Void(object):
 
 class Primitive(object):
 
-    def __init__(self, name, offset, type, default=0):
+    def __init__(self, name, offset, type, default_=0):
         self.name = name
         self.offset = offset
         self.type = type
-        self.default_ = default
+        self.default_ = default_
         self.fmt = type.fmt
 
     def __get__(self, blob, cls):

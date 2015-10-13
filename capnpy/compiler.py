@@ -320,11 +320,11 @@ class FileGenerator(object):
             if nullable_by:
                 kwds['nullable_by'] = nullable_by
                 decl = ('__.field.NullablePrimitive("{name}", {offset}, '
-                        '__.Types.{typename}, default={default}, '
+                        '__.Types.{typename}, default_={default}, '
                         'nullable_by={nullable_by})')
             else:
                 decl = ('__.field.Primitive("{name}", {offset}, '
-                        '__.Types.{typename}, default={default})')
+                        '__.Types.{typename}, default_={default})')
         #
         elif which == 'bool':
             size = 0
