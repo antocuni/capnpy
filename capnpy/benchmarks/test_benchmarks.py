@@ -85,7 +85,7 @@ class TestGetAttr(object):
         def sum_xs(p):
             res = 0
             for i in range(self.N):
-                res += p._read_primitive(0, Types.uint64)
+                res += p._read_primitive(0, Types.int64)
             return res
         #
         p = schema.Point(x=100, y=200)

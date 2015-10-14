@@ -8,6 +8,7 @@ if USE_CYTHON:
 
     files = ["capnpy/blob.py",
              "capnpy/field.py",
+             "capnpy/type.py",
              "capnpy/unpack.pyx"]
 
     def getext(fname):
