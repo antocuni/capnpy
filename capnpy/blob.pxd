@@ -1,5 +1,5 @@
 from capnpy.type cimport BuiltinType
-cimport capnpy.unpack
+from capnpy.unpack cimport unpack_primitive
 
 cdef class Blob:
     cdef readonly bytes _buf

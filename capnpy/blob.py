@@ -9,7 +9,7 @@ import capnpy
 from capnpy.ptr import Ptr, StructPtr, ListPtr, FarPtr
 from capnpy.type import Types
 from capnpy.printer import BufferPrinter
-import capnpy.unpack
+from capnpy.unpack import unpack_primitive
 
 class Blob(object):
     """
@@ -29,7 +29,7 @@ class Blob(object):
         self._segment_offsets = segment_offsets
 
     def _read_primitive(self, offset, t):
-        return capnpy.unpack.unpack_primitive(t.fmt, self._buf, self._offset+offset)
+        return unpack_primitive(t.fmt, self._buf, self._offset+offset)
 
     def _read_bit(self, offset, bitmask):
         val = self._read_primitive(offset, Types.uint8)

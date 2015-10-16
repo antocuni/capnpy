@@ -9,7 +9,8 @@ if USE_CYTHON:
     files = ["capnpy/blob.py",
              "capnpy/field.py",
              "capnpy/type.py",
-             "capnpy/unpack.pyx"]
+             "capnpy/unpack.pyx",
+             "capnpy/benchmarks/mypoint.pyx"]
 
     def getext(fname):
         extname = fname.replace('/', '.').replace('.pyx', '').replace('.py', '')

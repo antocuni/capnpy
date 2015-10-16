@@ -105,3 +105,21 @@ class TestGetAttr(object):
         p = Point(x=100, y=200)
         res = benchmark(sum_xs, p)
         assert res == 100*self.N
+
+    @pytest.mark.benchmark(group="getattr")
+    def test_cython_property(self, benchmark):
+        @pypytools.clonefunc
+        def sum_xs(p):
+            res = 0
+            for i in range(self.N):
+                res += p.x
+            return res
+        #
+        import struct
+        from capnpy.benchmarks.mypoint import MyPoint
+        buf = struct.pack('qq', 100, 200)
+        p = MyPoint.from_buffer(buf, 0, None)
+        assert p.x == 100
+        assert p.y == 200
+        res = benchmark(sum_xs, p)
+        #assert res == 100*self.N
