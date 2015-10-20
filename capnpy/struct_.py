@@ -21,6 +21,12 @@ class Struct(Blob):
     __tag_offset__ = None
     __tag__ = None
 
+    @classmethod
+    def from_buffer(cls, buf, offset, segment_offsets):
+        self = Struct.__new__(cls)
+        self._init(buf, offset, segment_offsets)
+        return self
+
     def which(self):
         """
         Return the value of the union tag, if the struct has an anonimous union or
@@ -154,24 +160,6 @@ class Struct(Blob):
         extra_start, extra_end = self._get_extra_range()
         return self._buf[extra_start:extra_end]
 
-    def __eq__(self, other):
-        if self.__class__ is not other.__class__:
-            return False
-        return self._get_key() == other._get_key()
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
-    def __hash__(self):
-        return hash(self._get_key())
-
-    def __lt__(self, other):
-        raise TypeError, "capnpy structs can be compared only for equality"
-
-    __le__ = __lt__
-    __gt__ = __lt__
-    __ge__ = __lt__
-
     def _split(self, extra_offset):
         """
         Split the body and the extra part.  The extra part must be placed at the
@@ -239,6 +227,65 @@ class Struct(Blob):
         buf = body+extra
         return self.__class__.from_buffer(buf, 0, None)
 
+    def __hash__(self):
+        return hash(self._get_key())
+
+    # ------------------------------------------------------
+    # Comparisons methods
+    # ------------------------------------------------------
+    #
+    # this class can be used in two ways:
+    #
+    #   1. Pure Python mode (either on CPython or PyPy)
+    #   2. compiled by Cython
+    #
+    # Cython does not support __eq__, __lt__ etc: instead, to enable
+    # comparisons you need to define __richcmp__ (which Cython maps to the
+    # CPython's tp_richcmp slot).  On the other hand, when in Pure Python
+    # mode, we *need* __eq__, __lt__ etc:
+    #
+    #   1. we write the actual logic inside the _cmp_* methods
+    #
+    #   2. we implement a __richcmp__ which will be used by Cython but ignored
+    #      by Pure Python
+    #
+    #   3. we add __eq__, __lt__, etc. OUTSIDE the class definition. The
+    #      assignments will fail when Struct is compiled by Cython, because
+    #      you cannot modify the class dict of an extension type: this means
+    #      that we will have the special methods only when in Pure Python
+    #      mode, as wished
+
+    def _cmp_eq(self, other):
+        if self.__class__ is not other.__class__:
+            return False
+        return self._get_key() == other._get_key()
+
+    def _cmp_ne(self, other):
+        return not self._cmp_eq(other)
+
+    def _cmp_error(self, other):
+        raise TypeError, "capnpy structs can be compared only for equality"
+
+    def __richcmp__(self, other, op):
+        if op == 2:
+            return self._cmp_eq(other)
+        elif op == 3:
+            return self._cmp_ne(other)
+        else:
+            return self._cmp_error(other)
+
+
+# add the special methods only when Struct has NOT been compiled by
+# Cython. See the comment above for more explanation
+try:
+    Struct.__eq__ = Struct.__dict__['_cmp_eq']
+    Struct.__ne__ = Struct.__dict__['_cmp_ne']
+    Struct.__lt__ = Struct.__dict__['_cmp_error']
+    Struct.__le__ = Struct.__dict__['_cmp_error']
+    Struct.__gt__ = Struct.__dict__['_cmp_error']
+    Struct.__ge__ = Struct.__dict__['_cmp_error']
+except TypeError:
+    pass
 
 
 class GenericStruct(Struct):

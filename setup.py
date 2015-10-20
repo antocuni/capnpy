@@ -7,6 +7,7 @@ if USE_CYTHON:
     from Cython.Build import cythonize
 
     files = ["capnpy/blob.py",
+             "capnpy/struct_.py",
              "capnpy/field.py",
              "capnpy/type.py",
              "capnpy/unpack.pyx",
