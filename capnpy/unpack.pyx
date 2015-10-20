@@ -27,7 +27,7 @@ cpdef __unpack_primitive_fast(char fmt, bytes buf, int offset):
         return (<unsigned long*>valueaddr)[0]
     #
     # slow fallback
-    return struct.unpack_from('<' + fmt, buf, offset)[0]
+    return struct.unpack_from('<' + chr(fmt), buf, offset)[0]
     #raise ValueError('unknown fmt %s' % chr(fmt))
 
 
