@@ -4,10 +4,8 @@ from capnpy.unpack cimport __unpack_primitive_fast as upf
 cdef class MyPoint(Blob):
 
     @classmethod
-    def from_buffer(cls, buf, offset, segment_offsets):
-        self = MyPoint.__new__(cls)
-        self._init(buf, offset, segment_offsets)
-        return self
+    def _allocate(cls):
+        return MyPoint.__new__(cls)
 
     property x:
         def __get__(self):

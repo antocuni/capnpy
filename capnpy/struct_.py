@@ -22,10 +22,9 @@ class Struct(Blob):
     __tag__ = None
 
     @classmethod
-    def from_buffer(cls, buf, offset, segment_offsets):
-        self = Struct.__new__(cls)
-        self._init(buf, offset, segment_offsets)
-        return self
+    def _allocate(cls):
+        # see the comment in Blob._allocate to understand why it's needed
+        return Struct.__new__(cls)
 
     def which(self):
         """

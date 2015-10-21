@@ -17,7 +17,7 @@ if USE_CYTHON:
         extname = fname.replace('/', '.').replace('.pyx', '').replace('.py', '')
         return Extension(extname, [fname])
 
-    ext_modules = cythonize(map(getext, files), gdb_debug=True)
+    ext_modules = cythonize(map(getext, files), gdb_debug=False)
 
 else:
     ext_modules = []
