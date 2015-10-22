@@ -9,26 +9,6 @@ from capnpy.type import Types
 class Unsupported(Exception):
     pass
 
-def define_structor(code, name, data_size, ptrs_size, fields,
-                    tag_offset=None, tag_value=None):
-    if field.Group in [type(f) for f in fields]:
-        return make_unsupported(name, "Group fields not supported yet")
-    #
-    fields = [f for f in fields if not isinstance(f, field.Void)]
-    if tag_offset is not None:
-        tag_field = field.Primitive('__which__', tag_offset, Types.int16)
-        fields.append(tag_field)
-    try:
-        fmt = compute_format(data_size, ptrs_size, fields)
-        return make_structor(code, name, fields, fmt, tag_value)
-    except Unsupported, e:
-        return make_unsupported(code, name, str(e))
-
-def make_unsupported(code, name, msg):
-    code.w('@staticmethod')
-    with code.def_(name, ['*args', '**kwargs']):
-        code.w('raise NotImplementedError({msg})', msg=repr(msg))
-
 def compute_format(data_size, ptrs_size, fields):
     total_length = (data_size+ptrs_size)*8
     fmt = ['x'] * total_length
@@ -49,6 +29,37 @@ def compute_format(data_size, ptrs_size, fields):
     fmt = ''.join(fmt)
     assert struct.calcsize(fmt) == total_length
     return fmt
+
+class Structor(object):
+
+    def __init__(self, name, data_size, ptrs_size, fields,
+                 tag_offset=None, tag_value=None):
+        self.name = name
+        self.data_size = data_size
+        self.ptrs_size = ptrs_size
+        self.fields = fields
+        self.tag_offset = tag_offset
+        self.tag_value = tag_value
+
+    def declare(self, code):
+        if field.Group in [type(f) for f in self.fields]:
+            return make_unsupported(name, "Group fields not supported yet")
+        #
+        fields = [f for f in self.fields if not isinstance(f, field.Void)]
+        if self.tag_offset is not None:
+            tag_field = field.Primitive('__which__', self.tag_offset, Types.int16)
+            fields.append(tag_field)
+        try:
+            fmt = compute_format(self.data_size, self.ptrs_size, fields)
+            return make_structor(code, self.name, fields, fmt, self.tag_value)
+        except Unsupported, e:
+            return make_unsupported(code, self.name, str(e))
+
+def make_unsupported(code, name, msg):
+    code.w('@staticmethod')
+    with code.def_(name, ['*args', '**kwargs']):
+        code.w('raise NotImplementedError({msg})', msg=repr(msg))
+
 
 def get_argnames(fields):
     # get the names of all fields, except those which are used as "check

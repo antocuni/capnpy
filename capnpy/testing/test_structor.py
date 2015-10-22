@@ -2,15 +2,30 @@ import py
 from pypytools.codegen import Code
 from capnpy.builder import StructBuilder
 from capnpy.struct_ import Struct
-from capnpy.structor import define_structor, compute_format, Unsupported
+from capnpy.structor import Structor, compute_format, Unsupported
 from capnpy import field
 from capnpy.type import Types
+
+class TestComputeFormat(object):
+    
+    def test_compute_format_simple(self):
+        fields = [field.Primitive('x', 0, Types.int64),
+                  field.Primitive('y', 8, Types.int64)]
+        fmt = compute_format(data_size=2, ptrs_size=0, fields=fields)
+        assert fmt == 'qq'
+
+    def test_compute_format_holes(self):
+        fields = [field.Primitive('x', 0, Types.int32),
+                  field.Primitive('y', 8, Types.int64)]
+        fmt = compute_format(data_size=2, ptrs_size=0, fields=fields)
+        assert fmt == 'ixxxxq'
 
 
 def new_structor(**kwds):
     code = Code()
     code['StructBuilder'] = StructBuilder
-    define_structor(code, 'ctor', **kwds)
+    structor = Structor('ctor', **kwds)
+    structor.declare(code)
     code.compile()
     static_ctor = code['ctor']
     # the structor is defined as @staticmethod, so before calling we need to
@@ -19,17 +34,6 @@ def new_structor(**kwds):
 
 
 
-def test_compute_format_simple():
-    fields = [field.Primitive('x', 0, Types.int64),
-              field.Primitive('y', 8, Types.int64)]
-    fmt = compute_format(data_size=2, ptrs_size=0, fields=fields)
-    assert fmt == 'qq'
-
-def test_compute_format_holes():
-    fields = [field.Primitive('x', 0, Types.int32),
-              field.Primitive('y', 8, Types.int64)]
-    fmt = compute_format(data_size=2, ptrs_size=0, fields=fields)
-    assert fmt == 'ixxxxq'
 
 def test_unsupported(monkeypatch):
     def fake_compute_format(*args):
