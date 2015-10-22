@@ -101,30 +101,40 @@ class Structor(object):
             if self.tag_value is not None:
                 code.w('__which__ = {tag_value}', tag_value=int(self.tag_value))
             for f in self.fields:
-                arg = f.name
                 if isinstance(f, field.NullablePrimitive):
-                    with code.block('if {arg} is None:', arg=arg):
-                        code.w('{isnull} = 1', isnull=f.nullable_by.name)
-                        code.w('{arg} = 0', arg=arg)
-                    with code.block('else:'):
-                        code.w('{isnull} = 0', isnull=f.nullable_by.name)
+                    self._field_nullable(code, f)
+                elif isinstance(f, field.String):
+                    self._field_string(code, f)
+                elif isinstance(f, field.Struct):
+                    self._field_struct(code, f)
+                elif isinstance(f, field.List):
+                    self._field_list(code, f)
                 elif isinstance(f, field.Primitive):
                     pass # nothing to do
-                elif isinstance(f, field.String):
-                    code.w('{arg} = builder.alloc_string({offset}, {arg})',
-                           arg=arg, offset=f.offset)
-                elif isinstance(f, field.Struct):
-                    structname = code.new_global(f.structcls.__name__, f.structcls)
-                    code.w('{arg} = builder.alloc_struct({offset}, {structname}, {arg})',
-                           arg=arg, offset=f.offset, structname=structname)
-                elif isinstance(f, field.List):
-                    listcls = code.new_global(f.listcls.__name__, f.listcls)
-                    itemtype = code.new_global('item_type', f.item_type)
-                    code.w('{arg} = builder.alloc_list({offset}, {listcls}, {itemtype}, {arg})',
-                           arg=arg, offset=f.offset, listcls=listcls, itemtype=itemtype)
                 else:
                     raise NotImplementedError('Unsupported field type: %s' % f)
                 #
             code.w('buf =', code.call('builder.build', buildnames))
             code.w('return buf')
 
+    def _field_nullable(self, code, f):
+        with code.block('if {arg} is None:', arg=f.name):
+            code.w('{isnull} = 1', isnull=f.nullable_by.name)
+            code.w('{arg} = 0', arg=f.name)
+        with code.block('else:'):
+            code.w('{isnull} = 0', isnull=f.nullable_by.name)
+
+    def _field_string(self, code, f):
+        code.w('{arg} = builder.alloc_string({offset}, {arg})',
+               arg=f.name, offset=f.offset)
+
+    def _field_struct(self, code, f):
+        structname = code.new_global(f.structcls.__name__, f.structcls)
+        code.w('{arg} = builder.alloc_struct({offset}, {structname}, {arg})',
+               arg=f.name, offset=f.offset, structname=structname)
+
+    def _field_list(self, code, f):
+        listcls = code.new_global(f.listcls.__name__, f.listcls)
+        itemtype = code.new_global('item_type', f.item_type)
+        code.w('{arg} = builder.alloc_list({offset}, {listcls}, {itemtype}, {arg})',
+               arg=f.name, offset=f.offset, listcls=listcls, itemtype=itemtype)
