@@ -1,17 +1,20 @@
 import py
 from pypytools.codegen import Code
-from capnpy.builder import StructBuilder
 from capnpy.struct_ import Struct
 from capnpy.structor import Structor
 from capnpy import field
 from capnpy.type import Types
 
-class FakePrimitiveField(object):
+class FakeField(object):
 
     def __init__(self, name, offset, t):
         self.name = name
         self.offset = offset
         self.t = t
+
+    @classmethod
+    def Void(cls, name):
+        return cls(name, None, Types.void)
 
     def get_fmt(self):
         return self.t.fmt
@@ -19,34 +22,41 @@ class FakePrimitiveField(object):
     def get_offset(self):
         return self.offset
 
+    def is_primitive(self):
+        return self.t.is_primitive()
+
     def is_group(self):
         return False
 
     def is_void(self):
-        return False
+        return self.t is Types.void
 
     def is_nullable(self, compiler):
         return False
 
+
 class TestComputeFormat(object):
 
     def test_compute_format_simple(self):
-        fields = [FakePrimitiveField('x', 0, Types.int64),
-                  FakePrimitiveField('y', 8, Types.int64)]
+        fields = [FakeField('x', 0, Types.int64),
+                  FakeField('y', 8, Types.int64)]
         s = Structor(None, 'fake', data_size=2, ptrs_size=0, fields=fields)
         assert s.fmt == 'qq'
 
     def test_compute_format_holes(self):
-        fields = [FakePrimitiveField('x', 0, Types.int32),
-                  FakePrimitiveField('y', 8, Types.int64)]
+        fields = [FakeField('x', 0, Types.int32),
+                  FakeField('y', 8, Types.int64)]
         s = Structor(None, 'fake', data_size=2, ptrs_size=0, fields=fields)
         assert s.fmt == 'ixxxxq'
 
 
 def new_structor(**kwds):
+    class Namespace:
+        from capnpy.builder import StructBuilder
+
     code = Code()
-    code['StructBuilder'] = StructBuilder
-    structor = Structor('ctor', **kwds)
+    code['__'] = Namespace
+    structor = Structor(None, 'ctor', **kwds)
     structor.declare(code)
     code.compile()
     static_ctor = code['ctor']
@@ -64,24 +74,24 @@ def test_unsupported(monkeypatch):
     assert exc.value.message == 'fake'
 
 def test_primitive():
-    fields = [field.Primitive('x', 0, Types.int64),
-              field.Primitive('y', 8, Types.int64)]
+    fields = [FakeField('x', 0, Types.int64),
+              FakeField('y', 8, Types.int64)]
     ctor = new_structor(data_size=2, ptrs_size=0, fields=fields)
     buf = ctor(1, 2)
     assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                    '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
 
 def test_argnames():
-    fields = [field.Primitive('x', 0, Types.int64),
-              field.Primitive('y', 8, Types.int64)]
+    fields = [FakeField('x', 0, Types.int64),
+              FakeField('y', 8, Types.int64)]
     ctor = new_structor(data_size=2, ptrs_size=0, fields=fields)
     buf = ctor(y=2, x=1)
     assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                    '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
 
 def test_unordered():
-    fields = [field.Primitive('y', 8, Types.int64),
-              field.Primitive('x', 0, Types.int64)]
+    fields = [FakeField('y', 8, Types.int64),
+              FakeField('x', 0, Types.int64)]
     ctor = new_structor(data_size=2, ptrs_size=0, fields=fields)
     buf = ctor(x=1, y=2)
     assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
@@ -92,9 +102,9 @@ def test_unordered():
 
 
 def test_void():
-    fields = [field.Primitive('x', 0, Types.int64),
-              field.Primitive('y', 8, Types.int64),
-              field.Void('z')]
+    fields = [FakeField('x', 0, Types.int64),
+              FakeField('y', 8, Types.int64),
+              FakeField.Void('z')]
     ctor = new_structor(data_size=2, ptrs_size=0, fields=fields)
     buf = ctor(1, 2)
     assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
