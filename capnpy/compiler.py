@@ -7,6 +7,7 @@ import subprocess
 from pypytools.codegen import Code
 from capnpy.type import Types
 from capnpy.convert_case import from_camel_case
+from capnpy.structor import Structor
 
 ## # pycapnp will be supported only until the boostrap is completed
 ## USE_PYCAPNP = False
@@ -91,10 +92,9 @@ class FileGenerator(object):
             self.w("from capnpy import field")
             self.w("from capnpy.enum import enum")
             self.w("from capnpy.blob import Types")
-            self.w("from capnpy.structor import structor")
+            self.w("from capnpy.builder import StructBuilder")
             self.w("from capnpy.util import extend")
             self.w("enum = staticmethod(enum)")
-            self.w("structor = staticmethod(structor)")
             self.w("extend = staticmethod(extend)")
 
         self.declare_imports(f)
@@ -187,15 +187,26 @@ class FileGenerator(object):
         else:
             self._emit_ctor_nounion(node)
 
+    ## def _emit_ctor_nounion(self, node):
+    ##     fnames = [self._field_name(f) for f in node.struct.fields]
+    ##     flist = "[%s]" % ', '.join(fnames)
+    ##     # normally, __new__ is special-cased at class creation time and
+    ##     # automatically turned into a staticmethod; however, here we are
+    ##     # inside an @extend body, so we need to call it manually
+    ##     self.w("__new__ = __.structor('__new__', __data_size__, __ptrs_size__, {flist})",
+    ##            flist=flist)
+    ##     self.w("__new__ = staticmethod(__new__)")
+
     def _emit_ctor_nounion(self, node):
-        fnames = [self._field_name(f) for f in node.struct.fields]
-        flist = "[%s]" % ', '.join(fnames)
-        # normally, __new__ is special-cased at class creation time and
-        # automatically turned into a staticmethod; however, here we are
-        # inside an @extend body, so we need to call it manually
-        self.w("__new__ = __.structor('__new__', __data_size__, __ptrs_size__, {flist})",
-               flist=flist)
-        self.w("__new__ = staticmethod(__new__)")
+        data_size = node.struct.dataWordCount
+        ptrs_size = node.struct.pointerCount
+        ctor = Structor(self, '__new', data_size, ptrs_size, node.struct.fields)
+        ctor.declare(self.code)
+        #
+        with self.code.def_('__init__', ['self'] + ctor.argnames):
+            call = self.code.call('self.__new', ctor.argnames)
+            self.w('buf = {call}', call=call)
+            self.w('self._init(buf, 0, None)')
 
     def _emit_ctors_union(self, node):
         # suppose we have a tag whose members are 'circle' and 'square': we
@@ -299,14 +310,6 @@ class FileGenerator(object):
             line = line.format(name=fname, discriminantValue=field.discriminantValue)
             self.w(line)
 
-    def _is_nullable(self, field):
-        for ann in field.annotations or []:
-            ann_node = self.allnodes[ann.id]
-            if ann_node.displayName == "capnpy/py.capnp:nullable":
-                assert ann.value.void is None
-                return True
-        return None
-
     def visit_field_slot(self, fname, field, data_size, ptrs_size, nullable_by=None):
         kwds = {}
         t = field.slot.type
@@ -383,7 +386,7 @@ class FileGenerator(object):
 
     def visit_field_group(self, fname, field, data_size, ptrs_size):
         group = self.allnodes[field.group.typeId]
-        if self._is_nullable(field):
+        if field.is_nullable(self):
             self.visit_nullable_group(fname, group, field, data_size, ptrs_size)
         else:
             self.visit_struct(group)
