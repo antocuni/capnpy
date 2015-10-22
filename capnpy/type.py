@@ -1,7 +1,7 @@
 import struct
 
 class BuiltinType(object):
-    def __init__(self, name, fmt=''):
+    def __init__(self, name, fmt=None):
         self.name = name
         self.fmt = fmt
 
@@ -18,7 +18,7 @@ class BuiltinType(object):
 class Types(object):
 
     @classmethod
-    def _make(cls, name, fmt=''):
+    def _make(cls, name, fmt=None):
         t = BuiltinType(name, fmt)
         setattr(cls, name, t)
 
