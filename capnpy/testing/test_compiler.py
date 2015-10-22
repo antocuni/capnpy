@@ -175,13 +175,13 @@ def test_group(tmpdir):
            '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
            '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
-    r = mod.Rectangle.from_buffer(buf, 8)
+    r = mod.Rectangle.from_buffer(buf, 8, None)
     assert r.a.x == 1
     assert r.a.y == 2
     assert r.b.x == 3
     assert r.b.y == 4
 
-def test_group(tmpdir):
+def test_union_group(tmpdir):
     schema = """
     @0xbf5147cbbecf40c1;
     struct Shape {
