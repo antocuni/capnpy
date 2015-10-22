@@ -6,18 +6,40 @@ from capnpy.structor import Structor
 from capnpy import field
 from capnpy.type import Types
 
+class FakePrimitiveField(object):
+
+    def __init__(self, name, offset, t):
+        self.name = name
+        self.offset = offset
+        self.t = t
+
+    def get_fmt(self):
+        return self.t.fmt
+
+    def get_offset(self):
+        return self.offset
+
+    def is_group(self):
+        return False
+
+    def is_void(self):
+        return False
+
+    def is_nullable(self, compiler):
+        return False
+
 class TestComputeFormat(object):
 
     def test_compute_format_simple(self):
-        fields = [field.Primitive('x', 0, Types.int64),
-                  field.Primitive('y', 8, Types.int64)]
-        s = Structor('fake', data_size=2, ptrs_size=0, fields=fields)
+        fields = [FakePrimitiveField('x', 0, Types.int64),
+                  FakePrimitiveField('y', 8, Types.int64)]
+        s = Structor(None, 'fake', data_size=2, ptrs_size=0, fields=fields)
         assert s.fmt == 'qq'
 
     def test_compute_format_holes(self):
-        fields = [field.Primitive('x', 0, Types.int32),
-                  field.Primitive('y', 8, Types.int64)]
-        s = Structor('fake', data_size=2, ptrs_size=0, fields=fields)
+        fields = [FakePrimitiveField('x', 0, Types.int32),
+                  FakePrimitiveField('y', 8, Types.int64)]
+        s = Structor(None, 'fake', data_size=2, ptrs_size=0, fields=fields)
         assert s.fmt == 'ixxxxq'
 
 
