@@ -3,15 +3,14 @@ Structor -> struct ctor -> struct construtor :)
 """
 
 import struct
-from pypytools.codegen import Code
 from capnpy import field
 from capnpy.type import Types
-from capnpy.builder import StructBuilder
 
 class Unsupported(Exception):
     pass
 
-def structor(name, data_size, ptrs_size, fields, tag_offset=None, tag_value=None):
+def define_structor(code, name, data_size, ptrs_size, fields,
+                    tag_offset=None, tag_value=None):
     if field.Group in [type(f) for f in fields]:
         return make_unsupported(name, "Group fields not supported yet")
     #
@@ -21,15 +20,14 @@ def structor(name, data_size, ptrs_size, fields, tag_offset=None, tag_value=None
         fields.append(tag_field)
     try:
         fmt = compute_format(data_size, ptrs_size, fields)
-        return make_structor(name, fields, fmt, tag_value)
+        return make_structor(code, name, fields, fmt, tag_value)
     except Unsupported, e:
-        return make_unsupported(name, str(e))
+        return make_unsupported(code, name, str(e))
 
-def make_unsupported(name, msg):
-    def fn(*args, **kwargs):
-        raise NotImplementedError(msg)
-    fn.__name__ = name
-    return fn
+def make_unsupported(code, name, msg):
+    code.w('@staticmethod')
+    with code.def_(name, ['*args', '**kwargs']):
+        code.w('raise NotImplementedError({msg})', msg=repr(msg))
 
 def compute_format(data_size, ptrs_size, fields):
     total_length = (data_size+ptrs_size)*8
@@ -62,13 +60,14 @@ def get_argnames(fields):
     #
     return [f.name for f in fields if f not in ignored]
 
-def make_structor(name, fields, fmt, tag_value):
-    ## create a constructor which looks like this
-    ## def ctor(cls, x, y, z):
+def make_structor(code, name, fields, fmt, tag_value):
+    ## generate a constructor which looks like this
+    ## @staticmethod
+    ## def ctor(x, y, z):
     ##     builder = StructBuilder('qqq')
     ##     z = builder.alloc_string(16, z)
     ##     buf = builder.build(x, y)
-    ##     return cls.from_buffer(buf, 0, None)
+    ##     return buf
     #
     # the parameters have the same order as fields
     argnames = get_argnames(fields)
@@ -81,9 +80,8 @@ def make_structor(name, fields, fmt, tag_value):
         argnames.remove('__which__')
     if len(argnames) != len(set(argnames)):
         raise ValueError("Duplicate field name(s): %s" % argnames)
-    code = Code()
-    code['StructBuilder'] = StructBuilder
-    with code.def_(name, ['cls'] + argnames):
+    code.w('@staticmethod')
+    with code.def_(name, argnames):
         code.w('builder = StructBuilder({fmt})', fmt=repr(fmt))
         if tag_value is not None:
             code.w('__which__ = {tag_value}', tag_value=int(tag_value))
@@ -113,6 +111,4 @@ def make_structor(name, fields, fmt, tag_value):
                 raise Unsupported('Unsupported field type: %s' % f)
             #
         code.w('buf =', code.call('builder.build', buildnames))
-        code.w('return cls.from_buffer(buf, 0, None)')
-    code.compile()
-    return code[name]
+        code.w('return buf')
