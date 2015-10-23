@@ -5,7 +5,6 @@ Integration tests which don't fit anywhere else :)
 import py
 from capnpy.testing.test_compiler import compile_string
 
-@py.test.mark.xfail
 def test_listbuilder_bug(tmpdir):
     schema = """
         @0xbf5147cbbecf40c1;
@@ -26,7 +25,6 @@ def test_listbuilder_bug(tmpdir):
     assert foo.bars[0].x == 1
     assert foo.bars[0].y == 2
 
-@py.test.mark.xfail
 def test_listbuilder_null_ptrs(tmpdir):
     schema = """
         @0xbf5147cbbecf40c1;
@@ -74,7 +72,6 @@ def test_compact_structs(tmpdir):
     assert foo.key._buf[8:] == ('\x01\x00\x00\x00\x32\x00\x00\x00'  # ptr to dummy
                                 'dummy\x00\x00\x00')
 
-@py.test.mark.xfail
 def test_compact_struct_inside_list(tmpdir):
     schema = """
         @0xbf5147cbbecf40c1;
