@@ -136,14 +136,6 @@ def test_void():
 
 
 @py.test.mark.xfail
-def test_list():
-    fields = [field.List('x', 0, Types.int8)]
-    ctor = new_structor(data_size=0, ptrs_size=1, fields=fields)
-    buf = ctor([1, 2, 3, 4])
-    assert buf == ('\x01\x00\x00\x00\x22\x00\x00\x00'   # ptrlist
-                   '\x01\x02\x03\x04\x00\x00\x00\x00')  # 1,2,3,4 + padding
-
-@py.test.mark.xfail
 def test_tag_offset():
     ## struct Shape {
     ##   area @0 :Int64;
