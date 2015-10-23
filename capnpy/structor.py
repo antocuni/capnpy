@@ -22,19 +22,28 @@ class Structor(object):
         self.fmt = self._compute_format()
 
     def _get_fields(self, fields):
-        if any([f.is_group() for f in fields]):
-            self._unsupported = "Group fields not supported yet"
-            return fields
-        #
-        fields = [f for f in fields if not f.is_void()]
+        newfields = []
+        for f in fields:
+            ngroup = f.is_nullable(self.compiler)
+            if ngroup:
+                self._unsupported = "XXX"
+                return []
+            elif f.is_group():
+                self._unsupported = "Group fields not supported yet"
+                return []
+            elif f.is_void():
+                continue # ignore void fields
+            else:
+                newfields.append(f)
+
         if self.tag_offset is not None:
             # self.tag_offset is expressed in bytes: as usual,
             # field.slot.offset is expressed in multiples of the field size,
             # which is 2 bytes in this case: thus, we need to use tag_offset/2
             tag_field = Field.new_slot('__which__', self.tag_offset/2, Type.new_int16())
-            fields.append(tag_field)
+            newfields.append(tag_field)
         #
-        return fields
+        return newfields
 
     def _get_argnames(self):
         # get the names of all fields, except those which are used as "check

@@ -373,27 +373,18 @@ class FileGenerator(object):
         self.w(line.format(**kwds))
 
     def visit_field_group(self, fname, field, data_size, ptrs_size):
-        group = self.allnodes[field.group.typeId]
-        if field.is_nullable(self):
-            self.visit_nullable_group(fname, group, field, data_size, ptrs_size)
+        ngroup = field.is_nullable(self)
+        if ngroup:
+            self.visit_nullable_group(ngroup, data_size, ptrs_size)
         else:
+            group = self.allnodes[field.group.typeId]
             self.visit_struct(group)
             self.w('%s = __.field.Group(%s)' % (fname, self._pyname(group)))
 
-    def visit_nullable_group(self, fname, group, field, data_size, ptrs_size):
-        msg = '%s: nullable groups must have exactly two fields: "isNull" and "value"'
-        msg = msg % fname
-        if len(group.struct.fields) != 2:
-            raise ValueError(msg)
-        is_null, value = group.struct.fields
-        if is_null.name != 'isNull':
-            raise ValueError(msg)
-        if value.name != 'value':
-            raise ValueError(msg)
-        #
-        is_null_name = '_%s_is_null' % fname
-        self.visit_field_slot(is_null_name, is_null, data_size, ptrs_size)
-        self.visit_field_slot(fname, value, data_size, ptrs_size, nullable_by=is_null_name)
+    def visit_nullable_group(self, ngroup, data_size, ptrs_size):
+        self.visit_field_slot(ngroup.is_null_name, ngroup.is_null, data_size, ptrs_size)
+        self.visit_field_slot(ngroup.name, ngroup.value, data_size, ptrs_size,
+                              nullable_by=ngroup.is_null_name)
 
     def visit_enum(self, node):
         name = self._shortname(node)
@@ -415,6 +406,7 @@ class FileGenerator(object):
             return self._pyname(self.allnodes[t.enum.typeId])
         else:
             assert False
+
 
 
 class Compiler(object):

@@ -1,5 +1,6 @@
 import sys
 from capnpy.type import Types
+from capnpy.nullable import NullableGroup
 from capnpy.util import extend
 schema = sys.modules['capnpy.schema']
 
@@ -84,7 +85,7 @@ class Field:
             ann_node = compiler.allnodes[ann.id]
             if ann_node.displayName == "capnpy/py.capnp:nullable":
                 assert ann.value.void is None
-                return True
+                return NullableGroup(compiler, self)
         return None
 
 
