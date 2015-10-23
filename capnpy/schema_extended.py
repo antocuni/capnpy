@@ -31,6 +31,9 @@ class Type:
 @extend(schema.Field)
 class Field:
 
+    def is_slot(self):
+        return self.which() == schema.Field.__tag__.slot
+
     def is_group(self):
         return self.which() == schema.Field.__tag__.group
 
@@ -58,26 +61,28 @@ class Field:
                 return True
         return None
 
-    def get_fmt(self):
-        # XXX: this method is very hackish, we absolutely need to find a
-        # cleaner way than the forest of ifs
-        if self.which() == schema.Field.__tag__.slot:
-            if self.slot.type.is_primitive():
-                typename = str(self.slot.type.which())
+
+    @extend(schema.Field.slot.field.groupcls)
+    class _:
+        def get_fmt(self):
+            # XXX: this method is very hackish, we absolutely need to find a
+            # cleaner way than the forest of ifs
+            if self.type.is_primitive():
+                typename = str(self.type.which())
                 t = getattr(Types, typename)
                 return t.fmt
-            elif self.slot.type.is_pointer():
+            elif self.type.is_pointer():
                 return 'q'
-            elif self.slot.type.is_enum():
+            elif self.type.is_enum():
                 return 'h'
 
-    def get_size(self):
-        # XXX: even more hackish, we need a better way
-        import struct
-        return struct.calcsize(self.get_fmt())
+        def get_size(self):
+            # XXX: even more hackish, we need a better way
+            import struct
+            return struct.calcsize(self.get_fmt())
 
-    def get_offset(self, data_size):
-        offset = self.slot.offset * self.get_size()
-        if self.is_pointer():
-            offset += data_size*8
-        return offset
+        def get_offset(self, data_size):
+            offset = self.offset * self.get_size()
+            if self.type.is_pointer():
+                offset += data_size*8
+            return offset

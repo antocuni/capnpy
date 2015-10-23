@@ -354,7 +354,7 @@ class FileGenerator(object):
             raise ValueError("explicit defaults not supported for field %s" % field)
         #
         if not field.slot.type.is_bool():
-            kwds['offset'] = field.get_offset(data_size)
+            kwds['offset'] = field.slot.get_offset(data_size)
         kwds['name'] = fname
         line = '{name} = ' + decl
         self.w(line.format(**kwds))

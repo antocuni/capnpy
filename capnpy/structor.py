@@ -60,12 +60,10 @@ class Structor(object):
                 fmt[i] = None
 
         for f in self.fields:
-            f_fmt = f.get_fmt()
-            if f_fmt is None:
+            if not f.is_slot() or f.slot.type.is_bool():
                 self._unsupported = 'Unsupported field type: %s' % f
                 return
-            #
-            set(f.get_offset(self.data_size), f_fmt)
+            set(f.slot.get_offset(self.data_size), f.slot.get_fmt())
         #
         # remove all the Nones
         fmt = [ch for ch in fmt if ch is not None]
@@ -97,7 +95,7 @@ class Structor(object):
         argnames = self.argnames
 
         # for for building, we sort them by offset
-        self.fields.sort(key=lambda f: f.get_offset(self.data_size))
+        self.fields.sort(key=lambda f: f.slot.get_offset(self.data_size))
         buildnames = [f.name for f in self.fields]
 
         if self.tag_value is not None:
@@ -135,7 +133,7 @@ class Structor(object):
 
     def _field_string(self, code, f):
         code.w('{arg} = builder.alloc_string({offset}, {arg})',
-               arg=f.name, offset=f.get_offset(self.data_size))
+               arg=f.name, offset=f.slot.get_offset(self.data_size))
 
     def _field_struct(self, code, f):
         structname = code.new_global(f.structcls.__name__, f.structcls)
