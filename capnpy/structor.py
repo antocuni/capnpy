@@ -5,6 +5,9 @@ Structor -> struct ctor -> struct construtor :)
 import struct
 from capnpy.schema import Field, Type
 
+class Unsupported(Exception):
+    pass
+
 class Structor(object):
 
     _unsupported = None
@@ -17,46 +20,36 @@ class Structor(object):
         self.ptrs_size = ptrs_size
         self.tag_offset = tag_offset
         self.tag_value = tag_value
-        self.fields = self._get_fields(fields)
-        self.argnames = self._get_argnames()
-        self.fmt = self._compute_format()
+        try:
+            self.fields, self.argnames = self._get_fields(fields)
+            self.fmt = self._compute_format()
+        except Unsupported as e:
+            self.argnames = ['*args']
+            self._unsupported = e.message
 
     def _get_fields(self, fields):
         newfields = []
+        argnames = []
         for f in fields:
             ngroup = f.is_nullable(self.compiler)
             if ngroup:
-                self._unsupported = "XXX"
-                return []
+                raise Unsupported("XXX")
             elif f.is_group():
-                self._unsupported = "Group fields not supported yet"
-                return []
+                raise Unsupported("Group fields not supported yet")
             elif f.is_void():
                 continue # ignore void fields
             else:
                 newfields.append(f)
+                argnames.append(f.name)
 
         if self.tag_offset is not None:
-            # self.tag_offset is expressed in bytes: as usual,
-            # field.slot.offset is expressed in multiples of the field size,
-            # which is 2 bytes in this case: thus, we need to use tag_offset/2
-            tag_field = Field.new_slot('__which__', self.tag_offset/2, Type.new_int16())
+            # add a field to represent the tag, but don't add it to argnames,
+            # as it's implicit
+            tag_offset = self.tag_offset/2 # from bytes to multiple of int16
+            tag_field = Field.new_slot('__which__', tag_offset, Type.new_int16())
             newfields.append(tag_field)
         #
-        return newfields
-
-    def _get_argnames(self):
-        # get the names of all fields, except those which are used as "check
-        # condition" for nullable fields
-        ignored = set()
-        for f in self.fields:
-            if f.is_nullable(self.compiler):
-                # XXX
-                self._unsupported = 'nullable fields'
-                return ['*args']
-                ignored.add(f.nullable_by)
-        #
-        return [f.name for f in self.fields if f not in ignored]
+        return newfields, argnames
 
     def _compute_format(self):
         total_length = (self.data_size + self.ptrs_size)*8
@@ -70,8 +63,7 @@ class Structor(object):
 
         for f in self.fields:
             if not f.is_slot() or f.slot.type.is_bool():
-                self._unsupported = 'Unsupported field type: %s' % f
-                return
+                raise Unsupported('Unsupported field type: %s' % f)
             set(f.slot.get_offset(self.data_size), f.slot.get_fmt())
         #
         # remove all the Nones
@@ -107,8 +99,6 @@ class Structor(object):
         self.fields.sort(key=lambda f: f.slot.get_offset(self.data_size))
         buildnames = [f.name for f in self.fields]
 
-        if self.tag_value is not None:
-            argnames.remove('__which__')
         if len(argnames) != len(set(argnames)):
             raise ValueError("Duplicate field name(s): %s" % argnames)
         code.w('@staticmethod')
