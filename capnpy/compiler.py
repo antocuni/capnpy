@@ -187,16 +187,6 @@ class FileGenerator(object):
         else:
             self._emit_ctor_nounion(node)
 
-    ## def _emit_ctor_nounion(self, node):
-    ##     fnames = [self._field_name(f) for f in node.struct.fields]
-    ##     flist = "[%s]" % ', '.join(fnames)
-    ##     # normally, __new__ is special-cased at class creation time and
-    ##     # automatically turned into a staticmethod; however, here we are
-    ##     # inside an @extend body, so we need to call it manually
-    ##     self.w("__new__ = __.structor('__new__', __data_size__, __ptrs_size__, {flist})",
-    ##            flist=flist)
-    ##     self.w("__new__ = staticmethod(__new__)")
-
     def _emit_ctor_nounion(self, node):
         data_size = node.struct.dataWordCount
         ptrs_size = node.struct.pointerCount
@@ -209,6 +199,9 @@ class FileGenerator(object):
             self.w('self._init(buf, 0, None)')
 
     def _emit_ctors_union(self, node):
+        with self.code.def_('__init__', ['self', '*args', '**kwargs']):
+            self.w('raise NotImplementedError("ctors_union")')
+        return
         # suppose we have a tag whose members are 'circle' and 'square': we
         # create three ctors:
         #

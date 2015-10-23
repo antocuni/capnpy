@@ -42,7 +42,9 @@ class Structor(object):
         ignored = set()
         for f in self.fields:
             if f.is_nullable(self.compiler):
-                XXX
+                # XXX
+                self._unsupported = 'nullable fields'
+                return ['*args']
                 ignored.add(f.nullable_by)
         #
         return [f.name for f in self.fields if f not in ignored]

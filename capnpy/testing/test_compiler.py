@@ -133,7 +133,6 @@ def test_enum(tmpdir):
     assert f.gender == mod.Gender.female
 
 
-@py.test.mark.xfail
 def test_union(tmpdir):
     schema = """
     @0xbf5147cbbecf40c1;
@@ -182,7 +181,6 @@ def test_group(tmpdir):
     assert r.b.x == 3
     assert r.b.y == 4
 
-@py.test.mark.xfail
 def test_union_group(tmpdir):
     schema = """
     @0xbf5147cbbecf40c1;
@@ -470,7 +468,6 @@ def test_import_absolute(tmpdir):
     """)
     mod = comp.load_schema("/two/tmp.capnp")
 
-@py.test.mark.xfail
 def test_nullable(tmpdir):
     schema = """
     @0xbf5147cbbecf40c1;
