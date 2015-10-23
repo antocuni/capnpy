@@ -80,7 +80,6 @@ def test_void():
                    '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
 
 
-@py.test.mark.xfail
 def test_tag_offset():
     ## struct Shape {
     ##   area @0 :Int64;
@@ -90,8 +89,8 @@ def test_tag_offset():
     ##   }
     ## }
     #
-    fields = [field.Primitive('area', 0, Type.new_int64()),
-              field.Primitive('square', 8, Type.new_int64())]
+    fields = [Field.new_slot('area', 0, Type.new_int64()),
+              Field.new_slot('square', 1, Type.new_int64())]
     new_square = new_structor(data_size=3, ptrs_size=0,
                               fields=fields,
                               tag_offset=16, tag_value=1)

@@ -3,9 +3,7 @@ Structor -> struct ctor -> struct construtor :)
 """
 
 import struct
-#from capnpy import field
-#from capnpy.type import Types
-from capnpy.schema import Field
+from capnpy.schema import Field, Type
 
 class Structor(object):
 
@@ -30,8 +28,10 @@ class Structor(object):
         #
         fields = [f for f in fields if not f.is_void()]
         if self.tag_offset is not None:
-            XXX
-            tag_field = field.Primitive('__which__', self.tag_offset, Types.int16)
+            # self.tag_offset is expressed in bytes: as usual,
+            # field.slot.offset is expressed in multiples of the field size,
+            # which is 2 bytes in this case: thus, we need to use tag_offset/2
+            tag_field = Field.new_slot('__which__', self.tag_offset/2, Type.new_int16())
             fields.append(tag_field)
         #
         return fields
