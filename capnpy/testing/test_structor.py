@@ -2,74 +2,19 @@ import py
 from pypytools.codegen import Code
 from capnpy.struct_ import Struct
 from capnpy.structor import Structor
-from capnpy import field
-from capnpy.type import Types
-
-class FakeSlot(object):
-
-    def __init__(self, offset, t):
-        self.offset = offset
-        self.t = t
-
-    def get_fmt(self):
-        return self.t.fmt
-
-    def get_offset(self, data_size):
-        return self.offset
-
-
-class FakeType(object):
-
-    def is_bool(self):
-        return False
-
-class FakeField(object):
-
-    def __init__(self, name, offset, t):
-        self.name = name
-        self.slot = FakeSlot(offset, t)
-        self.slot.type = FakeType()
-
-    @classmethod
-    def Void(cls, name):
-        return cls(name, None, Types.void)
-
-    def is_primitive(self):
-        return self.slot.t.is_primitive()
-
-    def is_slot(self):
-        return True
-
-    def is_group(self):
-        return False
-
-    def is_string(self):
-        return False
-
-    def is_struct(self):
-        return False
-
-    def is_list(self):
-        return False
-
-    def is_void(self):
-        return self.slot.t is Types.void
-
-    def is_nullable(self, compiler):
-        return False
-
+from capnpy.schema import Field, Type
 
 class TestComputeFormat(object):
 
     def test_compute_format_simple(self):
-        fields = [FakeField('x', 0, Types.int64),
-                  FakeField('y', 8, Types.int64)]
+        fields = [Field.new_slot('x', 0, Type.new_int64()),
+                  Field.new_slot('y', 1, Type.new_int64())]
         s = Structor(None, 'fake', data_size=2, ptrs_size=0, fields=fields)
         assert s.fmt == 'qq'
 
     def test_compute_format_holes(self):
-        fields = [FakeField('x', 0, Types.int32),
-                  FakeField('y', 8, Types.int64)]
+        fields = [Field.new_slot('x', 0, Type.new_int32()),
+                  Field.new_slot('y', 1, Type.new_int64())]
         s = Structor(None, 'fake', data_size=2, ptrs_size=0, fields=fields)
         assert s.fmt == 'ixxxxq'
 
@@ -98,24 +43,24 @@ def test_unsupported(monkeypatch):
     assert exc.value.message == 'fake'
 
 def test_primitive():
-    fields = [FakeField('x', 0, Types.int64),
-              FakeField('y', 8, Types.int64)]
+    fields = [Field.new_slot('x', 0, Type.new_int64()),
+              Field.new_slot('y', 1, Type.new_int64())]
     ctor = new_structor(data_size=2, ptrs_size=0, fields=fields)
     buf = ctor(1, 2)
     assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                    '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
 
 def test_argnames():
-    fields = [FakeField('x', 0, Types.int64),
-              FakeField('y', 8, Types.int64)]
+    fields = [Field.new_slot('x', 0, Type.new_int64()),
+              Field.new_slot('y', 1, Type.new_int64())]
     ctor = new_structor(data_size=2, ptrs_size=0, fields=fields)
     buf = ctor(y=2, x=1)
     assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                    '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
 
 def test_unordered():
-    fields = [FakeField('y', 8, Types.int64),
-              FakeField('x', 0, Types.int64)]
+    fields = [Field.new_slot('y', 1, Type.new_int64()),
+              Field.new_slot('x', 0, Type.new_int64())]
     ctor = new_structor(data_size=2, ptrs_size=0, fields=fields)
     buf = ctor(x=1, y=2)
     assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
@@ -126,9 +71,9 @@ def test_unordered():
 
 
 def test_void():
-    fields = [FakeField('x', 0, Types.int64),
-              FakeField('y', 8, Types.int64),
-              FakeField.Void('z')]
+    fields = [Field.new_slot('x', 0, Type.new_int64()),
+              Field.new_slot('y', 1, Type.new_int64()),
+              Field.new_slot('z', 0, Type.new_void())]
     ctor = new_structor(data_size=2, ptrs_size=0, fields=fields)
     buf = ctor(1, 2)
     assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
@@ -145,8 +90,8 @@ def test_tag_offset():
     ##   }
     ## }
     #
-    fields = [field.Primitive('area', 0, Types.int64),
-              field.Primitive('square', 8, Types.int64)]
+    fields = [field.Primitive('area', 0, Type.new_int64()),
+              field.Primitive('square', 8, Type.new_int64())]
     new_square = new_structor(data_size=3, ptrs_size=0,
                               fields=fields,
                               tag_offset=16, tag_value=1)
@@ -158,8 +103,8 @@ def test_tag_offset():
 
 @py.test.mark.xfail
 def test_nullable():
-    isnull = field.Primitive('isnull', 0, Types.int64)
-    value = field.NullablePrimitive('value', 8, Types.int64, 0, isnull)
+    isnull = field.Primitive('isnull', 0, Type.new_int64())
+    value = field.NullablePrimitive('value', 8, Type.new_int64(), 0, isnull)
     fields = [isnull, value]
     ctor = new_structor(data_size=2, ptrs_size=0, fields=fields)
     buf = ctor(value=42)
