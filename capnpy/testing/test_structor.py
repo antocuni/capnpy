@@ -46,6 +46,9 @@ class FakeField(object):
     def is_string(self):
         return False
 
+    def is_struct(self):
+        return False
+
     def is_void(self):
         return self.slot.t is Types.void
 
@@ -128,21 +131,6 @@ def test_void():
     assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                    '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
 
-@py.test.mark.xfail
-def test_struct():
-    class MyStruct(Struct):
-        __data_size__ = 2
-        __ptrs_size__ = 0
-
-    mybuf = ('\x01\x00\x00\x00\x00\x00\x00\x00'
-             '\x02\x00\x00\x00\x00\x00\x00\x00')
-    mystruct = MyStruct.from_buffer(mybuf, 0, None)
-    #
-    fields = [field.Struct('x', 0, MyStruct)]
-    ctor = new_structor(data_size=0, ptrs_size=1, fields=fields)
-    buf = ctor(mystruct)
-    assert buf == ('\x00\x00\x00\x00\x02\x00\x00\x00'  # ptr to mystruct
-                   + mybuf)
 
 @py.test.mark.xfail
 def test_list():

@@ -57,6 +57,10 @@ class Field:
         return (self.which() == schema.Field.__tag__.slot and
                 self.slot.type.which() == schema.Type.__tag__.struct)
 
+    def is_list(self):
+        return (self.which() == schema.Field.__tag__.slot and
+                self.slot.type.which() == schema.Type.__tag__.list)
+
     def is_nullable(self, compiler):
         for ann in self.annotations or []:
             ann_node = compiler.allnodes[ann.id]

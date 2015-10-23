@@ -334,7 +334,21 @@ class TestConstructors(object):
         assert foo._buf == ('\x00\x00\x00\x00\x02\x00\x00\x00'  # ptr to point
                             '\x01\x00\x00\x00\x00\x00\x00\x00'  # p.x == 1
                             '\x02\x00\x00\x00\x00\x00\x00\x00') # p.y == 2
-        
+
+
+    @py.test.mark.xfail
+    def test_list(self, tmpdir):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            x @0 :List(Int8);
+        }
+        """
+        mod = compile_string(tmpdir, schema)
+        foo = mod.Foo([1, 2, 3, 4])
+        assert foo._buf == ('\x01\x00\x00\x00\x22\x00\x00\x00'   # ptrlist
+                            '\x01\x02\x03\x04\x00\x00\x00\x00')  # 1,2,3,4 + padding
+
 
 
 @py.test.mark.xfail
