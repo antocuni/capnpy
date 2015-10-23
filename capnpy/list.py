@@ -39,6 +39,8 @@ class List(Blob):
             self._item_length = ListPtr.SIZE_LENGTH[size_tag]
             self._item_offset = 0
 
+    def __repr__(self):
+        return '<capnpy list [%d items]>' % (len(self),)
 
     def _read_list_item(self, offset):
         raise NotImplementedError
