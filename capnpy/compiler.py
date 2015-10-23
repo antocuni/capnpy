@@ -200,13 +200,10 @@ class FileGenerator(object):
             self.w('self._init(buf, 0, None)')
 
     def _emit_ctors_union(self, node):
-        with self.code.def_('__init__', ['self', '*args', '**kwargs']):
-            self.w('raise NotImplementedError("ctors_union")')
-        return
         # suppose we have a tag whose members are 'circle' and 'square': we
         # create three ctors:
         #
-        #     def __new__(cls, x, y, square=undefined, circle=undefined):  ...
+        #     def __init__(self, x, y, square=undefined, circle=undefined):  ...
         #
         #     @classmethod
         #     def new_square(cls, x, y): ...
@@ -214,7 +211,11 @@ class FileGenerator(object):
         #     @classmethod
         #     def new_circle(cls, x, y): ...
         #
-        # when calling __new__, one and only one of square and circle must be given. 
+        # when calling __init__, one and only one of square and circle must be given. 
+        #
+        data_size = node.struct.dataWordCount
+        ptrs_size = node.struct.pointerCount
+        tag_offset = node.struct.discriminantOffset * 2
         #
         std_fields = [] # non-union fields
         tag_fields = [] # union fields
@@ -226,14 +227,20 @@ class FileGenerator(object):
         #
         # now, we create a separate ctor for each tag value
         for tag_field in tag_fields:
-            fnames = ['%s.field' % self._field_name(tag_field)]
-            fnames += [self._field_name(f) for f in std_fields]
-            flist = "[%s]" % ', '.join(fnames)
-            self.w("new_{name} = classmethod(__.structor('new_{name}', __data_size__, "
-                   "__ptrs_size__, {flist}, __tag_offset__, __tag__.{name}))",
-                   name=self._field_name(tag_field), flist=flist)
+            fields = [tag_field] + std_fields
+            tag_name  = self._field_name(tag_field)
+            ctor_name = '__new_' + tag_name
+            ctor = Structor(self, ctor_name, data_size, ptrs_size, fields,
+                            tag_offset, tag_field.discriminantValue)
+            ctor.declare(self.code)
+            #
+            self.w('@classmethod')
+            with self.code.def_('new_' + tag_name, ['cls'] + ctor.argnames):
+                call = self.code.call('cls.' + ctor_name, ctor.argnames)
+                self.w('buf = {call}', call=call)
+                self.w('return cls.from_buffer(buf, 0, None)')
         #
-        # finally, create the __new__
+        # finally, create the __init__ XXX
         # def __new__(cls, x, y, square=undefined, circle=undefined):
         #     if square is not undefined:
         #         self._assert_undefined(circle, 'circle', 'square')

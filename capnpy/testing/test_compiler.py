@@ -371,7 +371,6 @@ class TestConstructors(object):
         assert poly.points[1].y == 4
 
 
-@py.test.mark.xfail
 class TestUnionConstructors(object):
 
     @py.test.fixture
@@ -402,6 +401,7 @@ class TestUnionConstructors(object):
         assert s.square == 2
         assert s.perimeter == 3
 
+    @py.test.mark.xfail
     def test_generic_ctor(self, mod):
         # test the __new__
         s = mod.Shape(area=1, square=2, perimeter=3)
@@ -409,12 +409,14 @@ class TestUnionConstructors(object):
         assert s.area == 1
         assert s.square == 2
         assert s.perimeter == 3
-    
+
+    @py.test.mark.xfail
     def test_multiple_tags(self, mod):
         einfo = py.test.raises(TypeError,
                               "mod.Shape(area=0, perimeter=0, circle=1, square=2)")
         assert str(einfo.value) == 'got multiple values for the union tag: square, circle'
 
+    @py.test.mark.xfail
     def test_no_tags(self, mod):
         einfo = py.test.raises(TypeError, "mod.Shape(area=0, perimeter=0)")
         assert str(einfo.value) == "one of the following args is required: circle, square"
