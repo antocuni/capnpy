@@ -49,6 +49,9 @@ class FakeField(object):
     def is_struct(self):
         return False
 
+    def is_list(self):
+        return False
+
     def is_void(self):
         return self.slot.t is Types.void
 
