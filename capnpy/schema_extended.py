@@ -25,6 +25,9 @@ class Type:
     def is_bool(self):
         return self.which() == schema.Type.__tag__.bool
 
+    def is_void(self):
+        return self.which() == schema.Type.__tag__.void
+
     def is_enum(self):
         return self.which() == schema.Type.__tag__.enum
 
@@ -53,7 +56,7 @@ class Field:
 
     def is_void(self):
         return (self.which() == schema.Field.__tag__.slot and
-                self.slot.type.which() == schema.Type.__tag__.void)
+                self.slot.type.is_void())
 
     def is_primitive(self):
         return (self.which() == schema.Field.__tag__.slot and
@@ -107,3 +110,45 @@ class Field:
             if self.type.is_pointer():
                 offset += data_size*8
             return offset
+
+
+# =============================================
+# hand-written constructors
+# =============================================
+#
+# As of now, the compiler is not capable of generating proper constructors for
+# Type and Field, but we need them in tests and in structor.py. In the
+# meantime, we write limited versions of them by hand.
+import struct
+
+@extend(schema.Type)
+class Type:
+    # Type instances are 32 bytes (3 words of data + 1 word of pointers).
+    # We support constructors for primitive fields only, so the only fields we
+    ## data_size = 3
+    ## ptrs_size = 1
+
+    @classmethod
+    def __new_primitive(cls, tag):
+        assert 0 <= tag <= 13, 'non-primitive types non supported'
+        assert cls.__tag_offset__ == 0 # the tag is the first 16 bits
+        assert cls.__data_size__ + cls.__ptrs_size__ == 4 # 32 bytes in total
+        fmt = 'h' + 'x'*30
+        assert struct.calcsize(fmt) == 32
+        buf = struct.pack(fmt, tag)
+        return cls.from_buffer(buf, 0, None)
+
+    new_void = classmethod(lambda cls: cls.__new_primitive(0))
+    new_bool = classmethod(lambda cls: cls.__new_primitive(1))
+    new_int8 = classmethod(lambda cls: cls.__new_primitive(2))
+    new_int16 = classmethod(lambda cls: cls.__new_primitive(3))
+    new_int32 = classmethod(lambda cls: cls.__new_primitive(4))
+    new_int64 = classmethod(lambda cls: cls.__new_primitive(5))
+    new_uint8 = classmethod(lambda cls: cls.__new_primitive(6))
+    new_uint16 = classmethod(lambda cls: cls.__new_primitive(7))
+    new_uint32 = classmethod(lambda cls: cls.__new_primitive(8))
+    new_uint64 = classmethod(lambda cls: cls.__new_primitive(9))
+    new_float32 = classmethod(lambda cls: cls.__new_primitive(10))
+    new_float64 = classmethod(lambda cls: cls.__new_primitive(11))
+    new_text = classmethod(lambda cls: cls.__new_primitive(12))
+    new_data = classmethod(lambda cls: cls.__new_primitive(13))
