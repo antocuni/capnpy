@@ -237,7 +237,6 @@ def test_const(tmpdir):
     assert mod.Foo.bar == 42
 
 
-@py.test.mark.xfail
 def test_list_of_structs(tmpdir):
     schema = """
     @0xbf5147cbbecf40c1;
@@ -349,6 +348,27 @@ class TestConstructors(object):
         assert foo._buf == ('\x01\x00\x00\x00\x22\x00\x00\x00'   # ptrlist
                             '\x01\x02\x03\x04\x00\x00\x00\x00')  # 1,2,3,4 + padding
 
+
+
+    def test_list_of_structs(self, tmpdir):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Polygon {
+            struct Point {
+                x @0 :Int64;
+                y @1 :Int64;
+            }
+            points @0 :List(Point);
+        }
+        """
+        mod = compile_string(tmpdir, schema)
+        p1 = mod.Polygon.Point(1, 2)
+        p2 = mod.Polygon.Point(3, 4)
+        poly = mod.Polygon([p1, p2])
+        assert poly.points[0].x == 1
+        assert poly.points[0].y == 2
+        assert poly.points[1].x == 3
+        assert poly.points[1].y == 4
 
 
 @py.test.mark.xfail

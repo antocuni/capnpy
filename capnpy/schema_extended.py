@@ -31,6 +31,9 @@ class Type:
     def is_string(self):
         return self.which() == schema.Type.__tag__.text
 
+    def is_struct(self):
+        return self.which() == schema.Type.__tag__.struct
+
     def is_pointer(self):
         return self.which() in (schema.Type.__tag__.text,
                                 schema.Type.__tag__.data,
@@ -67,7 +70,7 @@ class Field:
 
     def is_struct(self):
         return (self.which() == schema.Field.__tag__.slot and
-                self.slot.type.which() == schema.Type.__tag__.struct)
+                self.slot.type.is_struct())
 
     def is_list(self):
         return (self.which() == schema.Field.__tag__.slot and

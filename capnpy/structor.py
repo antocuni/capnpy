@@ -151,6 +151,8 @@ class Structor(object):
             listcls = '__.PrimitiveList'
         elif item_type.is_string():
             listcls = '__.StringList'
+        elif item_type.is_struct():
+            listcls = '__.StructList'
         else:
             raise ValueError('Unknown item type: %s' % item_type)
         #
