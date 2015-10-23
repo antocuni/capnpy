@@ -112,14 +112,15 @@ class Structor(object):
                 ##     self._field_nullable(code, f)
                 if f.is_string():
                     self._field_string(code, f)
-                ## elif isinstance(f, field.Struct):
-                ##     self._field_struct(code, f)
+                elif f.is_struct():
+                    self._field_struct(code, f)
                 ## elif isinstance(f, field.List):
                 ##     self._field_list(code, f)
                 elif f.is_primitive():
                     pass # nothing to do
                 else:
-                    code.w("raise NotImplementedError('Unsupported field type: %s' % f)")
+                    code.w("raise NotImplementedError('Unsupported field type: {f}')",
+                           f=str(f))
                 #
             code.w('buf =', code.call('builder.build', buildnames))
             code.w('return buf')
@@ -136,9 +137,10 @@ class Structor(object):
                arg=f.name, offset=f.slot.get_offset(self.data_size))
 
     def _field_struct(self, code, f):
-        structname = code.new_global(f.structcls.__name__, f.structcls)
+        offset = f.slot.get_offset(self.data_size)
+        structname = self.compiler._get_typename(f.slot.type)
         code.w('{arg} = builder.alloc_struct({offset}, {structname}, {arg})',
-               arg=f.name, offset=f.offset, structname=structname)
+               arg=f.name, offset=offset, structname=structname)
 
     def _field_list(self, code, f):
         listcls = code.new_global(f.listcls.__name__, f.listcls)

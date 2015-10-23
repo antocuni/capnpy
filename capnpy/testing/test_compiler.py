@@ -317,6 +317,24 @@ class TestConstructors(object):
                             'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
                             'p' 'n' 'p' '\x00\x00\x00\x00\x00')
 
+    def test_struct(self, tmpdir):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        struct Foo {
+            x @0 :Point;
+        }
+        """
+        mod = compile_string(tmpdir, schema)
+        p = mod.Point(1, 2)
+        foo = mod.Foo(p)
+        assert foo._buf == ('\x00\x00\x00\x00\x02\x00\x00\x00'  # ptr to point
+                            '\x01\x00\x00\x00\x00\x00\x00\x00'  # p.x == 1
+                            '\x02\x00\x00\x00\x00\x00\x00\x00') # p.y == 2
+        
 
 
 @py.test.mark.xfail
