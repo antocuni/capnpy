@@ -120,13 +120,10 @@ class Field:
 # Type and Field, but we need them in tests and in structor.py. In the
 # meantime, we write limited versions of them by hand.
 import struct
+from capnpy.builder import StructBuilder
 
 @extend(schema.Type)
 class Type:
-    # Type instances are 32 bytes (3 words of data + 1 word of pointers).
-    # We support constructors for primitive fields only, so the only fields we
-    ## data_size = 3
-    ## ptrs_size = 1
 
     @classmethod
     def __new_primitive(cls, tag):
@@ -152,3 +149,53 @@ class Type:
     new_float64 = classmethod(lambda cls: cls.__new_primitive(11))
     new_text = classmethod(lambda cls: cls.__new_primitive(12))
     new_data = classmethod(lambda cls: cls.__new_primitive(13))
+
+
+@extend(schema.Field)
+class Field:
+
+    @classmethod
+    def new_slot(cls, name, offset, type):
+        """
+        This is a very limited version of new_slot. Once we have full support for
+        constructor, its signature will be more complex.
+        """
+        fmt = (
+            # data
+            'H' # [0:16]    codeOrder
+            'H' # [16:32]   discriminantValue
+            'I' # [32:64]   slot.offset
+            'h' # [64:80]   __tag__
+            'h' # [80:96]   ordinal.__tag__
+            'h' # [96:112]  ordinal.explicit
+            'h' # [112:128] padding
+            'Q' # [128:192] group.typeId
+            #
+            # pointers
+            'q' # [0]       name
+            'q' # [1]       annotations
+            'q' # [2]       slot.type
+            'q' # [3]       slot.defaultValue
+            )
+        size = struct.calcsize(fmt)
+        assert size == (cls.__data_size__ + cls.__ptrs_size__)*8
+        builder = StructBuilder(fmt)
+        #
+        codeOrder = 0
+        discriminantValue = 65535
+        slot_offset = offset
+        tag = cls.__tag__.slot
+        ordinal_tag = 0
+        ordinal_explicit = 0
+        padding = 0
+        group_typeId = 0
+        ptr_name = builder.alloc_string(24, name)
+        ptr_annotations = 0
+        ptr_slot_type = builder.alloc_struct(40, schema.Type, type)
+        ptr_slot_defaultValue = 0
+        #
+        buf = builder.build(codeOrder, discriminantValue, slot_offset,
+                            tag, ordinal_tag, ordinal_explicit, padding,
+                            group_typeId, ptr_name, ptr_annotations,
+                            ptr_slot_type, ptr_slot_defaultValue)
+        return cls.from_buffer(buf, 0, None)
