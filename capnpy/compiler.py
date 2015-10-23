@@ -240,20 +240,23 @@ class FileGenerator(object):
                 self.w('buf = {call}', call=call)
                 self.w('return cls.from_buffer(buf, 0, None)')
         #
-        # finally, create the __init__ XXX
-        # def __new__(cls, x, y, square=undefined, circle=undefined):
+        # finally, create the __init__
+        # def __init__(cls, x, y, square=undefined, circle=undefined):
         #     if square is not undefined:
         #         self._assert_undefined(circle, 'circle', 'square')
-        #         return cls.new_square(x=x, y=y)
+        #         buf = cls.__new_squadre(x=x, y=y)
+        #         self._init(buf, 0, None)
+        #         return
         #     if circle is not undefined:
         #         self._assert_undefined(square, 'square', 'circle')
-        #         return cls.new_circle(x=x, y=y)
+        #         buf = cls.__new_circle(x=x, y=y)
+        #         self._init(buf, 0, None)
+        #         return
         #     raise TypeError("one of the following args is required: square, circle")
         args = [self._field_name(f) for f in std_fields]
         for f in tag_fields:
             args.append('%s=__.undefined' % self._field_name(f))
-        self.w('@staticmethod')
-        with self.block('def __new__(cls, {arglist}):', arglist=self.code.args(args)):
+        with self.block('def __init__(self, {arglist}):', arglist=self.code.args(args)):
             for tag_field in tag_fields:
                 tag_field_name = self._field_name(tag_field)
                 with self.block('if {name} is not __.undefined:', name=tag_field_name):
@@ -261,7 +264,7 @@ class FileGenerator(object):
                     for other_tag_field in tag_fields:
                         if other_tag_field is tag_field:
                             continue
-                        self.w('cls._assert_undefined({fname}, "{fname}", "{myname}")',
+                        self.w('self._assert_undefined({fname}, "{fname}", "{myname}")',
                                fname=self._field_name(other_tag_field),
                                myname=tag_field_name)
                     #
@@ -269,8 +272,10 @@ class FileGenerator(object):
                     args = [self._field_name(f) for f in std_fields]
                     args.append(self._field_name(tag_field))
                     args = ['%s=%s' % (arg, arg) for arg in args]
-                    self.w('return cls.new_{ctor}({args})',
+                    self.w('buf = self.__new_{ctor}({args})',
                            ctor=tag_field_name, args=self.code.args(args))
+                    self.w('self._init(buf, 0, None)')
+                    self.w('return')
             #
             tags = [self._field_name(f) for f in tag_fields]
             tags = ', '.join(tags)
