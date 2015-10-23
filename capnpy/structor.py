@@ -121,7 +121,7 @@ class Structor(object):
                 elif f.is_primitive():
                     pass # nothing to do
                 else:
-                    raise NotImplementedError('Unsupported field type: %s' % f)
+                    code.w("raise NotImplementedError('Unsupported field type: %s' % f)")
                 #
             code.w('buf =', code.call('builder.build', buildnames))
             code.w('return buf')

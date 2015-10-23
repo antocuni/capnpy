@@ -331,48 +331,30 @@ class FileGenerator(object):
             kwds['default'] = self._get_value(field.slot.defaultValue)
             decl = '__.field.Bool("{name}", {byteoffset}, {bitoffset}, default={default})'
         elif which == 'text':
-            size = 8
-            delta = data_size*8 # it's a pointer
             decl = '__.field.String("{name}", {offset})'
-        #
         elif which == 'data':
-            size = 8
-            delta = data_size*8 # it's a pointer
             decl = '__.field.Data("{name}", {offset})'
-        #
         elif which == 'struct':
-            size = 8
-            delta = data_size*8 # it's a pointer
             kwds['structname'] = self._get_typename(field.slot.type)
             decl = '__.field.Struct("{name}", {offset}, {structname})'
-        #
         elif which == 'list':
-            size = 8
-            delta = data_size*8 # it's a pointer
             kwds['itemtype'] = self._get_typename(field.slot.type.list.elementType)
             decl = '__.field.List("{name}", {offset}, {itemtype})'
-        #
         elif which == 'enum':
-            size = 2
-            delta = 0
             kwds['enumname'] = self._get_typename(field.slot.type)
             decl = '__.field.Enum("{name}", {offset}, {enumname})'
-        #
         elif which == 'void':
-            size = 0
-            delta = 0
             decl = '__.field.Void("{name}")'
-        #
         elif which == 'anyPointer':
-            size = 8
-            delta = data_size*8
             decl = '__.field.AnyPointer("{name}", {offset})'
         else:
             raise ValueError('Unknown type: %s' % field.slot.type)
         #
         if field.slot.hadExplicitDefault and 'default' not in kwds:
             raise ValueError("explicit defaults not supported for field %s" % field)
-        kwds['offset'] = delta + field.slot.offset*size
+        #
+        if not field.slot.type.is_bool():
+            kwds['offset'] = field.get_offset(data_size)
         kwds['name'] = fname
         line = '{name} = ' + decl
         self.w(line.format(**kwds))

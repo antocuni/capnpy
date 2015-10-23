@@ -14,6 +14,19 @@ class Type:
     def is_builtin(self):
         return schema.Type.__tag__.void <= self.which() <= schema.Type.__tag__.data
 
+    def is_bool(self):
+        return self.which() == schema.Type.__tag__.bool
+
+    def is_enum(self):
+        return self.which() == schema.Type.__tag__.enum
+
+    def is_pointer(self):
+        return self.which() in (schema.Type.__tag__.text,
+                                schema.Type.__tag__.data,
+                                schema.Type.__tag__.struct,
+                                schema.Type.__tag__.list,
+                                schema.Type.__tag__.anyPointer)
+
 
 @extend(schema.Field)
 class Field:
@@ -31,11 +44,7 @@ class Field:
 
     def is_pointer(self):
         return (self.which() == schema.Field.__tag__.slot and
-                self.slot.type.which() in (schema.Type.__tag__.text,
-                                           schema.Type.__tag__.data,
-                                           schema.Type.__tag__.struct,
-                                           schema.Type.__tag__.list,
-                                           schema.Type.__tag__.anyPointer))
+                self.slot.type.is_pointer())
 
     def is_string(self):
         return (self.which() == schema.Field.__tag__.slot and
@@ -57,8 +66,10 @@ class Field:
                 typename = str(self.slot.type.which())
                 t = getattr(Types, typename)
                 return t.fmt
-            elif self.slot.type.which() == schema.Type.__tag__.text:
+            elif self.slot.type.is_pointer():
                 return 'q'
+            elif self.slot.type.is_enum():
+                return 'h'
 
     def get_size(self):
         # XXX: even more hackish, we need a better way
