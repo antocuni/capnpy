@@ -110,16 +110,6 @@ def test_void():
     assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                    '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
 
-def test_string():
-    fields = [field.Primitive('x', 0, Types.int64),
-              field.String('y', 8)]
-    ctor = new_structor(data_size=1, ptrs_size=1, fields=fields)
-    buf = ctor(1, 'hello capnp')
-    assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'
-                   '\x01\x00\x00\x00\x62\x00\x00\x00'
-                   'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
-                   'p' 'n' 'p' '\x00\x00\x00\x00\x00')
-
 def test_struct():
     class MyStruct(Struct):
         __data_size__ = 2

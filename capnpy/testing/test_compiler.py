@@ -283,38 +283,39 @@ def test_bool(tmpdir):
     assert p.c == True
 
 
+class TestConstructors(object):
 
-def test_ctor_simple(tmpdir):
-    schema = """
-    @0xbf5147cbbecf40c1;
-    struct Point {
-        x @0 :Int64;
-        y @1 :Int64;
-    }
-    """
-    mod = compile_string(tmpdir, schema)
-    buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
-           '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
-    #
-    p = mod.Point(1, 2)
-    assert p.x == 1
-    assert p.y == 2
-    assert p._buf == buf
+    def test_simple(self, tmpdir):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        """
+        mod = compile_string(tmpdir, schema)
+        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        #
+        p = mod.Point(1, 2)
+        assert p.x == 1
+        assert p.y == 2
+        assert p._buf == buf
 
-def test_ctor_string(tmpdir):
-    schema = """
-    @0xbf5147cbbecf40c1;
-    struct Foo {
-        x @0 :Int64;
-        y @1 :Text;
-    }
-    """
-    mod = compile_string(tmpdir, schema)
-    foo = mod.Foo(1, 'hello capnp')
-    assert foo._buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'
-                        '\x01\x00\x00\x00\x62\x00\x00\x00'
-                        'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
-                        'p' 'n' 'p' '\x00\x00\x00\x00\x00')
+    def test_string(self, tmpdir):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            x @0 :Int64;
+            y @1 :Text;
+        }
+        """
+        mod = compile_string(tmpdir, schema)
+        foo = mod.Foo(1, 'hello capnp')
+        assert foo._buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'
+                            '\x01\x00\x00\x00\x62\x00\x00\x00'
+                            'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
+                            'p' 'n' 'p' '\x00\x00\x00\x00\x00')
 
 
 

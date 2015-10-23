@@ -29,6 +29,18 @@ class Field:
         return (self.which() == schema.Field.__tag__.slot and
                 self.slot.type.is_primitive())
 
+    def is_pointer(self):
+        return (self.which() == schema.Field.__tag__.slot and
+                self.slot.type.which() in (schema.Type.__tag__.text,
+                                           schema.Type.__tag__.data,
+                                           schema.Type.__tag__.struct,
+                                           schema.Type.__tag__.list,
+                                           schema.Type.__tag__.anyPointer))
+
+    def is_string(self):
+        return (self.which() == schema.Field.__tag__.slot and
+                self.slot.type.which() == schema.Type.__tag__.text)
+
     def is_nullable(self, compiler):
         for ann in self.annotations or []:
             ann_node = compiler.allnodes[ann.id]
@@ -38,18 +50,23 @@ class Field:
         return None
 
     def get_fmt(self):
+        # XXX: this method is very hackish, we absolutely need to find a
+        # cleaner way than the forest of ifs
         if self.which() == schema.Field.__tag__.slot:
             if self.slot.type.is_primitive():
                 typename = str(self.slot.type.which())
                 t = getattr(Types, typename)
                 return t.fmt
+            elif self.slot.type.which() == schema.Type.__tag__.text:
+                return 'q'
 
     def get_size(self):
-        if self.which() == schema.Field.__tag__.slot:
-            if self.slot.type.is_primitive():
-                typename = str(self.slot.type.which())
-                t = getattr(Types, typename)
-                return t.calcsize()
+        # XXX: even more hackish, we need a better way
+        import struct
+        return struct.calcsize(self.get_fmt())
 
-    def get_offset(self):
-        return self.slot.offset * self.get_size()
+    def get_offset(self, data_size):
+        offset = self.slot.offset * self.get_size()
+        if self.is_pointer():
+            offset += data_size*8
+        return offset

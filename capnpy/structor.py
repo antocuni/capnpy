@@ -63,7 +63,7 @@ class Structor(object):
                 self._unsupported = 'Unsupported field type: %s' % f
                 return
             #
-            set(f.get_offset(), f_fmt)
+            set(f.get_offset(self.data_size), f_fmt)
         #
         # remove all the Nones
         fmt = [ch for ch in fmt if ch is not None]
@@ -95,7 +95,7 @@ class Structor(object):
         argnames = self.argnames
 
         # for for building, we sort them by offset
-        self.fields.sort(key=lambda f: f.get_offset())
+        self.fields.sort(key=lambda f: f.get_offset(self.data_size))
         buildnames = [f.name for f in self.fields]
 
         if self.tag_value is not None:
@@ -110,13 +110,13 @@ class Structor(object):
             for f in self.fields:
                 ## if isinstance(f, field.NullablePrimitive):
                 ##     self._field_nullable(code, f)
-                ## elif isinstance(f, field.String):
-                ##     self._field_string(code, f)
+                if f.is_string():
+                    self._field_string(code, f)
                 ## elif isinstance(f, field.Struct):
                 ##     self._field_struct(code, f)
                 ## elif isinstance(f, field.List):
                 ##     self._field_list(code, f)
-                if f.is_primitive():
+                elif f.is_primitive():
                     pass # nothing to do
                 else:
                     raise NotImplementedError('Unsupported field type: %s' % f)
@@ -133,7 +133,7 @@ class Structor(object):
 
     def _field_string(self, code, f):
         code.w('{arg} = builder.alloc_string({offset}, {arg})',
-               arg=f.name, offset=f.offset)
+               arg=f.name, offset=f.get_offset(self.data_size))
 
     def _field_struct(self, code, f):
         structname = code.new_global(f.structcls.__name__, f.structcls)
