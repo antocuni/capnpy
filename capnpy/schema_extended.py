@@ -5,7 +5,15 @@ schema = sys.modules['capnpy.schema']
 
 @extend(schema.Type)
 class Type:
-    
+
+    def as_type(self):
+        """
+        Convert between schema.Type to capnpy.type.Types.*
+        We should unify the twos eventually
+        """
+        typename = str(self.which())
+        return getattr(Types, typename)
+
     def is_primitive(self):
         # note that bool is NOT considered primitive, i.e. it is handled
         # specially everywhere
@@ -19,6 +27,9 @@ class Type:
 
     def is_enum(self):
         return self.which() == schema.Type.__tag__.enum
+
+    def is_string(self):
+        return self.which() == schema.Type.__tag__.text
 
     def is_pointer(self):
         return self.which() in (schema.Type.__tag__.text,
@@ -51,7 +62,8 @@ class Field:
 
     def is_string(self):
         return (self.which() == schema.Field.__tag__.slot and
-                self.slot.type.which() == schema.Type.__tag__.text)
+                self.slot.type.is_string())
+
 
     def is_struct(self):
         return (self.which() == schema.Field.__tag__.slot and
@@ -76,9 +88,7 @@ class Field:
             # XXX: this method is very hackish, we absolutely need to find a
             # cleaner way than the forest of ifs
             if self.type.is_primitive():
-                typename = str(self.type.which())
-                t = getattr(Types, typename)
-                return t.fmt
+                return self.type.as_type().fmt
             elif self.type.is_pointer():
                 return 'q'
             elif self.type.is_enum():

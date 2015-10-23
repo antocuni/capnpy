@@ -237,6 +237,7 @@ def test_const(tmpdir):
     assert mod.Foo.bar == 42
 
 
+@py.test.mark.xfail
 def test_list_of_structs(tmpdir):
     schema = """
     @0xbf5147cbbecf40c1;
@@ -336,7 +337,6 @@ class TestConstructors(object):
                             '\x02\x00\x00\x00\x00\x00\x00\x00') # p.y == 2
 
 
-    @py.test.mark.xfail
     def test_list(self, tmpdir):
         schema = """
         @0xbf5147cbbecf40c1;

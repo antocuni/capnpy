@@ -114,8 +114,8 @@ class Structor(object):
                     self._field_string(code, f)
                 elif f.is_struct():
                     self._field_struct(code, f)
-                ## elif f.is_list():
-                ##     self._field_list(code, f)
+                elif f.is_list():
+                    self._field_list(code, f)
                 elif f.is_primitive():
                     pass # nothing to do
                 else:
@@ -144,7 +144,15 @@ class Structor(object):
 
     def _field_list(self, code, f):
         offset = f.slot.get_offset(self.data_size)
-        listcls = code.new_global(f.listcls.__name__, f.listcls)
-        itemtype = code.new_global('item_type', f.item_type)
+        item_type = f.slot.type.list.elementType
+        item_type_name = self.compiler._get_typename(item_type)
+        #
+        if item_type.is_primitive():
+            listcls = '__.PrimitiveList'
+        elif item_type.is_string():
+            listcls = '__.StringList'
+        else:
+            raise ValueError('Unknown item type: %s' % item_type)
+        #
         code.w('{arg} = builder.alloc_list({offset}, {listcls}, {itemtype}, {arg})',
-               arg=f.name, offset=f.offset, listcls=listcls, itemtype=itemtype)
+               arg=f.name, offset=offset, listcls=listcls, itemtype=item_type_name)

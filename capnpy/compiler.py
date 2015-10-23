@@ -93,6 +93,7 @@ class FileGenerator(object):
             self.w("from capnpy.enum import enum")
             self.w("from capnpy.blob import Types")
             self.w("from capnpy.builder import StructBuilder")
+            self.w("from capnpy.list import PrimitiveList, StructList, StringList")
             self.w("from capnpy.util import extend")
             self.w("enum = staticmethod(enum)")
             self.w("extend = staticmethod(extend)")
