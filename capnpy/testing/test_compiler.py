@@ -542,3 +542,11 @@ def test_nullable(tmpdir):
     foo = mod.Foo.from_buffer(buf, 0, None)
     assert not foo._x_is_null
     assert foo.x == 2
+    #
+    # the test constructor
+    foo = mod.Foo(x=None)
+    assert foo._x_is_null
+    assert foo.x is None
+    foo = mod.Foo(x=42)
+    assert not foo._x_is_null
+    assert foo.x == 42

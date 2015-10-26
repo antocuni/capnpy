@@ -20,36 +20,51 @@ class Structor(object):
         self.ptrs_size = ptrs_size
         self.tag_offset = tag_offset
         self.tag_value = tag_value
+        #
+        self.argnames = []    # the arguments accepted by the ctor, in order
+        self.fields = []      # the fields as passed to StructBuilder
+        self.field_name = {}  # for plain fields is simply f.name, but in case
+                              # of groups it's groupname_fieldname
+        self.nullable_by = {} # field -> NullableGroup
+        #
         try:
-            self.fields, self.argnames = self._get_fields(fields)
+            self.init_fields(fields)
             self.fmt = self._compute_format()
         except Unsupported as e:
             self.argnames = ['*args']
             self._unsupported = e.message
 
-    def _get_fields(self, fields):
-        newfields = []
-        argnames = []
+    def init_fields(self, fields):
         for f in fields:
             ngroup = f.is_nullable(self.compiler)
             if ngroup:
-                raise Unsupported("XXX")
+                # add isNull and value to fields, but use the group name in the arguments
+                self._append_field(ngroup.is_null, ngroup.name)
+                self._append_field(ngroup.value, ngroup.name)
+                self.argnames.append(ngroup.name)
+                self.nullable_by[ngroup.value] = ngroup
             elif f.is_group():
                 raise Unsupported("Group fields not supported yet")
             elif f.is_void():
                 continue # ignore void fields
             else:
-                newfields.append(f)
-                argnames.append(f.name)
+                fname = self._append_field(f)
+                self.argnames.append(fname)
 
         if self.tag_offset is not None:
             # add a field to represent the tag, but don't add it to argnames,
             # as it's implicit
             tag_offset = self.tag_offset/2 # from bytes to multiple of int16
             tag_field = Field.new_slot('__which__', tag_offset, Type.new_int16())
-            newfields.append(tag_field)
-        #
-        return newfields, argnames
+            self._append_field(tag_field)
+
+    def _append_field(self, f, prefix=None):
+        name = f.name
+        if prefix:
+            name = '%s_%s' % (prefix, name)
+        self.fields.append(f)
+        self.field_name[f] = name
+        return name
 
     def _compute_format(self):
         total_length = (self.data_size + self.ptrs_size)*8
@@ -97,7 +112,7 @@ class Structor(object):
 
         # for for building, we sort them by offset
         self.fields.sort(key=lambda f: f.slot.get_offset(self.data_size))
-        buildnames = [f.name for f in self.fields]
+        buildnames = [self.field_name[f] for f in self.fields]
 
         if len(argnames) != len(set(argnames)):
             raise ValueError("Duplicate field name(s): %s" % argnames)
@@ -107,14 +122,14 @@ class Structor(object):
             if self.tag_value is not None:
                 code.w('__which__ = {tag_value}', tag_value=int(self.tag_value))
             for f in self.fields:
-                ## if isinstance(f, field.NullablePrimitive):
-                ##     self._field_nullable(code, f)
                 if f.is_string():
                     self._field_string(code, f)
                 elif f.is_struct():
                     self._field_struct(code, f)
                 elif f.is_list():
                     self._field_list(code, f)
+                elif f in self.nullable_by:
+                    self._field_nullable(code, f)
                 elif f.is_primitive():
                     pass # nothing to do
                 else:
@@ -125,23 +140,39 @@ class Structor(object):
             code.w('return buf')
 
     def _field_nullable(self, code, f):
-        with code.block('if {arg} is None:', arg=f.name):
-            code.w('{isnull} = 1', isnull=f.nullable_by.name)
-            code.w('{arg} = 0', arg=f.name)
+        # def __init__(self, ..., x, ...):
+        #     ...
+        #     if x is None:
+        #         x_is_null = 1
+        #         x_value = 0
+        #     else:
+        #         x_is_null = 0
+        #         x_value = x
+        #
+        ngroup = self.nullable_by[f]
+        is_null = self.field_name[ngroup.is_null]
+        value = self.field_name[ngroup.value]
+        with code.block('if {arg} is None:', arg=ngroup.name):
+            code.w('{is_null} = 1', is_null=is_null)
+            code.w('{value} = 0', value=value)
         with code.block('else:'):
-            code.w('{isnull} = 0', isnull=f.nullable_by.name)
+            code.w('{is_null} = 0', is_null=is_null)
+            code.w('{value} = {arg}', value=value, arg=ngroup.name)
 
     def _field_string(self, code, f):
+        fname = self.field_name[f]
         code.w('{arg} = builder.alloc_string({offset}, {arg})',
-               arg=f.name, offset=f.slot.get_offset(self.data_size))
+               arg=fname, offset=f.slot.get_offset(self.data_size))
 
     def _field_struct(self, code, f):
+        fname = self.field_name[f]
         offset = f.slot.get_offset(self.data_size)
         structname = self.compiler._get_typename(f.slot.type)
         code.w('{arg} = builder.alloc_struct({offset}, {structname}, {arg})',
-               arg=f.name, offset=offset, structname=structname)
+               arg=fname, offset=offset, structname=structname)
 
     def _field_list(self, code, f):
+        fname = self.field_name[f]
         offset = f.slot.get_offset(self.data_size)
         item_type = f.slot.type.list.elementType
         item_type_name = self.compiler._get_typename(item_type)
@@ -156,4 +187,4 @@ class Structor(object):
             raise ValueError('Unknown item type: %s' % item_type)
         #
         code.w('{arg} = builder.alloc_list({offset}, {listcls}, {itemtype}, {arg})',
-               arg=f.name, offset=offset, listcls=listcls, itemtype=item_type_name)
+               arg=fname, offset=offset, listcls=listcls, itemtype=item_type_name)
