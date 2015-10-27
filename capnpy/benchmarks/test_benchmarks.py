@@ -4,29 +4,7 @@ import pypytools
 from collections import namedtuple
 import capnpy
 
-#schema = capnpy.load_schema('/capnpy/benchmarks/point.capnp')
-
-# XXX
-from capnpy.struct_ import Struct
-from capnpy.builder import StructBuilder
-from capnpy import field
-from capnpy.enum import enum
-from capnpy.blob import Types
-class schema:    
-    class Point(Struct):
-        x = field.Primitive("x", 0, Types.int64, default_=0)
-        y = field.Primitive("y", 8, Types.int64, default_=0)
-
-        __data_size__ = 3
-        __ptrs_size__ = 1
-        
-        def __new__(cls, x, y):
-            builder = StructBuilder('qq')
-            buf = builder.build(x, y)
-            offset = 0
-            segment_offsets = None
-            return cls.from_buffer(buf, offset, segment_offsets)
-
+schema = capnpy.load_schema('/capnpy/benchmarks/point.capnp')
         
 @pytest.fixture(params=[1, 2, 3])
 def n(request):
@@ -84,10 +62,12 @@ class TestGetAttr(object):
 
     @pytest.mark.benchmark(group="getattr")
     def test__read_primitive(self, benchmark):
+        from capnpy.blob import Types
         def sum_xs(p):
+            int64 = Types.int64
             res = 0
             for i in range(self.N):
-                res += p._read_primitive(0, Types.int64)
+                res += p._read_primitive(0, int64)
             return res
         #
         p = schema.Point(x=100, y=200)
