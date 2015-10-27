@@ -1,3 +1,3 @@
 cdef class BuiltinType:
-    cdef readonly char* name
-    cdef readonly char* fmt
+    cdef readonly bytes name
+    cdef readonly bytes fmt

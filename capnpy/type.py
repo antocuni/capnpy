@@ -37,3 +37,4 @@ Types._make('float32', 'f')
 Types._make('float64', 'd')
 Types._make('text')
 Types._make('data')
+
