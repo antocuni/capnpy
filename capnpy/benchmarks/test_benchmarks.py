@@ -1,3 +1,4 @@
+import py
 import pytest
 import pypytools
 from collections import namedtuple
@@ -46,7 +47,8 @@ class points(object):
         if pypytools.is_pypy:
             pytest.skip('CPython only')
         import capnp
-        myschema = capnp.load('point.capnp')
+        thisdir = py.path.local(__file__).dirpath()
+        myschema = capnp.load(str(thisdir.join('point.capnp')))
         p = myschema.Point.new_message()
         p.x = x
         p.y = y
