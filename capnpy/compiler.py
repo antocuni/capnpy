@@ -411,10 +411,15 @@ class FileGenerator(object):
 
 class Compiler(object):
 
-    def __init__(self, path, convert_case=True):
+    def __init__(self, path, convert_case=True, pyx=False):
         self.path = [py.path.local(dirname) for dirname in path]
         self.convert_case = convert_case
         self.modules = {}
+        self.pyx = pyx
+        if self.pyx:
+            self.tmpdir = py.path.local.mkdtemp()
+        else:
+            self.tmpdir = None
 
     def load_schema(self, filename):
         filename = self._find_file(filename)
@@ -434,11 +439,36 @@ class Compiler(object):
     def compile_file(self, filename):
         data = self._capnp_compile(filename)
         request, src = self.generate_py_source(data)
+        if self.pyx:
+            return self._compile_pyx(filename, src)
+        else:
+            return self._compile_py(filename, src)
+
+    def _compile_py(self, filename, src):
+        """
+        Compile and load the schema as pure python
+        """
         mod = types.ModuleType(filename.purebasename)
         mod.__file__ = str(filename)
         mod.__source__ = str(src)
         mod.__dict__['__compiler'] = self
         exec src.compile() in mod.__dict__
+        return mod
+
+    def _compile_pyx(self, filename, src):
+        """
+        Use Cython to compile the schema
+        """
+        import imp
+        from pyximport.pyxbuild import pyx_to_dll
+        pyxname = filename.new(ext='pyx')
+        pyxfile = self.tmpdir.join(pyxname).ensure(file=True)
+        pyxfile.write(src)
+        dll = pyx_to_dll(str(pyxfile), pyxbuild_dir=str(self.tmpdir))
+        mod = imp.load_dynamic(filename.purebasename, str(dll))
+        # imp.load_dynamic also places the mod in sys.modules, but we don't
+        # want to pollute any global state, so let's remove it
+        del sys.modules[mod.__name__]
         return mod
 
     def _find_file(self, filename):

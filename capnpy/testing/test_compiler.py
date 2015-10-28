@@ -1,11 +1,12 @@
 import py
+import pytest
 import capnpy
 from capnpy.compiler import Compiler
 
-def compile_string(tmpdir, s):
+def compile_string(tmpdir, s, pyx=False):
     # root is needed to be able to import capnpy/py.capnp
     root = py.path.local(capnpy.__file__).dirpath('..')
-    comp = Compiler([root, tmpdir])
+    comp = Compiler([root, tmpdir], pyx=pyx)
     tmp_capnp = tmpdir.join('tmp.capnp')
     tmp_capnp.write(s)
     return comp.load_schema('/tmp.capnp')
@@ -26,6 +27,24 @@ def test_primitive(tmpdir):
     p = mod.Point.from_buffer(buf, 0, None)
     assert p.x == 1
     assert p.y == 2
+
+def test_load_pyx(tmpdir):
+    schema = """
+    @0xbf5147cbbecf40c1;
+    struct Point {
+        x @0 :Int64;
+        y @1 :Int64;
+    }
+    """
+    mod = compile_string(tmpdir, schema, pyx=True)
+    assert mod.__file__.endswith('/tmp.so')
+    #
+    buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+    p = mod.Point.from_buffer(buf, 0, None)
+    assert p.x == 1
+    assert p.y == 2
+
 
 def test_primitive_default(tmpdir):
     schema = """
