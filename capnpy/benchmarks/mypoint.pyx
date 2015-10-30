@@ -1,7 +1,7 @@
-from capnpy.blob cimport Blob
+from capnpy.struct_ cimport Struct as Struct
 from capnpy.unpack cimport __unpack_primitive_fast as upf
 
-cdef class MyPoint(Blob):
+cdef class MyPoint(Struct):
 
     @classmethod
     def _allocate(cls):
