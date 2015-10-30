@@ -8,6 +8,7 @@ from pypytools.codegen import Code
 from capnpy.type import Types
 from capnpy.convert_case import from_camel_case
 from capnpy.structor import Structor
+from capnpy.compiler import nodes
 
 ## # pycapnp will be supported only until the boostrap is completed
 ## USE_PYCAPNP = False
@@ -22,7 +23,7 @@ from capnpy import schema
 from capnpy.message import loads
 
 
-class FileGenerator(object):
+class ModuleGenerator(object):
 
     def __init__(self, request, convert_case=True, pyx=False):
         self.code = Code()
@@ -59,17 +60,8 @@ class FileGenerator(object):
             return '%s.%s' % (self._pyname(parent), self._shortname(node))
 
     def generate(self):
-        self.visit_request(self.request)
+        self.request.emit(self)
         return self.code.build()
-
-    def visit_request(self, request):
-        for node in request.nodes:
-            self.allnodes[node.id] = node
-            # roots have scopeId == 0, so children[0] will contain them
-            self.children[node.scopeId].append(node)
-        #
-        for f in request.requestedFiles:
-            self.visit_file(f)
 
     def _dump_node(self, node):
         def visit(node, deep=0):
@@ -441,30 +433,30 @@ class Compiler(object):
 
     def generate_py_source(self, data):
         request = loads(data, schema.CodeGeneratorRequest)
-        gen = FileGenerator(request, self.convert_case, self.pyx)
-        src = gen.generate()
-        return gen, py.code.Source(src)
+        m = ModuleGenerator(request, self.convert_case, self.pyx)
+        src = m.generate()
+        return m, py.code.Source(src)
 
     def compile_file(self, filename):
         data = self._capnp_compile(filename)
-        gen, src = self.generate_py_source(data)
+        m, src = self.generate_py_source(data)
         if self.pyx:
-            return self._compile_pyx(filename, gen, src)
+            return self._compile_pyx(filename, m, src)
         else:
-            return self._compile_py(filename, gen, src)
+            return self._compile_py(filename, m, src)
 
-    def _compile_py(self, filename, gen, src):
+    def _compile_py(self, filename, m, src):
         """
         Compile and load the schema as pure python
         """
-        mod = types.ModuleType(gen.modname)
+        mod = types.ModuleType(m.modname)
         mod.__file__ = str(filename)
         mod.__source__ = str(src)
         mod.__dict__['__compiler'] = self
         exec src.compile() in mod.__dict__
         return mod
 
-    def _compile_pyx(self, filename, gen, src):
+    def _compile_pyx(self, filename, m, src):
         """
         Use Cython to compile the schema
         """
@@ -487,10 +479,10 @@ class Compiler(object):
         # contains __compiler. Then, in foo.pyx, we import it:
         #     from foo_tmp import __compiler
         #
-        tmpmod = types.ModuleType(gen.tmpname)
+        tmpmod = types.ModuleType(m.tmpname)
         tmpmod.__dict__['__compiler'] = self
-        sys.modules[gen.tmpname] = tmpmod
-        mod = imp.load_dynamic(gen.modname, str(dll))
+        sys.modules[m.tmpname] = tmpmod
+        mod = imp.load_dynamic(m.modname, str(dll))
         #
         # clean-up the cluttered sys.modules
         del sys.modules[mod.__name__]
