@@ -69,14 +69,6 @@ class ModuleGenerator(object):
                 visit(child, deep+2)
         visit(node)
 
-    def declare_struct(self, node):
-        name = self._shortname(node)
-        with self.block("class %s(__.Struct):" % name):
-            for child in self.children[node.id]:
-                if child.which() == schema.Node.__tag__.struct:
-                    self.declare_struct(child)
-            self.w("pass")
-
     def visit_struct(self, node):
         name = self._pyname(node)
         shortname = self._shortname(node)
