@@ -54,7 +54,7 @@ class Node__Struct:
                 enum_items[i] = m._field_name(field)
         enum_name = '%s.__tag__' % m._shortname(self)
         m.w("__tag_offset__ = %s" % tag_offset)
-        m._emit_enum('__tag__', enum_name, enum_items)
+        m.declare_enum('__tag__', enum_name, enum_items)
 
     def _emit_ctors(self, m):
         if self.struct.discriminantCount:

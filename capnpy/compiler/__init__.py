@@ -180,12 +180,9 @@ class ModuleGenerator(object):
         self.visit_field_slot(ngroup.name, ngroup.value, data_size, ptrs_size,
                               nullable_by=ngroup.is_null_name)
 
-    def visit_enum(self, node):
-        name = self._shortname(node)
-        items = [self._field_name(item) for item in node.enum.enumerants]
-        self._emit_enum(name, name, items)
-
-    def _emit_enum(self, var_name, enum_name, items):
+    def declare_enum(self, var_name, enum_name, items):
+        # this method cannot go on Node__Enum because it's also called by
+        # Node__Struct (for __tag__)
         items = map(repr, items)
         decl = "%s = __.enum(%r, (%s))" % (var_name, enum_name, ', '.join(items))
         self.w(decl)

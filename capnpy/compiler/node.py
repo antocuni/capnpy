@@ -19,4 +19,6 @@ class Node:
 class Node__Enum:
 
     def emit_declaration(self, m):
-        m.visit_enum(self)
+        name = m._shortname(self)
+        items = [m._field_name(item) for item in self.enum.enumerants]
+        m.declare_enum(name, name, items)
