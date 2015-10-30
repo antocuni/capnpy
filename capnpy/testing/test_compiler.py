@@ -3,25 +3,29 @@ import pytest
 import capnpy
 from capnpy.compiler import Compiler
 
-# GLOBAL TEST SETUP
-#
-# all compiler tests must inherit from CompilerTest; the compiler_test fixture
-# will be automatically used and it will set the values of pyx and
-# tmpdir. The net result is that tests can simply call self.compile() to
-# compiler a schema, and they will be automatically run in py and pyx mode
 
-@pytest.fixture(params=['py', 'pyx'])
-def compiler_test(request, tmpdir):
-    request.instance.tmpdir = tmpdir
-    request.instance.pyx = request.param == 'pyx'
-
-@pytest.mark.usefixtures('compiler_test')
+@pytest.mark.usefixtures('initargs')
 class CompilerTest:
+    """
+    Base class for compiler tests: the initargs fixture ensures that:
 
-    # these two attrs will be automatically set by the fixture
+        1. we have self.tmpdir available
+
+        2. we have self.pyx set to True or False, depending whether we want to
+           test the pure-python or cython compiler
+
+    Both attributes are used by self.compile(), so that the final tests can
+    simply call it without any further setup required.
+    """
+
     compiler_mode = None
     tmpdir = None
-    
+
+    @pytest.fixture(params=['py', 'pyx'])
+    def initargs(self, request, tmpdir):
+        self.tmpdir = tmpdir
+        self.pyx = request.param == 'pyx'
+
     def compile(self, s):
         # root is needed to be able to import capnpy/py.capnp
         root = py.path.local(capnpy.__file__).dirpath('..')
