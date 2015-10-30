@@ -114,6 +114,34 @@ class Field:
 
 
 # =============================================
+# hand-written union subclasses
+# =============================================
+#
+# As of now, the compiler is not capable of generating different subclasses
+# for each union tag. In the meantime, write it by hand
+
+class Node__Struct(schema.Node): pass
+class Node__Enum(schema.Node): pass
+
+schema.Node__Struct = Node__Struct
+schema.Node__Enum = Node__Enum
+
+@extend(schema.Node)
+class Node:
+
+    @classmethod
+    def from_buffer(cls, buf, offset, segment_offsets):
+        self = super(Node, cls).from_buffer(buf, offset, segment_offsets)
+        if self.which() == Node.__tag__.struct:
+            self.__class__ = Node__Struct
+        elif self.which() == Node.__tag__.enum:
+            self.__class__ = Node__Enum
+        return self
+
+
+
+
+# =============================================
 # hand-written constructors
 # =============================================
 #

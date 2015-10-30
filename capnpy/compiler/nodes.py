@@ -74,34 +74,37 @@ class RequestedFile:
                 fname = fname)
 
 
-
 @extend(schema.Node)
 class Node:
 
     def emit_declaration(self, m):
-        which = self.which()
-        if which == schema.Node.__tag__.struct:
-            self._declare_struct(m)
-        elif which == schema.Node.__tag__.enum:
-            m.visit_enum(self)
-        elif which == schema.Node.__tag__.annotation:
+        if self.which() == schema.Node.__tag__.annotation:
             # annotations are simply ignored for now
             pass
         else:
             assert False, 'Unkown node type: %s' % which
 
     def emit_definition(self, m):
-        which = self.which()
-        if which == schema.Node.__tag__.struct:
-            m.visit_struct(self)
-        else:
-            pass
+        pass # do nothing by default
 
-    def _declare_struct(self, m):
+
+
+@extend(schema.Node__Struct)
+class Node__Struct:
+
+    def emit_declaration(self, m):
         name = m._shortname(self)
         with m.block("class %s(__.Struct):" % name):
             for child in m.children[self.id]:
-                if child.which() == schema.Node.__tag__.struct:
+                if child.which() == Node.__tag__.struct:
                     child.emit_declaration(m)
             m.w("pass")
 
+    def emit_definition(self, m):
+        m.visit_struct(self)
+
+@extend(schema.Node__Enum)
+class Node__Enum:
+
+    def emit_declaration(self, m):
+        m.visit_enum(self)
