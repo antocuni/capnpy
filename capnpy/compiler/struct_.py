@@ -9,10 +9,14 @@ class Node__Struct:
     def emit_declaration(self, m):
         name = m._shortname(self)
         with m.block("class %s(__.Struct):" % name):
-            for child in m.children[self.id]:
+            children = m.children[self.id]
+            empty = True
+            for child in children:
                 if child.which() == schema.Node.__tag__.struct:
                     child.emit_declaration(m)
-            m.w("pass")
+                    empty = False
+            if empty:
+                m.w("pass")
 
     def emit_definition(self, m):
         name = m._pyname(self)
