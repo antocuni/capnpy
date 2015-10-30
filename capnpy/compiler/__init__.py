@@ -2,7 +2,6 @@ import py
 import sys
 import types
 from collections import defaultdict
-from datetime import datetime
 import subprocess
 from pypytools.codegen import Code
 from capnpy.type import Types
@@ -69,66 +68,6 @@ class ModuleGenerator(object):
             for child in self.children[node.id]:
                 visit(child, deep+2)
         visit(node)
-
-    def visit_file(self, f):
-        self.modname = py.path.local(f.filename).purebasename
-        self.extname = '%s_extended' % self.modname
-        self.tmpname = '%s_tmp' % self.modname
-        #
-        node = self.allnodes[f.id]
-        self.current_scope = node
-        self.w("# THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy")
-        self.w("# do not edit by hand")
-        self.w("# generated on %s" % datetime.now().strftime("%Y-%m-%d %H:%M"))
-        self.w("# input files: ")
-        for f in self.request.requestedFiles:
-            self.w("#   - %s" % f.filename)
-        self.w("")
-        with self.block("class __(object):"):
-            self.w("from capnpy.struct_ import Struct, undefined")
-            self.w("from capnpy import field")
-            self.w("from capnpy.enum import enum")
-            self.w("from capnpy.blob import Types")
-            self.w("from capnpy.builder import StructBuilder")
-            self.w("from capnpy.list import PrimitiveList, StructList, StringList")
-            self.w("from capnpy.util import extend")
-            self.w("enum = staticmethod(enum)")
-            self.w("extend = staticmethod(extend)")
-        #
-        if self.pyx:
-            # load the compiler from the outside. See the comment in
-            # _compile_pyx for a detailed explanation
-            self.w('from %s import __compiler' % self.tmpname)
-        #
-        self.declare_imports(f)
-        self.w("")
-        #
-        # first of all, we emit all the non-structs and "predeclare" all the
-        # structs
-        structs = []
-        children = self.children[node.id]
-        for child in children:
-            which = child.which()
-            if which == schema.Node.__tag__.struct:
-                self.declare_struct(child)
-                structs.append(child)
-            elif which == schema.Node.__tag__.enum:
-                self.visit_enum(child)
-            elif which == schema.Node.__tag__.annotation:
-                # annotations are simply ignored for now
-                pass
-            else:
-                assert False, 'Unkown node type: %s' % which
-        #
-        # then, we emit the body of all the structs we declared earlier
-        for child in structs:
-            self.visit_struct(child)
-        #
-        self.w("")
-        self.w("try:")
-        self.w("    import %s # side effects" % self.extname)
-        self.w("except ImportError:")
-        self.w("    pass")
 
     def declare_imports(self, f):
         for imp in f.imports:
