@@ -24,10 +24,11 @@ from capnpy.message import loads
 
 class FileGenerator(object):
 
-    def __init__(self, request, convert_case=True):
+    def __init__(self, request, convert_case=True, pyx=False):
         self.code = Code()
         self.request = request
         self.convert_case = convert_case
+        self.pyx = pyx
         self.allnodes = {} # id -> node
         self.children = defaultdict(list) # nodeId -> nested nodes
  
@@ -78,6 +79,10 @@ class FileGenerator(object):
         visit(node)
 
     def visit_file(self, f):
+        self.modname = py.path.local(f.filename).purebasename
+        self.extname = '%s_extended' % self.modname
+        self.tmpname = '%s_tmp' % self.modname
+        #
         node = self.allnodes[f.id]
         self.current_scope = node
         self.w("# THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy")
@@ -97,7 +102,12 @@ class FileGenerator(object):
             self.w("from capnpy.util import extend")
             self.w("enum = staticmethod(enum)")
             self.w("extend = staticmethod(extend)")
-
+        #
+        if self.pyx:
+            # load the compiler from the outside. See the comment in
+            # _compile_pyx for a detailed explanation
+            self.w('from %s import __compiler' % self.tmpname)
+        #
         self.declare_imports(f)
         self.w("")
         #
@@ -122,10 +132,9 @@ class FileGenerator(object):
         for child in structs:
             self.visit_struct(child)
         #
-        modname = py.path.local(f.filename).purebasename
         self.w("")
         self.w("try:")
-        self.w("    import %s_extended # side effects" % modname)
+        self.w("    import %s # side effects" % self.extname)
         self.w("except ImportError:")
         self.w("    pass")
 
@@ -432,30 +441,30 @@ class Compiler(object):
 
     def generate_py_source(self, data):
         request = loads(data, schema.CodeGeneratorRequest)
-        gen = FileGenerator(request, self.convert_case)
+        gen = FileGenerator(request, self.convert_case, self.pyx)
         src = gen.generate()
-        return request, py.code.Source(src)
+        return gen, py.code.Source(src)
 
     def compile_file(self, filename):
         data = self._capnp_compile(filename)
-        request, src = self.generate_py_source(data)
+        gen, src = self.generate_py_source(data)
         if self.pyx:
-            return self._compile_pyx(filename, src)
+            return self._compile_pyx(filename, gen, src)
         else:
-            return self._compile_py(filename, src)
+            return self._compile_py(filename, gen, src)
 
-    def _compile_py(self, filename, src):
+    def _compile_py(self, filename, gen, src):
         """
         Compile and load the schema as pure python
         """
-        mod = types.ModuleType(filename.purebasename)
+        mod = types.ModuleType(gen.modname)
         mod.__file__ = str(filename)
         mod.__source__ = str(src)
         mod.__dict__['__compiler'] = self
         exec src.compile() in mod.__dict__
         return mod
 
-    def _compile_pyx(self, filename, src):
+    def _compile_pyx(self, filename, gen, src):
         """
         Use Cython to compile the schema
         """
@@ -465,10 +474,27 @@ class Compiler(object):
         pyxfile = self.tmpdir.join(pyxname).ensure(file=True)
         pyxfile.write(src)
         dll = pyx_to_dll(str(pyxfile), pyxbuild_dir=str(self.tmpdir))
-        mod = imp.load_dynamic(filename.purebasename, str(dll))
-        # imp.load_dynamic also places the mod in sys.modules, but we don't
-        # want to pollute any global state, so let's remove it
+        #
+        # the generated file needs a reference to __compiler to be able to
+        # import other schemas. In pure-python mode, we simply inject
+        # __compiler in the __dict__ before compiling the source; but in pyx
+        # mode we cannot, hence we need a way to "pass" an argument from the
+        # outside. I think the only way is to temporarily stick it in some
+        # global state, for example sys.modules. Then, as we don't want to
+        # clutter any global state, we cleanup sys.modules.
+        #
+        # So, when compiling foo.capnp, we create a dummy foo_tmp module which
+        # contains __compiler. Then, in foo.pyx, we import it:
+        #     from foo_tmp import __compiler
+        #
+        tmpmod = types.ModuleType(gen.tmpname)
+        tmpmod.__dict__['__compiler'] = self
+        sys.modules[gen.tmpname] = tmpmod
+        mod = imp.load_dynamic(gen.modname, str(dll))
+        #
+        # clean-up the cluttered sys.modules
         del sys.modules[mod.__name__]
+        del sys.modules[tmpmod.__name__]
         return mod
 
     def _find_file(self, filename):
