@@ -69,13 +69,6 @@ class ModuleGenerator(object):
                 visit(child, deep+2)
         visit(node)
 
-    def declare_imports(self, f):
-        for imp in f.imports:
-            fname = imp.name
-            self.w('{decl_name} = __compiler.load_schema("{fname}")',
-                   decl_name = self._pyname_for_file(fname),
-                   fname = fname)
-
     def declare_struct(self, node):
         name = self._shortname(node)
         with self.block("class %s(__.Struct):" % name):

@@ -49,32 +49,59 @@ class RequestedFile:
             # _compile_pyx for a detailed explanation
             m.w('from %s import __compiler' % m.tmpname)
         #
-        m.declare_imports(f)
+        f._declare_imports(m)
         m.w("")
         #
-        # first of all, we emit all the non-structs and "predeclare" all the
-        # structs
-        structs = []
+        # visit the children in two passes: first the declaration, then the
+        # definition
         children = m.children[node.id]
         for child in children:
-            which = child.which()
-            if which == schema.Node.__tag__.struct:
-                m.declare_struct(child)
-                structs.append(child)
-            elif which == schema.Node.__tag__.enum:
-                m.visit_enum(child)
-            elif which == schema.Node.__tag__.annotation:
-                # annotations are simply ignored for now
-                pass
-            else:
-                assert False, 'Unkown node type: %s' % which
-        #
-        # then, we emit the body of all the structs we declared earlier
-        for child in structs:
-            m.visit_struct(child)
+            child.emit_declaration(m)
+        for child in children:
+            child.emit_definition(m)
         #
         m.w("")
         m.w("try:")
         m.w("    import %s # side effects" % m.extname)
         m.w("except ImportError:")
         m.w("    pass")
+
+    def _declare_imports(self, m):
+        for imp in self.imports:
+            fname = imp.name
+            m.w('{decl_name} = __compiler.load_schema("{fname}")',
+                decl_name = m._pyname_for_file(fname),
+                fname = fname)
+
+
+
+@extend(schema.Node)
+class Node:
+
+    def emit_declaration(self, m):
+        which = self.which()
+        if which == schema.Node.__tag__.struct:
+            self._declare_struct(m)
+        elif which == schema.Node.__tag__.enum:
+            m.visit_enum(self)
+        elif which == schema.Node.__tag__.annotation:
+            # annotations are simply ignored for now
+            pass
+        else:
+            assert False, 'Unkown node type: %s' % which
+
+    def emit_definition(self, m):
+        which = self.which()
+        if which == schema.Node.__tag__.struct:
+            m.visit_struct(self)
+        else:
+            pass
+
+    def _declare_struct(self, m):
+        name = m._shortname(self)
+        with m.block("class %s(__.Struct):" % name):
+            for child in m.children[self.id]:
+                if child.which() == schema.Node.__tag__.struct:
+                    child.emit_declaration(m)
+            m.w("pass")
+
