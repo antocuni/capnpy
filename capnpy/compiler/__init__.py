@@ -7,7 +7,15 @@ from pypytools.codegen import Code
 from capnpy.type import Types
 from capnpy.convert_case import from_camel_case
 from capnpy.structor import Structor
-from capnpy.compiler import nodes
+from capnpy import schema
+from capnpy.message import loads
+
+# the following imports have side-effects, and augment the schema.* classes
+# with emit() methods
+import capnpy.compiler.request
+import capnpy.compiler.node
+import capnpy.compiler.struct_
+
 
 ## # pycapnp will be supported only until the boostrap is completed
 ## USE_PYCAPNP = False
@@ -18,8 +26,6 @@ from capnpy.compiler import nodes
 ##     def loads(buf, payload_type):
 ##         return payload_type.from_bytes(buf)
 ## else:
-from capnpy import schema
-from capnpy.message import loads
 
 
 class ModuleGenerator(object):

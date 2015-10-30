@@ -72,39 +72,3 @@ class RequestedFile:
             m.w('{decl_name} = __compiler.load_schema("{fname}")',
                 decl_name = m._pyname_for_file(fname),
                 fname = fname)
-
-
-@extend(schema.Node)
-class Node:
-
-    def emit_declaration(self, m):
-        if self.which() == schema.Node.__tag__.annotation:
-            # annotations are simply ignored for now
-            pass
-        else:
-            assert False, 'Unkown node type: %s' % which
-
-    def emit_definition(self, m):
-        pass # do nothing by default
-
-
-
-@extend(schema.Node__Struct)
-class Node__Struct:
-
-    def emit_declaration(self, m):
-        name = m._shortname(self)
-        with m.block("class %s(__.Struct):" % name):
-            for child in m.children[self.id]:
-                if child.which() == Node.__tag__.struct:
-                    child.emit_declaration(m)
-            m.w("pass")
-
-    def emit_definition(self, m):
-        m.visit_struct(self)
-
-@extend(schema.Node__Enum)
-class Node__Enum:
-
-    def emit_declaration(self, m):
-        m.visit_enum(self)
