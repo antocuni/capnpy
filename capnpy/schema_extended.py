@@ -106,7 +106,7 @@ class Field:
             import struct
             return struct.calcsize(self.get_fmt())
 
-        def get_offset(self, data_size):
+        def compute_offset_inside(self, data_size):
             offset = self.offset * self.get_size()
             if self.type.is_pointer():
                 offset += data_size*8
@@ -122,7 +122,6 @@ class Field:
 
 class Node__Struct(schema.Node): pass
 class Node__Enum(schema.Node): pass
-
 schema.Node__Struct = Node__Struct
 schema.Node__Enum = Node__Enum
 
@@ -139,6 +138,23 @@ class Node:
         return self
 
 
+
+class Field__Slot(schema.Field): pass
+class Field__Group(schema.Field): pass
+schema.Field__Slot = Field__Slot
+schema.Field__Group = Field__Group
+
+@extend(schema.Field)
+class Field:
+
+    @classmethod
+    def from_buffer(cls, buf, offset, segment_offsets):
+        self = super(Field, cls).from_buffer(buf, offset, segment_offsets)
+        if self.which() == Field.__tag__.slot:
+            self.__class__ = Field__Slot
+        elif self.which() == Field.__tag__.group:
+            self.__class__ = Field__Group
+        return self
 
 
 # =============================================

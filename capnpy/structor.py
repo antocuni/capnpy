@@ -79,7 +79,7 @@ class Structor(object):
         for f in self.fields:
             if not f.is_slot() or f.slot.type.is_bool():
                 raise Unsupported('Unsupported field type: %s' % f)
-            set(f.slot.get_offset(self.data_size), f.slot.get_fmt())
+            set(f.slot.compute_offset_inside(self.data_size), f.slot.get_fmt())
         #
         # remove all the Nones
         fmt = [ch for ch in fmt if ch is not None]
@@ -111,7 +111,7 @@ class Structor(object):
         argnames = self.argnames
 
         # for for building, we sort them by offset
-        self.fields.sort(key=lambda f: f.slot.get_offset(self.data_size))
+        self.fields.sort(key=lambda f: f.slot.compute_offset_inside(self.data_size))
         buildnames = [self.field_name[f] for f in self.fields]
 
         if len(argnames) != len(set(argnames)):
@@ -162,18 +162,18 @@ class Structor(object):
     def _field_string(self, code, f):
         fname = self.field_name[f]
         code.w('{arg} = builder.alloc_string({offset}, {arg})',
-               arg=fname, offset=f.slot.get_offset(self.data_size))
+               arg=fname, offset=f.slot.compute_offset_inside(self.data_size))
 
     def _field_struct(self, code, f):
         fname = self.field_name[f]
-        offset = f.slot.get_offset(self.data_size)
+        offset = f.slot.compute_offset_inside(self.data_size)
         structname = self.compiler._get_typename(f.slot.type)
         code.w('{arg} = builder.alloc_struct({offset}, {structname}, {arg})',
                arg=fname, offset=offset, structname=structname)
 
     def _field_list(self, code, f):
         fname = self.field_name[f]
-        offset = f.slot.get_offset(self.data_size)
+        offset = f.slot.compute_offset_inside(self.data_size)
         item_type = f.slot.type.list.elementType
         item_type_name = self.compiler._get_typename(item_type)
         #

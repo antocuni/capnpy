@@ -41,7 +41,7 @@ class Node__Struct:
                 self._emit_tag(m)
             if self.struct.fields is not None:
                 for field in self.struct.fields:
-                    m.visit_field(field, data_size, ptrs_size)
+                    field.emit(m, self)
                 self._emit_ctors(m)
 
     def _emit_tag(self, m):

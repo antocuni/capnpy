@@ -4,7 +4,6 @@ import types
 from collections import defaultdict
 import subprocess
 from pypytools.codegen import Code
-from capnpy.type import Types
 from capnpy.convert_case import from_camel_case
 from capnpy import schema
 from capnpy.message import loads
@@ -14,6 +13,7 @@ from capnpy.message import loads
 import capnpy.compiler.request
 import capnpy.compiler.node
 import capnpy.compiler.struct_
+import capnpy.compiler.field
 
 
 ## # pycapnp will be supported only until the boostrap is completed
@@ -94,91 +94,6 @@ class ModuleGenerator(object):
     def _field_name(self, field):
         return self._convert_name(field.name)
 
-    def visit_field(self, field, data_size, ptrs_size):
-        fname = self._field_name(field)
-        which = field.which()
-        if which == schema.Field.__tag__.group:
-            self.visit_field_group(fname, field, data_size, ptrs_size)
-        elif which == schema.Field.__tag__.slot:
-            self.visit_field_slot(fname, field, data_size, ptrs_size)
-        else:
-            assert False, 'Unkown field kind: %s' % field.which()
-        #
-        if field.discriminantValue != schema.Field.noDiscriminant:
-            line = '{name} = __.field.Union({discriminantValue}, {name})'
-            line = line.format(name=fname, discriminantValue=field.discriminantValue)
-            self.w(line)
-
-    def visit_field_slot(self, fname, field, data_size, ptrs_size, nullable_by=None):
-        kwds = {}
-        t = field.slot.type
-        which = str(t.which()) # XXX
-        if t.is_primitive():
-            t = getattr(Types, which)
-            size = t.calcsize()
-            delta = 0
-            kwds['typename'] = t.name
-            kwds['default'] = self._get_value(field.slot.defaultValue)
-            if nullable_by:
-                kwds['nullable_by'] = nullable_by
-                decl = ('__.field.NullablePrimitive("{name}", {offset}, '
-                        '__.Types.{typename}, default_={default}, '
-                        'nullable_by={nullable_by})')
-            else:
-                decl = ('__.field.Primitive("{name}", {offset}, '
-                        '__.Types.{typename}, default_={default})')
-        #
-        elif which == 'bool':
-            size = 0
-            delta = 0
-            byteoffset, bitoffset = divmod(field.slot.offset, 8)
-            kwds['byteoffset'] = byteoffset
-            kwds['bitoffset'] = bitoffset
-            kwds['default'] = self._get_value(field.slot.defaultValue)
-            decl = '__.field.Bool("{name}", {byteoffset}, {bitoffset}, default={default})'
-        elif which == 'text':
-            decl = '__.field.String("{name}", {offset})'
-        elif which == 'data':
-            decl = '__.field.Data("{name}", {offset})'
-        elif which == 'struct':
-            kwds['structname'] = self._get_typename(field.slot.type)
-            decl = '__.field.Struct("{name}", {offset}, {structname})'
-        elif which == 'list':
-            kwds['itemtype'] = self._get_typename(field.slot.type.list.elementType)
-            decl = '__.field.List("{name}", {offset}, {itemtype})'
-        elif which == 'enum':
-            kwds['enumname'] = self._get_typename(field.slot.type)
-            decl = '__.field.Enum("{name}", {offset}, {enumname})'
-        elif which == 'void':
-            decl = '__.field.Void("{name}")'
-        elif which == 'anyPointer':
-            decl = '__.field.AnyPointer("{name}", {offset})'
-        else:
-            raise ValueError('Unknown type: %s' % field.slot.type)
-        #
-        if field.slot.hadExplicitDefault and 'default' not in kwds:
-            raise ValueError("explicit defaults not supported for field %s" % field)
-        #
-        if not field.slot.type.is_bool():
-            kwds['offset'] = field.slot.get_offset(data_size)
-        kwds['name'] = fname
-        line = '{name} = ' + decl
-        self.w(line.format(**kwds))
-
-    def visit_field_group(self, fname, field, data_size, ptrs_size):
-        ngroup = field.is_nullable(self)
-        if ngroup:
-            self.visit_nullable_group(ngroup, data_size, ptrs_size)
-        else:
-            group = self.allnodes[field.group.typeId]
-            group.emit_definition(self)
-            #self.visit_struct(group)
-            self.w('%s = __.field.Group(%s)' % (fname, self._pyname(group)))
-
-    def visit_nullable_group(self, ngroup, data_size, ptrs_size):
-        self.visit_field_slot(ngroup.is_null_name, ngroup.is_null, data_size, ptrs_size)
-        self.visit_field_slot(ngroup.name, ngroup.value, data_size, ptrs_size,
-                              nullable_by=ngroup.is_null_name)
 
     def declare_enum(self, var_name, enum_name, items):
         # this method cannot go on Node__Enum because it's also called by
