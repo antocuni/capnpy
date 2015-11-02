@@ -92,8 +92,7 @@ class Field__Group:
         group.emit_definition(m)
         m.w('%s = __.field.Group(%s)' % (name, m._pyname(group)))
         #
-        ngroup = self.is_nullable(m)
-        if ngroup:
+        if self.is_nullable(m):
             privname = '_' + name
             m.w()
             m.w('{privname} = {name}', privname=privname, name=name)

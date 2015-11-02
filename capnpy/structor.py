@@ -34,8 +34,7 @@ class Structor(object):
 
     def init_fields(self, fields):
         for f in fields:
-            ngroup = f.is_nullable(self.m)
-            if ngroup:
+            if f.is_nullable(self.m):
                 # use "foo_is_null" and "foo_value" as fields, but "foo" in the arguments
                 fname, f_is_null, f_value = self._unpack_nullable(f)
                 self._append_field(f_is_null, fname)

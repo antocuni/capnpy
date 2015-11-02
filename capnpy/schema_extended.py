@@ -1,6 +1,5 @@
 import sys
 from capnpy.type import Types
-from capnpy.nullable import NullableGroup
 from capnpy.util import extend
 schema = sys.modules['capnpy.schema']
 
@@ -80,13 +79,13 @@ class Field:
         return (self.which() == schema.Field.__tag__.slot and
                 self.slot.type.which() == schema.Type.__tag__.list)
 
-    def is_nullable(self, compiler):
+    def is_nullable(self, m):
         for ann in self.annotations or []:
-            ann_node = compiler.allnodes[ann.id]
+            ann_node = m.allnodes[ann.id]
             if ann_node.displayName == "capnpy/py.capnp:nullable":
                 assert ann.value.void is None
-                return NullableGroup(compiler, self)
-        return None
+                return True
+        return False
 
 
     @extend(schema.Field.slot.field.groupcls)
