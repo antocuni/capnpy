@@ -250,24 +250,3 @@ def test_anyPointer():
     f = Foo.from_buffer('somedata', 0, None)
     py.test.raises(ValueError, "f.x")
     assert repr(Foo.x) == '<Field x +0: AnyPointer>'
-
-
-def test_nullable_primitive():
-    class Foo(Struct):
-        x_is_null = field.Primitive('x_is_null', 0, Types.int64)
-        x = field.NullablePrimitive('x', 8, Types.int64, 0, x_is_null)
-
-    buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'  # 0
-           '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
-    p = Foo.from_buffer(buf, 0, None)
-    assert p.x_is_null == 0
-    assert p.x == 2
-    #
-    buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 0
-           '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
-    p = Foo.from_buffer(buf, 0, None)
-    assert p.x_is_null == 1
-    assert p.x is None
-    #
-    assert repr(Foo.x) == ('<Field x +8: Primitive, type=int64, '
-                           'NULL when <Field x_is_null +0: Primitive, type=int64>>')

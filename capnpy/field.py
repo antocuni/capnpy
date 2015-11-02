@@ -40,27 +40,6 @@ class Primitive(object):
             s += ', default=%s>' % self.default_
         return s
 
-class NullablePrimitive(Primitive):
-
-    def __init__(self, name, offset, type, default_, nullable_by):
-        Primitive.__init__(self, name, offset, type, default_)
-        self.nullable_by = nullable_by
-
-    def __get__(self, blob, cls):
-        if blob is None:
-            return self
-        isnull = self.nullable_by.__get__(blob, cls)
-        if isnull:
-            return None
-        return Primitive.__get__(self, blob, cls)
-
-    def __repr__(self):
-        r = Primitive.__repr__(self)
-        r = r[:-1] # remove the last '>'
-        r += ', NULL when %s>' % self.nullable_by
-        return r
-
-
 class Bool(object):
 
     def __init__(self, name, offset, bitno, default=0):

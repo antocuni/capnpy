@@ -16,15 +16,17 @@ class Field:
 @extend(schema.Field__Slot)
 class Field__Slot:
 
-    def _emit(self, m, node, name, nullable_by=None):
+    def _emit(self, m, node, name):
         if self.slot.type.is_bool():
             self._emit_bool(m, name)
             return
         #
         offset = self.slot.compute_offset_inside(node.struct.dataWordCount)
         if self.slot.type.is_primitive():
-            self._emit_primitive(m, name, offset, nullable_by)
+            self._emit_primitive(m, name, offset)
         else:
+            # a bit of metaprogramming: call _emit_text, _emit_struct, etc,
+            # depending on the type
             methname = '_emit_%s' % self.slot.type.which()
             _emit = getattr(self, methname, None)
             if _emit is None:
@@ -36,22 +38,15 @@ class Field__Slot:
                 raise ValueError("explicit defaults not supported for field %s" % self)
 
 
-    def _emit_primitive(self, m, name, offset, nullable_by):
+    def _emit_primitive(self, m, name, offset):
         typename = str(self.slot.type.which())
         t = getattr(Types, typename)
         size = t.calcsize()
         delta = 0
         default = m._get_value(self.slot.defaultValue)
-        if nullable_by:
-            line = ('{name} = __.field.NullablePrimitive("{name}", {offset}, '
-                                      '__.Types.{typename}, default_={default}, '
-                                      'nullable_by={nullable_by})')
-            m.w(line, name=name, offset=offset, typename=typename,
-                default=default, nullable_by=nullable_by)
-        else:
-            line = ('{name} = __.field.Primitive("{name}", {offset}, '
-                                      '__.Types.{typename}, default_={default})')
-            m.w(line, name=name, offset=offset, typename=typename, default=default)
+        line = ('{name} = __.field.Primitive("{name}", {offset}, '
+                                  '__.Types.{typename}, default_={default})')
+        m.w(line, name=name, offset=offset, typename=typename, default=default)
 
     def _emit_bool(self, m, name):
         size = 0
@@ -97,14 +92,18 @@ class Field__Slot:
 class Field__Group:
 
     def _emit(self, m, node, name):
+        group = m.allnodes[self.group.typeId]
+        group.emit_definition(m)
+        m.w('%s = __.field.Group(%s)' % (name, m._pyname(group)))
+        #
         ngroup = self.is_nullable(m)
         if ngroup:
-            # nullable group
-            ngroup.is_null._emit(m, node, ngroup.is_null_name)
-            ngroup.value._emit(m, node,
-                              name=ngroup.name,
-                              nullable_by=ngroup.is_null_name)
-        else:
-            group = m.allnodes[self.group.typeId]
-            group.emit_definition(m)
-            m.w('%s = __.field.Group(%s)' % (name, m._pyname(group)))
+            privname = '_' + name
+            m.w()
+            m.w('{privname} = {name}', privname=privname, name=name)
+            m.w('@property')
+            with m.code.def_(name, ['self']):
+                with m.block('if self.{privname}.is_null:', privname=privname):
+                    m.w('return None')
+                m.w('return self.{privname}.value', privname=privname)
+            m.w()
