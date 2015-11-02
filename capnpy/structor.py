@@ -25,8 +25,6 @@ class Structor(object):
         self.fields = []      # the fields as passed to StructBuilder
         self.field_name = {}  # for plain fields is simply f.name, but in case
                               # of groups it's groupname_fieldname
-        self.nullable_by = {} # field -> NullableGroup
-        #
         try:
             self.init_fields(fields)
             self.fmt = self._compute_format()
@@ -38,11 +36,12 @@ class Structor(object):
         for f in fields:
             ngroup = f.is_nullable(self.m)
             if ngroup:
-                # add isNull and value to fields, but use the group name in the arguments
-                self._append_field(ngroup.is_null, ngroup.name)
-                self._append_field(ngroup.value, ngroup.name)
-                self.argnames.append(ngroup.name)
-                self.nullable_by[ngroup.value] = ngroup
+                # use "foo_is_null" and "foo_value" as fields, but "foo" in the arguments
+                fname, f_is_null, f_value = self._unpack_nullable(f)
+                self._append_field(f_is_null, fname)
+                self._append_field(f_value, fname)
+                self.argnames.append(fname)
+                f_value.nullable_group = fname
             elif f.is_group():
                 raise Unsupported("Group fields not supported yet")
             elif f.is_void():
@@ -58,8 +57,25 @@ class Structor(object):
             tag_field = Field.new_slot('__which__', tag_offset, Type.new_int16())
             self._append_field(tag_field)
 
+    def _unpack_nullable(self, field):
+        assert field.is_group()
+        name = self.m._field_name(field)
+        def error():
+            msg = '%s: nullable groups must have exactly two fields: "isNull" and "value"'
+            raise ValueError(msg % name)
+        #
+        group = self.m.allnodes[field.group.typeId]
+        if len(group.struct.fields) != 2:
+            error()
+        f_is_null, f_value = group.struct.fields
+        if f_is_null.name != 'isNull':
+            error()
+        if f_value.name != 'value':
+            error()
+        return name, f_is_null, f_value
+
     def _append_field(self, f, prefix=None):
-        name = f.name
+        name = self.m._field_name(f)
         if prefix:
             name = '%s_%s' % (prefix, name)
         self.fields.append(f)
@@ -128,7 +144,7 @@ class Structor(object):
                     self._field_struct(code, f)
                 elif f.is_list():
                     self._field_list(code, f)
-                elif f in self.nullable_by:
+                elif hasattr(f, 'nullable_group'):
                     self._field_nullable(code, f)
                 elif f.is_primitive():
                     pass # nothing to do
@@ -149,15 +165,13 @@ class Structor(object):
         #         x_is_null = 0
         #         x_value = x
         #
-        ngroup = self.nullable_by[f]
-        is_null = self.field_name[ngroup.is_null]
-        value = self.field_name[ngroup.value]
-        with code.block('if {arg} is None:', arg=ngroup.name):
-            code.w('{is_null} = 1', is_null=is_null)
-            code.w('{value} = 0', value=value)
+        fname = f.nullable_group
+        with code.block('if {fname} is None:', fname=fname):
+            code.w('{fname}_is_null = 1', fname=fname)
+            code.w('{fname}_value = 0', fname=fname)
         with code.block('else:'):
-            code.w('{is_null} = 0', is_null=is_null)
-            code.w('{value} = {arg}', value=value, arg=ngroup.name)
+            code.w('{fname}_is_null = 0', fname=fname)
+            code.w('{fname}_value = {fname}', fname=fname)
 
     def _field_string(self, code, f):
         fname = self.field_name[f]
