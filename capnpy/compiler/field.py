@@ -57,12 +57,10 @@ class Field__Slot:
             name=name, byteoffset=byteoffset, bitoffset=bitoffset, default=default)
 
     def _emit_text(self, m, name, offset):
-        m.w('{name} = __.field.String("{name}", {offset})',
-            name=name, offset=offset)
+        m.w('{name} = __.field.String("{name}", {offset})', name=name, offset=offset)
 
     def _emit_data(self, m, name, offset):
-        m.w('{name} = __.field.Data("{name}", {offset})',
-            name=name, offset=offset)
+        m.w('{name} = __.field.Data("{name}", {offset})', name=name, offset=offset)
 
     def _emit_struct(self, m, name, offset):
         structname = m._get_typename(self.slot.type)
@@ -80,12 +78,10 @@ class Field__Slot:
             name=name, offset=offset, enumname=enumname)
         
     def _emit_void(self, m, name, offset):
-        m.w('{name} = __.field.Void("{name}")',
-            name=name)
+        m.w('{name} = __.field.Void("{name}")', name=name)
         
     def _emit_anyPointer(self, m, name, offset):
-        m.w('{name} = __.field.AnyPointer("{name}", {offset})',
-            name=name, offset=offset)
+        m.w('{name} = __.field.AnyPointer("{name}", {offset})', name=name, offset=offset)
 
 
 @extend(schema.Field__Group)
