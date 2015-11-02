@@ -552,8 +552,9 @@ class TestCompiler(CompilerTest):
 
 
 class TestNullable(CompilerTest):
-    
-    def test_nullable(self):
+
+    @py.test.fixture
+    def mod(self):
         schema = """
         @0xbf5147cbbecf40c1;
         using Py = import "/capnpy/py.capnp";
@@ -564,7 +565,9 @@ class TestNullable(CompilerTest):
             }
         }
         """
-        mod = self.compile(schema)
+        return self.compile(schema)
+
+    def test_nullable(self, mod):
         buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
         foo = mod.Foo.from_buffer(buf, 0, None)
@@ -578,11 +581,14 @@ class TestNullable(CompilerTest):
         assert not foo._x.is_null
         assert foo._x.value == 2
         assert foo.x == 2
-        #
-        # the test constructor
+
+    def test_constructor(self, mod):
         foo = mod.Foo(x=None)
         assert foo._x.is_null
+        assert foo._x.value == 0
         assert foo.x is None
+        #
         foo = mod.Foo(x=42)
         assert not foo._x.is_null
+        assert foo._x.value == 42
         assert foo.x == 42
