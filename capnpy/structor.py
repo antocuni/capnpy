@@ -12,9 +12,9 @@ class Structor(object):
 
     _unsupported = None
 
-    def __init__(self, compiler, name, data_size, ptrs_size, fields,
+    def __init__(self, m, name, data_size, ptrs_size, fields,
                  tag_offset=None, tag_value=None):
-        self.compiler = compiler
+        self.m = m
         self.name = name
         self.data_size = data_size
         self.ptrs_size = ptrs_size
@@ -36,7 +36,7 @@ class Structor(object):
 
     def init_fields(self, fields):
         for f in fields:
-            ngroup = f.is_nullable(self.compiler)
+            ngroup = f.is_nullable(self.m)
             if ngroup:
                 # add isNull and value to fields, but use the group name in the arguments
                 self._append_field(ngroup.is_null, ngroup.name)
@@ -167,7 +167,7 @@ class Structor(object):
     def _field_struct(self, code, f):
         fname = self.field_name[f]
         offset = f.slot.compute_offset_inside(self.data_size)
-        structname = self.compiler._get_typename(f.slot.type)
+        structname = self.m._get_typename(f.slot.type)
         code.w('{arg} = builder.alloc_struct({offset}, {structname}, {arg})',
                arg=fname, offset=offset, structname=structname)
 
@@ -175,7 +175,7 @@ class Structor(object):
         fname = self.field_name[f]
         offset = f.slot.compute_offset_inside(self.data_size)
         item_type = f.slot.type.list.elementType
-        item_type_name = self.compiler._get_typename(item_type)
+        item_type_name = self.m._get_typename(item_type)
         #
         if item_type.is_primitive():
             listcls = '__.PrimitiveList'
