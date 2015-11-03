@@ -2,8 +2,8 @@ import py
 import pytest
 from pypytools.codegen import Code
 from capnpy.struct_ import Struct
-from capnpy.structor import Structor
 from capnpy.schema import Field, Type
+from capnpy.compiler.structor import Structor
 
 @pytest.fixture
 def m():

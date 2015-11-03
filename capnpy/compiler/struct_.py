@@ -1,6 +1,6 @@
 from capnpy import schema
 from capnpy.util import extend
-from capnpy.structor import Structor
+from capnpy.compiler.structor import Structor
 
 
 @extend(schema.Node__Struct)
