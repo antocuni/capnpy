@@ -117,7 +117,7 @@ class Structor(object):
         ## generate a constructor which looks like this
         ## @staticmethod
         ## def ctor(x, y, z):
-        ##     builder = __.StructBuilder('qqq')
+        ##     builder = _StructBuilder('qqq')
         ##     z = builder.alloc_string(16, z)
         ##     buf = builder.build(x, y)
         ##     return buf
@@ -133,7 +133,7 @@ class Structor(object):
             raise ValueError("Duplicate field name(s): %s" % argnames)
         code.w('@staticmethod')
         with code.def_(self.name, argnames):
-            code.w('builder = __.StructBuilder({fmt})', fmt=repr(self.fmt))
+            code.w('builder = _StructBuilder({fmt})', fmt=repr(self.fmt))
             if self.tag_value is not None:
                 code.w('__which__ = {tag_value}', tag_value=int(self.tag_value))
             for f in self.fields:
@@ -191,11 +191,11 @@ class Structor(object):
         item_type_name = self.m._get_typename(item_type)
         #
         if item_type.is_primitive():
-            listcls = '__.PrimitiveList'
+            listcls = '_PrimitiveList'
         elif item_type.is_string():
-            listcls = '__.StringList'
+            listcls = '_StringList'
         elif item_type.is_struct():
-            listcls = '__.StructList'
+            listcls = '_StructList'
         else:
             raise ValueError('Unknown item type: %s' % item_type)
         #

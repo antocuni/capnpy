@@ -32,14 +32,14 @@ class RequestedFile:
         for f in m.request.requestedFiles:
             m.w("#   - %s" % self.filename)
         m.w("")
-        with m.block("class __(object):"):
-            m.w("from capnpy.struct_ import Struct, undefined")
-            m.w("from capnpy import field")
-            m.w("from capnpy.enum import enum")
-            m.w("from capnpy.blob import Types")
-            m.w("from capnpy.builder import StructBuilder")
-            m.w("from capnpy.list import PrimitiveList, StructList, StringList")
-            m.w("enum = staticmethod(enum)")
+        m.w("from capnpy.struct_ import Struct as _Struct, undefined as _undefined")
+        m.w("from capnpy import field as _field")
+        m.w("from capnpy.enum import enum as _enum")
+        m.w("from capnpy.blob import Types as _Types")
+        m.w("from capnpy.builder import StructBuilder as _StructBuilder")
+        m.w("from capnpy.list import PrimitiveList as _PrimitiveList")
+        m.w("from capnpy.list import StructList as _StructList")
+        m.w("from capnpy.list import StringList as _StringList")
         #
         if m.pyx:
             # load the compiler from the outside. See the comment in

@@ -85,13 +85,13 @@ class ModuleGenerator(object):
         # this method cannot go on Node__Enum because it's also called by
         # Node__Struct (for __tag__)
         items = map(repr, items)
-        decl = "%s = __.enum(%r, (%s))" % (var_name, enum_name, ', '.join(items))
+        decl = "%s = _enum(%r, (%s))" % (var_name, enum_name, ', '.join(items))
         self.w(decl)
 
     def _get_typename(self, t):
         which = str(t.which()) # XXX
         if t.is_builtin():
-            return '__.Types.%s' % which
+            return '_Types.%s' % which
         elif which == 'struct':
             return self._pyname(self.allnodes[t.struct.typeId])
         elif which == 'enum':

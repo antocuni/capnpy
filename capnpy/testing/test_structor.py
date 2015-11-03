@@ -28,11 +28,9 @@ class TestComputeFormat(object):
 
 
 def new_structor(m, **kwds):
-    class Namespace:
-        from capnpy.builder import StructBuilder
-
+    from capnpy.builder import StructBuilder
     code = Code()
-    code['__'] = Namespace
+    code['_StructBuilder'] = StructBuilder
     structor = Structor(m, 'ctor', **kwds)
     structor.declare(code)
     code.compile()

@@ -6,7 +6,7 @@ from capnpy.compiler.structor import Structor
 class Node__Struct:
 
     def emit_declaration(self, m):
-        with m.block("class %s(__.Struct):" % self.shortname()):
+        with m.block("class %s(_Struct):" % self.shortname()):
             children = m.children[self.id]
             empty = True
             for child in children:
@@ -120,11 +120,11 @@ class Node__Struct:
         #     raise TypeError("one of the following args is required: square, circle")
         args = [m._field_name(f) for f in std_fields]
         for f in tag_fields:
-            args.append('%s=__.undefined' % m._field_name(f))
+            args.append('%s=_undefined' % m._field_name(f))
         with m.block('def __init__(self, {arglist}):', arglist=m.code.args(args)):
             for tag_field in tag_fields:
                 tag_field_name = m._field_name(tag_field)
-                with m.block('if {name} is not __.undefined:', name=tag_field_name):
+                with m.block('if {name} is not _undefined:', name=tag_field_name):
                     # emit the series of _assert_undefined, for each other tag field
                     for other_tag_field in tag_fields:
                         if other_tag_field is tag_field:

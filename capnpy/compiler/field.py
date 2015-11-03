@@ -8,7 +8,7 @@ class Field:
         name = m._field_name(self)
         self._emit(m, node, name)
         if self.discriminantValue != Field.noDiscriminant:
-            line = '{name} = __.field.Union({discriminantValue}, {name})'
+            line = '{name} = _field.Union({discriminantValue}, {name})'
             m.w(line, name=name, discriminantValue=self.discriminantValue)
 
 
@@ -43,8 +43,8 @@ class Field__Slot:
         size = t.calcsize()
         delta = 0
         default = self.slot.defaultValue.as_pyobj()
-        line = ('{name} = __.field.Primitive("{name}", {offset}, '
-                                  '__.Types.{typename}, default_={default})')
+        line = ('{name} = _field.Primitive("{name}", {offset}, '
+                                  '_Types.{typename}, default_={default})')
         m.w(line, name=name, offset=offset, typename=typename, default=default)
 
     def _emit_bool(self, m, name):
@@ -52,35 +52,35 @@ class Field__Slot:
         delta = 0
         byteoffset, bitoffset = divmod(self.slot.offset, 8)
         default = self.slot.defaultValue.as_pyobj()
-        m.w('{name} = __.field.Bool("{name}", {byteoffset}, {bitoffset}, {default})',
+        m.w('{name} = _field.Bool("{name}", {byteoffset}, {bitoffset}, {default})',
             name=name, byteoffset=byteoffset, bitoffset=bitoffset, default=default)
 
     def _emit_text(self, m, name, offset):
-        m.w('{name} = __.field.String("{name}", {offset})', name=name, offset=offset)
+        m.w('{name} = _field.String("{name}", {offset})', name=name, offset=offset)
 
     def _emit_data(self, m, name, offset):
-        m.w('{name} = __.field.Data("{name}", {offset})', name=name, offset=offset)
+        m.w('{name} = _field.Data("{name}", {offset})', name=name, offset=offset)
 
     def _emit_struct(self, m, name, offset):
         structname = m._get_typename(self.slot.type)
-        m.w('{name} = __.field.Struct("{name}", {offset}, {structname})',
+        m.w('{name} = _field.Struct("{name}", {offset}, {structname})',
             name=name, offset=offset, structname=structname)
 
     def _emit_list(self, m, name, offset):
         itemtype = m._get_typename(self.slot.type.list.elementType)
-        m.w('{name} = __.field.List("{name}", {offset}, {itemtype})',
+        m.w('{name} = _field.List("{name}", {offset}, {itemtype})',
             name=name, offset=offset, itemtype=itemtype)
         
     def _emit_enum(self, m, name, offset):
         enumname = m._get_typename(self.slot.type)
-        m.w('{name} = __.field.Enum("{name}", {offset}, {enumname})',
+        m.w('{name} = _field.Enum("{name}", {offset}, {enumname})',
             name=name, offset=offset, enumname=enumname)
         
     def _emit_void(self, m, name, offset):
-        m.w('{name} = __.field.Void("{name}")', name=name)
+        m.w('{name} = _field.Void("{name}")', name=name)
         
     def _emit_anyPointer(self, m, name, offset):
-        m.w('{name} = __.field.AnyPointer("{name}", {offset})', name=name, offset=offset)
+        m.w('{name} = _field.AnyPointer("{name}", {offset})', name=name, offset=offset)
 
 
 @schema.Field__Group.__extend__
@@ -89,7 +89,7 @@ class Field__Group:
     def _emit(self, m, node, name):
         if self.is_nullable(m):
             privname = '_' + name
-            m.w('{privname} = __.field.Group({name})', privname=privname, name=name)
+            m.w('{privname} = _field.Group({name})', privname=privname, name=name)
             m.w('@property')
             with m.code.def_(name, ['self']):
                 with m.block('if self.{privname}.is_null:', privname=privname):
@@ -97,4 +97,4 @@ class Field__Group:
                 m.w('return self.{privname}.value', privname=privname)
             m.w()
         else:
-            m.w('{name} = __.field.Group({name})', name=name)
+            m.w('{name} = _field.Group({name})', name=name)
