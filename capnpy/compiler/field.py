@@ -42,7 +42,7 @@ class Field__Slot:
         t = getattr(Types, typename)
         size = t.calcsize()
         delta = 0
-        default = m._get_value(self.slot.defaultValue)
+        default = self.slot.defaultValue.as_pyobj()
         line = ('{name} = __.field.Primitive("{name}", {offset}, '
                                   '__.Types.{typename}, default_={default})')
         m.w(line, name=name, offset=offset, typename=typename, default=default)
@@ -51,7 +51,7 @@ class Field__Slot:
         size = 0
         delta = 0
         byteoffset, bitoffset = divmod(self.slot.offset, 8)
-        default = m._get_value(self.slot.defaultValue)
+        default = self.slot.defaultValue.as_pyobj()
         m.w('{name} = __.field.Bool("{name}", {byteoffset}, {bitoffset}, {default})',
             name=name, byteoffset=byteoffset, bitoffset=bitoffset, default=default)
 

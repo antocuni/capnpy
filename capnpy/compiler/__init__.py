@@ -14,6 +14,7 @@ import capnpy.compiler.request
 import capnpy.compiler.node
 import capnpy.compiler.struct_
 import capnpy.compiler.field
+import capnpy.compiler.misc
 
 
 ## # pycapnp will be supported only until the boostrap is completed
@@ -74,11 +75,6 @@ class ModuleGenerator(object):
                 visit(child, deep+2)
         visit(node)
 
-
-    def _get_value(self, value):
-        val_type = str(value.which())
-        return getattr(value, val_type)
-
     def _convert_name(self, name):
         if self.convert_case:
             return from_camel_case(name)
@@ -87,7 +83,6 @@ class ModuleGenerator(object):
 
     def _field_name(self, field):
         return self._convert_name(field.name)
-
 
     def declare_enum(self, var_name, enum_name, items):
         # this method cannot go on Node__Enum because it's also called by

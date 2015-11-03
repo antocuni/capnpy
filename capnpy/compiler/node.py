@@ -33,5 +33,5 @@ class Node__Const:
     def emit_definition(self, m):
         # XXX: this works only for numerical consts so far
         name = m._shortname(self)
-        val = m._get_value(self.const.value)
+        val = self.const.value.as_pyobj()
         m.w("%s = %s" % (name, val))
