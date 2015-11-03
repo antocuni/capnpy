@@ -28,13 +28,7 @@ class Node__Struct:
             m.w("__data_size__ = %d" % data_size)
             m.w("__ptrs_size__ = %d" % ptrs_size)
             for child in m.children[self.id]:
-                which = child.which()
-                if which == schema.Node.__tag__.const:
-                    m.visit_const(child)
-                elif which == schema.Node.__tag__.struct:
-                    child.emit_definition(m)
-                else:
-                    assert False
+                child.emit_definition(m)
             if self.struct.discriminantCount:
                 self._emit_tag(m)
             if self.struct.fields is not None:

@@ -120,8 +120,10 @@ class Field:
 
 class Node__Struct(schema.Node): pass
 class Node__Enum(schema.Node): pass
+class Node__Const(schema.Node): pass
 schema.Node__Struct = Node__Struct
 schema.Node__Enum = Node__Enum
+schema.Node__Const = Node__Const
 
 @schema.Node.__extend__
 class Node:
@@ -133,6 +135,8 @@ class Node:
             self.__class__ = Node__Struct
         elif self.which() == Node.__tag__.enum:
             self.__class__ = Node__Enum
+        elif self.which() == Node.__tag__.const:
+            self.__class__ = Node__Const
         return self
 
 

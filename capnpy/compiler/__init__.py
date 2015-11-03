@@ -75,12 +75,6 @@ class ModuleGenerator(object):
         visit(node)
 
 
-    def visit_const(self, node):
-        # XXX: this works only for numerical consts so far
-        name = self._shortname(node)
-        val = self._get_value(node.const.value)
-        self.w("%s = %s" % (name, val))
-
     def _get_value(self, value):
         val_type = str(value.which())
         return getattr(value, val_type)

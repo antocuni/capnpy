@@ -264,6 +264,14 @@ class TestAttribute(CompilerTest):
         mod = self.compile(schema)
         assert mod.Foo.bar == 42
 
+    def test_global_const(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        const bar :UInt16 = 42;
+        """
+        mod = self.compile(schema)
+        assert mod.bar == 42
+
 
     def test_list_of_structs(self):
         schema = """
