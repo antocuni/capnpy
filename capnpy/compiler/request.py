@@ -1,9 +1,8 @@
 import py
 from datetime import datetime
 from capnpy import schema
-from capnpy.util import extend
 
-@extend(schema.CodeGeneratorRequest)
+@schema.CodeGeneratorRequest.__extend__
 class CodeGeneratorRequest:
 
     def emit(self, m):
@@ -16,7 +15,7 @@ class CodeGeneratorRequest:
         self.requestedFiles[0].emit(m)
 
 
-@extend(schema.CodeGeneratorRequest.RequestedFile)
+@schema.CodeGeneratorRequest.RequestedFile.__extend__
 class RequestedFile:
 
     def emit(self, m):
@@ -40,9 +39,7 @@ class RequestedFile:
             m.w("from capnpy.blob import Types")
             m.w("from capnpy.builder import StructBuilder")
             m.w("from capnpy.list import PrimitiveList, StructList, StringList")
-            m.w("from capnpy.util import extend")
             m.w("enum = staticmethod(enum)")
-            m.w("extend = staticmethod(extend)")
         #
         if m.pyx:
             # load the compiler from the outside. See the comment in

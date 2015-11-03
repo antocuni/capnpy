@@ -1,9 +1,8 @@
 import sys
 from capnpy.type import Types
-from capnpy.util import extend
 schema = sys.modules['capnpy.schema']
 
-@extend(schema.Type)
+@schema.Type.__extend__
 class Type:
 
     def as_type(self):
@@ -45,7 +44,7 @@ class Type:
                                 schema.Type.__tag__.anyPointer)
 
 
-@extend(schema.Field)
+@schema.Field.__extend__
 class Field:
 
     def is_slot(self):
@@ -88,7 +87,7 @@ class Field:
         return False
 
 
-    @extend(schema.Field.slot.field.groupcls)
+    @schema.Field.slot.field.groupcls.__extend__
     class _:
         def get_fmt(self):
             # XXX: this method is very hackish, we absolutely need to find a
@@ -124,7 +123,7 @@ class Node__Enum(schema.Node): pass
 schema.Node__Struct = Node__Struct
 schema.Node__Enum = Node__Enum
 
-@extend(schema.Node)
+@schema.Node.__extend__
 class Node:
 
     @classmethod
@@ -143,7 +142,7 @@ class Field__Group(schema.Field): pass
 schema.Field__Slot = Field__Slot
 schema.Field__Group = Field__Group
 
-@extend(schema.Field)
+@schema.Field.__extend__
 class Field:
 
     @classmethod
@@ -166,7 +165,7 @@ class Field:
 import struct
 from capnpy.builder import StructBuilder
 
-@extend(schema.Type)
+@schema.Type.__extend__
 class Type:
 
     @classmethod
@@ -195,7 +194,7 @@ class Type:
     new_data = classmethod(lambda cls: cls.__new_primitive(13))
 
 
-@extend(schema.Field)
+@schema.Field.__extend__
 class Field:
 
     @classmethod

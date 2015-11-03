@@ -1,8 +1,7 @@
 from capnpy import schema
 from capnpy.type import Types
-from capnpy.util import extend
 
-@extend(schema.Field)
+@schema.Field.__extend__
 class Field:
 
     def emit(self, m, node):
@@ -13,7 +12,7 @@ class Field:
             m.w(line, name=name, discriminantValue=self.discriminantValue)
 
 
-@extend(schema.Field__Slot)
+@schema.Field__Slot.__extend__
 class Field__Slot:
 
     def _emit(self, m, node, name):
@@ -84,7 +83,7 @@ class Field__Slot:
         m.w('{name} = __.field.AnyPointer("{name}", {offset})', name=name, offset=offset)
 
 
-@extend(schema.Field__Group)
+@schema.Field__Group.__extend__
 class Field__Group:
 
     def _emit(self, m, node, name):

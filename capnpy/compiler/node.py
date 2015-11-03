@@ -1,7 +1,6 @@
 from capnpy import schema
-from capnpy.util import extend
 
-@extend(schema.Node)
+@schema.Node.__extend__
 class Node:
 
     def emit_declaration(self, m):
@@ -15,7 +14,7 @@ class Node:
         pass # do nothing by default
 
 
-@extend(schema.Node__Enum)
+@schema.Node__Enum.__extend__
 class Node__Enum:
 
     def emit_declaration(self, m):

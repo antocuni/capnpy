@@ -1,9 +1,8 @@
 from capnpy import schema
-from capnpy.util import extend
 from capnpy.compiler.structor import Structor
 
 
-@extend(schema.Node__Struct)
+@schema.Node__Struct.__extend__
 class Node__Struct:
 
     def emit_declaration(self, m):
@@ -22,7 +21,7 @@ class Node__Struct:
         name = m._pyname(self)
         shortname = m._shortname(self)
         m.w("")
-        m.w("@__.extend({name})", name=name)
+        m.w("@{name}.__extend__", name=name)
         with m.block("class {shortname}:", shortname=shortname):
             data_size = self.struct.dataWordCount
             ptrs_size = self.struct.pointerCount
