@@ -38,18 +38,19 @@ class Field__Slot:
 
 
     def _emit_primitive(self, m, name, offset):
-        typename = str(self.slot.type.which())
-        t = getattr(Types, typename)
-        size = t.calcsize()
-        delta = 0
-        default = self.slot.defaultValue.as_pyobj()
-        line = ('{name} = _field.Primitive("{name}", {offset}, '
-                                  '_Types.{typename}, default_={default})')
-        m.w(line, name=name, offset=offset, typename=typename, default=default)
+        if m.pyx:
+            with m.block('property {name}:', name=name):
+                with m.block('def __get__(self):'):
+                    m.w('return _upf("{fmt}", self._buf, self._offset+{offset})',
+                        fmt=self.slot.get_fmt(), offset=offset)
+        else:
+            typename = str(self.slot.type.which())
+            default = self.slot.defaultValue.as_pyobj()
+            line = ('{name} = _field.Primitive("{name}", {offset}, '
+                                      '_Types.{typename}, default_={default})')
+            m.w(line, name=name, offset=offset, typename=typename, default=default)
 
     def _emit_bool(self, m, name):
-        size = 0
-        delta = 0
         byteoffset, bitoffset = divmod(self.slot.offset, 8)
         default = self.slot.defaultValue.as_pyobj()
         m.w('{name} = _field.Bool("{name}", {byteoffset}, {bitoffset}, {default})',
