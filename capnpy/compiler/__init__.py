@@ -45,7 +45,7 @@ class ModuleGenerator(object):
         return self.code.block(*args, **kwargs)
 
     def _pyname_for_file(self, fname):
-        return '_%s' % py.path.local(fname).purebasename
+        return '_%s_capnp' % py.path.local(fname).purebasename
 
     def _pyname(self, node):
         if node.scopeId == 0:
