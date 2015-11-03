@@ -3,6 +3,9 @@ from capnpy.schema import Node, Node__Enum, Node__Const
 @Node.__extend__
 class Node:
 
+    def shortname(self):
+        return self.displayName[self.displayNamePrefixLength:]
+
     def emit_declaration(self, m):
         if self.which() == Node.__tag__.annotation:
             # annotations are simply ignored for now
@@ -18,7 +21,7 @@ class Node:
 class Node__Enum:
 
     def emit_declaration(self, m):
-        name = m._shortname(self)
+        name = self.shortname()
         items = [m._field_name(item) for item in self.enum.enumerants]
         m.declare_enum(name, name, items)
 
@@ -32,6 +35,6 @@ class Node__Const:
 
     def emit_definition(self, m):
         # XXX: this works only for numerical consts so far
-        name = m._shortname(self)
+        name = self.shortname()
         val = self.const.value.as_pyobj()
         m.w("%s = %s" % (name, val))

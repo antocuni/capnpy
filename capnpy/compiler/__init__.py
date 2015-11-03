@@ -44,25 +44,22 @@ class ModuleGenerator(object):
     def block(self, *args, **kwargs):
         return self.code.block(*args, **kwargs)
 
-    def _shortname(self, node):
-        return node.displayName[node.displayNamePrefixLength:]
-
     def _pyname_for_file(self, fname):
         return '_%s' % py.path.local(fname).purebasename
 
     def _pyname(self, node):
         if node.scopeId == 0:
-            return self._shortname(node)
+            return node.shortname()
         parent = self.allnodes[node.scopeId]
         if parent.which() == schema.Node.__tag__.file:
             if self.current_scope.id == parent.id:
                 # no need for fully qualified names for children of the current file
-                return self._shortname(node)
+                return node.shortname()
             else:
                 return '%s.%s' % (self._pyname_for_file(parent.displayName),
-                                  self._shortname(node))
+                                  node.shortname())
         else:
-            return '%s.%s' % (self._pyname(parent), self._shortname(node))
+            return '%s.%s' % (self._pyname(parent), node.shortname())
 
     def generate(self):
         self.request.emit(self)
@@ -70,7 +67,7 @@ class ModuleGenerator(object):
 
     def _dump_node(self, node):
         def visit(node, deep=0):
-            print '%s%s: %s' % (' ' * deep, node.which(), self._shortname(node))
+            print '%s%s: %s' % (' ' * deep, node.which(), node.shortname())
             for child in self.children[node.id]:
                 visit(child, deep+2)
         visit(node)

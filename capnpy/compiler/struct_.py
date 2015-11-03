@@ -6,8 +6,7 @@ from capnpy.compiler.structor import Structor
 class Node__Struct:
 
     def emit_declaration(self, m):
-        name = m._shortname(self)
-        with m.block("class %s(__.Struct):" % name):
+        with m.block("class %s(__.Struct):" % self.shortname()):
             children = m.children[self.id]
             empty = True
             for child in children:
@@ -19,7 +18,7 @@ class Node__Struct:
 
     def emit_definition(self, m):
         name = m._pyname(self)
-        shortname = m._shortname(self)
+        shortname = self.shortname()
         m.w("")
         m.w("@{name}.__extend__", name=name)
         with m.block("class {shortname}:", shortname=shortname):
@@ -44,7 +43,7 @@ class Node__Struct:
             i = field.discriminantValue
             if i != schema.Field.noDiscriminant:
                 enum_items[i] = m._field_name(field)
-        enum_name = '%s.__tag__' % m._shortname(self)
+        enum_name = '%s.__tag__' % self.shortname()
         m.w("__tag_offset__ = %s" % tag_offset)
         m.declare_enum('__tag__', enum_name, enum_items)
 
