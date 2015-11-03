@@ -6,26 +6,37 @@ from capnpy.compiler.structor import Structor
 class Node__Struct:
 
     def emit_declaration(self, m):
-        with m.block("class %s(_Struct):" % self.shortname()):
-            children = m.children[self.id]
-            empty = True
-            for child in children:
-                if child.which() == schema.Node.__tag__.struct:
-                    child.emit_declaration(m)
-                    empty = False
-            if empty:
-                m.w("pass")
+        if m.pyx:
+            # XXX: add support for nested structs
+            m.w("cdef class {name}(_Struct)", name=self.shortname())
+        else:
+            with m.block("class %s(_Struct):" % self.shortname()):
+                children = m.children[self.id]
+                for child in children:
+                    if child.which() == schema.Node.__tag__.struct:
+                        child.emit_declaration(m)
 
     def emit_definition(self, m):
         name = m._pyname(self)
         shortname = self.shortname()
         m.w("")
-        m.w("@{name}.__extend__", name=name)
-        with m.block("class {shortname}:", shortname=shortname):
+        if not m.pyx:
+            # use the @extend decorator only in Pure Python mode: in pyx mode
+            # it is (1) not allowed and (2) useless anyway, because we have
+            # forward-declared the class, not defined it
+            m.w("@{name}.__extend__", name=name)
+        #
+        with m.block("{cdef class} {shortname}(_Struct):", shortname=shortname):
             data_size = self.struct.dataWordCount
             ptrs_size = self.struct.pointerCount
             m.w("__data_size__ = %d" % data_size)
             m.w("__ptrs_size__ = %d" % ptrs_size)
+            m.w()
+            # see the comment in blob.py:_allocate for an explanation of why it's needed
+            m.w('@classmethod')
+            with m.block('def _allocate(cls):'):
+                m.w('return {clsname}.__new__(cls)', clsname=m._pyname(self))
+            m.w()
             for child in m.children[self.id]:
                 child.emit_definition(m)
             if self.struct.discriminantCount:

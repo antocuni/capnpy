@@ -23,6 +23,16 @@ class RequestedFile:
         m.extname = '%s_extended' % m.modname
         m.tmpname = '%s_tmp' % m.modname
         #
+        # some lines need to be different when in pyx mode: here we define
+        # some global kwarg which are "turned off" when in pure python mode
+        if m.pyx:
+            # pyx mode
+            m.code.kwargs['cimport'] = 'cimport'
+            m.code.kwargs['cdef class'] = 'cdef class'
+        else:
+            m.code.kwargs['cimport'] = 'import'
+            m.code.kwargs['cdef class'] = 'class'
+        #
         node = m.allnodes[self.id]
         m.current_scope = node
         m.w("# THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy")
@@ -32,7 +42,8 @@ class RequestedFile:
         for f in m.request.requestedFiles:
             m.w("#   - %s" % self.filename)
         m.w("")
-        m.w("from capnpy.struct_ import Struct as _Struct, undefined as _undefined")
+        m.w("from capnpy.struct_ {cimport} Struct as _Struct")
+        m.w("from capnpy.struct_ import undefined as _undefined")
         m.w("from capnpy import field as _field")
         m.w("from capnpy.enum import enum as _enum")
         m.w("from capnpy.blob import Types as _Types")

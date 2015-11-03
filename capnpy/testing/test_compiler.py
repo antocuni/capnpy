@@ -18,9 +18,6 @@ class CompilerTest:
     simply call it without any further setup required.
     """
 
-    compiler_mode = None
-    tmpdir = None
-
     @pytest.fixture(params=['py', 'pyx'])
     def initargs(self, request, tmpdir):
         self.tmpdir = tmpdir
@@ -37,7 +34,7 @@ class CompilerTest:
 
 class TestAttribute(CompilerTest):
 
-    def test_primitive(self):
+    def test_primitive_plain(self):
         schema = """
         @0xbf5147cbbecf40c1;
         struct Point {
@@ -46,8 +43,12 @@ class TestAttribute(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        if self.compiler_mode == 'pyx':
+        if self.pyx:
             assert mod.__file__.endswith('/tmp.so')
+            # the repr starts with 'class' for Python classes but 'type' for
+            # classes defined in C. Let's check that mod.Point is actually a
+            # cdef class
+            assert repr(mod.Point) == "<type 'tmp.Point'>"
         #
         buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
