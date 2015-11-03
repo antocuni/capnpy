@@ -87,17 +87,14 @@ class Field__Slot:
 class Field__Group:
 
     def _emit(self, m, node, name):
-        group = m.allnodes[self.group.typeId]
-        group.emit_definition(m)
-        m.w('%s = __.field.Group(%s)' % (name, m._pyname(group)))
-        #
         if self.is_nullable(m):
             privname = '_' + name
-            m.w()
-            m.w('{privname} = {name}', privname=privname, name=name)
+            m.w('{privname} = __.field.Group({name})', privname=privname, name=name)
             m.w('@property')
             with m.code.def_(name, ['self']):
                 with m.block('if self.{privname}.is_null:', privname=privname):
                     m.w('return None')
                 m.w('return self.{privname}.value', privname=privname)
             m.w()
+        else:
+            m.w('{name} = __.field.Group({name})', name=name)

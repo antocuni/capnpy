@@ -32,8 +32,7 @@ class Node__Struct:
                 if which == schema.Node.__tag__.const:
                     m.visit_const(child)
                 elif which == schema.Node.__tag__.struct:
-                    if not child.struct.isGroup:
-                        child.emit_definition(m)
+                    child.emit_definition(m)
                 else:
                     assert False
             if self.struct.discriminantCount:
