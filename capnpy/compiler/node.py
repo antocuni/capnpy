@@ -1,10 +1,10 @@
-from capnpy import schema
+from capnpy.schema import Node, Node__Enum, Node__Const
 
-@schema.Node.__extend__
+@Node.__extend__
 class Node:
 
     def emit_declaration(self, m):
-        if self.which() == schema.Node.__tag__.annotation:
+        if self.which() == Node.__tag__.annotation:
             # annotations are simply ignored for now
             pass
         else:
@@ -14,7 +14,7 @@ class Node:
         pass # do nothing by default
 
 
-@schema.Node__Enum.__extend__
+@Node__Enum.__extend__
 class Node__Enum:
 
     def emit_declaration(self, m):
@@ -24,8 +24,11 @@ class Node__Enum:
 
 
 
-@schema.Node__Const.__extend__
+@Node__Const.__extend__
 class Node__Const:
+
+    def emit_declaration(self, m):
+        pass
 
     def emit_definition(self, m):
         # XXX: this works only for numerical consts so far
