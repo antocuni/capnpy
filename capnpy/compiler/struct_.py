@@ -7,31 +7,30 @@ class Node__Struct:
 
     def emit_declaration(self, m):
         if m.pyx:
-            m.w("cdef class {name}(_Struct)", name=self.fullname(m))
+            m.w("cdef class {name}(_Struct)", name=self.compile_name(m))
         else:
             children = m.children[self.id]
             for child in children:
                 if child.which() == schema.Node.__tag__.struct:
                     child.emit_declaration(m)
             #
-            fullname = self.fullname(m)
-            dotname = self.fullname(m, sep='.')
-            m.w("class {fullname}(_Struct): pass", fullname=fullname)
-            m.w("{fullname}.__name__ = '{dotname}'", fullname=fullname, dotname=dotname)
+            name = self.compile_name(m)
+            dotname = self.runtime_name(m)
+            m.w("class {name}(_Struct): pass", name=name)
+            m.w("{name}.__name__ = '{dotname}'", name=name, dotname=dotname)
 
     def emit_definition(self, m):
-        name = m._pyname(self)
-        fullname = self.fullname(m)
+        name = self.compile_name(m)
         for child in m.children[self.id]:
             child.emit_definition(m)
-
+        #
         if not m.pyx:
             # use the @extend decorator only in Pure Python mode: in pyx mode
             # it is (1) not allowed and (2) useless anyway, because we have
             # forward-declared the class, not defined it
-            m.w("@{fullname}.__extend__", fullname=fullname)
+            m.w("@{name}.__extend__", name=name)
         #
-        with m.block("{cdef class} {fullname}(_Struct):", fullname=fullname):
+        with m.block("{cdef class} {name}(_Struct):", name=name):
             data_size = self.struct.dataWordCount
             ptrs_size = self.struct.pointerCount
             m.w("__data_size__ = %d" % data_size)
@@ -40,6 +39,7 @@ class Node__Struct:
             # see the comment in blob.py:_allocate for an explanation of why it's needed
             m.w('@classmethod')
             with m.block('def _allocate(cls):'):
+                # XXX
                 m.w('return {clsname}.__new__(cls)', clsname=m._pyname(self))
             m.w()
             for child in m.children[self.id]:
@@ -54,11 +54,12 @@ class Node__Struct:
 
     def emit_reference_as_child(self, m):
         if self.is_nested(m):
-            m.w('{name} = {fullname}', name=self.shortname(), fullname=self.fullname(m))
+            m.w('{shortname} = {name}', shortname=self.shortname(),
+                name=self.compile_name(m))
 
     def emit_delete_nested_from_globals(self, m):
         if self.is_nested(m):
-            m.w("del globals()['{fullname}']", fullname=self.fullname(m))
+            m.w("del globals()['{name}']", name=self.compile_name(m))
         for child in m.children[self.id]:
             child.emit_delete_nested_from_globals(m)
 

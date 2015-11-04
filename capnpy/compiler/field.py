@@ -63,17 +63,17 @@ class Field__Slot:
         m.w('{name} = _field.Data("{name}", {offset})', name=name, offset=offset)
 
     def _emit_struct(self, m, name, offset):
-        structname = m._get_typename(self.slot.type)
+        structname = m._get_typename(self.slot.type, 'compile')
         m.w('{name} = _field.Struct("{name}", {offset}, {structname})',
             name=name, offset=offset, structname=structname)
 
     def _emit_list(self, m, name, offset):
-        itemtype = m._get_typename(self.slot.type.list.elementType)
+        itemtype = m._get_typename(self.slot.type.list.elementType, 'compile')
         m.w('{name} = _field.List("{name}", {offset}, {itemtype})',
             name=name, offset=offset, itemtype=itemtype)
         
     def _emit_enum(self, m, name, offset):
-        enumname = m._get_typename(self.slot.type)
+        enumname = m._get_typename(self.slot.type, 'compile')
         m.w('{name} = _field.Enum("{name}", {offset}, {enumname})',
             name=name, offset=offset, enumname=enumname)
         
@@ -89,7 +89,7 @@ class Field__Group:
 
     def _emit(self, m, node, name):
         groupnode = m.allnodes[self.group.typeId]
-        clsname = groupnode.fullname(m)
+        clsname = groupnode.compile_name(m)
         if self.is_nullable(m):
             privname = '_' + name
             m.w('{privname} = _field.Group({clsname})', privname=privname, clsname=clsname)

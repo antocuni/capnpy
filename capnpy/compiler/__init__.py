@@ -88,12 +88,17 @@ class ModuleGenerator(object):
         decl = "%s = _enum(%r, (%s))" % (var_name, enum_name, ', '.join(items))
         self.w(decl)
 
-    def _get_typename(self, t):
+    def _get_typename(self, t, mode):
         which = str(t.which()) # XXX
         if t.is_builtin():
             return '_Types.%s' % which
         elif which == 'struct':
-            return self._pyname(self.allnodes[t.struct.typeId])
+            node = self.allnodes[t.struct.typeId]
+            if mode == 'compile':
+                return node.compile_name(self)
+            else:
+                assert mode == 'runtime'
+                return node.runtime_name(self)
         elif which == 'enum':
             return self._pyname(self.allnodes[t.enum.typeId])
         else:

@@ -48,12 +48,18 @@ class Node:
             name = '_group_%s' % name
         return name
 
-    def fullname(self, m, sep='_'):
+    def _fullname(self, m, sep):
         if self.is_nested(m):
             parent = m.allnodes[self.scopeId]
-            return '%s%s%s' % (parent.fullname(m), sep, self.shortname())
+            return '%s%s%s' % (parent._fullname(m, sep), sep, self.shortname())
         else:
             return self.shortname()
+
+    def compile_name(self, m):
+        return self._fullname(m, '_')
+
+    def runtime_name(self, m):
+        return self._fullname(m, '.')
 
     def is_nested(self, m):
         parent = m.allnodes[self.scopeId]
