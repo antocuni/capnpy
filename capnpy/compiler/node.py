@@ -49,13 +49,15 @@ class Node:
         return name
 
     def fullname(self, m, sep='_'):
-        scope = m.allnodes[self.scopeId]
-        if scope.scopeId == 0:
-            # module-level struct
-            return self.shortname()
+        if self.is_nested(m):
+            parent = m.allnodes[self.scopeId]
+            return '%s%s%s' % (parent.fullname(m), sep, self.shortname())
         else:
-            # nested struct
-            return '%s%s%s' % (scope.fullname(m), sep, self.shortname())
+            return self.shortname()
+
+    def is_nested(self, m):
+        parent = m.allnodes[self.scopeId]
+        return parent.scopeId != 0
 
     def emit_declaration(self, m):
         if self.which() == Node.__tag__.annotation:

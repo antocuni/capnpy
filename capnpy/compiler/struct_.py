@@ -56,8 +56,9 @@ class Node__Struct:
         m.w('{name} = {fullname}', name=self.shortname(), fullname=self.fullname(m))
 
     def emit_delete_nested_from_globals(self, m):
+        if self.is_nested(m):
+            m.w("del globals()['{fullname}']", fullname=self.fullname(m))
         for child in m.children[self.id]:
-            m.w("del globals()['{fullname}']", fullname=child.fullname(m))
             child.emit_delete_nested_from_globals(m)
 
     def _emit_tag(self, m):
