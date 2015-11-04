@@ -43,7 +43,10 @@ from capnpy.schema import Node, Node__Enum, Node__Const
 class Node:
 
     def shortname(self):
-        return self.displayName[self.displayNamePrefixLength:]
+        name = self.displayName[self.displayNamePrefixLength:]
+        if self.which() == Node.__tag__.struct and self.struct.isGroup:
+            name = '_group_%s' % name
+        return name
 
     def fullname(self, m, sep='_'):
         scope = m.allnodes[self.scopeId]
