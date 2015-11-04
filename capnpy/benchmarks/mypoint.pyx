@@ -14,4 +14,3 @@ cdef class MyPoint(Struct):
     property y:
         def __get__(self):
             return upf('q', self._buf, self._offset+8)
-

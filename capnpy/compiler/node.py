@@ -1,10 +1,58 @@
 from capnpy.schema import Node, Node__Enum, Node__Const
 
+# The implementation of each node is divided in three parts:
+#     1. forward declaration
+#     2. definition
+#     3. reference as child
+#
+# They are slightly different in pyx or python mode. It is probably easier to
+# explain by giving an example in each mode.
+#
+# PYTHON MODE
+#
+#     class Outer__Nested: pass  # forward declaration
+#     class Outer: pass          # forward declaration
+#
+#     # definition of Outer__Nested
+#     @Outer__Nested.__extend__
+#     class Outer__Nested:
+#         ...
+#
+#     # definition of Outer
+#     @Outer.__extend__
+#     class Outer:
+#         ...
+#         Nested = Outer__Nested # reference as child
+#
+# PYX MODE
+#
+#     cdef class Outer__Nested  # forward declaration
+#     cdef class Outer          # forward declaration
+#
+#     # definition of Outer__Nested
+#     cdef class Outer__Nested:
+#         ...
+#
+#     # definition of Outer
+#     cdef class Outer:
+#         ...
+#         Nested = Outer__Nested # reference as child
+
+
 @Node.__extend__
 class Node:
 
     def shortname(self):
         return self.displayName[self.displayNamePrefixLength:]
+
+    def fullname(self, m):
+        scope = m.allnodes[self.scopeId]
+        if scope.scopeId == 0:
+            # module-level struct
+            return self.shortname()
+        else:
+            # nested struct
+            return '%s_%s' % (scope.fullname(m), self.shortname())
 
     def emit_declaration(self, m):
         if self.which() == Node.__tag__.annotation:
@@ -14,6 +62,9 @@ class Node:
             assert False, 'Unkown node type: %s' % self.which()
 
     def emit_definition(self, m):
+        pass # do nothing by default
+
+    def emit_reference_as_child(self, m):
         pass # do nothing by default
 
 
@@ -33,7 +84,7 @@ class Node__Const:
     def emit_declaration(self, m):
         pass
 
-    def emit_definition(self, m):
+    def emit_reference_as_child(self, m):
         # XXX: this works only for numerical consts so far
         name = self.shortname()
         val = self.const.value.as_pyobj()

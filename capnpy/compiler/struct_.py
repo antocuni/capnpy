@@ -8,25 +8,27 @@ class Node__Struct:
     def emit_declaration(self, m):
         if m.pyx:
             # XXX: add support for nested structs
-            m.w("cdef class {name}(_Struct)", name=self.shortname())
+            m.w("cdef class {name}(_Struct)", name=self.fullname(m))
         else:
-            with m.block("class %s(_Struct):" % self.shortname()):
-                children = m.children[self.id]
-                for child in children:
-                    if child.which() == schema.Node.__tag__.struct:
-                        child.emit_declaration(m)
+            children = m.children[self.id]
+            for child in children:
+                if child.which() == schema.Node.__tag__.struct:
+                    child.emit_declaration(m)
+            m.w("class %s(_Struct): pass" % self.fullname(m))
 
     def emit_definition(self, m):
         name = m._pyname(self)
-        shortname = self.shortname()
-        m.w("")
+        fullname = self.fullname(m)
+        for child in m.children[self.id]:
+            child.emit_definition(m)
+
         if not m.pyx:
             # use the @extend decorator only in Pure Python mode: in pyx mode
             # it is (1) not allowed and (2) useless anyway, because we have
             # forward-declared the class, not defined it
-            m.w("@{name}.__extend__", name=name)
+            m.w("@{fullname}.__extend__", fullname=fullname)
         #
-        with m.block("{cdef class} {shortname}(_Struct):", shortname=shortname):
+        with m.block("{cdef class} {fullname}(_Struct):", fullname=fullname):
             data_size = self.struct.dataWordCount
             ptrs_size = self.struct.pointerCount
             m.w("__data_size__ = %d" % data_size)
@@ -38,13 +40,17 @@ class Node__Struct:
                 m.w('return {clsname}.__new__(cls)', clsname=m._pyname(self))
             m.w()
             for child in m.children[self.id]:
-                child.emit_definition(m)
+                child.emit_reference_as_child(m)
             if self.struct.discriminantCount:
                 self._emit_tag(m)
             if self.struct.fields is not None:
                 for field in self.struct.fields:
                     field.emit(m, self)
                 self._emit_ctors(m)
+        m.w()
+
+    def emit_reference_as_child(self, m):
+        m.w('{name} = {fullname}', name=self.shortname(), fullname=self.fullname(m))
 
     def _emit_tag(self, m):
         # union tags are 16 bits, so *2

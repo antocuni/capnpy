@@ -64,12 +64,17 @@ class RequestedFile:
         # visit the children in two passes: first the declaration, then the
         # definition
         children = m.children[node.id]
+        m.w("#### FORWARD DECLARATIONS ####")
+        m.w()
         for child in children:
             child.emit_declaration(m)
+        m.w()
+        m.w("#### DEFINITIONS ####")
+        m.w()
         for child in children:
             child.emit_definition(m)
         #
-        m.w("")
+        m.w()
         m.w("try:")
         m.w("    import %s # side effects" % m.extname)
         m.w("except ImportError:")
