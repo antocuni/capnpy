@@ -53,7 +53,8 @@ class Node__Struct:
         m.w()
 
     def emit_reference_as_child(self, m):
-        m.w('{name} = {fullname}', name=self.shortname(), fullname=self.fullname(m))
+        if self.is_nested(m):
+            m.w('{name} = {fullname}', name=self.shortname(), fullname=self.fullname(m))
 
     def emit_delete_nested_from_globals(self, m):
         if self.is_nested(m):

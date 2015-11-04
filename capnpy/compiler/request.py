@@ -74,6 +74,9 @@ class RequestedFile:
         for child in children:
             child.emit_definition(m)
         #
+        for child in children:
+            child.emit_reference_as_child(m)
+        #
         m.w()
         for child in children:
             child.emit_delete_nested_from_globals(m)
