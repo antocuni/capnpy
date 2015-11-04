@@ -75,6 +75,9 @@ class RequestedFile:
             child.emit_definition(m)
         #
         m.w()
+        for child in children:
+            child.emit_delete_nested_from_globals(m)
+        m.w()
         m.w("try:")
         m.w("    import %s # side effects" % m.extname)
         m.w("except ImportError:")

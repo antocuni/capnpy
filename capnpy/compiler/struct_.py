@@ -7,14 +7,17 @@ class Node__Struct:
 
     def emit_declaration(self, m):
         if m.pyx:
-            # XXX: add support for nested structs
             m.w("cdef class {name}(_Struct)", name=self.fullname(m))
         else:
             children = m.children[self.id]
             for child in children:
                 if child.which() == schema.Node.__tag__.struct:
                     child.emit_declaration(m)
-            m.w("class %s(_Struct): pass" % self.fullname(m))
+            #
+            fullname = self.fullname(m)
+            dotname = self.fullname(m, sep='.')
+            m.w("class {fullname}(_Struct): pass", fullname=fullname)
+            m.w("{fullname}.__name__ = '{dotname}'", fullname=fullname, dotname=dotname)
 
     def emit_definition(self, m):
         name = m._pyname(self)
@@ -51,6 +54,11 @@ class Node__Struct:
 
     def emit_reference_as_child(self, m):
         m.w('{name} = {fullname}', name=self.shortname(), fullname=self.fullname(m))
+
+    def emit_delete_nested_from_globals(self, m):
+        for child in m.children[self.id]:
+            m.w("del globals()['{fullname}']", fullname=child.fullname(m))
+            child.emit_delete_nested_from_globals(m)
 
     def _emit_tag(self, m):
         # union tags are 16 bits, so *2

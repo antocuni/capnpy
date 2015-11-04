@@ -45,14 +45,14 @@ class Node:
     def shortname(self):
         return self.displayName[self.displayNamePrefixLength:]
 
-    def fullname(self, m):
+    def fullname(self, m, sep='_'):
         scope = m.allnodes[self.scopeId]
         if scope.scopeId == 0:
             # module-level struct
             return self.shortname()
         else:
             # nested struct
-            return '%s_%s' % (scope.fullname(m), self.shortname())
+            return '%s%s%s' % (scope.fullname(m), sep, self.shortname())
 
     def emit_declaration(self, m):
         if self.which() == Node.__tag__.annotation:
@@ -67,6 +67,8 @@ class Node:
     def emit_reference_as_child(self, m):
         pass # do nothing by default
 
+    def emit_delete_nested_from_globals(self, m):
+        pass
 
 @Node__Enum.__extend__
 class Node__Enum:
