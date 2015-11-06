@@ -180,7 +180,7 @@ class Structor(object):
     def _field_struct(self, code, f):
         fname = self.field_name[f]
         offset = f.slot.compute_offset_inside(self.data_size)
-        structname = self.m._get_typename(f.slot.type, 'runtime')
+        structname = f.slot.type.runtime_name(self.m)
         code.w('{arg} = builder.alloc_struct({offset}, {structname}, {arg})',
                arg=fname, offset=offset, structname=structname)
 
@@ -188,7 +188,7 @@ class Structor(object):
         fname = self.field_name[f]
         offset = f.slot.compute_offset_inside(self.data_size)
         item_type = f.slot.type.list.elementType
-        item_type_name = self.m._get_typename(item_type, 'runtime')
+        item_type_name = item_type.runtime_name(self.m)
         #
         if item_type.is_primitive():
             listcls = '_PrimitiveList'

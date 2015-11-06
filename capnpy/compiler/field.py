@@ -66,17 +66,17 @@ class Field__Slot:
         m.w('{name} = _field.Data("{name}", {offset})', name=name, offset=offset)
 
     def _emit_struct(self, m, name, offset):
-        structname = m._get_typename(self.slot.type, 'compile')
+        structname = self.slot.type.compile_name(m)
         m.w('{name} = _field.Struct("{name}", {offset}, {structname})',
             name=name, offset=offset, structname=structname)
 
     def _emit_list(self, m, name, offset):
-        itemtype = m._get_typename(self.slot.type.list.elementType, 'compile')
+        itemtype = self.slot.type.list.elementType.compile_name(m)
         m.w('{name} = _field.List("{name}", {offset}, {itemtype})',
             name=name, offset=offset, itemtype=itemtype)
         
     def _emit_enum(self, m, name, offset):
-        enumname = m._get_typename(self.slot.type, 'compile')
+        enumname = self.slot.type.compile_name(m)
         m.w('{name} = _field.Enum("{name}", {offset}, {enumname})',
             name=name, offset=offset, enumname=enumname)
         
