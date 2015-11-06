@@ -38,8 +38,7 @@ class Node__Struct:
             # see the comment in blob.py:_allocate for an explanation of why it's needed
             m.w('@classmethod')
             with m.block('def _allocate(cls):'):
-                # XXX
-                m.w('return {clsname}.__new__(cls)', clsname=m._pyname(self))
+                m.w('return {clsname}.__new__(cls)', clsname=self.runtime_name(m))
             m.w()
             for child in m.children[self.id]:
                 child.emit_reference_as_child(m)

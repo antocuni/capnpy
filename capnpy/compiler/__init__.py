@@ -53,23 +53,6 @@ class ModuleGenerator(object):
         self.importnames[fname] = name
         return name
 
-    def _pyname_for_file(self, fname):
-        return '_%s_capnp' % py.path.local(fname).purebasename
-
-    def _pyname(self, node):
-        if node.scopeId == 0:
-            return node.shortname(self)
-        parent = self.allnodes[node.scopeId]
-        if parent.is_file():
-            if self.current_scope.id == parent.id:
-                # no need for fully qualified names for children of the current file
-                return node.shortname(self)
-            else:
-                return '%s.%s' % (self._pyname_for_file(parent.displayName),
-                                  node.shortname(self))
-        else:
-            return '%s.%s' % (self._pyname(parent), node.shortname(self))
-
     def generate(self):
         self.request.emit(self)
         return self.code.build()
@@ -109,7 +92,12 @@ class ModuleGenerator(object):
                 assert mode == 'runtime'
                 return node.runtime_name(self)
         elif which == 'enum':
-            return self._pyname(self.allnodes[t.enum.typeId])
+            node = self.allnodes[t.enum.typeId]
+            if mode == 'compile':
+                return node.compile_name(self)
+            else:
+                assert mode == 'runtime'
+                return node.runtime_name(self)
         else:
             assert False
 
