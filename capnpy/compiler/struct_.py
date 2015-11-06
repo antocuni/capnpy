@@ -6,14 +6,13 @@ from capnpy.compiler.structor import Structor
 class Node__Struct:
 
     def emit_declaration(self, m):
+        children = m.children[self.id]
+        for child in children:
+            child.emit_declaration(m)
+        #
         if m.pyx:
             m.w("cdef class {name}(_Struct)", name=self.compile_name(m))
         else:
-            children = m.children[self.id]
-            for child in children:
-                if child.is_struct():
-                    child.emit_declaration(m)
-            #
             name = self.compile_name(m)
             dotname = self.runtime_name(m)
             m.w("class {name}(_Struct): pass", name=name)
