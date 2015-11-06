@@ -51,7 +51,7 @@ class ModuleGenerator(object):
         if node.scopeId == 0:
             return node.shortname()
         parent = self.allnodes[node.scopeId]
-        if parent.which() == schema.Node.__tag__.file:
+        if parent.is_file():
             if self.current_scope.id == parent.id:
                 # no need for fully qualified names for children of the current file
                 return node.shortname()

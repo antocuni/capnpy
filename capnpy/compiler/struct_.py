@@ -11,7 +11,7 @@ class Node__Struct:
         else:
             children = m.children[self.id]
             for child in children:
-                if child.which() == schema.Node.__tag__.struct:
+                if child.is_struct():
                     child.emit_declaration(m)
             #
             name = self.compile_name(m)

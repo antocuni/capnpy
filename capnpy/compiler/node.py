@@ -54,19 +54,19 @@ class Node:
     def is_imported(self, m):
         node = self
         while node is not None:
-            if node.which() == Node.__tag__.file and node != m.current_scope:
+            if node.is_file() and node != m.current_scope:
                 return True
             node = node.get_parent(m)
         return False
 
     def shortname(self):
         name = self.displayName[self.displayNamePrefixLength:]
-        if self.which() == Node.__tag__.file:
+        if self.is_file():
             # XXX fix this mess
             import py
             fname = self.displayName
             return '_%s_capnp' % py.path.local(fname).purebasename
-        elif self.which() == Node.__tag__.struct and self.struct.isGroup:
+        elif self.is_struct() and self.struct.isGroup:
             return '_group_%s' % name
         return name
 
@@ -85,7 +85,7 @@ class Node:
         return self._fullname(m, '.')
 
     def emit_declaration(self, m):
-        if self.which() == Node.__tag__.annotation:
+        if self.is_annotation():
             # annotations are simply ignored for now
             pass
         else:

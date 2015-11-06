@@ -43,6 +43,28 @@ class Type:
                                 schema.Type.__tag__.list,
                                 schema.Type.__tag__.anyPointer)
 
+@schema.Node.__extend__
+class Node:
+
+    def is_file(self):
+        return self.which() == Node.__tag__.file
+
+    def is_struct(self):
+        return self.which() == Node.__tag__.struct
+
+    def is_enum(self):
+        return self.which() == Node.__tag__.enum
+
+    def is_interface(self):
+        return self.which() == Node.__tag__.interface
+
+    def is_const(self):
+        return self.which() == Node.__tag__.const
+
+    def is_annotation(self):
+        return self.which() == Node.__tag__.annotation
+
+
 
 @schema.Field.__extend__
 class Field:
