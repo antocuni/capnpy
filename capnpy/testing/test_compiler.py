@@ -473,8 +473,13 @@ class TestCompiler(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        assert mod.MyStruct.first_attr.name == 'first_attr'
-        assert mod.MyStruct.second_attr.name == 'second_attr'
+        if self.pyx:
+            assert mod.MyStruct.first_attr.__name__ == 'first_attr'
+            assert mod.MyStruct.second_attr.__name__ == 'second_attr'
+        else:
+            assert mod.MyStruct.first_attr.name == 'first_attr'
+            assert mod.MyStruct.second_attr.name == 'second_attr'
+
 
     def test_convert_case_enum(self):
         schema = """
