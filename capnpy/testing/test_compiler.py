@@ -535,7 +535,7 @@ class TestCompiler(CompilerTest):
         self.tmpdir.join("tmp.capnp").write("""
         @0xbf5147cbbecf40c2;
         using P = import "/p.capnp";
-            struct Rectangle {
+        struct Rectangle {
             a @0 :P.Point;
             b @1 :P.Point;
         }

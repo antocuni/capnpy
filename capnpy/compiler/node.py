@@ -42,28 +42,47 @@ from capnpy.schema import Node, Node__Enum, Node__Const
 @Node.__extend__
 class Node:
 
+    def get_parent(self, m):
+        if self.scopeId == 0:
+            return None
+        return m.allnodes[self.scopeId]
+
+    def is_nested(self, m):
+        parent = self.get_parent(m)
+        return parent.scopeId != 0
+
+    def is_imported(self, m):
+        node = self
+        while node is not None:
+            if node.which() == Node.__tag__.file and node != m.current_scope:
+                return True
+            node = node.get_parent(m)
+        return False
+
     def shortname(self):
         name = self.displayName[self.displayNamePrefixLength:]
-        if self.which() == Node.__tag__.struct and self.struct.isGroup:
-            name = '_group_%s' % name
+        if self.which() == Node.__tag__.file:
+            # XXX fix this mess
+            import py
+            fname = self.displayName
+            return '_%s_capnp' % py.path.local(fname).purebasename
+        elif self.which() == Node.__tag__.struct and self.struct.isGroup:
+            return '_group_%s' % name
         return name
 
     def _fullname(self, m, sep):
-        if self.is_nested(m):
-            parent = m.allnodes[self.scopeId]
-            return '%s%s%s' % (parent._fullname(m, sep), sep, self.shortname())
-        else:
+        parent = self.get_parent(m)
+        if parent is None or parent == m.current_scope:
             return self.shortname()
+        return '%s%s%s' % (parent._fullname(m, sep), sep, self.shortname())
 
     def compile_name(self, m):
+        if self.is_imported(m):
+            return self.runtime_name(m)
         return self._fullname(m, '_')
 
     def runtime_name(self, m):
         return self._fullname(m, '.')
-
-    def is_nested(self, m):
-        parent = m.allnodes[self.scopeId]
-        return parent.scopeId != 0
 
     def emit_declaration(self, m):
         if self.which() == Node.__tag__.annotation:

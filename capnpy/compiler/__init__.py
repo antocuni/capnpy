@@ -67,7 +67,7 @@ class ModuleGenerator(object):
 
     def _dump_node(self, node):
         def visit(node, deep=0):
-            print '%s%s: %s' % (' ' * deep, node.which(), node.shortname())
+            print '%s%s: %s' % (' ' * deep, node.which(), node.displayName)
             for child in self.children[node.id]:
                 visit(child, deep+2)
         visit(node)
