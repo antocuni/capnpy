@@ -59,13 +59,11 @@ class Node:
             node = node.get_parent(m)
         return False
 
-    def shortname(self):
+    def shortname(self, m):
         name = self.displayName[self.displayNamePrefixLength:]
         if self.is_file():
-            # XXX fix this mess
-            import py
-            fname = self.displayName
-            return '_%s_capnp' % py.path.local(fname).purebasename
+            filename = self.displayName
+            return m.importnames[filename]
         elif self.is_struct() and self.struct.isGroup:
             return '_group_%s' % name
         return name
@@ -73,8 +71,8 @@ class Node:
     def _fullname(self, m, sep):
         parent = self.get_parent(m)
         if parent is None or parent == m.current_scope:
-            return self.shortname()
-        return '%s%s%s' % (parent._fullname(m, sep), sep, self.shortname())
+            return self.shortname(m)
+        return '%s%s%s' % (parent._fullname(m, sep), sep, self.shortname(m))
 
     def compile_name(self, m):
         if self.is_imported(m):
@@ -104,7 +102,7 @@ class Node:
 class Node__Enum:
 
     def emit_declaration(self, m):
-        name = self.shortname()
+        name = self.shortname(m)
         items = [m._field_name(item) for item in self.enum.enumerants]
         m.declare_enum(name, name, items)
 
@@ -118,6 +116,6 @@ class Node__Const:
 
     def emit_reference_as_child(self, m):
         # XXX: this works only for numerical consts so far
-        name = self.shortname()
+        name = self.shortname(m)
         val = self.const.value.as_pyobj()
         m.w("%s = %s" % (name, val))

@@ -53,7 +53,7 @@ class Node__Struct:
 
     def emit_reference_as_child(self, m):
         if self.is_nested(m):
-            m.w('{shortname} = {name}', shortname=self.shortname(),
+            m.w('{shortname} = {name}', shortname=self.shortname(m),
                 name=self.compile_name(m))
 
     def emit_delete_nested_from_globals(self, m):
@@ -70,7 +70,7 @@ class Node__Struct:
             i = field.discriminantValue
             if i != schema.Field.noDiscriminant:
                 enum_items[i] = m._field_name(field)
-        enum_name = '%s.__tag__' % self.shortname()
+        enum_name = '%s.__tag__' % self.shortname(m)
         m.w("__tag_offset__ = %s" % tag_offset)
         m.declare_enum('__tag__', enum_name, enum_items)
 

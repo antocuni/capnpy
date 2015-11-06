@@ -37,6 +37,7 @@ class ModuleGenerator(object):
         self.pyx = pyx
         self.allnodes = {} # id -> node
         self.children = defaultdict(list) # nodeId -> nested nodes
+        self.importnames = {} # filename -> import name
  
     def w(self, *args, **kwargs):
         self.code.w(*args, **kwargs)
@@ -44,22 +45,30 @@ class ModuleGenerator(object):
     def block(self, *args, **kwargs):
         return self.code.block(*args, **kwargs)
 
+    def register_import(self, fname):
+        name = '_%s_capnp' % py.path.local(fname).purebasename
+        if name in self.importnames.values():
+            # avoid name clashes
+            name = '%s_%s' % (name, len(self.filenames))
+        self.importnames[fname] = name
+        return name
+
     def _pyname_for_file(self, fname):
         return '_%s_capnp' % py.path.local(fname).purebasename
 
     def _pyname(self, node):
         if node.scopeId == 0:
-            return node.shortname()
+            return node.shortname(self)
         parent = self.allnodes[node.scopeId]
         if parent.is_file():
             if self.current_scope.id == parent.id:
                 # no need for fully qualified names for children of the current file
-                return node.shortname()
+                return node.shortname(self)
             else:
                 return '%s.%s' % (self._pyname_for_file(parent.displayName),
-                                  node.shortname())
+                                  node.shortname(self))
         else:
-            return '%s.%s' % (self._pyname(parent), node.shortname())
+            return '%s.%s' % (self._pyname(parent), node.shortname(self))
 
     def generate(self):
         self.request.emit(self)

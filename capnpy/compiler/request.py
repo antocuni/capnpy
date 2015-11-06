@@ -33,8 +33,9 @@ class RequestedFile:
             m.code.kwargs['cimport'] = 'import'
             m.code.kwargs['cdef class'] = 'class'
         #
-        node = m.allnodes[self.id]
-        m.current_scope = node
+        filenode = m.allnodes[self.id]
+        assert filenode.is_file()
+        m.current_scope = filenode
         m.w("# THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy")
         m.w("# do not edit by hand")
         m.w("# generated on %s" % datetime.now().strftime("%Y-%m-%d %H:%M"))
@@ -63,7 +64,7 @@ class RequestedFile:
         #
         # visit the children in two passes: first the declaration, then the
         # definition
-        children = m.children[node.id]
+        children = m.children[filenode.id]
         m.w("#### FORWARD DECLARATIONS ####")
         m.w()
         for child in children:
@@ -88,7 +89,10 @@ class RequestedFile:
 
     def _declare_imports(self, m):
         for imp in self.imports:
-            fname = imp.name
-            m.w('{decl_name} = __compiler.load_schema("{fname}")',
-                decl_name = m._pyname_for_file(fname),
-                fname = fname)
+            filenode = m.allnodes[imp.id]
+            fname = filenode.displayName
+            importname = m.register_import(fname)
+            fullpath = imp.name
+            m.w('{importname} = __compiler.load_schema("{fullpath}")',
+                importname = importname,
+                fullpath = fullpath)
