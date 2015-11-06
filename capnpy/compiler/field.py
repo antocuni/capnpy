@@ -41,8 +41,11 @@ class Field__Slot:
         if m.pyx:
             with m.block('property {name}:', name=name):
                 with m.block('def __get__(self):'):
-                    m.w('return _upf("{fmt}", self._buf, self._offset+{offset})',
+                    default_ = self.slot.defaultValue.as_pyobj()
+                    m.w('value = _upf("{fmt}", self._buf, self._offset+{offset})',
                         fmt=self.slot.get_fmt(), offset=offset)
+                    m.w('value = value ^ {default_}', default_=default_)
+                    m.w('return value')
         else:
             typename = str(self.slot.type.which())
             default = self.slot.defaultValue.as_pyobj()
