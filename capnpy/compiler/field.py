@@ -36,24 +36,27 @@ class Field__Slot:
                 return _emit(m, name, offset)
 
     def _emit_primitive(self, m, name, offset):
+        ns = m.code.new_scope()
+        ns.name = name
+        ns.offset = offset
+        ns.typename = '_Types.%s' % self.slot.type.which()
+        ns.default_ = self.slot.defaultValue.as_pyobj()
+        ns.use_tag = self.discriminantValue != Field.noDiscriminant
+        ns.tag = self.discriminantValue
+        ns.fmt = self.slot.get_fmt()
         if m.pyx:
-            with m.block('property {name}:', name=name):
-                with m.block('def __get__(self):'):
-                    if self.discriminantValue != Field.noDiscriminant:
-                        m.w('self._ensure_union({tag})', tag=self.discriminantValue)
-                    default_ = self.slot.defaultValue.as_pyobj()
-                    m.w('value = _upf("{fmt}", self._buf, self._offset+{offset})',
-                        fmt=self.slot.get_fmt(), offset=offset)
-                    m.w('value = value ^ {default_}', default_=default_)
-                    m.w('return value')
-                    m.w()
+            ns.ww("""
+                property {name}:
+                    def __get__(self):
+                        if {use_tag}: # "compile time" switch
+                            self._ensure_union({tag})
+                        value = _upf("{fmt}", self._buf, self._offset+{offset})
+                        value = value ^ {default_}
+                        return value
+            """)
             return True
         else:
-            typename = str(self.slot.type.which())
-            default = self.slot.defaultValue.as_pyobj()
-            line = ('{name} = _field.Primitive("{name}", {offset}, '
-                                      '_Types.{typename}, default_={default})')
-            m.w(line, name=name, offset=offset, typename=typename, default=default)
+            ns.w('{name} = _field.Primitive("{name}", {offset}, {typename}, {default_})')
 
     def _emit_bool(self, m, name):
         byteoffset, bitoffset = divmod(self.slot.offset, 8)
