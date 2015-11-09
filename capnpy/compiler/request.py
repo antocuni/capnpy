@@ -27,11 +27,11 @@ class RequestedFile:
         # some global kwarg which are "turned off" when in pure python mode
         if m.pyx:
             # pyx mode
-            m.code.kwargs['cimport'] = 'cimport'
-            m.code.kwargs['cdef class'] = 'cdef class'
+            m.code.global_scope.cimport = 'cimport'
+            m.code.global_scope.__dict__['cdef class'] = 'cdef class'
         else:
-            m.code.kwargs['cimport'] = 'import'
-            m.code.kwargs['cdef class'] = 'class'
+            m.code.global_scope.cimport = 'import'
+            m.code.global_scope.__dict__['cdef class'] = 'class'
         #
         filenode = m.allnodes[self.id]
         assert filenode.is_file()
