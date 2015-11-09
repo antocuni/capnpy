@@ -164,13 +164,16 @@ class Structor(object):
         #         x_is_null = 0
         #         x_value = x
         #
-        fname = f.nullable_group
-        with code.block('if {fname} is None:', fname=fname):
-            code.w('{fname}_is_null = 1', fname=fname)
-            code.w('{fname}_value = 0', fname=fname)
-        with code.block('else:'):
-            code.w('{fname}_is_null = 0', fname=fname)
-            code.w('{fname}_value = {fname}', fname=fname)
+        ns = code.new_scope()
+        ns.fname = f.nullable_group
+        ns.ww("""
+            if {fname} is None:
+                {fname}_is_null = 1
+                {fname}_value = 0
+            else:
+                {fname}_is_null = 0
+                {fname}_value = {fname}
+        """)
 
     def _field_string(self, code, f):
         fname = self.field_name[f]
@@ -185,19 +188,19 @@ class Structor(object):
                arg=fname, offset=offset, structname=structname)
 
     def _field_list(self, code, f):
-        fname = self.field_name[f]
-        offset = f.slot.compute_offset_inside(self.data_size)
-        item_type = f.slot.type.list.elementType
-        item_type_name = item_type.runtime_name(self.m)
+        ns = code.new_scope()
+        ns.fname = self.field_name[f]
+        ns.offset = f.slot.compute_offset_inside(self.data_size)
+        itemtype = f.slot.type.list.elementType
+        ns.itemtype = itemtype.runtime_name(self.m)
         #
-        if item_type.is_primitive():
-            listcls = '_PrimitiveList'
-        elif item_type.is_string():
-            listcls = '_StringList'
-        elif item_type.is_struct():
-            listcls = '_StructList'
+        if itemtype.is_primitive():
+            ns.listcls = '_PrimitiveList'
+        elif itemtype.is_string():
+            ns.listcls = '_StringList'
+        elif itemtype.is_struct():
+            ns.listcls = '_StructList'
         else:
             raise ValueError('Unknown item type: %s' % item_type)
         #
-        code.w('{arg} = builder.alloc_list({offset}, {listcls}, {itemtype}, {arg})',
-               arg=fname, offset=offset, listcls=listcls, itemtype=item_type_name)
+        ns.w('{fname} = builder.alloc_list({offset}, {listcls}, {itemtype}, {fname})')
