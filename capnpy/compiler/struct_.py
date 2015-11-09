@@ -10,36 +10,40 @@ class Node__Struct:
         for child in children:
             child.emit_declaration(m)
         #
+        ns = m.code.new_scope()
+        ns.name = self.compile_name(m)
+        ns.dotname = self.runtime_name(m)
         if m.pyx:
-            m.w("cdef class {name}(_Struct)", name=self.compile_name(m))
+            ns.w("cdef class {name}(_Struct)")
         else:
-            name = self.compile_name(m)
-            dotname = self.runtime_name(m)
-            m.w("class {name}(_Struct): pass", name=name)
-            m.w("{name}.__name__ = '{dotname}'", name=name, dotname=dotname)
+            ns.w("class {name}(_Struct): pass")
+            ns.w("{name}.__name__ = '{dotname}'")
 
     def emit_definition(self, m):
-        name = self.compile_name(m)
         for child in m.children[self.id]:
             child.emit_definition(m)
+        #
+        ns = m.code.new_scope()
+        ns.name = self.compile_name(m)
+        ns.dotname = self.runtime_name(m)
+        ns.data_size = self.struct.dataWordCount
+        ns.ptrs_size = self.struct.pointerCount
         #
         if not m.pyx:
             # use the @extend decorator only in Pure Python mode: in pyx mode
             # it is (1) not allowed and (2) useless anyway, because we have
             # forward-declared the class, not defined it
-            m.w("@{name}.__extend__", name=name)
+            ns.w("@{name}.__extend__")
         #
-        with m.block("{cdef class} {name}(_Struct):", name=name):
-            data_size = self.struct.dataWordCount
-            ptrs_size = self.struct.pointerCount
-            m.w("__data_size__ = %d" % data_size)
-            m.w("__ptrs_size__ = %d" % ptrs_size)
-            m.w()
-            # see the comment in blob.py:_allocate for an explanation of why it's needed
-            m.w('@classmethod')
-            with m.block('def _allocate(cls):'):
-                m.w('return {clsname}.__new__(cls)', clsname=self.runtime_name(m))
-            m.w()
+        with ns.block("{cdef class} {name}(_Struct):"):
+            ns.ww("""
+                __data_size__ = {data_size}
+                __ptrs_size__ = {ptrs_size}
+
+                @classmethod
+                def _allocate(cls):
+                    return {dotname}.__new__(cls)
+            """)
             for child in m.children[self.id]:
                 child.emit_reference_as_child(m)
             if self.struct.discriminantCount:
@@ -48,7 +52,7 @@ class Node__Struct:
                 for field in self.struct.fields:
                     field.emit(m, self)
                 self._emit_ctors(m)
-        m.w()
+        ns.w()
 
     def emit_reference_as_child(self, m):
         if self.is_nested(m):
