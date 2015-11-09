@@ -94,15 +94,18 @@ class Field__Group:
 
     def _emit(self, m, node, name):
         groupnode = m.allnodes[self.group.typeId]
-        clsname = groupnode.compile_name(m)
+        ns = m.code.new_scope()
+        ns.name = name
+        ns.clsname = groupnode.compile_name(m)
         if self.is_nullable(m):
-            privname = '_' + name
-            m.w('{privname} = _field.Group({clsname})', privname=privname, clsname=clsname)
-            m.w('@property')
-            with m.code.def_(name, ['self']):
-                with m.block('if self.{privname}.is_null:', privname=privname):
-                    m.w('return None')
-                m.w('return self.{privname}.value', privname=privname)
-            m.w()
+            ns.privname = '_' + name
+            ns.w('{privname} = _field.Group({clsname})')
+            ns.w('@property')
+            with ns.def_(name, ['self']):
+                ns.ww("""
+                    if self.{privname}.is_null:
+                        return None
+                    return self.{privname}.value
+                """)
         else:
-            m.w('{name} = _field.Group({clsname})', name=name, clsname=clsname)
+            ns.w('{name} = _field.Group({clsname})')

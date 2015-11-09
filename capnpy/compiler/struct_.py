@@ -88,6 +88,7 @@ class Node__Struct:
         ptrs_size = self.struct.pointerCount
         ctor = Structor(m, '__new', data_size, ptrs_size, self.struct.fields)
         ctor.declare(m.code)
+        m.w()
         #
         with m.code.def_('__init__', ['self'] + ctor.argnames):
             call = m.code.call('self.__new', ctor.argnames)
