@@ -102,13 +102,13 @@ class Field__Group:
         ns.clsname = groupnode.compile_name(m)
         if self.is_nullable(m):
             ns.privname = '_' + name
-            ns.w('{privname} = _field.Group({clsname})')
-            ns.w('@property')
-            with ns.def_(name, ['self']):
-                ns.ww("""
+            ns.ww("""
+                {privname} = _field.Group({clsname})
+                @property
+                def {name}(self):
                     if self.{privname}.is_null:
                         return None
                     return self.{privname}.value
-                """)
+            """)
         else:
             ns.w('{name} = _field.Group({clsname})')
