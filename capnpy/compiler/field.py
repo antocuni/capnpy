@@ -6,8 +6,8 @@ class Field:
 
     def emit(self, m, node):
         name = m._field_name(self)
-        self._emit(m, node, name)
-        if self.discriminantValue != Field.noDiscriminant:
+        union_check_done = self._emit(m, node, name)
+        if not union_check_done and self.discriminantValue != Field.noDiscriminant:
             line = '{name} = _field.Union({discriminantValue}, {name})'
             m.w(line, name=name, discriminantValue=self.discriminantValue)
 
@@ -17,35 +17,37 @@ class Field__Slot:
 
     def _emit(self, m, node, name):
         if self.slot.type.is_bool():
-            self._emit_bool(m, name)
-            return
+            return self._emit_bool(m, name)
         #
         offset = self.slot.compute_offset_inside(node.struct.dataWordCount)
         if self.slot.type.is_primitive():
-            self._emit_primitive(m, name, offset)
+            return self._emit_primitive(m, name, offset)
+        elif self.slot.hadExplicitDefault:
+            raise ValueError("explicit defaults not supported for field %s" % self)
         else:
             # a bit of metaprogramming: call _emit_text, _emit_struct, etc,
             # depending on the type
+            #
             methname = '_emit_%s' % self.slot.type.which()
             _emit = getattr(self, methname, None)
             if _emit is None:
                 raise NotImplementedError('Unknown type: %s' % self.slot.type)
             else:
-                _emit(m, name, offset)
-            #
-            if self.slot.hadExplicitDefault:
-                raise ValueError("explicit defaults not supported for field %s" % self)
-
+                return _emit(m, name, offset)
 
     def _emit_primitive(self, m, name, offset):
         if m.pyx:
             with m.block('property {name}:', name=name):
                 with m.block('def __get__(self):'):
+                    if self.discriminantValue != Field.noDiscriminant:
+                        m.w('self._ensure_union({tag})', tag=self.discriminantValue)
                     default_ = self.slot.defaultValue.as_pyobj()
                     m.w('value = _upf("{fmt}", self._buf, self._offset+{offset})',
                         fmt=self.slot.get_fmt(), offset=offset)
                     m.w('value = value ^ {default_}', default_=default_)
                     m.w('return value')
+                    m.w()
+            return True
         else:
             typename = str(self.slot.type.which())
             default = self.slot.defaultValue.as_pyobj()
