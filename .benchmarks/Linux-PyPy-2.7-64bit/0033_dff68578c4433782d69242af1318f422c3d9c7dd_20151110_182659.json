@@ -1,0 +1,110 @@
+{
+    "machine_info": {
+        "node": "homer", 
+        "processor": "x86_64", 
+        "machine": "x86_64", 
+        "python_compiler": "", 
+        "python_implementation": "PyPy", 
+        "python_version": "2.7.10", 
+        "release": "3.13.0-48-generic", 
+        "system": "Linux"
+    }, 
+    "commit_info": {
+        "id": "dff68578c4433782d69242af1318f422c3d9c7dd", 
+        "dirty": false
+    }, 
+    "benchmarks": [
+        {
+            "group": "getattr", 
+            "name": "test_getattr[namedtuple]", 
+            "fullname": "capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_getattr[namedtuple]", 
+            "stats": {
+                "min": 3.550958354026079e-06, 
+                "max": 0.0003245130064897239, 
+                "mean": 4.365137591772984e-06, 
+                "stddev": 3.488267840950569e-06, 
+                "rounds": 14091, 
+                "median": 4.234025254845619e-06, 
+                "iqr": 1.6333069652318954e-07, 
+                "q1": 4.093628376722336e-06, 
+                "q3": 4.256959073245525e-06, 
+                "iqr_outliers": 1270, 
+                "stddev_outliers": 90, 
+                "outliers": "90;1270", 
+                "ld15iqr": 3.8504949770867825e-06, 
+                "hd15iqr": 4.502013325691223e-06, 
+                "iterations": 2
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 0.1, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_getattr[capnpyx]", 
+            "fullname": "capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_getattr[capnpyx]", 
+            "stats": {
+                "min": 5.013076588511467e-06, 
+                "max": 0.00173857097979635, 
+                "mean": 6.319720892327006e-06, 
+                "stddev": 1.5593401502536873e-05, 
+                "rounds": 19917, 
+                "median": 5.710986442863941e-06, 
+                "iqr": 2.5494955480098724e-07, 
+                "q1": 5.679088644683361e-06, 
+                "q3": 5.934038199484348e-06, 
+                "iqr_outliers": 755, 
+                "stddev_outliers": 51, 
+                "outliers": "51;755", 
+                "ld15iqr": 5.3389230743050575e-06, 
+                "hd15iqr": 6.318092346191406e-06, 
+                "iterations": 1
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 0.1, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_getattr[instance]", 
+            "fullname": "capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_getattr[instance]", 
+            "stats": {
+                "min": 3.554043360054493e-06, 
+                "max": 0.0003084354684688151, 
+                "mean": 4.614873294487898e-06, 
+                "stddev": 4.323799448664722e-06, 
+                "rounds": 13441, 
+                "median": 4.235480446368456e-06, 
+                "iqr": 5.448237061500549e-08, 
+                "q1": 4.218483809381723e-06, 
+                "q3": 4.272966179996729e-06, 
+                "iqr_outliers": 5620, 
+                "stddev_outliers": 88, 
+                "outliers": "88;5620", 
+                "ld15iqr": 4.136993084102869e-06, 
+                "hd15iqr": 4.3549807742238045e-06, 
+                "iterations": 2
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 0.1, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }
+        }
+    ], 
+    "datetime": "2015-11-10T17:27:01.989301", 
+    "version": "3.0.0"
+}

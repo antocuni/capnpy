@@ -1,0 +1,110 @@
+{
+    "machine_info": {
+        "node": "homer", 
+        "processor": "x86_64", 
+        "machine": "x86_64", 
+        "python_compiler": "", 
+        "python_implementation": "PyPy", 
+        "python_version": "2.7.10", 
+        "release": "3.13.0-48-generic", 
+        "system": "Linux"
+    }, 
+    "commit_info": {
+        "id": "e3e6adf44ec25e0d8eb8a7c0ee651dbf2c1891be", 
+        "dirty": false
+    }, 
+    "benchmarks": [
+        {
+            "group": "getattr", 
+            "name": "test_getattr[namedtuple]", 
+            "fullname": "capnpy/benchmarks/test_benchmarks.py::test_getattr[namedtuple]", 
+            "stats": {
+                "min": 3.560504410415888e-06, 
+                "max": 0.00032431649742648005, 
+                "mean": 4.774275088429117e-06, 
+                "stddev": 3.0761658692831526e-06, 
+                "rounds": 14077, 
+                "median": 4.249042831361294e-06, 
+                "iqr": 1.0843650670722127e-06, 
+                "q1": 4.22849552705884e-06, 
+                "q3": 5.3128605941310525e-06, 
+                "iqr_outliers": 91, 
+                "stddev_outliers": 58, 
+                "outliers": "58;91", 
+                "ld15iqr": 3.560504410415888e-06, 
+                "hd15iqr": 6.94196205586195e-06, 
+                "iterations": 2
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 0.1, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_getattr[capnpyx]", 
+            "fullname": "capnpy/benchmarks/test_benchmarks.py::test_getattr[capnpyx]", 
+            "stats": {
+                "min": 5.057896487414837e-06, 
+                "max": 0.001253133057616651, 
+                "mean": 6.186035806178148e-06, 
+                "stddev": 1.3596917981525931e-05, 
+                "rounds": 15452, 
+                "median": 5.68595714867115e-06, 
+                "iqr": 5.203764885663986e-08, 
+                "q1": 5.670939572155476e-06, 
+                "q3": 5.7229772210121155e-06, 
+                "iqr_outliers": 2481, 
+                "stddev_outliers": 14, 
+                "outliers": "14;2481", 
+                "ld15iqr": 5.59899490326643e-06, 
+                "hd15iqr": 5.801091901957989e-06, 
+                "iterations": 1
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 0.1, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_getattr[instance]", 
+            "fullname": "capnpy/benchmarks/test_benchmarks.py::test_getattr[instance]", 
+            "stats": {
+                "min": 3.555556759238243e-06, 
+                "max": 0.00024656549794599414, 
+                "mean": 4.3818016113572795e-06, 
+                "stddev": 2.9081771527045574e-06, 
+                "rounds": 14057, 
+                "median": 4.241010174155235e-06, 
+                "iqr": 4.912726581096649e-08, 
+                "q1": 4.216388333588839e-06, 
+                "q3": 4.265515599399805e-06, 
+                "iqr_outliers": 6027, 
+                "stddev_outliers": 432, 
+                "outliers": "432;6027", 
+                "ld15iqr": 4.143454134464264e-06, 
+                "hd15iqr": 4.3405452743172646e-06, 
+                "iterations": 2
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 0.1, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }
+        }
+    ], 
+    "datetime": "2015-11-10T17:25:43.937942", 
+    "version": "3.0.0"
+}

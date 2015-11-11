@@ -1,0 +1,110 @@
+{
+    "machine_info": {
+        "node": "homer", 
+        "processor": "x86_64", 
+        "machine": "x86_64", 
+        "python_compiler": "", 
+        "python_implementation": "PyPy", 
+        "python_version": "2.7.10", 
+        "release": "3.13.0-48-generic", 
+        "system": "Linux"
+    }, 
+    "commit_info": {
+        "id": "12927cd2c27c38feba487d11116452c2ab28da9e", 
+        "dirty": false
+    }, 
+    "benchmarks": [
+        {
+            "group": "getattr", 
+            "name": "test_getattr[namedtuple]", 
+            "fullname": "capnpy/benchmarks/test_benchmarks.py::test_getattr[namedtuple]", 
+            "stats": {
+                "min": 3.551540430635214e-06, 
+                "max": 0.0003177474718540907, 
+                "mean": 4.293900338236113e-06, 
+                "stddev": 2.8817175638592863e-06, 
+                "rounds": 13436, 
+                "median": 4.238507244735956e-06, 
+                "iqr": 1.2698001228272915e-07, 
+                "q1": 4.221510607749224e-06, 
+                "q3": 4.348490620031953e-06, 
+                "iqr_outliers": 3377, 
+                "stddev_outliers": 34, 
+                "outliers": "34;3377", 
+                "ld15iqr": 4.031462594866753e-06, 
+                "hd15iqr": 4.540022928267717e-06, 
+                "iterations": 2
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 0.1, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_getattr[capnpyx]", 
+            "fullname": "capnpy/benchmarks/test_benchmarks.py::test_getattr[capnpyx]", 
+            "stats": {
+                "min": 5.0280941650271416e-06, 
+                "max": 0.0016198880039155483, 
+                "mean": 6.104761433255929e-06, 
+                "stddev": 1.4042510283602586e-05, 
+                "rounds": 19838, 
+                "median": 5.688052624464035e-06, 
+                "iqr": 5.995389074087143e-08, 
+                "q1": 5.671987310051918e-06, 
+                "q3": 5.7319412007927895e-06, 
+                "iqr_outliers": 3524, 
+                "stddev_outliers": 11, 
+                "outliers": "11;3524", 
+                "ld15iqr": 5.643931217491627e-06, 
+                "hd15iqr": 5.8229779824614525e-06, 
+                "iterations": 1
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 0.1, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_getattr[instance]", 
+            "fullname": "capnpy/benchmarks/test_benchmarks.py::test_getattr[instance]", 
+            "stats": {
+                "min": 3.5570119507610798e-06, 
+                "max": 0.0002503395080566406, 
+                "mean": 4.300813124868212e-06, 
+                "stddev": 2.993610338113334e-06, 
+                "rounds": 14061, 
+                "median": 4.232511855661869e-06, 
+                "iqr": 3.2351817935705185e-07, 
+                "q1": 3.9219739846885204e-06, 
+                "q3": 4.245492164045572e-06, 
+                "iqr_outliers": 580, 
+                "stddev_outliers": 423, 
+                "outliers": "423;580", 
+                "ld15iqr": 3.5570119507610798e-06, 
+                "hd15iqr": 4.7460198402404785e-06, 
+                "iterations": 2
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 0.1, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }
+        }
+    ], 
+    "datetime": "2015-11-10T17:25:37.540684", 
+    "version": "3.0.0"
+}

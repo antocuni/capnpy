@@ -1,0 +1,110 @@
+{
+    "machine_info": {
+        "node": "homer", 
+        "processor": "x86_64", 
+        "machine": "x86_64", 
+        "python_compiler": "", 
+        "python_implementation": "PyPy", 
+        "python_version": "2.7.10", 
+        "release": "3.13.0-48-generic", 
+        "system": "Linux"
+    }, 
+    "commit_info": {
+        "id": "02920f62ee75145573ef4960f3a1a44101abf828", 
+        "dirty": false
+    }, 
+    "benchmarks": [
+        {
+            "group": "getattr", 
+            "name": "test_getattr[namedtuple]", 
+            "fullname": "capnpy/benchmarks/test_benchmarks.py::test_getattr[namedtuple]", 
+            "stats": {
+                "min": 3.5549746826291084e-06, 
+                "max": 0.00030942849116399884, 
+                "mean": 4.2679730131163475e-06, 
+                "stddev": 2.7441147055758337e-06, 
+                "rounds": 14075, 
+                "median": 4.234025254845619e-06, 
+                "iqr": 2.8463546186685562e-08, 
+                "q1": 4.224013537168503e-06, 
+                "q3": 4.252477083355188e-06, 
+                "iqr_outliers": 5763, 
+                "stddev_outliers": 24, 
+                "outliers": "24;5763", 
+                "ld15iqr": 4.181987605988979e-06, 
+                "hd15iqr": 4.295492544770241e-06, 
+                "iterations": 2
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 0.1, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_getattr[capnpyx]", 
+            "fullname": "capnpy/benchmarks/test_benchmarks.py::test_getattr[capnpyx]", 
+            "stats": {
+                "min": 9.363796561956406e-05, 
+                "max": 0.0036540429573506117, 
+                "mean": 0.00013039287304352973, 
+                "stddev": 0.00014401115674248993, 
+                "rounds": 1061, 
+                "median": 0.00010039494372904301, 
+                "iqr": 3.657571505755186e-05, 
+                "q1": 9.459975990466774e-05, 
+                "q3": 0.0001311754749622196, 
+                "iqr_outliers": 170, 
+                "stddev_outliers": 24, 
+                "outliers": "24;170", 
+                "ld15iqr": 9.363796561956406e-05, 
+                "hd15iqr": 0.00018605496734380722, 
+                "iterations": 1
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 0.1, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_getattr[instance]", 
+            "fullname": "capnpy/benchmarks/test_benchmarks.py::test_getattr[instance]", 
+            "stats": {
+                "min": 3.5580014809966087e-06, 
+                "max": 0.00024245399981737137, 
+                "mean": 4.270377513552204e-06, 
+                "stddev": 2.837314970646737e-06, 
+                "rounds": 14067, 
+                "median": 4.229485057294369e-06, 
+                "iqr": 3.2602110877633095e-07, 
+                "q1": 3.915978595614433e-06, 
+                "q3": 4.241999704390764e-06, 
+                "iqr_outliers": 588, 
+                "stddev_outliers": 430, 
+                "outliers": "430;588", 
+                "ld15iqr": 3.5580014809966087e-06, 
+                "hd15iqr": 4.775007255375385e-06, 
+                "iterations": 2
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 0.1, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }
+        }
+    ], 
+    "datetime": "2015-11-10T17:25:47.140846", 
+    "version": "3.0.0"
+}
