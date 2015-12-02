@@ -611,3 +611,20 @@ class TestNullable(CompilerTest):
         assert not foo._x.is_null
         assert foo._x.value == 42
         assert foo.x == 42
+
+
+class TestRepr(CompilerTest):
+
+    def test_shortrepr_simple(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        """
+        mod = self.compile(schema)
+        #
+        p = mod.Point(1, 2)
+        myrepr = p.shortrepr()
+        assert myrepr == '(x = 1, y = 2)'

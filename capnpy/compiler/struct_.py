@@ -52,6 +52,7 @@ class Node__Struct:
                 for field in self.struct.fields:
                     field.emit(m, self)
                 self._emit_ctors(m)
+            self._emit_repr(m)
         ns.w()
 
     def emit_reference_as_child(self, m):
@@ -177,3 +178,27 @@ class Node__Struct:
             tags = ', '.join(tags)
             m.w('raise TypeError("one of the following args is required: {tags}")',
                 tags=tags)
+
+    def _emit_repr(self, m):
+        # def shortrepr(self):
+        #     parts = [
+        #         "(",
+        #         "x = ", str(self.x), ",",
+        #         "y = ", str(self.y),
+        #         ")"
+        #         ]
+        #     return "".join(parts)
+        #
+        fields = self.struct.fields or []
+        with m.block('def shortrepr(self):'):
+            with m.block('parts = ['):
+                m.w('"(",')
+                for i, f in enumerate(fields):
+                    is_last = (i == len(fields)-1)
+                    ns = m.code.new_scope()
+                    ns.fname = f.name
+                    ns.comma = '' if is_last else '", ",'
+                    ns.w('"{fname} = ", str(self.{fname}), {comma}')
+                m.w('")"')
+                m.w(']')
+            m.w('return "".join(parts)')
