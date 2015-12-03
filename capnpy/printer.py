@@ -132,14 +132,15 @@ class BufferPrinter(object):
 
 
 if __name__ == '__main__':
-    buf = ('\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
-           '\x08\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
-           '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
-           '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
-           '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
-           '\x04\x00\x00\x00\x00\x00\x00\x00'    # b.y == 4
-           '\x01\x00\x00\x00\x82\x00\x00\x00'    # ptrlist
-           'hello capnproto\0')                  # string
-
+    ## buf = ('\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+    ##        '\x08\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
+    ##        '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+    ##        '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
+    ##        '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
+    ##        '\x04\x00\x00\x00\x00\x00\x00\x00'    # b.y == 4
+    ##        '\x01\x00\x00\x00\x82\x00\x00\x00'    # ptrlist
+    ##        'hello capnproto\0')                  # string
+    import sys
+    buf = sys.stdin.read()
     p = BufferPrinter(buf)
-    p.printbuf(8, 40)
+    p.printbuf()
