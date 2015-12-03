@@ -27,4 +27,5 @@ setup(name="capnpy",
       package_data = {
           'capnpy': ['*.capnp', '*.pyx']
           },
-      ext_modules = ext_modules)
+      ext_modules = ext_modules,
+      install_requires=['pypytools'])
