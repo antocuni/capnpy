@@ -41,7 +41,7 @@ class BufferPrinter(object):
             if 32 <= ord(ch) <= 127:
                 return ch
             else:
-                return '.'
+                return Color.set(Color.lightgray, '.')
         return ''.join(map(printable, s))
 
     def int64(self, s):
