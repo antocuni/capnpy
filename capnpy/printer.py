@@ -64,7 +64,7 @@ class BufferPrinter(object):
         try:
             p = p.specialize()
         except ValueError:
-            return ' ' * 23
+            return ' ' * 25
         #
         # try to display only "reasonable" ptrs; if the fields are too big, it
         # probably means that the current word is not a pointer
@@ -77,15 +77,15 @@ class BufferPrinter(object):
         if p == 0:
             return  'NULL'.ljust(23)
         if p.kind == StructPtr.KIND:
-            descr = 'struct {:>3} {:>2}'.format(if_in_range(p.data_size, 0, 100),
+            descr = 'struct {:>4} {:>3}'.format(if_in_range(p.data_size, 0, 100),
                                                 if_in_range(p.ptrs_size, 0, 100))
 
         elif p.kind == ListPtr.KIND:
-            descr = 'list {:>5} {:>2}'.format(if_in_range(p.item_count, 0, 65536),
-                                              if_in_range(p.size_tag, 0, 8))
+            tag = '<%s>' % self._list_tag(p.size_tag)
+            descr = 'list{:<5} {:>5}'.format(tag, if_in_range(p.item_count, 0, 65536))
 
         elif p.kind == FarPtr.KIND:
-            descr = 'far {:>6} {:>2}'.format(p.landing_pad,
+            descr = 'far {:>7} {:>3}'.format(p.landing_pad,
                                              if_in_range(p.target, 0, 100))
         else:
             descr = 'unknown ptr '
@@ -102,6 +102,13 @@ class BufferPrinter(object):
         else:
             return line
 
+    def _list_tag(self, tag):
+        tags = ('v', 'bit', '8', '16', '32', '64', 'ptr', 'cmp')
+        try:
+            return tags[tag]
+        except IndexError:
+            return '?'
+
     def line(self, offset, line):
         addr = self.addr(offset)
         hex = self.hex(line)
@@ -115,7 +122,7 @@ class BufferPrinter(object):
 
     def printbuf(self, start=0, end=None, human=True):
         if human:
-            fmt = '{addr:>5}  {hex:24}  {string:8}  {ptr:21} {double:>11}  {int64}'
+            fmt = '{addr:>5}  {hex:24}  {string:8}  {ptr:23} {double:>11}  {int64}'
             header = fmt.format(addr='Offset', hex=' Hex view', string='ASCII',
                                 ptr='Pointer', double='double', int64='int64')
             print Color.set(Color.yellow, header)
@@ -132,6 +139,7 @@ class BufferPrinter(object):
 
 
 if __name__ == '__main__':
+    import sys
     ## buf = ('\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
     ##        '\x08\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
     ##        '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
@@ -140,7 +148,6 @@ if __name__ == '__main__':
     ##        '\x04\x00\x00\x00\x00\x00\x00\x00'    # b.y == 4
     ##        '\x01\x00\x00\x00\x82\x00\x00\x00'    # ptrlist
     ##        'hello capnproto\0')                  # string
-    import sys
     buf = sys.stdin.read()
     p = BufferPrinter(buf)
     p.printbuf()
