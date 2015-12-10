@@ -78,7 +78,7 @@ class BufferPrinter(object):
                 return '?'
         #
         if p == 0:
-            return  'NULL'.ljust(23)
+            return  'NULL'.ljust(25)
         if p.kind == StructPtr.KIND:
             descr = 'struct {:>4} {:>3}'.format(if_in_range(p.data_size, 0, 100),
                                                 if_in_range(p.ptrs_size, 0, 100))
