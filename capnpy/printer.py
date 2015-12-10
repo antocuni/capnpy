@@ -1,3 +1,5 @@
+from __future__ import print_function
+import sys
 import struct
 from pypytools.jitview import Color
 from capnpy.ptr import Ptr, StructPtr, ListPtr, FarPtr
@@ -11,8 +13,9 @@ def print_buffer(buf, **kwds):
 
 class BufferPrinter(object):
 
-    def __init__(self, buf):
+    def __init__(self, buf, stream=None):
         self.buf = buf
+        self.stream = stream or sys.stdout
 
     def pyrepr(self, s):
         ch = s[0]
@@ -125,7 +128,7 @@ class BufferPrinter(object):
             fmt = '{addr:>5}  {hex:24}  {string:8}  {ptr:23} {double:>11}  {int64}'
             header = fmt.format(addr='Offset', hex=' Hex view', string='ASCII',
                                 ptr='Pointer', double='double', int64='int64')
-            print Color.set(Color.yellow, header)
+            print(Color.set(Color.yellow, header), file=self.stream)
 
         if end is None:
             end = len(self.buf)
@@ -133,13 +136,12 @@ class BufferPrinter(object):
             addr = i*8
             line = self.buf[i*8:i*8+8]
             if human:
-                print self.line(addr, line)
+                print(self.line(addr, line), file=self.stream)
             else:
-                print '%5d: %s' % (addr, self.pyrepr(line))
+                print('%5d: %s' % (addr, self.pyrepr(line)), file=self.stream)
 
 
 if __name__ == '__main__':
-    import sys
     ## buf = ('\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
     ##        '\x08\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
     ##        '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
@@ -148,6 +150,13 @@ if __name__ == '__main__':
     ##        '\x04\x00\x00\x00\x00\x00\x00\x00'    # b.y == 4
     ##        '\x01\x00\x00\x00\x82\x00\x00\x00'    # ptrlist
     ##        'hello capnproto\0')                  # string
+    pipe =  '--pipe' in sys.argv
     buf = sys.stdin.read()
-    p = BufferPrinter(buf)
+    if pipe:
+        out = sys.stderr
+    else:
+        out = sys.stdout
+    p = BufferPrinter(buf, stream=out)
     p.printbuf()
+    if pipe:
+        sys.stdout.write(buf)
