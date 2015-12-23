@@ -1,6 +1,7 @@
 import py
 import struct
 from capnpy.blob import Blob, Types, unpack_primitive
+from capnpy.struct_ import Struct
 
 def test_unpack_primitive():
     s = struct.pack('q', 1234)
@@ -48,7 +49,7 @@ def test_read_struct():
            '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
            '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
     blob = Blob.from_buffer(buf, 0, None)
-    p = blob._read_struct(0, Blob)
+    p = blob._read_struct(0, Struct)
     assert p._buf is blob._buf
     assert p._offset == 8
     assert p._read_primitive(0, Types.int64) == 1
@@ -66,8 +67,8 @@ def test_nested_struct():
            '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
     rect = Blob.from_buffer(buf, 0, None)
-    p1 = rect._read_struct(0, Blob)
-    p2 = rect._read_struct(8, Blob)
+    p1 = rect._read_struct(0, Struct)
+    p2 = rect._read_struct(8, Struct)
     assert p1._read_primitive(0, Types.int64) == 1
     assert p1._read_primitive(8, Types.int64) == 2
     assert p2._read_primitive(0, Types.int64) == 3
@@ -77,7 +78,7 @@ def test_nested_struct():
 def test_null_pointers():
     buf = '\x00\x00\x00\x00\x00\x00\x00\x00'    # NULL pointer
     blob = Blob.from_buffer(buf, 0, None)
-    assert blob._read_struct(0, Blob) is None
+    assert blob._read_struct(0, Struct) is None
     assert blob._read_list(0, None, None) is None
     assert blob._read_string(0) is None
 
@@ -93,9 +94,9 @@ def test_read_group():
     ##         y @5 :Int64;
     ##     }
     ## }
-    class GroupA(Blob):
+    class GroupA(Struct):
         pass
-    class GroupB(Blob):
+    class GroupB(Struct):
         pass
     buf = ('garbage0'
            '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
@@ -127,6 +128,6 @@ def test_far_pointer():
     #
     buf = seg0+seg1
     blob = Blob.from_buffer(buf, 8, segment_offsets=(0, 16))
-    p = blob._read_struct(0, Blob)
+    p = blob._read_struct(0, Struct)
     assert p._read_primitive(0, Types.int64) == 1
     assert p._read_primitive(8, Types.int64) == 2
