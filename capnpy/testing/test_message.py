@@ -1,6 +1,6 @@
 import py
 from capnpy.message import loads, _load_message, dumps
-from capnpy.blob import Blob, Types
+from capnpy.blob import Types
 from capnpy.struct_ import Struct
 
 def test_loads():
@@ -9,8 +9,8 @@ def test_loads():
            '\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
            '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
 
-    p = loads(buf, Blob)
-    assert isinstance(p, Blob)
+    p = loads(buf, Struct)
+    assert isinstance(p, Struct)
     assert p._read_primitive(0, Types.int64) == 1
     assert p._read_primitive(8, Types.int64) == 2
 
@@ -19,7 +19,7 @@ def test_wrong_size():
            '\x00\x00\x00\x00\x02\x00\x01\x00'   # ptr to payload (Point {x, y})
            '\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
            '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
-    py.test.raises(ValueError, "loads(buf, Blob)")
+    py.test.raises(ValueError, "loads(buf, Struct)")
 
 
 def test_segments():
