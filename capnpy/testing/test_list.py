@@ -2,6 +2,7 @@ import py
 from capnpy.blob import Blob, Types
 from capnpy.ptr import ListPtr
 from capnpy.list import PrimitiveList, StructList, StringList
+from capnpy.struct_ import Struct
 
 def test_read_list():
     buf = ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
@@ -52,7 +53,7 @@ def test_list_of_structs():
            '\x28\x00\x00\x00\x00\x00\x00\x00'    # 40
            '\x90\x01\x00\x00\x00\x00\x00\x00')   # 400
     blob = Blob.from_buffer(buf, 0, None)
-    lst = blob._read_list(0, StructList, Blob)
+    lst = blob._read_list(0, StructList, Struct)
     assert lst._buf is blob._buf
     assert lst._offset == 8
     assert lst._item_offset == 8

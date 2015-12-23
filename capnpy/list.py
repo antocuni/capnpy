@@ -165,7 +165,8 @@ class StructList(List):
     def _read_list_item(self, offset):
         return self._item_type.from_buffer(self._buf,
                                            self._offset+offset,
-                                           self._segment_offsets)
+                                           self._segment_offsets,
+                                           'fixme', 'fixme')
 
 
 class StringList(List):

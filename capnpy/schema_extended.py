@@ -151,8 +151,9 @@ schema.Node__Const = Node__Const
 class Node:
 
     @classmethod
-    def from_buffer(cls, buf, offset, segment_offsets):
-        self = super(Node, cls).from_buffer(buf, offset, segment_offsets)
+    def from_buffer(cls, buf, offset, segment_offsets, data_size, ptrs_size):
+        self = super(Node, cls).from_buffer(buf, offset, segment_offsets,
+                                            data_size, ptrs_size)
         if self.which() == Node.__tag__.struct:
             self.__class__ = Node__Struct
         elif self.which() == Node.__tag__.enum:
