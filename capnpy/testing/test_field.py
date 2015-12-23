@@ -11,7 +11,7 @@ def test_primitive():
     
     buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
-    p = Point.from_buffer(buf, 0, None)
+    p = Point.from_buffer(buf, 0, None, 2, 0)
     assert p.x == 1
     assert p.y == 2
     assert isinstance(Point.x, field.Primitive)
@@ -27,7 +27,7 @@ def test_bool():
         c = field.Bool('c', 0, 2)
 
     buf = '\x05\x00\x00\x00\x00\x00\x00\x00'   # True, False, True, padding
-    p = Foo.from_buffer(buf, 0, None)
+    p = Foo.from_buffer(buf, 0, None, 1, 0)
     assert p.a == True
     assert p.b == False
     assert p.c == True
@@ -40,13 +40,13 @@ def test_default_value():
     
     buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'
            '\x00\x00\x00\x00\x00\x00\x00\x00')
-    p = Foo.from_buffer(buf, 0, None)
+    p = Foo.from_buffer(buf, 0, None, 2, 0)
     assert p.x == 42
     assert p.y is True
     #
     buf = ('\x2a\x00\x00\x00\x00\x00\x00\x00'
            '\x01\x00\x00\x00\x00\x00\x00\x00')
-    p = Foo.from_buffer(buf, 0, None)
+    p = Foo.from_buffer(buf, 0, None, 2, 0)
     assert p.x == 0
     assert p.y is False
     #
@@ -62,7 +62,7 @@ def test_string():
     buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
            'hello capnproto\0')                 # string
 
-    f = Foo.from_buffer(buf, 0, None)
+    f = Foo.from_buffer(buf, 0, None, 0, 1)
     assert f.name == 'hello capnproto'
     assert repr(Foo.name) == '<Field name +0: String>'
 
@@ -73,7 +73,7 @@ def test_data():
     buf = ('\x01\x00\x00\x00\x42\x00\x00\x00'   # ptrlist
            'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H')     # data
 
-    f = Foo.from_buffer(buf, 0, None)
+    f = Foo.from_buffer(buf, 0, None, 0, 1)
     assert f.data == 'ABCDEFGH'
     assert repr(Foo.data) == '<Field data +0: Data>'
 
@@ -87,7 +87,7 @@ def test_list():
            '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
-    f = Foo.from_buffer(buf, 0, None)
+    f = Foo.from_buffer(buf, 0, None, 0, 1)
     assert f.items == [1, 2, 3, 4]
     assert repr(Foo.items) == ("<Field items +0: List, listcls=PrimitiveList, "
                                "item_type=<capnp type int64>>")
@@ -109,7 +109,7 @@ def test_struct():
            '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
 
-    r = Rectangle.from_buffer(buf, 0, None)
+    r = Rectangle.from_buffer(buf, 0, None, 0, 2)
     assert r.a.x == 1
     assert r.a.y == 2
     assert r.b.x == 3
@@ -126,7 +126,7 @@ def test_enum():
     
     #      color      gender     padding
     buf = '\x02\x00' '\x01\x00' '\x00\x00\x00\x00'
-    f = Foo.from_buffer(buf, 0, None)
+    f = Foo.from_buffer(buf, 0, None, 1, 0)
     assert f.color == Color.blue
     assert f.gender == Gender.female
     assert repr(Foo.color) == "<Field color +0: Enum, enumcls=Color>"
@@ -135,7 +135,7 @@ def test_void():
     class Foo(Struct):
         myvoid = field.Void('myvoid')
     
-    f = Foo.from_buffer('somedata', 0, None)
+    f = Foo.from_buffer('somedata', 0, None, 0, 0)
     assert f.myvoid is None
     assert repr(Foo.myvoid) == "<Field myvoid: Void>"
 
@@ -158,7 +158,7 @@ def test_union():
     buf = ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
            '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
            '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
-    shape = Shape.from_buffer(buf, 0, None)
+    shape = Shape.from_buffer(buf, 0, None, 2, 0)
     assert shape.area == 64
     assert shape.which() == Shape.__tag__.square
     assert shape.square == 8
@@ -198,7 +198,7 @@ def test_read_group():
     # Note that the offsets inside groups are always "absolute" from the
     # beginning of the struct. So, a.x has offset 0, b.x has offset 3.
     #
-    r = Rectangle.from_buffer(buf, 8, None)
+    r = Rectangle.from_buffer(buf, 8, None, 4, 0)
     assert r.a.x == 1
     assert r.a.y == 2
     assert r.b.x == 3
@@ -237,7 +237,7 @@ def test_group_union():
            '\x01\x00\x00\x00\x00\x00\x00\x00'    # which() == rectangle, padding
            '\x05\x00\x00\x00\x00\x00\x00\x00')   # rectangle.height == 5
 
-    shape = Shape.from_buffer(buf, 0, None)
+    shape = Shape.from_buffer(buf, 0, None, 3, 0)
     assert shape.which() == Shape.__tag__.rectangle
     assert shape.rectangle.width == 4
     assert shape.rectangle.height == 5
@@ -247,6 +247,6 @@ def test_anyPointer():
     class Foo(Struct):
         x = field.AnyPointer('x', 0)
 
-    f = Foo.from_buffer('somedata', 0, None)
+    f = Foo.from_buffer('somedata', 0, None, 0, 1)
     py.test.raises(ValueError, "f.x")
     assert repr(Foo.x) == '<Field x +0: AnyPointer>'

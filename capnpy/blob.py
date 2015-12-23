@@ -74,7 +74,7 @@ class Blob(object):
             return None
         return structcls.from_buffer(self._buf,
                                      self._offset+struct_offset,
-                                     self._segment_offsets)
+                                     self._segment_offsets, 'fixme', 'fixme')
 
     def _read_list(self, offset, listcls, item_type):
         offset, size_tag, item_count = self._deref_ptrlist(offset)
@@ -108,7 +108,8 @@ class Blob(object):
 
     def _read_group(self, groupcls):
         return groupcls.from_buffer(self._buf, self._offset,
-                                    self._segment_offsets)
+                                    self._segment_offsets,
+                                    'fixme', 'fixme')
 
     def _follow_generic_pointer(self, ptr_offset):
         ptr = self._read_ptr(ptr_offset)
