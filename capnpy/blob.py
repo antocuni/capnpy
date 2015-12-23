@@ -117,11 +117,11 @@ class Blob(object):
         ptr = ptr.specialize()
         blob_offet = ptr.deref(ptr_offset)
         if ptr.kind == StructPtr.KIND:
-            GenericStruct = capnpy.struct_.GenericStruct
-            return GenericStruct.from_buffer_and_size(self._buf,
-                                                      self._offset+blob_offet,
-                                                      self._segment_offsets,
-                                                      ptr.data_size, ptr.ptrs_size)
+            Struct = capnpy.struct_.Struct
+            return Struct.from_buffer(self._buf,
+                                      self._offset+blob_offet,
+                                      self._segment_offsets,
+                                      ptr.data_size, ptr.ptrs_size)
         elif ptr.kind == ListPtr.KIND:
             List = capnpy.list.List
             return List.from_buffer(self._buf,

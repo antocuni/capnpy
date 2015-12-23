@@ -84,8 +84,8 @@ class List(Blob):
             return self._get_body_end_scalar()
 
     def _get_body_end_composite(self):
-        # lazy access to GenericStruct to avoid circular imports
-        GenericStruct = capnpy.struct_.GenericStruct
+        # lazy access to Struct to avoid circular imports
+        Struct = capnpy.struct_.Struct
         #
         # to calculate the end the of the list, there are three cases
         #
@@ -105,11 +105,11 @@ class List(Blob):
         while i >= 0:
             struct_offset = self._get_offset_for_item(i)
             struct_offset += self._offset
-            mystruct = GenericStruct.from_buffer_and_size(self._buf,
-                                                          struct_offset,
-                                                          self._segment_offsets,
-                                                          self._tag.data_size,
-                                                          self._tag.ptrs_size)
+            mystruct = Struct.from_buffer(self._buf,
+                                          struct_offset,
+                                          self._segment_offsets,
+                                          self._tag.data_size,
+                                          self._tag.ptrs_size)
             end = mystruct._get_extra_end_maybe()
             if end is not None:
                 # case 3

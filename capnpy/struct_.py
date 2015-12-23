@@ -8,18 +8,34 @@ class Struct(Blob):
     """
     Abstract base class: a blob representing a struct.
 
-    subclasses of Struct needs to provide two attributes: __data_size__ and
-    __ptrs_size__; there are two alternatives:
-
-    1) you put the as class attributes in your subclass
-
-    2) you use GenericStruct, where they are instance attributes (and thus
-       less space-efficient, but it's handy if you need to walk the buffer
-       without knowing the schema
+    Struct subclasses are expected to set __data_size__ and __ptrs_size__,
+    which contain the size of the data and pointer sections as defined in the
+    schema. However, note that you can also pass explicit values for data_size
+    and ptrs_size when calling Strct.from_buffer(...): this is needed to
+    support schema evolution, and in particular when using an old schema to
+    read newer messages, which might contain more fields.
     """
 
     __tag_offset__ = None
     __tag__ = None
+    __data_size__ = None
+    __ptrs_size__ = None
+
+    @classmethod
+    def from_buffer(cls, buf, offset, segment_offsets, data_size, ptrs_size):
+        self = cls._allocate()
+        self._init(buf, offset, segment_offsets)
+        if cls.__data_size__ == data_size and cls.__ptrs_size__ == ptrs_size:
+            # PyPy optimization: don't set these if they are equal to the
+            # default values, which we expect to be the normal and most
+            # frequent case: this way, PyPy will represent the instances using
+            # a class-map without __data_size__ and __ptrs_size__, and the JIT
+            # will be able to constant-fold them.
+            pass
+        else:
+            self.__data_size__ = data_size
+            self.__ptrs_size__ = ptrs_size
+        return self
 
     @classmethod
     def _allocate(cls):
@@ -224,7 +240,8 @@ class Struct(Blob):
         """
         body, extra = self._split(0)
         buf = body+extra
-        return self.__class__.from_buffer(buf, 0, None)
+        return self.__class__.from_buffer(buf, 0, None,
+                                          self.__data_size__, self.__ptrs_size__)
 
     def __hash__(self):
         return hash(self._get_key())
@@ -285,13 +302,3 @@ try:
     Struct.__ge__ = Struct.__dict__['_cmp_error']
 except TypeError:
     pass
-
-
-class GenericStruct(Struct):
-
-    @classmethod
-    def from_buffer_and_size(cls, buf, offset, segment_offsets, data_size, ptrs_size):
-        self = cls.from_buffer(buf, offset, segment_offsets)
-        self.__data_size__ = data_size
-        self.__ptrs_size__ = ptrs_size
-        return self
