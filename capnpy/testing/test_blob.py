@@ -1,5 +1,19 @@
 import py
-from capnpy.blob import Blob, Types
+import struct
+from capnpy.blob import Blob, Types, unpack_primitive
+
+def test_unpack_primitive():
+    s = struct.pack('q', 1234)
+    assert unpack_primitive('q', s, 0) == 1234
+    #
+    # left bound check
+    with py.test.raises(IndexError):
+        unpack_primitive('q', s, -8)
+    #
+    # right bound check
+    with py.test.raises(IndexError):
+        unpack_primitive('q', s, 1) # not enough bytes
+
 
 def test_Blob():
     # buf is an array of int64 == [1, 2]
