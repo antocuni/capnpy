@@ -41,7 +41,7 @@ def test_dumps():
     
     buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
            '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
-    p = Point.from_buffer(buf, 0, None)
+    p = Point.from_buffer(buf, 0, None, data_size=2, ptrs_size=0)
     msg = dumps(p)
     exp = ('\x00\x00\x00\x00\x03\x00\x00\x00'   # message header: 1 segment, size 3 words
            '\x00\x00\x00\x00\x02\x00\x00\x00'   # ptr to payload (Point {x, y})
@@ -58,7 +58,7 @@ def test_dumps_alignment():
            '\x01\x00\x00\x00\x2a\x00\x00\x00'   # name=ptr
            'J' 'o' 'h' 'n' '\x00\x00\x00\x00')  # John
 
-    p = Person.from_buffer(buf, 0, None)
+    p = Person.from_buffer(buf, 0, None, data_size=1, ptrs_size=1)
     msg = dumps(p)
     exp = ('\x00\x00\x00\x00\x04\x00\x00\x00'   # message header: 1 segment, size 3 words
            '\x00\x00\x00\x00\x01\x00\x01\x00'   # ptr to payload

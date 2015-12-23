@@ -1,5 +1,5 @@
 import struct
-from capnpy.blob import Blob
+from capnpy.struct_ import Struct
 from capnpy.ptr import StructPtr
 
 
@@ -50,7 +50,15 @@ def _load_message(buf):
         offset += size*8
         segment_offsets.append(offset)
 
-    return Blob.from_buffer(buf, message_offset, tuple(segment_offsets))
+    # from the capnproto docs:
+    #
+    #     The first word of the first segment of the message is always a
+    #     pointer pointing to the message’s root struct.
+    #
+    # Thus, the root of the message is equivalent to a struct with
+    # data_size==0 and ptrs_size==1
+    return Struct.from_buffer(buf, message_offset, tuple(segment_offsets),
+                              data_size=0, ptrs_size=1)
 
 def dumps(obj):
     """
