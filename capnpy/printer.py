@@ -56,11 +56,12 @@ class BufferPrinter(object):
 
     def double(self, s):
         d = struct.unpack('d', s)[0]
-        s = '%9.2f' % d
-        if len(s) > 8:
-            return Color.set(Color.lightgray, '%.2E' % d)
+        s = str(d)
+        if len(s) > 9:
+            s = '{:<9.2E}'.format(d)
+            return Color.set(Color.lightgray, s)
         else:
-            return s
+            return '{:<9}'.format(s)
 
     def ptr(self, offset, s):
         p = Ptr.from_bytes(s)
