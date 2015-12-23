@@ -111,7 +111,7 @@ class Blob(object):
                                     self._segment_offsets,
                                     'fixme', 'fixme')
 
-    def _follow_generic_pointer(self, ptr_offset):
+    def _read_generic_pointer(self, ptr_offset):
         ptr = self._read_ptr(ptr_offset)
         if ptr == 0:
             return None

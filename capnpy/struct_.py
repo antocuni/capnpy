@@ -11,7 +11,7 @@ class Struct(Blob):
     Struct subclasses are expected to set __data_size__ and __ptrs_size__,
     which contain the size of the data and pointer sections as defined in the
     schema. However, note that you can also pass explicit values for data_size
-    and ptrs_size when calling Strct.from_buffer(...): this is needed to
+    and ptrs_size when calling Struct.from_buffer(...): this is needed to
     support schema evolution, and in particular when using an old schema to
     read newer messages, which might contain more fields.
     """
@@ -105,7 +105,7 @@ class Struct(Blob):
         i = self.__ptrs_size__ - 1 # start from the last ptr
         while i >= 0:
             ptr_offset = self._ptr_offset_by_index(i)
-            blob = self._follow_generic_pointer(ptr_offset)
+            blob = self._read_generic_pointer(ptr_offset)
             if blob is not None:
                 return blob._get_end()
             i -= 1
