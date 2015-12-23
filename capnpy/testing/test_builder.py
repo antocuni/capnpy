@@ -18,7 +18,7 @@ def test_alloc_struct():
 
     mybuf = ('\x01\x00\x00\x00\x00\x00\x00\x00'
              '\x02\x00\x00\x00\x00\x00\x00\x00')
-    mystruct = MyStruct.from_buffer(mybuf, 0, None)
+    mystruct = MyStruct.from_buffer(mybuf, 0, None, 2, 0)
     #
     builder = StructBuilder('q')
     ptr = builder.alloc_struct(0, MyStruct, mystruct)
@@ -35,7 +35,7 @@ def test_alloc_struct_with_offset():
     mybuf = ('garbage0'
              '\x01\x00\x00\x00\x00\x00\x00\x00'
              '\x02\x00\x00\x00\x00\x00\x00\x00')
-    mystruct = MyStruct.from_buffer(mybuf, 8, None)
+    mystruct = MyStruct.from_buffer(mybuf, 8, None, 2, 0)
     #
     builder = StructBuilder('q')
     ptr = builder.alloc_struct(0, MyStruct, mystruct)
@@ -100,10 +100,10 @@ def test_alloc_list_of_structs():
             '\x2c\x01\x00\x00\x00\x00\x00\x00')   # 300
     buf4 = ('\x28\x00\x00\x00\x00\x00\x00\x00'    # 40
             '\x90\x01\x00\x00\x00\x00\x00\x00')   # 400
-    p1 = Point.from_buffer(buf1, 0, None)
-    p2 = Point.from_buffer(buf2, 0, None)
-    p3 = Point.from_buffer(buf3, 0, None)
-    p4 = Point.from_buffer(buf4, 0, None)
+    p1 = Point.from_buffer(buf1, 0, None, 2, 0)
+    p2 = Point.from_buffer(buf2, 0, None, 2, 0)
+    p3 = Point.from_buffer(buf3, 0, None, 2, 0)
+    p4 = Point.from_buffer(buf4, 0, None, 2, 0)
     #
     builder = StructBuilder('q')
     ptr = builder.alloc_list(0, StructList, Point, [p1, p2, p3, p4])
@@ -165,8 +165,8 @@ def test_alloc_list_of_structs_with_pointers():
              '\x45\x6d\x69\x6c\x79\x00\x00\x00'    # Emily
              'garbage3')
 
-    john = Person.from_buffer(john, 0, None)
-    emily = Person.from_buffer(emily, 8, None)
+    john = Person.from_buffer(john, 0, None, 1, 1)
+    emily = Person.from_buffer(emily, 8, None, 1, 1)
     #
     builder = StructBuilder('q')
     ptr = builder.alloc_list(0, StructList, Person, [john, emily])

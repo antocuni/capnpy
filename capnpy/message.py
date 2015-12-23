@@ -53,7 +53,7 @@ def _load_message(buf):
     # from the capnproto docs:
     #
     #     The first word of the first segment of the message is always a
-    #     pointer pointing to the message’s root struct.
+    #     pointer pointing to the message's root struct.
     #
     # Thus, the root of the message is equivalent to a struct with
     # data_size==0 and ptrs_size==1
