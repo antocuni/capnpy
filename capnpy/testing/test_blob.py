@@ -33,12 +33,12 @@ def test_float64():
     blob = Blob.from_buffer(buf, 0, None)
     assert blob._read_primitive(0, Types.float64) == 1.234
 
-def test_deref_ptrstruct():
+def test_read_ptr():
     buf = '\x90\x01\x00\x00\x02\x00\x04\x00'
     blob = Blob.from_buffer(buf, 0, None)
-    offset = blob._deref_ptrstruct(0)
+    offset, ptr = blob._read_ptr(0)
+    offset = ptr.deref(offset)
     assert offset == 808
-
 
 def test_read_struct():
     ## struct Point {
@@ -52,6 +52,8 @@ def test_read_struct():
     p = blob._read_struct(0, Struct)
     assert p._buf is blob._buf
     assert p._offset == 8
+    assert p.__data_size__ == 2
+    assert p.__ptrs_size__ == 0
     assert p._read_primitive(0, Types.int64) == 1
     assert p._read_primitive(8, Types.int64) == 2
 

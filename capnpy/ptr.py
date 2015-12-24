@@ -209,5 +209,5 @@ class FarPtr(Ptr):
         segment_start = blob._segment_offsets[self.target] # in bytes
         abs_offset  = segment_start + self.offset*8
         rel_offset = abs_offset - blob._offset
-        ptr = blob._read_ptr(rel_offset)
+        ptr = blob._read_raw_ptr(rel_offset)
         return rel_offset, ptr

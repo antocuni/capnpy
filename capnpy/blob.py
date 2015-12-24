@@ -69,12 +69,17 @@ class Blob(object):
         Read and dereference a struct pointer at the given offset.  It returns an
         instance of ``cls`` pointing to the dereferenced struct.
         """
-        struct_offset = self._deref_ptrstruct(offset)
-        if struct_offset is None:
+        offset, ptr = self._read_ptr(offset)
+        if ptr is None:
             return None
+        assert ptr.kind == StructPtr.KIND
+        ptr = ptr.specialize()
+        struct_offset = ptr.deref(offset)
         return structcls.from_buffer(self._buf,
                                      self._offset+struct_offset,
-                                     self._segment_offsets, 'fixme', 'fixme')
+                                     self._segment_offsets,
+                                     ptr.data_size,
+                                     ptr.ptrs_size)
 
     def _read_list(self, offset, listcls, item_type):
         offset, size_tag, item_count = self._deref_ptrlist(offset)
@@ -102,7 +107,10 @@ class Blob(object):
         end = start + item_count
         return self._buf[start:end]
 
-    def _read_ptr(self, offset):
+    def _read_raw_ptr(self, offset):
+        """
+        Read a pointer at the specified offset
+        """
         ptr = self._read_primitive(offset, Types.int64)
         return Ptr(ptr)
 
@@ -112,7 +120,7 @@ class Blob(object):
                                     'fixme', 'fixme')
 
     def _read_generic_pointer(self, ptr_offset):
-        ptr = self._read_ptr(ptr_offset)
+        ptr = self._read_raw_ptr(ptr_offset)
         if ptr == 0:
             return None
         ptr = ptr.specialize()
@@ -132,16 +140,14 @@ class Blob(object):
         else:
             assert False, 'Unkwown pointer kind: %s' % ptr.kind
 
-    def _deref_ptrstruct(self, offset):
-        ptr = self._read_ptr(offset)
+    def _read_ptr(self, offset):
+        ptr = self._read_raw_ptr(offset)
         if ptr == 0:
-            return None
+            return offset, None
         if ptr.kind == FarPtr.KIND:
             ptr = ptr.specialize()
-            offset, ptr = ptr.follow(self)
-        #
-        assert ptr.kind == StructPtr.KIND
-        return ptr.deref(offset)
+            return ptr.follow(self)
+        return offset, ptr
 
     def _deref_ptrlist(self, offset):
         """
@@ -152,7 +158,7 @@ class Blob(object):
         - size_tag: specifies the size of each element
         - item_count: the total number of elements
         """
-        ptr = self._read_ptr(offset)
+        ptr = self._read_raw_ptr(offset)
         if ptr == 0:
             return None, None, None
         if ptr.kind == FarPtr.KIND:
@@ -176,7 +182,7 @@ class Blob(object):
 
 
 # make sure that these two modules are imported, they are used by
-# _follow_generic_pointer. We need to put them at the end because of circular
+# _read_generic_pointer. We need to put them at the end because of circular
 # references
 import capnpy.struct_
 import capnpy.list
