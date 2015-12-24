@@ -166,7 +166,8 @@ class StructList(List):
         return self._item_type.from_buffer(self._buf,
                                            self._offset+offset,
                                            self._segment_offsets,
-                                           'fixme', 'fixme')
+                                           self._tag.data_size,
+                                           self._tag.ptrs_size)
 
 
 class StringList(List):

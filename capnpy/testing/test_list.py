@@ -63,6 +63,8 @@ def test_list_of_structs():
     assert len(lst) == 4
     def read_point(i):
         p = lst[i]
+        assert p.__data_size__ == 2
+        assert p.__ptrs_size__ == 0
         x = p._read_primitive(0, Types.int64)
         y = p._read_primitive(8, Types.int64)
         return x, y
