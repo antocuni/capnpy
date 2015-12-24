@@ -52,7 +52,7 @@ class TestAttribute(CompilerTest):
         #
         buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
-        p = mod.Point.from_buffer(buf, 0, None)
+        p = mod.Point.from_buffer(buf, 0, None, 2, 0)
         assert p.x == 1
         assert p.y == 2
 
@@ -68,7 +68,7 @@ class TestAttribute(CompilerTest):
         #
         buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'
                '\x00\x00\x00\x00\x00\x00\x00\x00')
-        p = mod.Foo.from_buffer(buf, 0, None)
+        p = mod.Foo.from_buffer(buf, 0, None, 2, 0)
         assert p.x == 42
         assert p.y is True
 
@@ -87,7 +87,7 @@ class TestAttribute(CompilerTest):
                '\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
                'hello capnproto\0')                 # string
 
-        f = mod.Foo.from_buffer(buf, 0, None)
+        f = mod.Foo.from_buffer(buf, 0, None, 1, 1)
         assert f.x == 1
         assert f.name == 'hello capnproto'
 
@@ -106,7 +106,7 @@ class TestAttribute(CompilerTest):
                '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
                '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
                '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
-        f = mod.Foo.from_buffer(buf, 0, None)
+        f = mod.Foo.from_buffer(buf, 0, None, 0, 1)
         assert f.items == [1, 2, 3, 4]
 
 
@@ -130,7 +130,7 @@ class TestAttribute(CompilerTest):
                '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
                '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
 
-        r = mod.Rectangle.from_buffer(buf, 0, None)
+        r = mod.Rectangle.from_buffer(buf, 0, None, 0, 2)
         assert r.a.x == 1
         assert r.a.y == 2
         assert r.b.x == 3
@@ -157,7 +157,7 @@ class TestAttribute(CompilerTest):
         """
         mod = self.compile(schema)
         buf = '\x02\x00' '\x01\x00' '\x00\x00\x00\x00'
-        f = mod.Foo.from_buffer(buf, 0, None)
+        f = mod.Foo.from_buffer(buf, 0, None, 1, 0)
         assert f.color == mod.Color.blue
         assert f.gender == mod.Gender.female
 
@@ -177,7 +177,7 @@ class TestAttribute(CompilerTest):
         buf = ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
                '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
                '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
-        shape = mod.Shape.from_buffer(buf, 0, None)
+        shape = mod.Shape.from_buffer(buf, 0, None, 3, 0)
         assert shape.area == 64
         assert shape.which() == mod.Shape.__tag__.square
         assert shape.square == 8
@@ -204,7 +204,7 @@ class TestAttribute(CompilerTest):
                '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
                '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
                '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
-        r = mod.Rectangle.from_buffer(buf, 8, None)
+        r = mod.Rectangle.from_buffer(buf, 8, None, 4, 0)
         assert r.a.x == 1
         assert r.a.y == 2
         assert r.b.x == 3
@@ -230,7 +230,7 @@ class TestAttribute(CompilerTest):
                '\x01\x00\x00\x00\x00\x00\x00\x00'    # which() == rectangle, padding
                '\x05\x00\x00\x00\x00\x00\x00\x00')   # rectangle.height == 5
 
-        shape = mod.Shape.from_buffer(buf, 0, None)
+        shape = mod.Shape.from_buffer(buf, 0, None, 3, 0)
         assert shape.which() == mod.Shape.__tag__.rectangle
         assert shape.rectangle.width == 4
         assert shape.rectangle.height == 5
@@ -250,7 +250,7 @@ class TestAttribute(CompilerTest):
         #
         buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
-        p = mod.Outer.Point.from_buffer(buf, 0, None)
+        p = mod.Outer.Point.from_buffer(buf, 0, None, 2, 0)
         assert p.x == 1
         assert p.y == 2
         #
@@ -301,7 +301,7 @@ class TestAttribute(CompilerTest):
                '\x2c\x01\x00\x00\x00\x00\x00\x00'    # 300
                '\x28\x00\x00\x00\x00\x00\x00\x00'    # 40
                '\x90\x01\x00\x00\x00\x00\x00\x00')   # 400
-        poly = mod.Polygon.from_buffer(buf, 0, None)
+        poly = mod.Polygon.from_buffer(buf, 0, None, 0, 1)
         assert len(poly.points) == 4
         assert poly.points[0].x == 10
         assert poly.points[0].y == 100
@@ -319,7 +319,7 @@ class TestAttribute(CompilerTest):
         mod = self.compile(schema)
         buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'   # padding
                '\x05\x00\x00\x00\x00\x00\x00\x00')  # True, False, True, padding
-        p = mod.Foo.from_buffer(buf, 0, None)
+        p = mod.Foo.from_buffer(buf, 0, None, 2, 0)
         assert p.a == True
         assert p.b == False
         assert p.c == True
@@ -508,7 +508,7 @@ class TestCompiler(CompilerTest):
         #
         buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
-        p = mod.Point.from_buffer(buf, 0, None)
+        p = mod.Point.from_buffer(buf, 0, None, 2, 0)
         assert p.x == 1
         assert p.y == 2
 
@@ -589,14 +589,14 @@ class TestNullable(CompilerTest):
     def test_nullable(self, mod):
         buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
-        foo = mod.Foo.from_buffer(buf, 0, None)
+        foo = mod.Foo.from_buffer(buf, 0, None, 2, 0)
         assert foo._x.is_null
         assert foo._x.value == 2
         assert foo.x is None
         #
         buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'  # 0
                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
-        foo = mod.Foo.from_buffer(buf, 0, None)
+        foo = mod.Foo.from_buffer(buf, 0, None, 2, 0)
         assert not foo._x.is_null
         assert foo._x.value == 2
         assert foo.x == 2
