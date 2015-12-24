@@ -66,7 +66,7 @@ class TestIntegration(CompilerTest):
                '\x05\x00\x00\x00\x32\x00\x00\x00'  # ptr to name
                'garbage1'
                'dummy\x00\x00\x00')
-        p = mod.Person.from_buffer(buf, 8, None)
+        p = mod.Person.from_buffer(buf, 8, None, 0, 1)
         foo = mod.Foo(p)
         assert foo.key.name == 'dummy'
         # we check that the structure has been packed
