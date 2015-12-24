@@ -82,29 +82,41 @@ class Blob(object):
                                      ptr.ptrs_size)
 
     def _read_list(self, offset, listcls, item_type):
-        offset, size_tag, item_count = self._deref_ptrlist(offset)
-        if offset is None:
+        offset, ptr = self._read_ptr(offset)
+        if ptr is None:
             return None
-        return listcls.from_buffer(self._buf, self._offset+offset,
+        assert ptr.kind == ListPtr.KIND
+        ptr = ptr.specialize()
+        list_offset = ptr.deref(offset)
+        return listcls.from_buffer(self._buf,
+                                   self._offset+list_offset,
                                    self._segment_offsets,
-                                   size_tag, item_count, item_type)
+                                   ptr.size_tag,
+                                   ptr.item_count,
+                                   item_type)
 
     def _read_string(self, offset):
-        offset, size_tag, item_count = self._deref_ptrlist(offset)
-        if offset is None:
+        offset, ptr = self._read_ptr(offset)
+        if ptr is None:
             return None
-        assert size_tag == ListPtr.SIZE_8
-        start = self._offset + offset
-        end = start + item_count - 1
+        ptr = ptr.specialize()
+        assert ptr.kind == ListPtr.KIND
+        assert ptr.size_tag == ListPtr.SIZE_8
+        str_offset = ptr.deref(offset)
+        start = self._offset + str_offset
+        end = start + ptr.item_count - 1
         return self._buf[start:end]
 
     def _read_data(self, offset):
-        offset, size_tag, item_count = self._deref_ptrlist(offset)
-        if offset is None:
+        offset, ptr = self._read_ptr(offset)
+        if ptr is None:
             return None
-        assert size_tag == ListPtr.SIZE_8
-        start = self._offset + offset
-        end = start + item_count
+        ptr = ptr.specialize()
+        assert ptr.kind == ListPtr.KIND
+        assert ptr.size_tag == ListPtr.SIZE_8
+        str_offset = ptr.deref(offset)
+        start = self._offset + str_offset
+        end = start + ptr.item_count
         return self._buf[start:end]
 
     def _read_raw_ptr(self, offset):
@@ -148,27 +160,6 @@ class Blob(object):
             ptr = ptr.specialize()
             return ptr.follow(self)
         return offset, ptr
-
-    def _deref_ptrlist(self, offset):
-        """
-        Dereference a list pointer at the given offset.  It returns a tuple
-        (offset, size_tag, item_count):
-
-        - offset is where the list items start, from the start of the blob
-        - size_tag: specifies the size of each element
-        - item_count: the total number of elements
-        """
-        ptr = self._read_raw_ptr(offset)
-        if ptr == 0:
-            return None, None, None
-        if ptr.kind == FarPtr.KIND:
-            ptr = ptr.specialize()
-            offset, ptr = ptr.follow(self)
-        #
-        assert ptr.kind == ListPtr.KIND
-        ptr = ptr.specialize()
-        offset = ptr.deref(offset)
-        return offset, ptr.size_tag, ptr.item_count
 
     def _print_buf(self, start=None, end='auto', **kwds):
         if start is None:
