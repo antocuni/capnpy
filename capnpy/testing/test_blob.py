@@ -109,13 +109,17 @@ def test_read_group():
     # Note that the offsets inside groups are always "absolute" from the
     # beginning of the struct. So, a.x has offset 0, b.x has offset 3.
     #
-    blob = Blob.from_buffer(buf, 8, None)
+    blob = Struct.from_buffer(buf, 8, None, data_size=4, ptrs_size=0)
     a = blob._read_group(GroupA)
     assert isinstance(a, GroupA)
+    assert a.__data_size__ == 4
+    assert a.__ptrs_size__ == 0
     assert a._read_primitive(0, Types.int64) == 1  # a.x
     #
     b = blob._read_group(GroupB)
     assert isinstance(b, GroupB)
+    assert b.__data_size__ == 4
+    assert b.__ptrs_size__ == 0
     assert b._read_primitive(16, Types.int64) == 3 # b.x
 
 
