@@ -135,7 +135,7 @@ class Node__Struct:
             with m.code.def_('new_' + tag_name, ['cls'] + ctor.argnames):
                 call = m.code.call('cls.' + ctor_name, ctor.argnames)
                 m.w('buf = {call}', call=call)
-                m.w('return cls.from_buffer(buf, 0, None)')
+                m.w('return cls.from_buffer(buf, 0, None, cls.__data_size__, cls.__ptrs_size__)')
         #
         # finally, create the __init__
         # def __init__(cls, x, y, square=undefined, circle=undefined):
