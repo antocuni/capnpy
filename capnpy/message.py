@@ -70,7 +70,7 @@ def dumps(obj):
     a = obj._get_body_start()
     b = obj._get_extra_end()
     buf = obj._buf[a:b]
-    ptr = StructPtr.new(0, obj.__data_size__, obj.__ptrs_size__)
+    ptr = StructPtr.new(0, obj._data_size, obj._ptrs_size)
     #
     segment_count = 1
     if len(buf) % 8 != 0:
