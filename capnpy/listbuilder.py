@@ -56,8 +56,9 @@ class StructItemBuilder(object):
 
     @classmethod
     def get_item_length(cls, item_type):
-        total_size = item_type.__data_size__ + item_type.__ptrs_size__ # in words
-        total_length = total_size*8 # in bytes
+        total_size = (item_type.__static_data_size__ +
+                      item_type.__static_ptrs_size__)   # in words
+        total_length = total_size*8                     # in bytes
         if total_length > 8:
             return total_length, ListPtr.SIZE_COMPOSITE
         assert False, 'XXX'
@@ -88,7 +89,7 @@ class StructItemBuilder(object):
         #
         # Note that extra_offset is expressed in WORDS, while _total_length in
         # BYTES
-        body_size = item_type.__data_size__ + item_type.__ptrs_size__
+        body_size = item_type.__static_data_size__ + item_type.__static_ptrs_size__
         body_offset = body_size * (i+1)
         extra_offset = listbuilder._total_length/8 - body_offset
         body, extra = item._split(extra_offset)

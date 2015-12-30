@@ -11,8 +11,9 @@ class Struct(Blob):
 
     __tag_offset__ = None
     __tag__ = None
-    ## __data_size__ = None
-    ## __ptrs_size__ = None
+
+    __static_data_size__ = None
+    __static_ptrs_size__ = None
 
     @classmethod
     def from_buffer(cls, buf, offset, segment_offsets, data_size, ptrs_size):

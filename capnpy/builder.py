@@ -30,8 +30,8 @@ class AbstractBuilder(object):
             raise TypeError("Expected %s instance, got %s" %
                             (struct_type.__class__.__name__, value))
         #
-        data_size = struct_type.__data_size__           # in words
-        ptrs_size = struct_type.__ptrs_size__           # in words
+        data_size = struct_type.__static_data_size__    # in words
+        ptrs_size = struct_type.__static_ptrs_size__    # in words
         ptr_offset = self._calc_relative_offset(offset) # in words
         #
         # we need to take the compact repr of the struct, else we might get
@@ -57,8 +57,8 @@ class AbstractBuilder(object):
         #
         # if size is composite, ptr contains the total size in words, and
         # we also need to emit a "list tag"
-        data_size = item_type.__data_size__  # in words
-        ptrs_size = item_type.__ptrs_size__  # in words
+        data_size = item_type.__static_data_size__  # in words
+        ptrs_size = item_type.__static_ptrs_size__  # in words
         total_words = (data_size+ptrs_size) * item_count
         #
         # emit the tag
