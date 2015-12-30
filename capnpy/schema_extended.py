@@ -200,11 +200,11 @@ class Type:
     def __new_primitive(cls, tag):
         assert 0 <= tag <= 13, 'non-primitive types non supported'
         assert cls.__tag_offset__ == 0 # the tag is the first 16 bits
-        assert cls.__data_size__ + cls.__ptrs_size__ == 4 # 32 bytes in total
+        assert cls.__static_data_size__ + cls.__static_ptrs_size__ == 4 # 32 bytes in total
         fmt = 'h' + 'x'*30
         assert struct.calcsize(fmt) == 32
         buf = struct.pack(fmt, tag)
-        return cls.from_buffer(buf, 0, None, cls.__data_size__, cls.__ptrs_size__)
+        return cls.from_buffer(buf, 0, None, cls.__static_data_size__, cls.__static_ptrs_size__)
 
     new_void = classmethod(lambda cls: cls.__new_primitive(0))
     new_bool = classmethod(lambda cls: cls.__new_primitive(1))
@@ -249,7 +249,7 @@ class Field:
             'q' # [3]       slot.defaultValue
             )
         size = struct.calcsize(fmt)
-        assert size == (cls.__data_size__ + cls.__ptrs_size__)*8
+        assert size == (cls.__static_data_size__ + cls.__static_ptrs_size__)*8
         builder = StructBuilder(fmt)
         #
         codeOrder = 0
@@ -269,4 +269,4 @@ class Field:
                             tag, ordinal_tag, ordinal_explicit, padding,
                             group_typeId, ptr_name, ptr_annotations,
                             ptr_slot_type, ptr_slot_defaultValue)
-        return cls.from_buffer(buf, 0, None, cls.__data_size__, cls.__ptrs_size__)
+        return cls.from_buffer(buf, 0, None, cls.__static_data_size__, cls.__static_ptrs_size__)

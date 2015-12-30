@@ -77,18 +77,18 @@ class Node(Struct):
 
 @extend(CodeGeneratorRequest)
 class _:
-    __data_size__ = 0
-    __ptrs_size__ = 2
+    __static_data_size__ = 0
+    __static_ptrs_size__ = 2
     
     @extend(CodeGeneratorRequest.RequestedFile)
     class _:
-        __data_size__ = 1
-        __ptrs_size__ = 2
+        __static_data_size__ = 1
+        __static_ptrs_size__ = 2
         
         @extend(CodeGeneratorRequest.RequestedFile.Import)
         class _:
-            __data_size__ = 1
-            __ptrs_size__ = 1
+            __static_data_size__ = 1
+            __static_ptrs_size__ = 1
             def __init__(self, *args, **kwds):
                 raise NotImplementedError("Not supported: text fields")
             id = field.Primitive("id", 0, Types.uint64, default_=0)
@@ -105,8 +105,8 @@ class _:
 
 @extend(Method)
 class _:
-    __data_size__ = 3
-    __ptrs_size__ = 5
+    __static_data_size__ = 3
+    __static_ptrs_size__ = 5
     def __init__(self, *args, **kwds):
         raise NotImplementedError("Not supported: text fields")
     name = field.String("name", 24)
@@ -120,8 +120,8 @@ class _:
 
 @extend(Enumerant)
 class _:
-    __data_size__ = 1
-    __ptrs_size__ = 2
+    __static_data_size__ = 1
+    __static_ptrs_size__ = 2
     def __init__(self, *args, **kwds):
         raise NotImplementedError("Not supported: text fields")
     name = field.String("name", 8)
@@ -130,8 +130,8 @@ class _:
 
 @extend(Type)
 class _:
-    __data_size__ = 3
-    __ptrs_size__ = 1
+    __static_data_size__ = 3
+    __static_ptrs_size__ = 1
     __tag_offset__ = 0
     __tag__ = enum('Type.__tag__', ('void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer'))
     def __init__(self, *args, **kwds):
@@ -167,8 +167,8 @@ class _:
     
     @extend(Type.list)
     class _:
-        __data_size__ = 3
-        __ptrs_size__ = 1
+        __static_data_size__ = 3
+        __static_ptrs_size__ = 1
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: struct fields")
         elementType = field.Struct("elementType", 24, Type)
@@ -177,8 +177,8 @@ class _:
     
     @extend(Type.enum)
     class _:
-        __data_size__ = 3
-        __ptrs_size__ = 1
+        __static_data_size__ = 3
+        __static_ptrs_size__ = 1
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: struct fields")
         typeId = field.Primitive("typeId", 8, Types.uint64, default_=0)
@@ -188,8 +188,8 @@ class _:
     
     @extend(Type.struct)
     class _:
-        __data_size__ = 3
-        __ptrs_size__ = 1
+        __static_data_size__ = 3
+        __static_ptrs_size__ = 1
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: struct fields")
         typeId = field.Primitive("typeId", 8, Types.uint64, default_=0)
@@ -199,8 +199,8 @@ class _:
     
     @extend(Type.interface)
     class _:
-        __data_size__ = 3
-        __ptrs_size__ = 1
+        __static_data_size__ = 3
+        __static_ptrs_size__ = 1
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: struct fields")
         typeId = field.Primitive("typeId", 8, Types.uint64, default_=0)
@@ -210,8 +210,8 @@ class _:
     
     @extend(Type.anyPointer)
     class _:
-        __data_size__ = 3
-        __ptrs_size__ = 1
+        __static_data_size__ = 3
+        __static_ptrs_size__ = 1
         __tag_offset__ = 8
         __tag__ = enum('anyPointer.__tag__', ('unconstrained', 'parameter', 'implicitMethodParameter'))
         def __init__(self, *args, **kwds):
@@ -221,8 +221,8 @@ class _:
         
         @extend(Type.anyPointer.parameter)
         class _:
-            __data_size__ = 3
-            __ptrs_size__ = 1
+            __static_data_size__ = 3
+            __static_ptrs_size__ = 1
             
             def __init__(self, scopeId, parameterIndex):
                 builder = StructBuilder('QH')
@@ -237,8 +237,8 @@ class _:
         
         @extend(Type.anyPointer.implicitMethodParameter)
         class _:
-            __data_size__ = 3
-            __ptrs_size__ = 1
+            __static_data_size__ = 3
+            __static_ptrs_size__ = 1
             
             def __init__(self, parameterIndex):
                 builder = StructBuilder('H')
@@ -254,8 +254,8 @@ class _:
 
 @extend(Field)
 class _:
-    __data_size__ = 3
-    __ptrs_size__ = 4
+    __static_data_size__ = 3
+    __static_ptrs_size__ = 4
     noDiscriminant = 65535
     __tag_offset__ = 8
     __tag__ = enum('Field.__tag__', ('slot', 'group'))
@@ -268,8 +268,8 @@ class _:
     
     @extend(Field.slot)
     class _:
-        __data_size__ = 3
-        __ptrs_size__ = 4
+        __static_data_size__ = 3
+        __static_ptrs_size__ = 4
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: struct fields")
         offset = field.Primitive("offset", 4, Types.uint32, default_=0)
@@ -281,8 +281,8 @@ class _:
     
     @extend(Field.group)
     class _:
-        __data_size__ = 3
-        __ptrs_size__ = 4
+        __static_data_size__ = 3
+        __static_ptrs_size__ = 4
         
         def __init__(self, typeId):
             builder = StructBuilder('Q')
@@ -296,8 +296,8 @@ class _:
     
     @extend(Field.ordinal)
     class _:
-        __data_size__ = 3
-        __ptrs_size__ = 4
+        __static_data_size__ = 3
+        __static_ptrs_size__ = 4
         __tag_offset__ = 10
         __tag__ = enum('ordinal.__tag__', ('implicit', 'explicit'))
         def __init__(self, *args, **kwds):
@@ -310,8 +310,8 @@ class _:
 
 @extend(Superclass)
 class _:
-    __data_size__ = 1
-    __ptrs_size__ = 1
+    __static_data_size__ = 1
+    __static_ptrs_size__ = 1
     def __init__(self, *args, **kwds):
         raise NotImplementedError("Not supported: struct fields")
     id = field.Primitive("id", 0, Types.uint64, default_=0)
@@ -319,8 +319,8 @@ class _:
 
 @extend(Value)
 class _:
-    __data_size__ = 2
-    __ptrs_size__ = 1
+    __static_data_size__ = 2
+    __static_ptrs_size__ = 1
     __tag_offset__ = 0
     __tag__ = enum('Value.__tag__', ('void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer'))
     def __init__(self, *args, **kwds):
@@ -366,13 +366,13 @@ class _:
 
 @extend(Brand)
 class _:
-    __data_size__ = 0
-    __ptrs_size__ = 1
+    __static_data_size__ = 0
+    __static_ptrs_size__ = 1
     
     @extend(Brand.Binding)
     class _:
-        __data_size__ = 1
-        __ptrs_size__ = 1
+        __static_data_size__ = 1
+        __static_ptrs_size__ = 1
         __tag_offset__ = 0
         __tag__ = enum('Binding.__tag__', ('unbound', 'type'))
         def __init__(self, *args, **kwds):
@@ -384,8 +384,8 @@ class _:
     
     @extend(Brand.Scope)
     class _:
-        __data_size__ = 2
-        __ptrs_size__ = 1
+        __static_data_size__ = 2
+        __static_ptrs_size__ = 1
         __tag_offset__ = 8
         __tag__ = enum('Scope.__tag__', ('bind', 'inherit'))
         def __init__(self, *args, **kwds):
@@ -401,8 +401,8 @@ class _:
 
 @extend(Annotation)
 class _:
-    __data_size__ = 1
-    __ptrs_size__ = 2
+    __static_data_size__ = 1
+    __static_ptrs_size__ = 2
     def __init__(self, *args, **kwds):
         raise NotImplementedError("Not supported: struct fields")
     id = field.Primitive("id", 0, Types.uint64, default_=0)
@@ -411,13 +411,13 @@ class _:
 
 @extend(Node)
 class _:
-    __data_size__ = 5
-    __ptrs_size__ = 6
+    __static_data_size__ = 5
+    __static_ptrs_size__ = 6
     
     @extend(Node.NestedNode)
     class _:
-        __data_size__ = 1
-        __ptrs_size__ = 1
+        __static_data_size__ = 1
+        __static_ptrs_size__ = 1
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: text fields")
         name = field.String("name", 8)
@@ -425,8 +425,8 @@ class _:
     
     @extend(Node.Parameter)
     class _:
-        __data_size__ = 0
-        __ptrs_size__ = 1
+        __static_data_size__ = 0
+        __static_ptrs_size__ = 1
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: text fields")
         name = field.String("name", 0)
@@ -445,8 +445,8 @@ class _:
     
     @extend(Node.struct)
     class _:
-        __data_size__ = 5
-        __ptrs_size__ = 6
+        __static_data_size__ = 5
+        __static_ptrs_size__ = 6
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: enum fields")
         dataWordCount = field.Primitive("dataWordCount", 14, Types.uint16, default_=0)
@@ -461,8 +461,8 @@ class _:
     
     @extend(Node.enum)
     class _:
-        __data_size__ = 5
-        __ptrs_size__ = 6
+        __static_data_size__ = 5
+        __static_ptrs_size__ = 6
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: list fields")
         enumerants = field.List("enumerants", 64, Enumerant)
@@ -471,8 +471,8 @@ class _:
     
     @extend(Node.interface)
     class _:
-        __data_size__ = 5
-        __ptrs_size__ = 6
+        __static_data_size__ = 5
+        __static_ptrs_size__ = 6
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: list fields")
         methods = field.List("methods", 64, Method)
@@ -482,8 +482,8 @@ class _:
     
     @extend(Node.const)
     class _:
-        __data_size__ = 5
-        __ptrs_size__ = 6
+        __static_data_size__ = 5
+        __static_ptrs_size__ = 6
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: struct fields")
         type = field.Struct("type", 64, Type)
@@ -493,8 +493,8 @@ class _:
     
     @extend(Node.annotation)
     class _:
-        __data_size__ = 5
-        __ptrs_size__ = 6
+        __static_data_size__ = 5
+        __static_ptrs_size__ = 6
         def __init__(self, *args, **kwds):
             raise NotImplementedError("Not supported: struct fields")
         type = field.Struct("type", 64, Type)
