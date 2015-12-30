@@ -1,4 +1,6 @@
 from capnpy.blob cimport Blob
 
 cdef class Struct(Blob):
-    pass
+    cdef public long __data_size__
+    cdef public long __ptrs_size__
+

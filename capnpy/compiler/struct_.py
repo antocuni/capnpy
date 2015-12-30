@@ -37,8 +37,8 @@ class Node__Struct:
         #
         with ns.block("{cdef class} {name}(_Struct):"):
             ns.ww("""
-                __data_size__ = {data_size}
-                __ptrs_size__ = {ptrs_size}
+                ## __data_size__ = {data_size}
+                ## __ptrs_size__ = {ptrs_size}
 
                 @classmethod
                 def _allocate(cls):

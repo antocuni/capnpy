@@ -18,23 +18,23 @@ class Struct(Blob):
 
     __tag_offset__ = None
     __tag__ = None
-    __data_size__ = None
-    __ptrs_size__ = None
+    ## __data_size__ = None
+    ## __ptrs_size__ = None
 
     @classmethod
     def from_buffer(cls, buf, offset, segment_offsets, data_size, ptrs_size):
         self = cls._allocate()
         self._init(buf, offset, segment_offsets)
-        if cls.__data_size__ == data_size and cls.__ptrs_size__ == ptrs_size:
-            # PyPy optimization: don't set these if they are equal to the
-            # default values, which we expect to be the normal and most
-            # frequent case: this way, PyPy will represent the instances using
-            # a class-map without __data_size__ and __ptrs_size__, and the JIT
-            # will be able to constant-fold them.
-            pass
-        else:
-            self.__data_size__ = data_size
-            self.__ptrs_size__ = ptrs_size
+        ## if cls.__data_size__ == data_size and cls.__ptrs_size__ == ptrs_size:
+        ##     # PyPy optimization: don't set these if they are equal to the
+        ##     # default values, which we expect to be the normal and most
+        ##     # frequent case: this way, PyPy will represent the instances using
+        ##     # a class-map without __data_size__ and __ptrs_size__, and the JIT
+        ##     # will be able to constant-fold them.
+        ##     pass
+        ## else:
+        self.__data_size__ = data_size
+        self.__ptrs_size__ = ptrs_size
         return self
 
     @classmethod
