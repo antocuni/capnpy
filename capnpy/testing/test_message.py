@@ -36,8 +36,7 @@ def test_segments():
 
 def test_dumps():
     class Point(Struct):
-        __data_size__ = 2
-        __ptrs_size__ = 0
+        pass
     
     buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
            '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
@@ -51,8 +50,7 @@ def test_dumps():
 
 def test_dumps_alignment():
     class Person(Struct):
-        __data_size__ = 1
-        __ptrs_size__ = 1
+        pass
 
     buf = ('\x20\x00\x00\x00\x00\x00\x00\x00'   # age=32
            '\x01\x00\x00\x00\x2a\x00\x00\x00'   # name=ptr

@@ -149,12 +149,10 @@ def test_equality_many_ptrs():
 
 def test_equality_different_classes():
     class A(Struct):
-        __data_size__ = 2
-        __ptrs_size__ = 0
+        pass
 
     class B(Struct):
-        __data_size__ = 2
-        __ptrs_size__ = 0
+        pass
 
     buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
@@ -228,8 +226,7 @@ def test_split_ptrs():
 
 def test_compact():
     class Rect(Struct):
-        __data_size__ = 1
-        __ptrs_size__ = 2
+        pass
 
     buf = ('garbage0'
            '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
