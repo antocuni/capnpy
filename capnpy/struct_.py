@@ -7,13 +7,6 @@ undefined = object()
 class Struct(Blob):
     """
     Abstract base class: a blob representing a struct.
-
-    Struct subclasses are expected to set __data_size__ and __ptrs_size__,
-    which contain the size of the data and pointer sections as defined in the
-    schema. However, note that you can also pass explicit values for data_size
-    and ptrs_size when calling Struct.from_buffer(...): this is needed to
-    support schema evolution, and in particular when using an old schema to
-    read newer messages, which might contain more fields.
     """
 
     __tag_offset__ = None
@@ -25,6 +18,10 @@ class Struct(Blob):
     def from_buffer(cls, buf, offset, segment_offsets, data_size, ptrs_size):
         self = cls._allocate()
         self._init(buf, offset, segment_offsets)
+        self._struct_init(data_size, ptrs_size)
+        return self
+
+    def _struct_init(self, data_size, ptrs_size):
         ## if cls.__data_size__ == data_size and cls.__ptrs_size__ == ptrs_size:
         ##     # PyPy optimization: don't set these if they are equal to the
         ##     # default values, which we expect to be the normal and most
@@ -33,9 +30,8 @@ class Struct(Blob):
         ##     # will be able to constant-fold them.
         ##     pass
         ## else:
-        self.__data_size__ = data_size
-        self.__ptrs_size__ = ptrs_size
-        return self
+        self._data_size = data_size
+        self._ptrs_size = ptrs_size
 
     @classmethod
     def _allocate(cls):
@@ -66,7 +62,7 @@ class Struct(Blob):
 
 
     def _ptr_offset_by_index(self, i):
-        return (self.__data_size__ + i) * 8
+        return (self._data_size + i) * 8
 
     def _get_body_range(self):
         return self._get_body_start(), self._get_body_end()
@@ -78,12 +74,12 @@ class Struct(Blob):
         return self._offset
 
     def _get_body_end(self):
-        return self._offset + (self.__data_size__ + self.__ptrs_size__) * 8
+        return self._offset + (self._data_size + self._ptrs_size) * 8
 
     def _get_extra_start(self):
-        if self.__ptrs_size__ == 0:
+        if self._ptrs_size == 0:
             return self._get_body_end()
-        for i in range(self.__ptrs_size__):
+        for i in range(self._ptrs_size):
             ptr_offset = self._ptr_offset_by_index(i)
             ptr = self._read_raw_ptr(ptr_offset)
             assert ptr.kind != FarPtr.KIND
@@ -94,7 +90,7 @@ class Struct(Blob):
         return self._get_body_end()
 
     def _get_extra_end_maybe(self):
-        if self.__ptrs_size__ == 0:
+        if self._ptrs_size == 0:
             return None # no extra
         #
         # the end of our extra correspond to the end of our last non-null
@@ -102,7 +98,7 @@ class Struct(Blob):
         # compute the extra range this way
         #
         # XXX: we should probably unroll this loop
-        i = self.__ptrs_size__ - 1 # start from the last ptr
+        i = self._ptrs_size - 1 # start from the last ptr
         while i >= 0:
             ptr_offset = self._ptr_offset_by_index(i)
             blob = self._read_generic_pointer(ptr_offset)
@@ -138,7 +134,7 @@ class Struct(Blob):
 
     def _get_data_key(self):
         start = self._get_body_start()
-        data_end = start + self.__data_size__*8
+        data_end = start + self._data_size*8
         return self._buf[start:data_end]
 
     def _get_ptrs_key(self):
@@ -163,10 +159,10 @@ class Struct(Blob):
                     ...)
         """
         start = self._get_body_start()
-        ptrs_start = start + self.__data_size__*8
-        ptrs_key = [''] * self.__ptrs_size__ # pre-allocate list
+        ptrs_start = start + self._data_size*8
+        ptrs_key = [''] * self._ptrs_size # pre-allocate list
         offset = ptrs_start + 4
-        for i in range(self.__ptrs_size__):
+        for i in range(self._ptrs_size):
             ptrs_key[i] = struct.unpack_from('i', self._buf, offset)
             offset += 8
         return tuple(ptrs_key)
@@ -181,7 +177,7 @@ class Struct(Blob):
         specified offset, in words. The ptrs in the body will be adjusted
         accordingly.
         """
-        if self.__ptrs_size__ == 0:
+        if self._ptrs_size == 0:
             # easy case, just copy the body
             start, end = self._get_body_range()
             return self._buf[start:end], ''
@@ -205,7 +201,7 @@ class Struct(Blob):
         extra_start, extra_end = self._get_extra_range()
         #
         # 1) data section
-        data_size = self.__data_size__
+        data_size = self._data_size
         data_buf = self._buf[body_start:body_start+data_size*8]
         #
         # 2) ptrs section
@@ -218,7 +214,7 @@ class Struct(Blob):
         #
         # iterate over and fix the pointers
         parts = [data_buf]
-        for j in range(self.__ptrs_size__):
+        for j in range(self._ptrs_size):
             # read pointer, update its offset, and pack it
             ptr = self._read_raw_ptr(self._ptr_offset_by_index(j))
             if ptr != 0:
@@ -241,7 +237,7 @@ class Struct(Blob):
         body, extra = self._split(0)
         buf = body+extra
         return self.__class__.from_buffer(buf, 0, None,
-                                          self.__data_size__, self.__ptrs_size__)
+                                          self._data_size, self._ptrs_size)
 
     def __hash__(self):
         return hash(self._get_key())

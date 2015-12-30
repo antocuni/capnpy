@@ -129,8 +129,8 @@ class Blob(object):
     def _read_group(self, groupcls):
         return groupcls.from_buffer(self._buf, self._offset,
                                     self._segment_offsets,
-                                    self.__data_size__,
-                                    self.__ptrs_size__)
+                                    self._data_size,
+                                    self._ptrs_size)
 
     def _read_generic_pointer(self, ptr_offset):
         ptr = self._read_raw_ptr(ptr_offset)

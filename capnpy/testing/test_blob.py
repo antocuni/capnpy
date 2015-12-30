@@ -52,8 +52,8 @@ def test_read_struct():
     p = blob._read_struct(0, Struct)
     assert p._buf is blob._buf
     assert p._offset == 8
-    assert p.__data_size__ == 2
-    assert p.__ptrs_size__ == 0
+    assert p._data_size == 2
+    assert p._ptrs_size == 0
     assert p._read_primitive(0, Types.int64) == 1
     assert p._read_primitive(8, Types.int64) == 2
 
@@ -112,14 +112,14 @@ def test_read_group():
     blob = Struct.from_buffer(buf, 8, None, data_size=4, ptrs_size=0)
     a = blob._read_group(GroupA)
     assert isinstance(a, GroupA)
-    assert a.__data_size__ == 4
-    assert a.__ptrs_size__ == 0
+    assert a._data_size == 4
+    assert a._ptrs_size == 0
     assert a._read_primitive(0, Types.int64) == 1  # a.x
     #
     b = blob._read_group(GroupB)
     assert isinstance(b, GroupB)
-    assert b.__data_size__ == 4
-    assert b.__ptrs_size__ == 0
+    assert b._data_size == 4
+    assert b._ptrs_size == 0
     assert b._read_primitive(16, Types.int64) == 3 # b.x
 
 

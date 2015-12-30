@@ -95,6 +95,8 @@ class Node__Struct:
             call = m.code.call('self.__new', ctor.argnames)
             m.w('buf = {call}', call=call)
             m.w('self._init(buf, 0, None)')
+            m.w('self._struct_init({data_size}, {ptrs_size})',
+                data_size=data_size, ptrs_size=ptrs_size)
 
     def _emit_ctors_union(self, m):
         # suppose we have a tag whose members are 'circle' and 'square': we
