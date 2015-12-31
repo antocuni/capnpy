@@ -17,7 +17,8 @@ class List(Blob):
         item_type: the type of each list item. Either a Blob/Struct subclass,
         or a Types.*
         """
-        self = super(List, cls).from_buffer(buf, offset, segment_offsets)
+        self = cls.__new__(cls)
+        Blob.__init__(self, buf, offset, segment_offsets)
         self._item_type = item_type
         self._set_list_tag(size_tag, item_count)
         return self

@@ -39,10 +39,6 @@ class Node__Struct:
             ns.ww("""
                 __static_data_size__ = {data_size}
                 __static_ptrs_size__ = {ptrs_size}
-
-                @classmethod
-                def _allocate(cls):
-                    return {dotname}.__new__(cls)
             """)
             for child in m.children[self.id]:
                 child.emit_reference_as_child(m)
@@ -94,7 +90,7 @@ class Node__Struct:
         with m.code.def_('__init__', ['self'] + ctor.argnames):
             call = m.code.call('self.__new', ctor.argnames)
             m.w('buf = {call}', call=call)
-            m.w('self._init(buf, 0, None)')
+            m.w('_Struct.__init__(self, buf, 0, None)')
             m.w('self._struct_init({data_size}, {ptrs_size})',
                 data_size=data_size, ptrs_size=ptrs_size)
 
@@ -145,12 +141,12 @@ class Node__Struct:
         #     if square is not undefined:
         #         self._assert_undefined(circle, 'circle', 'square')
         #         buf = cls.__new_squadre(x=x, y=y)
-        #         self._init(buf, 0, None)
+        #         _Struct.__init__(self, buf, 0, None)
         #         return
         #     if circle is not undefined:
         #         self._assert_undefined(square, 'square', 'circle')
         #         buf = cls.__new_circle(x=x, y=y)
-        #         self._init(buf, 0, None)
+        #         _Struct.__init__(self, buf, 0, None)
         #         return
         #     raise TypeError("one of the following args is required: square, circle")
         args = [m._field_name(f) for f in std_fields]
@@ -174,7 +170,7 @@ class Node__Struct:
                     args = ['%s=%s' % (arg, arg) for arg in args]
                     m.w('buf = self.__new_{ctor}({args})',
                         ctor=tag_field_name, args=m.code.args(args))
-                    m.w('self._init(buf, 0, None)')
+                    m.w('_Struct.__init__(self, buf, 0, None)')
                     m.w('return')
             #
             tags = [m._field_name(f) for f in tag_fields]

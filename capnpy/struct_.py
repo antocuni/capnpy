@@ -21,19 +21,14 @@ class Struct(Blob):
 
     @classmethod
     def from_buffer(cls, buf, offset, segment_offsets, data_size, ptrs_size):
-        self = cls._allocate()
-        self._init(buf, offset, segment_offsets)
+        self = cls.__new__(cls)
+        Blob.__init__(self, buf, offset, segment_offsets)
         self._struct_init(data_size, ptrs_size)
         return self
 
     def _struct_init(self, data_size, ptrs_size):
         self._data_size = data_size
         self._ptrs_size = ptrs_size
-
-    @classmethod
-    def _allocate(cls):
-        # see the comment in Blob._allocate to understand why it's needed
-        return Struct.__new__(cls)
 
     def which(self):
         """
