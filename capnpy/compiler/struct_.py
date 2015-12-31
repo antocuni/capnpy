@@ -81,18 +81,17 @@ class Node__Struct:
             self._emit_ctor_nounion(m)
 
     def _emit_ctor_nounion(self, m):
-        data_size = self.struct.dataWordCount
-        ptrs_size = self.struct.pointerCount
-        ctor = Structor(m, '__new', data_size, ptrs_size, self.struct.fields)
+        ns = m.code.new_scope()
+        ns.data_size = self.struct.dataWordCount
+        ns.ptrs_size = self.struct.pointerCount
+        ctor = Structor(m, '__new', ns.data_size, ns.ptrs_size, self.struct.fields)
         ctor.declare(m.code)
-        m.w()
+        ns.w()
         #
-        with m.code.def_('__init__', ['self'] + ctor.argnames):
+        with ns.def_('__init__', ['self'] + ctor.argnames):
             call = m.code.call('self.__new', ctor.argnames)
-            m.w('buf = {call}', call=call)
-            m.w('_Struct.__init__(self, buf, 0, None)')
-            m.w('self._struct_init({data_size}, {ptrs_size})',
-                data_size=data_size, ptrs_size=ptrs_size)
+            ns.w('buf = {call}', call=call)
+            ns.w('_Struct.__init__(self, buf, 0, None, {data_size}, {ptrs_size})')
 
     def _emit_ctors_union(self, m):
         # suppose we have a tag whose members are 'circle' and 'square': we
@@ -108,8 +107,9 @@ class Node__Struct:
         #
         # when calling __init__, one and only one of square and circle must be given. 
         #
-        data_size = self.struct.dataWordCount
-        ptrs_size = self.struct.pointerCount
+        ns = m.code.new_scope()
+        ns.data_size = self.struct.dataWordCount
+        ns.ptrs_size = self.struct.pointerCount
         tag_offset = self.struct.discriminantOffset * 2
         #
         std_fields = [] # non-union fields
@@ -125,16 +125,15 @@ class Node__Struct:
             fields = [tag_field] + std_fields
             tag_name  = m._field_name(tag_field)
             ctor_name = '__new_' + tag_name
-            ctor = Structor(m, ctor_name, data_size, ptrs_size, fields,
+            ctor = Structor(m, ctor_name, ns.data_size, ns.ptrs_size, fields,
                             tag_offset, tag_field.discriminantValue)
             ctor.declare(m.code)
             #
-            m.w('@classmethod')
-            with m.code.def_('new_' + tag_name, ['cls'] + ctor.argnames):
+            ns.w('@classmethod')
+            with ns.def_('new_' + tag_name, ['cls'] + ctor.argnames):
                 call = m.code.call('cls.' + ctor_name, ctor.argnames)
-                m.w('buf = {call}', call=call)
-                m.w('return cls.from_buffer(buf, 0, None, {data_size}, {ptrs_size})',
-                    data_size=data_size, ptrs_size=ptrs_size)
+                ns.w('buf = {call}', call=call)
+                ns.w('return cls.from_buffer(buf, 0, None, {data_size}, {ptrs_size})')
         #
         # finally, create the __init__
         # def __init__(cls, x, y, square=undefined, circle=undefined):
@@ -152,31 +151,31 @@ class Node__Struct:
         args = [m._field_name(f) for f in std_fields]
         for f in tag_fields:
             args.append('%s=_undefined' % m._field_name(f))
-        with m.block('def __init__(self, {arglist}):', arglist=m.code.args(args)):
+        with ns.block('def __init__(self, {arglist}):', arglist=m.code.args(args)):
             for tag_field in tag_fields:
                 tag_field_name = m._field_name(tag_field)
-                with m.block('if {name} is not _undefined:', name=tag_field_name):
+                with ns.block('if {name} is not _undefined:', name=tag_field_name):
                     # emit the series of _assert_undefined, for each other tag field
                     for other_tag_field in tag_fields:
                         if other_tag_field is tag_field:
                             continue
-                        m.w('self._assert_undefined({fname}, "{fname}", "{myname}")',
-                            fname=m._field_name(other_tag_field),
-                            myname=tag_field_name)
+                        ns.w('self._assert_undefined({fname}, "{fname}", "{myname}")',
+                             fname=m._field_name(other_tag_field),
+                             myname=tag_field_name)
                     #
                     # return cls.new_square(x=x, y=y)
                     args = [m._field_name(f) for f in std_fields]
                     args.append(m._field_name(tag_field))
                     args = ['%s=%s' % (arg, arg) for arg in args]
-                    m.w('buf = self.__new_{ctor}({args})',
-                        ctor=tag_field_name, args=m.code.args(args))
-                    m.w('_Struct.__init__(self, buf, 0, None)')
-                    m.w('return')
+                    ns.w('buf = self.__new_{ctor}({args})',
+                         ctor=tag_field_name, args=m.code.args(args))
+                    ns.w('_Struct.__init__(self, buf, 0, None, {data_size}, {ptrs_size})')
+                    ns.w('return')
             #
             tags = [m._field_name(f) for f in tag_fields]
             tags = ', '.join(tags)
-            m.w('raise TypeError("one of the following args is required: {tags}")',
-                tags=tags)
+            ns.w('raise TypeError("one of the following args is required: {tags}")',
+                 tags=tags)
 
     def _emit_repr(self, m):
         # def shortrepr(self):

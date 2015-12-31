@@ -19,16 +19,16 @@ class Struct(Blob):
     __static_data_size__ = None
     __static_ptrs_size__ = None
 
+    def __init__(self, buf, offset, segment_offsets, data_size, ptrs_size):
+        Blob.__init__(self, buf, offset, segment_offsets)
+        self._data_size = data_size
+        self._ptrs_size = ptrs_size
+
     @classmethod
     def from_buffer(cls, buf, offset, segment_offsets, data_size, ptrs_size):
         self = cls.__new__(cls)
-        Blob.__init__(self, buf, offset, segment_offsets)
-        self._struct_init(data_size, ptrs_size)
+        Struct.__init__(self, buf, offset, segment_offsets, data_size, ptrs_size)
         return self
-
-    def _struct_init(self, data_size, ptrs_size):
-        self._data_size = data_size
-        self._ptrs_size = ptrs_size
 
     def which(self):
         """
