@@ -12,6 +12,10 @@ class Struct(Blob):
     __tag_offset__ = None
     __tag__ = None
 
+    # __static_{data,ptrs}_size__ contain the size of the struct as known from
+    # the schema: they are class attributes. On the other hand, _data_size and
+    # _ptrs_size contain the size as specified by the pointer which is
+    # pointing to the particular capnp struct, so they are instance attributes
     __static_data_size__ = None
     __static_ptrs_size__ = None
 
@@ -23,14 +27,6 @@ class Struct(Blob):
         return self
 
     def _struct_init(self, data_size, ptrs_size):
-        ## if cls.__data_size__ == data_size and cls.__ptrs_size__ == ptrs_size:
-        ##     # PyPy optimization: don't set these if they are equal to the
-        ##     # default values, which we expect to be the normal and most
-        ##     # frequent case: this way, PyPy will represent the instances using
-        ##     # a class-map without __data_size__ and __ptrs_size__, and the JIT
-        ##     # will be able to constant-fold them.
-        ##     pass
-        ## else:
         self._data_size = data_size
         self._ptrs_size = ptrs_size
 
