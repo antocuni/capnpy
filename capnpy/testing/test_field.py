@@ -158,7 +158,7 @@ def test_union():
     buf = ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
            '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
            '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
-    shape = Shape.from_buffer(buf, 0, None, 2, 0)
+    shape = Shape.from_buffer(buf, 0, None, data_size=3, ptrs_size=0)
     assert shape.area == 64
     assert shape.which() == Shape.__tag__.square
     assert shape.square == 8

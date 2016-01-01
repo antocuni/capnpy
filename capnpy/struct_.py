@@ -37,8 +37,22 @@ class Struct(Blob):
         """
         if self.__tag_offset__ is None:
             raise TypeError("Cannot call which() on a non-union type")
-        val = self._read_primitive(self.__tag_offset__, Types.int16)
+        val = self._read_data(self.__tag_offset__, Types.int16)
         return self.__tag__(val)
+
+    def _read_data(self, offset, t):
+        if offset >= self._data_size*8:
+            # reading bytes beyond _data_size is equivalent to read 0
+            return 0
+        return self._read_primitive(offset, t)
+
+    def _read_bit(self, offset, bitmask):
+        val = self._read_data(offset, Types.uint8)
+        return bool(val & bitmask)
+
+    def _read_enum(self, offset, enumtype):
+        val = self._read_data(offset, Types.int16)
+        return enumtype(val)
 
     @classmethod
     def _assert_undefined(cls, val, name, other_name):

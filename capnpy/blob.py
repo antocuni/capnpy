@@ -30,14 +30,6 @@ class Blob(object):
     def _read_primitive(self, offset, t):
         return unpack_primitive(t.fmt, self._buf, self._offset+offset)
 
-    def _read_bit(self, offset, bitmask):
-        val = self._read_primitive(offset, Types.uint8)
-        return bool(val & bitmask)
-
-    def _read_enum(self, offset, enumtype):
-        val = self._read_primitive(offset, Types.int16)
-        return enumtype(val)
-
     def _read_struct(self, offset, structcls):
         """
         Read and dereference a struct pointer at the given offset.  It returns an

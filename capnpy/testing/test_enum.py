@@ -1,6 +1,6 @@
 import py
 from capnpy.enum import enum
-from capnpy.blob import Blob
+from capnpy.struct_ import Struct
 
 def test_enum():
     Color = enum('Color', ('red', 'green', 'blue'))
@@ -22,7 +22,7 @@ def test_read_enum():
     #      color      gender     padding
     buf = '\x02\x00' '\x01\x00' '\x00\x00\x00\x00'
     
-    blob = Blob(buf, 0, None)
+    blob = Struct.from_buffer(buf, 0, None, data_size=1, ptrs_size=0)
     color = blob._read_enum(0, Color)
     gender = blob._read_enum(2, Gender)
     assert color == Color.blue

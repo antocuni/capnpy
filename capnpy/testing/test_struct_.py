@@ -25,6 +25,15 @@ BUF = ('garbage0'
        '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
        '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
 
+def test__read_data():
+    buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+    b1 = Struct.from_buffer(buf, 0, None, data_size=2, ptrs_size=0)
+    assert b1._read_data(0, Types.int64) == 1
+    assert b1._read_data(8, Types.int64) == 2
+    assert b1._read_data(16, Types.int64) == 0 # outside the buffer
+
+
 def test_point_range():
     point = Struct.from_buffer(BUF, 48, None, data_size=2, ptrs_size=0)
     body_start, body_end = point._get_body_range()
@@ -190,7 +199,7 @@ def test_union():
     buf = ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
            '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
            '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
-    shape = Shape.from_buffer(buf, 0, None, data_size=2, ptrs_size=2)
+    shape = Shape.from_buffer(buf, 0, None, data_size=3, ptrs_size=0)
     assert shape.which() == Shape.__tag__.square
     #
     shape._ensure_union(Shape.__tag__.square)
