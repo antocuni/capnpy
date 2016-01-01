@@ -89,7 +89,7 @@ class Data(object):
     def __get__(self, blob, cls):
         if blob is None:
             return self
-        return blob._read_data(self.offset)
+        return blob._read_data_string(self.offset)
 
     def __repr__(self):
         return '<Field %s +%d: Data>' % (self.name, self.offset)

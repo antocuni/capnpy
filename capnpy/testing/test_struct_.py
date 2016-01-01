@@ -1,4 +1,5 @@
 import py
+from capnpy.blob import Types
 from capnpy.struct_ import Struct
 from capnpy.enum import enum
 from capnpy.printer import print_buffer
@@ -244,3 +245,4 @@ def test_compact():
                           '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
                           '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
                           '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
+

@@ -81,7 +81,7 @@ class Blob(object):
         end = start + ptr.item_count - 1
         return self._buf[start:end]
 
-    def _read_data(self, offset):
+    def _read_data_string(self, offset):
         offset, ptr = self._read_ptr(offset)
         if ptr is None:
             return None
