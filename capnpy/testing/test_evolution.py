@@ -33,3 +33,29 @@ class TestEvolution(CompilerTest):
         assert obj.y == 2
         assert obj._data_size == 3
         py.test.raises(AttributeError, "obj.z")
+
+    def test_add_ptr_field(self):
+        py.test.skip('fix me')
+        schema = """
+            @0xbf5147cbbecf40c1;
+            struct Point {
+                x @0 :Int64;
+                y @1 :Int64;
+            }
+
+            struct Old {
+                p1 @0 :Point;
+            }
+
+            struct New {
+                p1 @0 :Point;
+                p2 @1 :Point;
+            }
+        """
+        mod = self.compile(schema)
+        # 1. read an old object with a newer schema
+        s = dumps(mod.Old(p1=mod.Point(x=1, y=2)))
+        obj = loads(s, mod.New)
+        assert obj.p1.x == 1
+        assert obj.p1.y == 2
+        assert obj.p2 is None
