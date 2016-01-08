@@ -12,8 +12,8 @@ def test_read_list():
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     blob = Blob(buf, 0, None)
     lst = blob._read_list(0, PrimitiveList, Types.int64)
-    assert lst._buf is blob._buf
-    assert lst._offset == 8
+    assert lst._blob._buf is blob._buf
+    assert lst._blob._offset == 8
     assert lst._item_offset == 0
     assert lst._item_count == 4
     assert lst._item_length == 8
@@ -31,8 +31,8 @@ def test_read_list_offset():
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     blob = Blob(buf, 4, None)
     lst = blob._read_list(0, PrimitiveList, Types.int64)
-    assert lst._buf is blob._buf
-    assert lst._offset == 12
+    assert lst._blob._buf is blob._buf
+    assert lst._blob._offset == 12
     assert lst._item_count == 4
     assert lst._item_length == 8
     assert lst._read_list_item(0) == 1
@@ -54,8 +54,8 @@ def test_list_of_structs():
            '\x90\x01\x00\x00\x00\x00\x00\x00')   # 400
     blob = Blob(buf, 0, None)
     lst = blob._read_list(0, StructList, Struct)
-    assert lst._buf is blob._buf
-    assert lst._offset == 8
+    assert lst._blob._buf is blob._buf
+    assert lst._blob._offset == 8
     assert lst._item_offset == 8
     assert lst._item_count == 4
     assert lst._item_length == 16
