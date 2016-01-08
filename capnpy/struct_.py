@@ -54,6 +54,23 @@ class Struct(Blob):
         val = self._read_data(offset, Types.int16)
         return enumtype(val)
 
+    def _read_struct(self, offset, structcls):
+        """
+        Read and dereference a struct pointer at the given offset.  It returns an
+        instance of ``cls`` pointing to the dereferenced struct.
+        """
+        offset, ptr = self._read_ptr(offset)
+        if ptr is None:
+            return None
+        assert ptr.kind == StructPtr.KIND
+        ptr = ptr.specialize()
+        struct_offset = ptr.deref(offset)
+        return structcls.from_buffer(self._buf,
+                                     self._offset+struct_offset,
+                                     self._segment_offsets,
+                                     ptr.data_size,
+                                     ptr.ptrs_size)
+
     @classmethod
     def _assert_undefined(cls, val, name, other_name):
         if val is not undefined:

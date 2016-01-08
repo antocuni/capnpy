@@ -48,7 +48,7 @@ def test_read_struct():
     buf = ('\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
            '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
            '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
-    blob = Blob(buf, 0, None)
+    blob = Struct.from_buffer(buf, 0, None, data_size=0, ptrs_size=1)
     p = blob._read_struct(0, Struct)
     assert p._buf is blob._buf
     assert p._offset == 8
@@ -68,7 +68,7 @@ def test_nested_struct():
            '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
            '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
-    rect = Blob(buf, 0, None)
+    rect = Struct.from_buffer(buf, 0, None, data_size=0, ptrs_size=2)
     p1 = rect._read_struct(0, Struct)
     p2 = rect._read_struct(8, Struct)
     assert p1._read_primitive(0, Types.int64) == 1
@@ -80,9 +80,11 @@ def test_nested_struct():
 def test_null_pointers():
     buf = '\x00\x00\x00\x00\x00\x00\x00\x00'    # NULL pointer
     blob = Blob(buf, 0, None)
-    assert blob._read_struct(0, Struct) is None
     assert blob._read_list(0, None, None) is None
     assert blob._read_string(0) is None
+    #
+    blob = Struct.from_buffer(buf, 0, None, data_size=0, ptrs_size=1)
+    assert blob._read_struct(0, Struct) is None
 
 
 def test_read_group():
@@ -133,7 +135,7 @@ def test_far_pointer():
             '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
     #
     buf = seg0+seg1
-    blob = Blob(buf, 8, segment_offsets=(0, 16))
+    blob = Struct.from_buffer(buf, 8, segment_offsets=(0, 16), data_size=0, ptrs_size=1)
     p = blob._read_struct(0, Struct)
     assert p._read_primitive(0, Types.int64) == 1
     assert p._read_primitive(8, Types.int64) == 2
