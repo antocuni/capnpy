@@ -102,13 +102,6 @@ class Blob(object):
         end = start + ptr.item_count
         return self._buf.s[start:end]
 
-    def _read_raw_ptr(self, offset):
-        """
-        Read a pointer at the specified offset
-        """
-        ptr = self._read_primitive(offset, Types.int64)
-        return Ptr(ptr)
-
     def _read_group(self, groupcls):
         return groupcls.from_buffer(self._buf, self._offset,
                                     self._data_size,
