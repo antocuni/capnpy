@@ -95,7 +95,7 @@ class Blob(object):
                                     self._data_size,
                                     self._ptrs_size)
 
-    def _read_generic_pointer(self, ptr_offset):
+    def _read_list_or_struct(self, ptr_offset):
         ptr_offset, ptr = self._read_ptr(ptr_offset)
         if ptr is None:
             return None
@@ -128,8 +128,7 @@ class Blob(object):
         p.printbuf(start=start, end=end, **kwds)
 
 
-# make sure that these two modules are imported, they are used by
-# _read_generic_pointer. We need to put them at the end because of circular
-# references
+# that these two modules are used by _read_list_or_struct. We need to put them
+# at the end because of circular references
 import capnpy.struct_
 import capnpy.list

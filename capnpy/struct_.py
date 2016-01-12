@@ -123,7 +123,7 @@ class Struct(Blob):
         i = self._ptrs_size - 1 # start from the last ptr
         while i >= 0:
             ptr_offset = self._ptr_offset_by_index(i)
-            blob = self._read_generic_pointer(ptr_offset)
+            blob = self._read_list_or_struct(ptr_offset)
             if blob is not None:
                 return blob._get_end()
             i -= 1

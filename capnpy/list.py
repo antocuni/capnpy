@@ -121,7 +121,7 @@ class List(object):
 
     def _get_body_end_ptr(self):
         ptr_offset = self._get_offset_for_item(self._item_count-1)
-        blob = self._blob._read_generic_pointer(ptr_offset)
+        blob = self._blob._read_list_or_struct(ptr_offset)
         return blob._get_end()
 
     def _get_body_end_scalar(self):
