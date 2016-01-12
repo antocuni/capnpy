@@ -108,20 +108,20 @@ class Blob(object):
                                     self._ptrs_size)
 
     def _read_generic_pointer(self, ptr_offset):
-        ptr = self._buf.read_raw_ptr(self._offset+ptr_offset)
-        if ptr == 0:
+        ptr_offset, ptr = self._read_ptr(ptr_offset)
+        if ptr is None:
             return None
         ptr = ptr.specialize()
         blob_offet = ptr.deref(ptr_offset)
         if ptr.kind == StructPtr.KIND:
             Struct = capnpy.struct_.Struct
             return Struct.from_buffer(self._buf,
-                                      self._offset+blob_offet,
+                                      blob_offet,
                                       ptr.data_size, ptr.ptrs_size)
         elif ptr.kind == ListPtr.KIND:
             List = capnpy.list.List
             return List.from_buffer(self._buf,
-                                    self._offset+blob_offet,
+                                    blob_offet,
                                     ptr.size_tag,ptr.item_count, Blob)
         else:
             assert False, 'Unkwown pointer kind: %s' % ptr.kind
