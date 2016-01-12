@@ -91,7 +91,7 @@ class Node__Struct:
         with ns.def_('__init__', ['self'] + ctor.argnames):
             call = m.code.call('self.__new', ctor.argnames)
             ns.w('buf = {call}', call=call)
-            ns.w('_Struct.__init__(self, buf, 0, None, {data_size}, {ptrs_size})')
+            ns.w('_Struct.__init__(self, buf, 0, {data_size}, {ptrs_size})')
 
     def _emit_ctors_union(self, m):
         # suppose we have a tag whose members are 'circle' and 'square': we
@@ -133,7 +133,7 @@ class Node__Struct:
             with ns.def_('new_' + tag_name, ['cls'] + ctor.argnames):
                 call = m.code.call('cls.' + ctor_name, ctor.argnames)
                 ns.w('buf = {call}', call=call)
-                ns.w('return cls.from_buffer(buf, 0, None, {data_size}, {ptrs_size})')
+                ns.w('return cls.from_buffer(buf, 0, {data_size}, {ptrs_size})')
         #
         # finally, create the __init__
         # def __init__(cls, x, y, square=undefined, circle=undefined):
@@ -169,7 +169,7 @@ class Node__Struct:
                     args = ['%s=%s' % (arg, arg) for arg in args]
                     ns.w('buf = self.__new_{ctor}({args})',
                          ctor=tag_field_name, args=m.code.args(args))
-                    ns.w('_Struct.__init__(self, buf, 0, None, {data_size}, {ptrs_size})')
+                    ns.w('_Struct.__init__(self, buf, 0, {data_size}, {ptrs_size})')
                     ns.w('return')
             #
             tags = [m._field_name(f) for f in tag_fields]
