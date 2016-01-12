@@ -4,7 +4,7 @@ from capnpy.blob import Blob, Types
 from capnpy.ptr import Ptr, StructPtr, ListPtr
 from capnpy import listbuilder
 
-class List(object):
+class List(Blob):
 
     @classmethod
     def from_buffer(cls, buf, offset, size_tag, item_count, item_type):
@@ -18,15 +18,22 @@ class List(object):
         or a Types.*
         """
         self = cls.__new__(cls)
-        self._blob = Blob(buf, offset)
+        Blob.__init__(self, buf)
+        self._offset = offset
         self._item_type = item_type
         self._set_list_tag(size_tag, item_count)
         return self
 
+    def _read_data(self, offset, t):
+        return self._buf.read_primitive(self._offset+offset, t)
+
+    def _read_ptr(self, offset):
+        return self._buf.read_ptr(self._offset+offset)
+
     def _set_list_tag(self, size_tag, item_count):
         self._size_tag = size_tag
         if size_tag == ListPtr.SIZE_COMPOSITE:
-            tag = self._blob._buf.read_primitive(self._blob._offset, Types.int64)
+            tag = self._read_data(0, Types.int64)
             tag = StructPtr(tag)
             self._tag = tag
             self._item_count = tag.offset
@@ -74,7 +81,7 @@ class List(object):
         return self._get_body_start(), self._get_body_end()
 
     def _get_body_start(self):
-        return self._blob._offset
+        return self._offset
 
     def _get_body_end(self):
         if self._size_tag == ListPtr.SIZE_COMPOSITE:
@@ -105,8 +112,8 @@ class List(object):
         i = self._item_count-1
         while i >= 0:
             struct_offset = self._get_offset_for_item(i)
-            struct_offset += self._blob._offset
-            mystruct = Struct.from_buffer(self._blob._buf,
+            struct_offset += self._offset
+            mystruct = Struct.from_buffer(self._buf,
                                           struct_offset,
                                           self._tag.data_size,
                                           self._tag.ptrs_size)
@@ -121,18 +128,18 @@ class List(object):
 
     def _get_body_end_ptr(self):
         ptr_offset = self._get_offset_for_item(self._item_count-1)
-        blob = self._blob._read_list_or_struct(ptr_offset)
+        blob = self._read_list_or_struct(ptr_offset)
         return blob._get_end()
 
     def _get_body_end_scalar(self):
-        return self._blob._offset + self._item_length*self._item_count
+        return self._offset + self._item_length*self._item_count
 
     def _get_end(self):
         return self._get_body_end()
 
     def _get_key(self):
         start, end = self._get_body_range()
-        body = self._blob._buf.s[start:end]
+        body = self._buf.s[start:end]
         return (self._item_count, self._item_type, body)
 
     def __eq__(self, other):
@@ -157,15 +164,14 @@ class PrimitiveList(List):
     ItemBuilder = listbuilder.PrimitiveItemBuilder
     
     def _read_list_item(self, offset):
-        buf = self._blob._buf
-        return buf.read_primitive(self._blob._offset+offset, self._item_type)
+        return self._read_data(offset, self._item_type)
 
 class StructList(List):
     ItemBuilder = listbuilder.StructItemBuilder
 
     def _read_list_item(self, offset):
-        return self._item_type.from_buffer(self._blob._buf,
-                                           self._blob._offset+offset,
+        return self._item_type.from_buffer(self._buf,
+                                           self._offset+offset,
                                            self._tag.data_size,
                                            self._tag.ptrs_size)
 
@@ -174,5 +180,5 @@ class StringList(List):
     ItemBuilder = listbuilder.StringItemBuilder
 
     def _read_list_item(self, offset):
-        return self._blob._read_string(offset)
+        return self._read_string(offset)
 

@@ -49,19 +49,23 @@ class CapnpBuffer(object):
 
 class Blob(object):
     """
-    Base class to read a generic capnp object.
+    Abstract base class to read a generic capnp object.
     """
 
     @classmethod
     def __extend__(cls, newcls):
         return extend(cls)(newcls)
 
-    def __init__(self, buf, offset):
+    def __init__(self, buf):
         if isinstance(buf, str):
             buf = CapnpBuffer(buf, None)
         self._buf = buf
-        self._offset = offset
-        assert self._offset < len(self._buf.s)
+
+    def _read_data(self, offset, t):
+        raise NotImplementedError
+
+    def _read_ptr(self, offset):
+        raise NotImplementedError
 
     def _read_list(self, offset, listcls, item_type):
         offset, ptr = self._read_ptr(offset)
@@ -90,11 +94,6 @@ class Blob(object):
         end = start + ptr.item_count + additional_size
         return self._buf.s[start:end]
 
-    def _read_group(self, groupcls):
-        return groupcls.from_buffer(self._buf, self._offset,
-                                    self._data_size,
-                                    self._ptrs_size)
-
     def _read_list_or_struct(self, ptr_offset):
         ptr_offset, ptr = self._read_ptr(ptr_offset)
         if ptr is None:
@@ -114,12 +113,9 @@ class Blob(object):
         else:
             assert False, 'Unkwown pointer kind: %s' % ptr.kind
 
-    def _read_ptr(self, offset):
-        return self._buf.read_ptr(self._offset+offset)
-
     def _print_buf(self, start=None, end='auto', **kwds):
         if start is None:
-            start = self._offset
+            start = self._data_offset
         if end == 'auto':
             end = self._get_body_end()
         elif end is None:

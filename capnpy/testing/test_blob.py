@@ -3,6 +3,19 @@ import struct
 from capnpy.blob import CapnpBuffer, Blob, Types, unpack_primitive
 from capnpy.struct_ import Struct
 
+class BlobForTests(Blob):
+
+    def __init__(self, buf, offset):
+        Blob.__init__(self, buf)
+        self._offset = offset
+
+    def _read_data(self, offset, t):
+        return self._buf.read_primitive(self._offset+offset, t)
+
+    def _read_ptr(self, offset):
+        return self._buf.read_ptr(self._offset+offset)
+
+
 def test_unpack_primitive():
     s = struct.pack('q', 1234)
     assert unpack_primitive('q', s, 0) == 1234
@@ -48,7 +61,7 @@ def test_read_struct():
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     p = blob._read_struct(0, Struct)
     assert p._buf is blob._buf
-    assert p._offset == 8
+    assert p._data_offset == 8
     assert p._data_size == 2
     assert p._ptrs_size == 0
     assert p._read_data(0, Types.int64) == 1
@@ -76,7 +89,7 @@ def test_nested_struct():
 
 def test_null_pointers():
     buf = '\x00\x00\x00\x00\x00\x00\x00\x00'    # NULL pointer
-    blob = Blob(buf, 0)
+    blob = BlobForTests(buf, 0)
     assert blob._read_list(0, None, None) is None
     assert blob._read_string(0) is None
     #

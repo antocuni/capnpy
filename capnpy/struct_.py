@@ -20,7 +20,10 @@ class Struct(Blob):
     __static_ptrs_size__ = None
 
     def __init__(self, buf, offset, data_size, ptrs_size):
-        Blob.__init__(self, buf, offset)
+        Blob.__init__(self, buf)
+        assert offset < len(self._buf.s)
+        self._data_offset = offset
+        self._ptrs_offset = offset # XXXX + data_size*8
         self._data_size = data_size
         self._ptrs_size = ptrs_size
 
@@ -44,7 +47,15 @@ class Struct(Blob):
         if offset >= self._data_size*8:
             # reading bytes beyond _data_size is equivalent to read 0
             return 0
-        return self._buf.read_primitive(self._offset+offset, t)
+        return self._buf.read_primitive(self._data_offset+offset, t)
+
+    def _read_ptr(self, offset):
+        return self._buf.read_ptr(self._ptrs_offset+offset)
+
+    def _read_group(self, groupcls):
+        return groupcls.from_buffer(self._buf, self._data_offset,
+                                    self._data_size,
+                                    self._ptrs_size)
 
     def _read_bit(self, offset, bitmask):
         val = self._read_data(offset, Types.uint8)
@@ -93,20 +104,20 @@ class Struct(Blob):
         return self._get_extra_start(), self._get_extra_end()
 
     def _get_body_start(self):
-        return self._offset
+        return self._data_offset
 
     def _get_body_end(self):
-        return self._offset + (self._data_size + self._ptrs_size) * 8
+        return self._data_offset + (self._data_size + self._ptrs_size) * 8
 
     def _get_extra_start(self):
         if self._ptrs_size == 0:
             return self._get_body_end()
         for i in range(self._ptrs_size):
             ptr_offset = self._ptr_offset_by_index(i)
-            ptr = self._buf.read_raw_ptr(self._offset+ptr_offset)
+            ptr = self._buf.read_raw_ptr(self._data_offset+ptr_offset)
             assert ptr.kind != FarPtr.KIND
             if ptr != 0:
-                return self._offset + ptr.deref(ptr_offset)
+                return self._data_offset + ptr.deref(ptr_offset)
         #
         # if we are here, it means that all ptrs are null
         return self._get_body_end()
@@ -238,7 +249,7 @@ class Struct(Blob):
         parts = [data_buf]
         for j in range(self._ptrs_size):
             # read pointer, update its offset, and pack it
-            ptr = self._buf.read_raw_ptr(self._offset+self._ptr_offset_by_index(j))
+            ptr = self._buf.read_raw_ptr(self._data_offset+self._ptr_offset_by_index(j))
             if ptr != 0:
                 assert ptr.kind != FarPtr.KIND
                 ptr = Ptr.new(ptr.kind, ptr.offset+additional_offset, ptr.extra)

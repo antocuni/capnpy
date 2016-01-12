@@ -70,7 +70,7 @@ class TestIntegration(CompilerTest):
         foo = mod.Foo(p)
         assert foo.key.name == 'dummy'
         # we check that the structure has been packed
-        assert foo.key._offset == 8
+        assert foo.key._data_offset == 8
         assert foo.key._buf.s[8:] == ('\x01\x00\x00\x00\x32\x00\x00\x00'  # ptr to dummy
                                       'dummy\x00\x00\x00')
 
