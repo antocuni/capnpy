@@ -66,7 +66,7 @@ class Struct(Blob):
         ptr = ptr.specialize()
         struct_offset = ptr.deref(offset)
         return structcls.from_buffer(self._buf,
-                                     self._offset+struct_offset,
+                                     struct_offset,
                                      ptr.data_size,
                                      ptr.ptrs_size)
 
@@ -103,7 +103,7 @@ class Struct(Blob):
             return self._get_body_end()
         for i in range(self._ptrs_size):
             ptr_offset = self._ptr_offset_by_index(i)
-            ptr = self._read_raw_ptr(ptr_offset)
+            ptr = self._buf.read_raw_ptr(self._offset+ptr_offset)
             assert ptr.kind != FarPtr.KIND
             if ptr != 0:
                 return self._offset + ptr.deref(ptr_offset)
@@ -238,7 +238,7 @@ class Struct(Blob):
         parts = [data_buf]
         for j in range(self._ptrs_size):
             # read pointer, update its offset, and pack it
-            ptr = self._read_raw_ptr(self._ptr_offset_by_index(j))
+            ptr = self._buf.read_raw_ptr(self._offset+self._ptr_offset_by_index(j))
             if ptr != 0:
                 assert ptr.kind != FarPtr.KIND
                 ptr = Ptr.new(ptr.kind, ptr.offset+additional_offset, ptr.extra)

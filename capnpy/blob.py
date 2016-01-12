@@ -21,6 +21,10 @@ class CapnpBuffer(object):
     def read_primitive(self, offset, t):
         return unpack_primitive(t.fmt, self.s, offset)
 
+    def read_raw_ptr(self, offset):
+        ptr = self.read_primitive(offset, Types.int64)
+        return Ptr(ptr)
+
 
 class Blob(object):
     """
@@ -50,7 +54,7 @@ class Blob(object):
         ptr = ptr.specialize()
         list_offset = ptr.deref(offset)
         return listcls.from_buffer(self._buf,
-                                   self._offset+list_offset,
+                                   list_offset,
                                    ptr.size_tag,
                                    ptr.item_count,
                                    item_type)
@@ -62,8 +66,7 @@ class Blob(object):
         ptr = ptr.specialize()
         assert ptr.kind == ListPtr.KIND
         assert ptr.size_tag == ListPtr.SIZE_8
-        str_offset = ptr.deref(offset)
-        start = self._offset + str_offset
+        start = ptr.deref(offset)
         end = start + ptr.item_count - 1
         return self._buf.s[start:end]
 
@@ -74,8 +77,7 @@ class Blob(object):
         ptr = ptr.specialize()
         assert ptr.kind == ListPtr.KIND
         assert ptr.size_tag == ListPtr.SIZE_8
-        str_offset = ptr.deref(offset)
-        start = self._offset + str_offset
+        start = ptr.deref(offset)
         end = start + ptr.item_count
         return self._buf.s[start:end]
 
@@ -92,7 +94,7 @@ class Blob(object):
                                     self._ptrs_size)
 
     def _read_generic_pointer(self, ptr_offset):
-        ptr = self._read_raw_ptr(ptr_offset)
+        ptr = self._buf.read_raw_ptr(self._offset+ptr_offset)
         if ptr == 0:
             return None
         ptr = ptr.specialize()
@@ -111,13 +113,13 @@ class Blob(object):
             assert False, 'Unkwown pointer kind: %s' % ptr.kind
 
     def _read_ptr(self, offset):
-        ptr = self._read_raw_ptr(offset)
+        ptr = self._buf.read_raw_ptr(self._offset+offset)
         if ptr == 0:
             return offset, None
         if ptr.kind == FarPtr.KIND:
             ptr = ptr.specialize()
             return ptr.follow(self)
-        return offset, ptr
+        return self._offset+offset, ptr
 
     def _print_buf(self, start=None, end='auto', **kwds):
         if start is None:
