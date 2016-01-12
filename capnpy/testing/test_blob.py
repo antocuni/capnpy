@@ -1,6 +1,6 @@
 import py
 import struct
-from capnpy.blob import Blob, Types, unpack_primitive
+from capnpy.blob import CapnpBuffer, Blob, Types, unpack_primitive
 from capnpy.struct_ import Struct
 
 def test_unpack_primitive():
@@ -20,22 +20,22 @@ def test_Blob():
     # buf is an array of int64 == [1, 2]
     buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
-    b1 = Blob(buf, 0, None)
+    b1 = Blob(buf, 0)
     assert b1._read_primitive(0, Types.int64) == 1
     assert b1._read_primitive(8, Types.int64) == 2
     #
-    b2 = Blob(buf, 8, None)
+    b2 = Blob(buf, 8)
     assert b2._read_primitive(0, Types.int64) == 2
 
 
 def test_float64():
     buf = '\x58\x39\xb4\xc8\x76\xbe\xf3\x3f'   # 1.234
-    blob = Blob(buf, 0, None)
+    blob = Blob(buf, 0)
     assert blob._read_primitive(0, Types.float64) == 1.234
 
 def test_read_ptr():
     buf = '\x90\x01\x00\x00\x02\x00\x04\x00'
-    blob = Blob(buf, 0, None)
+    blob = Blob(buf, 0)
     offset, ptr = blob._read_ptr(0)
     offset = ptr.deref(offset)
     assert offset == 808
@@ -48,7 +48,7 @@ def test_read_struct():
     buf = ('\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
            '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
            '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
-    blob = Struct.from_buffer(buf, 0, None, data_size=0, ptrs_size=1)
+    blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     p = blob._read_struct(0, Struct)
     assert p._buf is blob._buf
     assert p._offset == 8
@@ -68,7 +68,7 @@ def test_nested_struct():
            '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
            '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
-    rect = Struct.from_buffer(buf, 0, None, data_size=0, ptrs_size=2)
+    rect = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=2)
     p1 = rect._read_struct(0, Struct)
     p2 = rect._read_struct(8, Struct)
     assert p1._read_primitive(0, Types.int64) == 1
@@ -79,11 +79,11 @@ def test_nested_struct():
 
 def test_null_pointers():
     buf = '\x00\x00\x00\x00\x00\x00\x00\x00'    # NULL pointer
-    blob = Blob(buf, 0, None)
+    blob = Blob(buf, 0)
     assert blob._read_list(0, None, None) is None
     assert blob._read_string(0) is None
     #
-    blob = Struct.from_buffer(buf, 0, None, data_size=0, ptrs_size=1)
+    blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     assert blob._read_struct(0, Struct) is None
 
 
@@ -111,7 +111,7 @@ def test_read_group():
     # Note that the offsets inside groups are always "absolute" from the
     # beginning of the struct. So, a.x has offset 0, b.x has offset 3.
     #
-    blob = Struct.from_buffer(buf, 8, None, data_size=4, ptrs_size=0)
+    blob = Struct.from_buffer(buf, 8, data_size=4, ptrs_size=0)
     a = blob._read_group(GroupA)
     assert isinstance(a, GroupA)
     assert a._data_size == 4
@@ -134,8 +134,8 @@ def test_far_pointer():
             '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
             '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
     #
-    buf = seg0+seg1
-    blob = Struct.from_buffer(buf, 8, segment_offsets=(0, 16), data_size=0, ptrs_size=1)
+    buf = CapnpBuffer(seg0+seg1, segment_offsets=(0, 16))
+    blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
     p = blob._read_struct(0, Struct)
     assert p._read_primitive(0, Types.int64) == 1
     assert p._read_primitive(8, Types.int64) == 2

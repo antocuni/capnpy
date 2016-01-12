@@ -7,7 +7,7 @@ from capnpy import listbuilder
 class List(object):
 
     @classmethod
-    def from_buffer(cls, buf, offset, segment_offsets, size_tag, item_count, item_type):
+    def from_buffer(cls, buf, offset, size_tag, item_count, item_type):
         """
         buf, offset: the underlying buffer and the offset where the list starts
 
@@ -18,7 +18,7 @@ class List(object):
         or a Types.*
         """
         self = cls.__new__(cls)
-        self._blob = Blob(buf, offset, segment_offsets)
+        self._blob = Blob(buf, offset)
         self._item_type = item_type
         self._set_list_tag(size_tag, item_count)
         return self
@@ -108,7 +108,6 @@ class List(object):
             struct_offset += self._blob._offset
             mystruct = Struct.from_buffer(self._blob._buf,
                                           struct_offset,
-                                          self._blob._segment_offsets,
                                           self._tag.data_size,
                                           self._tag.ptrs_size)
             end = mystruct._get_extra_end_maybe()
@@ -133,7 +132,7 @@ class List(object):
 
     def _get_key(self):
         start, end = self._get_body_range()
-        body = self._blob._buf[start:end]
+        body = self._blob._buf.s[start:end]
         return (self._item_count, self._item_type, body)
 
     def __eq__(self, other):
@@ -166,7 +165,6 @@ class StructList(List):
     def _read_list_item(self, offset):
         return self._item_type.from_buffer(self._blob._buf,
                                            self._blob._offset+offset,
-                                           self._blob._segment_offsets,
                                            self._tag.data_size,
                                            self._tag.ptrs_size)
 

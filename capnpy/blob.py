@@ -12,6 +12,16 @@ from capnpy.type import Types
 from capnpy.printer import BufferPrinter
 from capnpy.unpack import unpack_primitive
 
+class CapnpBuffer(object):
+
+    def __init__(self, s, segment_offsets):
+        self.s = s
+        self.segment_offsets = segment_offsets
+
+    def read_primitive(self, offset, t):
+        return unpack_primitive(t.fmt, self.s, offset)
+
+
 class Blob(object):
     """
     Base class to read a generic capnp object.
@@ -21,14 +31,16 @@ class Blob(object):
     def __extend__(cls, newcls):
         return extend(cls)(newcls)
 
-    def __init__(self, buf, offset, segment_offsets):
+    def __init__(self, buf, offset):
+        if isinstance(buf, str):
+            buf = CapnpBuffer(buf, None)
         self._buf = buf
         self._offset = offset
-        assert self._offset < len(self._buf)
-        self._segment_offsets = segment_offsets
+        assert self._offset < len(self._buf.s)
 
     def _read_primitive(self, offset, t):
-        return unpack_primitive(t.fmt, self._buf, self._offset+offset)
+        # xxx remove this method
+        return self._buf.read_primitive(self._offset+offset, t)
 
     def _read_list(self, offset, listcls, item_type):
         offset, ptr = self._read_ptr(offset)
@@ -39,7 +51,6 @@ class Blob(object):
         list_offset = ptr.deref(offset)
         return listcls.from_buffer(self._buf,
                                    self._offset+list_offset,
-                                   self._segment_offsets,
                                    ptr.size_tag,
                                    ptr.item_count,
                                    item_type)
@@ -54,7 +65,7 @@ class Blob(object):
         str_offset = ptr.deref(offset)
         start = self._offset + str_offset
         end = start + ptr.item_count - 1
-        return self._buf[start:end]
+        return self._buf.s[start:end]
 
     def _read_data_string(self, offset):
         offset, ptr = self._read_ptr(offset)
@@ -66,7 +77,7 @@ class Blob(object):
         str_offset = ptr.deref(offset)
         start = self._offset + str_offset
         end = start + ptr.item_count
-        return self._buf[start:end]
+        return self._buf.s[start:end]
 
     def _read_raw_ptr(self, offset):
         """
@@ -77,7 +88,6 @@ class Blob(object):
 
     def _read_group(self, groupcls):
         return groupcls.from_buffer(self._buf, self._offset,
-                                    self._segment_offsets,
                                     self._data_size,
                                     self._ptrs_size)
 
@@ -91,13 +101,11 @@ class Blob(object):
             Struct = capnpy.struct_.Struct
             return Struct.from_buffer(self._buf,
                                       self._offset+blob_offet,
-                                      self._segment_offsets,
                                       ptr.data_size, ptr.ptrs_size)
         elif ptr.kind == ListPtr.KIND:
             List = capnpy.list.List
             return List.from_buffer(self._buf,
                                     self._offset+blob_offet,
-                                    self._segment_offsets,
                                     ptr.size_tag,ptr.item_count, Blob)
         else:
             assert False, 'Unkwown pointer kind: %s' % ptr.kind

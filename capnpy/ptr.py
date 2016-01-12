@@ -203,10 +203,10 @@ class FarPtr(Ptr):
         """
         Read and return the ptr referenced by this far pointer
         """
-        if blob._segment_offsets is None:
+        if blob._buf.segment_offsets is None:
             raise ValueError("Cannot follow a far pointer if there is no segment data")
         assert self.landing_pad == 0
-        segment_start = blob._segment_offsets[self.target] # in bytes
+        segment_start = blob._buf.segment_offsets[self.target] # in bytes
         abs_offset  = segment_start + self.offset*8
         rel_offset = abs_offset - blob._offset
         ptr = blob._read_raw_ptr(rel_offset)

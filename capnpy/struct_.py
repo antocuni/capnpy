@@ -19,15 +19,15 @@ class Struct(Blob):
     __static_data_size__ = None
     __static_ptrs_size__ = None
 
-    def __init__(self, buf, offset, segment_offsets, data_size, ptrs_size):
-        Blob.__init__(self, buf, offset, segment_offsets)
+    def __init__(self, buf, offset, data_size, ptrs_size):
+        Blob.__init__(self, buf, offset)
         self._data_size = data_size
         self._ptrs_size = ptrs_size
 
     @classmethod
-    def from_buffer(cls, buf, offset, segment_offsets, data_size, ptrs_size):
+    def from_buffer(cls, buf, offset, data_size, ptrs_size):
         self = cls.__new__(cls)
-        Struct.__init__(self, buf, offset, segment_offsets, data_size, ptrs_size)
+        Struct.__init__(self, buf, offset, data_size, ptrs_size)
         return self
 
     def which(self):
@@ -39,7 +39,7 @@ class Struct(Blob):
             raise TypeError("Cannot call which() on a non-union type")
         val = self._read_data(self.__tag_offset__, Types.int16)
         return self.__tag__(val)
-
+ 
     def _read_data(self, offset, t):
         if offset >= self._data_size*8:
             # reading bytes beyond _data_size is equivalent to read 0
@@ -67,7 +67,6 @@ class Struct(Blob):
         struct_offset = ptr.deref(offset)
         return structcls.from_buffer(self._buf,
                                      self._offset+struct_offset,
-                                     self._segment_offsets,
                                      ptr.data_size,
                                      ptr.ptrs_size)
 
