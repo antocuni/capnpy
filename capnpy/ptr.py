@@ -198,15 +198,3 @@ class FarPtr(Ptr):
     @property
     def target(self):
         return self>>32
-
-    def follow(self, buf):
-        """
-        Read and return the ptr referenced by this far pointer
-        """
-        if buf.segment_offsets is None:
-            raise ValueError("Cannot follow a far pointer if there is no segment data")
-        assert self.landing_pad == 0
-        segment_start = buf.segment_offsets[self.target] # in bytes
-        offset  = segment_start + self.offset*8
-        ptr = buf.read_raw_ptr(offset)
-        return offset, ptr
