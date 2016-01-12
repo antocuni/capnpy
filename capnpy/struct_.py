@@ -157,7 +157,7 @@ class Struct(Blob):
     def _get_data_key(self):
         start = self._get_body_start()
         data_end = start + self._data_size*8
-        return self._buf[start:data_end]
+        return self._buf.s[start:data_end]
 
     def _get_ptrs_key(self):
         """
@@ -185,13 +185,13 @@ class Struct(Blob):
         ptrs_key = [''] * self._ptrs_size # pre-allocate list
         offset = ptrs_start + 4
         for i in range(self._ptrs_size):
-            ptrs_key[i] = struct.unpack_from('i', self._buf, offset)
+            ptrs_key[i] = struct.unpack_from('i', self._buf.s, offset)
             offset += 8
         return tuple(ptrs_key)
 
     def _get_extra_key(self):
         extra_start, extra_end = self._get_extra_range()
-        return self._buf[extra_start:extra_end]
+        return self._buf.s[extra_start:extra_end]
 
     def _split(self, extra_offset):
         """
@@ -202,7 +202,7 @@ class Struct(Blob):
         if self._ptrs_size == 0:
             # easy case, just copy the body
             start, end = self._get_body_range()
-            return self._buf[start:end], ''
+            return self._buf.s[start:end], ''
         #
         # hard case. The layout of self._buf is like this:
         # +----------+------+------+----------+-------------+
@@ -224,7 +224,7 @@ class Struct(Blob):
         #
         # 1) data section
         data_size = self._data_size
-        data_buf = self._buf[body_start:body_start+data_size*8]
+        data_buf = self._buf.s[body_start:body_start+data_size*8]
         #
         # 2) ptrs section
         #    for each ptr:
@@ -247,7 +247,7 @@ class Struct(Blob):
         #
         body_buf = ''.join(parts)
         # 3) extra part
-        extra_buf = self._buf[extra_start:extra_end]
+        extra_buf = self._buf.s[extra_start:extra_end]
         #
         return body_buf, extra_buf
 
@@ -258,8 +258,7 @@ class Struct(Blob):
         """
         body, extra = self._split(0)
         buf = body+extra
-        return self.__class__.from_buffer(buf, 0, None,
-                                          self._data_size, self._ptrs_size)
+        return self.__class__.from_buffer(buf, 0, self._data_size, self._ptrs_size)
 
     def __hash__(self):
         return hash(self._get_key())
