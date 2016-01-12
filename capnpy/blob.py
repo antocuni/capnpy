@@ -77,17 +77,9 @@ class Blob(object):
                                    item_type)
 
     def _read_string(self, offset):
-        offset, ptr = self._read_ptr(offset)
-        if ptr is None:
-            return None
-        ptr = ptr.specialize()
-        assert ptr.kind == ListPtr.KIND
-        assert ptr.size_tag == ListPtr.SIZE_8
-        start = ptr.deref(offset)
-        end = start + ptr.item_count - 1
-        return self._buf.s[start:end]
+        return self._read_data_string(offset, additional_size=-1)
 
-    def _read_data_string(self, offset):
+    def _read_data_string(self, offset, additional_size=0):
         offset, ptr = self._read_ptr(offset)
         if ptr is None:
             return None
@@ -95,7 +87,7 @@ class Blob(object):
         assert ptr.kind == ListPtr.KIND
         assert ptr.size_tag == ListPtr.SIZE_8
         start = ptr.deref(offset)
-        end = start + ptr.item_count
+        end = start + ptr.item_count + additional_size
         return self._buf.s[start:end]
 
     def _read_group(self, groupcls):
