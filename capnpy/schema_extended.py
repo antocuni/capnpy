@@ -151,9 +151,8 @@ schema.Node__Const = Node__Const
 class Node:
 
     @classmethod
-    def from_buffer(cls, buf, offset, segment_offsets, data_size, ptrs_size):
-        self = super(Node, cls).from_buffer(buf, offset, segment_offsets,
-                                            data_size, ptrs_size)
+    def from_buffer(cls, buf, offset, data_size, ptrs_size):
+        self = super(Node, cls).from_buffer(buf, offset, data_size, ptrs_size)
         if self.which() == Node.__tag__.struct:
             self.__class__ = Node__Struct
         elif self.which() == Node.__tag__.enum:
@@ -173,9 +172,8 @@ schema.Field__Group = Field__Group
 class Field:
 
     @classmethod
-    def from_buffer(cls, buf, offset, segment_offsets, data_size, ptrs_size):
-        self = super(Field, cls).from_buffer(buf, offset, segment_offsets,
-                                             data_size, ptrs_size)
+    def from_buffer(cls, buf, offset, data_size, ptrs_size):
+        self = super(Field, cls).from_buffer(buf, offset, data_size, ptrs_size)
         if self.which() == Field.__tag__.slot:
             self.__class__ = Field__Slot
         elif self.which() == Field.__tag__.group:
@@ -204,7 +202,7 @@ class Type:
         fmt = 'h' + 'x'*30
         assert struct.calcsize(fmt) == 32
         buf = struct.pack(fmt, tag)
-        return cls.from_buffer(buf, 0, None, cls.__static_data_size__, cls.__static_ptrs_size__)
+        return cls.from_buffer(buf, 0, cls.__static_data_size__, cls.__static_ptrs_size__)
 
     new_void = classmethod(lambda cls: cls.__new_primitive(0))
     new_bool = classmethod(lambda cls: cls.__new_primitive(1))
@@ -269,4 +267,4 @@ class Field:
                             tag, ordinal_tag, ordinal_explicit, padding,
                             group_typeId, ptr_name, ptr_annotations,
                             ptr_slot_type, ptr_slot_defaultValue)
-        return cls.from_buffer(buf, 0, None, cls.__static_data_size__, cls.__static_ptrs_size__)
+        return cls.from_buffer(buf, 0, cls.__static_data_size__, cls.__static_ptrs_size__)
