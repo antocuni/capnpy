@@ -25,6 +25,15 @@ class CapnpBuffer(object):
         ptr = self.read_primitive(offset, Types.int64)
         return Ptr(ptr)
 
+    def read_ptr(self, offset):
+        ptr = self.read_raw_ptr(offset)
+        if ptr == 0:
+            return offset, None
+        if ptr.kind == FarPtr.KIND:
+            ptr = ptr.specialize()
+            return ptr.follow(self)
+        return offset, ptr
+
 
 class Blob(object):
     """
@@ -113,13 +122,7 @@ class Blob(object):
             assert False, 'Unkwown pointer kind: %s' % ptr.kind
 
     def _read_ptr(self, offset):
-        ptr = self._buf.read_raw_ptr(self._offset+offset)
-        if ptr == 0:
-            return offset, None
-        if ptr.kind == FarPtr.KIND:
-            ptr = ptr.specialize()
-            return ptr.follow(self)
-        return self._offset+offset, ptr
+        return self._buf.read_ptr(self._offset+offset)
 
     def _print_buf(self, start=None, end='auto', **kwds):
         if start is None:
