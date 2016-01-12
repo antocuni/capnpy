@@ -1,4 +1,5 @@
 import struct
+from capnpy.blob import CapnpBuffer
 from capnpy.struct_ import Struct
 from capnpy.ptr import StructPtr
 
@@ -57,8 +58,8 @@ def _load_message(buf):
     #
     # Thus, the root of the message is equivalent to a struct with
     # data_size==0 and ptrs_size==1
-    return Struct.from_buffer(buf, message_offset, tuple(segment_offsets),
-                              data_size=0, ptrs_size=1)
+    buf = CapnpBuffer(buf, tuple(segment_offsets))
+    return Struct.from_buffer(buf, message_offset, data_size=0, ptrs_size=1)
 
 def dumps(obj):
     """
@@ -69,7 +70,7 @@ def dumps(obj):
     """
     a = obj._get_body_start()
     b = obj._get_extra_end()
-    buf = obj._buf[a:b]
+    buf = obj._buf.s[a:b]
     ptr = StructPtr.new(0, obj._data_size, obj._ptrs_size)
     #
     segment_count = 1
