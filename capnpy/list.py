@@ -26,7 +26,7 @@ class List(object):
     def _set_list_tag(self, size_tag, item_count):
         self._size_tag = size_tag
         if size_tag == ListPtr.SIZE_COMPOSITE:
-            tag = self._blob._read_primitive(0, Types.int64)
+            tag = self._blob._buf.read_primitive(self._blob._offset, Types.int64)
             tag = StructPtr(tag)
             self._tag = tag
             self._item_count = tag.offset
@@ -157,7 +157,8 @@ class PrimitiveList(List):
     ItemBuilder = listbuilder.PrimitiveItemBuilder
     
     def _read_list_item(self, offset):
-        return self._blob._read_primitive(offset, self._item_type)
+        buf = self._blob._buf
+        return buf.read_primitive(self._blob._offset+offset, self._item_type)
 
 class StructList(List):
     ItemBuilder = listbuilder.StructItemBuilder

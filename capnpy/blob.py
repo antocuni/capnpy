@@ -63,10 +63,6 @@ class Blob(object):
         self._offset = offset
         assert self._offset < len(self._buf.s)
 
-    def _read_primitive(self, offset, t):
-        # xxx remove this method
-        return self._buf.read_primitive(self._offset+offset, t)
-
     def _read_list(self, offset, listcls, item_type):
         offset, ptr = self._read_ptr(offset)
         if ptr is None:

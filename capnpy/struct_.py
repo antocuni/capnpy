@@ -44,7 +44,7 @@ class Struct(Blob):
         if offset >= self._data_size*8:
             # reading bytes beyond _data_size is equivalent to read 0
             return 0
-        return self._read_primitive(offset, t)
+        return self._buf.read_primitive(self._offset+offset, t)
 
     def _read_bit(self, offset, bitmask):
         val = self._read_data(offset, Types.uint8)
