@@ -37,7 +37,7 @@ class AbstractBuilder(object):
         # we need to take the compact repr of the struct, else we might get
         # garbage and wrong offsets. See
         # test_alloc_list_of_structs_with_pointers
-        self._alloc(value.compact()._buf)
+        self._alloc(value.compact()._buf.s)
         ptr = StructPtr.new(ptr_offset, data_size, ptrs_size)
         return ptr
 
