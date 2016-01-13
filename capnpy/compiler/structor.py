@@ -81,6 +81,12 @@ class Structor(object):
         self.field_name[f] = name
         return name
 
+    def _slot_offset(self, f):
+        offset = f.slot.offset * f.slot.get_size()
+        if f.slot.type.is_pointer():
+            offset += self.data_size*8
+        return offset
+
     def _compute_format(self):
         total_length = (self.data_size + self.ptrs_size)*8
         fmt = ['x'] * total_length
@@ -94,7 +100,7 @@ class Structor(object):
         for f in self.fields:
             if not f.is_slot() or f.slot.type.is_bool():
                 raise Unsupported('Unsupported field type: %s' % f)
-            set(f.slot.compute_offset_inside(self.data_size), f.slot.get_fmt())
+            set(self._slot_offset(f), f.slot.get_fmt())
         #
         # remove all the Nones
         fmt = [ch for ch in fmt if ch is not None]
@@ -126,7 +132,7 @@ class Structor(object):
         argnames = self.argnames
 
         # for for building, we sort them by offset
-        self.fields.sort(key=lambda f: f.slot.compute_offset_inside(self.data_size))
+        self.fields.sort(key=lambda f: self._slot_offset(f))
         buildnames = [self.field_name[f] for f in self.fields]
 
         if len(argnames) != len(set(argnames)):
@@ -178,11 +184,11 @@ class Structor(object):
     def _field_string(self, code, f):
         fname = self.field_name[f]
         code.w('{arg} = builder.alloc_string({offset}, {arg})',
-               arg=fname, offset=f.slot.compute_offset_inside(self.data_size))
+               arg=fname, offset=self._slot_offset(f))
 
     def _field_struct(self, code, f):
         fname = self.field_name[f]
-        offset = f.slot.compute_offset_inside(self.data_size)
+        offset = self._slot_offset(f)
         structname = f.slot.type.runtime_name(self.m)
         code.w('{arg} = builder.alloc_struct({offset}, {structname}, {arg})',
                arg=fname, offset=offset, structname=structname)
@@ -190,7 +196,7 @@ class Structor(object):
     def _field_list(self, code, f):
         ns = code.new_scope()
         ns.fname = self.field_name[f]
-        ns.offset = f.slot.compute_offset_inside(self.data_size)
+        ns.offset = self._slot_offset(f)
         itemtype = f.slot.type.list.elementType
         ns.itemtype = itemtype.runtime_name(self.m)
         #

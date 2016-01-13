@@ -126,12 +126,6 @@ class Field:
             import struct
             return struct.calcsize(self.get_fmt())
 
-        def compute_offset_inside(self, data_size):
-            offset = self.offset * self.get_size()
-            if self.type.is_pointer():
-                offset += data_size*8
-            return offset
-
 
 # =============================================
 # hand-written union subclasses
