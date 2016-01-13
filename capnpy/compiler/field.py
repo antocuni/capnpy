@@ -19,7 +19,7 @@ class Field__Slot:
         if self.slot.type.is_bool():
             return self._emit_bool(m, name)
         #
-        offset = self.slot.compute_offset_inside(node.struct.dataWordCount)
+        offset = self.slot.offset * self.slot.get_size()
         if self.slot.type.is_primitive():
             return self._emit_primitive(m, name, offset)
         elif self.slot.hadExplicitDefault:
