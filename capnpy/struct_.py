@@ -50,6 +50,8 @@ class Struct(Blob):
         return self._buf.read_primitive(self._data_offset+offset, t)
 
     def _read_ptr(self, offset):
+        if offset >= self._ptrs_size*8:
+            return offset, Ptr(0)
         return self._buf.read_ptr(self._ptrs_offset+offset)
 
     def _read_raw_ptr(self, offset):

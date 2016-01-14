@@ -27,8 +27,6 @@ class CapnpBuffer(object):
 
     def read_ptr(self, offset):
         ptr = self.read_raw_ptr(offset)
-        if ptr == 0:
-            return offset, None
         if ptr.kind == FarPtr.KIND:
             ptr = ptr.specialize()
             return self._follow_far_ptr(ptr)
@@ -83,7 +81,7 @@ class Blob(object):
         instance of ``structcls`` pointing to the dereferenced struct.
         """
         offset, ptr = self._read_ptr(offset)
-        if ptr is None:
+        if ptr == 0:
             return None
         assert ptr.kind == StructPtr.KIND
         ptr = ptr.specialize()
@@ -96,7 +94,7 @@ class Blob(object):
 
     def _read_list(self, offset, listcls, item_type):
         offset, ptr = self._read_ptr(offset)
-        if ptr is None:
+        if ptr == 0:
             return None
         assert ptr.kind == ListPtr.KIND
         ptr = ptr.specialize()
@@ -112,7 +110,7 @@ class Blob(object):
 
     def _read_data_string(self, offset, additional_size=0):
         offset, ptr = self._read_ptr(offset)
-        if ptr is None:
+        if ptr == 0:
             return None
         ptr = ptr.specialize()
         assert ptr.kind == ListPtr.KIND
@@ -123,7 +121,7 @@ class Blob(object):
 
     def _read_list_or_struct(self, ptr_offset):
         ptr_offset, ptr = self._read_ptr(ptr_offset)
-        if ptr is None:
+        if ptr == 0:
             return None
         ptr = ptr.specialize()
         blob_offet = ptr.deref(ptr_offset)

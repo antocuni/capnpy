@@ -35,7 +35,6 @@ class TestEvolution(CompilerTest):
         py.test.raises(AttributeError, "obj.z")
 
     def test_add_ptr_field(self):
-        py.test.skip('fix me')
         schema = """
             @0xbf5147cbbecf40c1;
             struct Point {
