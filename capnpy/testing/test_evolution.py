@@ -58,3 +58,12 @@ class TestEvolution(CompilerTest):
         assert obj.p1.x == 1
         assert obj.p1.y == 2
         assert obj.p2 is None
+        # 2. read a new object with an older schema
+        s = dumps(mod.New(p1=mod.Point(x=1, y=2),
+                          p2=mod.Point(x=3, y=4)))
+        obj = loads(s, mod.Old)
+        assert obj.p1.x == 1
+        assert obj.p1.y == 2
+        assert obj._data_size == 0
+        assert obj._ptrs_size == 2
+        py.test.raises(AttributeError, "obj.p2")
