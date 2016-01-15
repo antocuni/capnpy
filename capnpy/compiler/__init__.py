@@ -30,7 +30,7 @@ import capnpy.compiler.misc
 
 class ModuleGenerator(object):
 
-    def __init__(self, request, convert_case=True, pyx=False):
+    def __init__(self, request, convert_case, pyx):
         self.code = Code()
         self.request = request
         self.convert_case = convert_case
