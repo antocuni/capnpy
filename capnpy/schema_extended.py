@@ -45,6 +45,8 @@ class Type:
 
 @schema.Node.__extend__
 class Node:
+    def _get_key(self):
+        return self.id
 
     def is_file(self):
         return self.which() == Node.__tag__.file
@@ -68,6 +70,13 @@ class Node:
 
 @schema.Field.__extend__
 class Field:
+
+    def _get_key(self):
+        # XXX: this is not strictly correct, because two fields might differ
+        # for other attributes. However, the pair (name, codeOrder) should be
+        # enough to uniquiely identify a field inside the parent struct, which
+        # is enough for what we need (in particular, in structor.py)
+        return self.name, self.codeOrder
 
     def is_slot(self):
         return self.which() == schema.Field.__tag__.slot
@@ -123,6 +132,8 @@ class Field:
 
         def get_size(self):
             # XXX: even more hackish, we need a better way
+            if self.type.is_void():
+                return 0
             import struct
             return struct.calcsize(self.get_fmt())
 
