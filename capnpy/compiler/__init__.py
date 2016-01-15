@@ -102,15 +102,15 @@ class Compiler(object):
             self.modules[filename] = mod
             return mod
 
-    def generate_py_source(self, data):
+    def generate_py_source(self, filename):
+        data = self._capnp_compile(filename)
         request = loads(data, schema.CodeGeneratorRequest)
         m = ModuleGenerator(request, self.convert_case, self.pyx)
         src = m.generate()
         return m, py.code.Source(src)
 
     def compile_file(self, filename):
-        data = self._capnp_compile(filename)
-        m, src = self.generate_py_source(data)
+        m, src = self.generate_py_source(filename)
         if self.pyx:
             return self._compile_pyx(filename, m, src)
         else:
