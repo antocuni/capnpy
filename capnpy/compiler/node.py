@@ -64,8 +64,6 @@ class Node:
         if self.is_file():
             filename = self.displayName
             return m.importnames[filename]
-        elif self.is_struct() and self.struct.isGroup:
-            return '_group_%s' % name
         return name
 
     def _fullname(self, m, sep):

@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2016-01-15 16:46
+# generated on 2016-01-15 16:58
 # input files: 
 #   - capnpy/schema.capnp
 
@@ -28,28 +28,28 @@ Method.__name__ = 'Method'
 class Enumerant(_Struct): pass
 Enumerant.__name__ = 'Enumerant'
 ElementSize = _enum('ElementSize', ('empty', 'bit', 'byte', 'twoBytes', 'fourBytes', 'eightBytes', 'pointer', 'inlineComposite'))
-class Type__group_anyPointer__group_parameter(_Struct): pass
-Type__group_anyPointer__group_parameter.__name__ = 'Type._group_anyPointer._group_parameter'
-class Type__group_anyPointer__group_implicitMethodParameter(_Struct): pass
-Type__group_anyPointer__group_implicitMethodParameter.__name__ = 'Type._group_anyPointer._group_implicitMethodParameter'
-class Type__group_anyPointer(_Struct): pass
-Type__group_anyPointer.__name__ = 'Type._group_anyPointer'
-class Type__group_struct(_Struct): pass
-Type__group_struct.__name__ = 'Type._group_struct'
-class Type__group_enum(_Struct): pass
-Type__group_enum.__name__ = 'Type._group_enum'
-class Type__group_interface(_Struct): pass
-Type__group_interface.__name__ = 'Type._group_interface'
-class Type__group_list(_Struct): pass
-Type__group_list.__name__ = 'Type._group_list'
+class Type_anyPointer_parameter(_Struct): pass
+Type_anyPointer_parameter.__name__ = 'Type.anyPointer.parameter'
+class Type_anyPointer_implicitMethodParameter(_Struct): pass
+Type_anyPointer_implicitMethodParameter.__name__ = 'Type.anyPointer.implicitMethodParameter'
+class Type_anyPointer(_Struct): pass
+Type_anyPointer.__name__ = 'Type.anyPointer'
+class Type_struct(_Struct): pass
+Type_struct.__name__ = 'Type.struct'
+class Type_enum(_Struct): pass
+Type_enum.__name__ = 'Type.enum'
+class Type_interface(_Struct): pass
+Type_interface.__name__ = 'Type.interface'
+class Type_list(_Struct): pass
+Type_list.__name__ = 'Type.list'
 class Type(_Struct): pass
 Type.__name__ = 'Type'
-class Field__group_group(_Struct): pass
-Field__group_group.__name__ = 'Field._group_group'
-class Field__group_ordinal(_Struct): pass
-Field__group_ordinal.__name__ = 'Field._group_ordinal'
-class Field__group_slot(_Struct): pass
-Field__group_slot.__name__ = 'Field._group_slot'
+class Field_group(_Struct): pass
+Field_group.__name__ = 'Field.group'
+class Field_ordinal(_Struct): pass
+Field_ordinal.__name__ = 'Field.ordinal'
+class Field_slot(_Struct): pass
+Field_slot.__name__ = 'Field.slot'
 class Field(_Struct): pass
 Field.__name__ = 'Field'
 class Superclass(_Struct): pass
@@ -64,16 +64,16 @@ class Brand(_Struct): pass
 Brand.__name__ = 'Brand'
 class Annotation(_Struct): pass
 Annotation.__name__ = 'Annotation'
-class Node__group_interface(_Struct): pass
-Node__group_interface.__name__ = 'Node._group_interface'
-class Node__group_const(_Struct): pass
-Node__group_const.__name__ = 'Node._group_const'
-class Node__group_struct(_Struct): pass
-Node__group_struct.__name__ = 'Node._group_struct'
-class Node__group_annotation(_Struct): pass
-Node__group_annotation.__name__ = 'Node._group_annotation'
-class Node__group_enum(_Struct): pass
-Node__group_enum.__name__ = 'Node._group_enum'
+class Node_interface(_Struct): pass
+Node_interface.__name__ = 'Node.interface'
+class Node_const(_Struct): pass
+Node_const.__name__ = 'Node.const'
+class Node_struct(_Struct): pass
+Node_struct.__name__ = 'Node.struct'
+class Node_annotation(_Struct): pass
+Node_annotation.__name__ = 'Node.annotation'
+class Node_enum(_Struct): pass
+Node_enum.__name__ = 'Node.enum'
 class Node_NestedNode(_Struct): pass
 Node_NestedNode.__name__ = 'Node.NestedNode'
 class Node_Parameter(_Struct): pass
@@ -233,8 +233,8 @@ class Enumerant(_Struct):
             ]
         return "".join(parts)
 
-@Type__group_anyPointer__group_parameter.__extend__
-class Type__group_anyPointer__group_parameter(_Struct):
+@Type_anyPointer_parameter.__extend__
+class Type_anyPointer_parameter(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
     scopeId = _field.Primitive("scopeId", 16, _Types.uint64, 0)
@@ -257,8 +257,8 @@ class Type__group_anyPointer__group_parameter(_Struct):
             ]
         return "".join(parts)
 
-@Type__group_anyPointer__group_implicitMethodParameter.__extend__
-class Type__group_anyPointer__group_implicitMethodParameter(_Struct):
+@Type_anyPointer_implicitMethodParameter.__extend__
+class Type_anyPointer_implicitMethodParameter(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
     parameterIndex = _field.Primitive("parameterIndex", 10, _Types.uint16, 0)
@@ -279,19 +279,19 @@ class Type__group_anyPointer__group_implicitMethodParameter(_Struct):
             ]
         return "".join(parts)
 
-@Type__group_anyPointer.__extend__
-class Type__group_anyPointer(_Struct):
+@Type_anyPointer.__extend__
+class Type_anyPointer(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
-    _group_parameter = Type__group_anyPointer__group_parameter
-    _group_implicitMethodParameter = Type__group_anyPointer__group_implicitMethodParameter
+    parameter = Type_anyPointer_parameter
+    implicitMethodParameter = Type_anyPointer_implicitMethodParameter
     __tag_offset__ = 8
-    __tag__ = _enum('_group_anyPointer.__tag__', ('unconstrained', 'parameter', 'implicitMethodParameter'))
+    __tag__ = _enum('anyPointer.__tag__', ('unconstrained', 'parameter', 'implicitMethodParameter'))
     unconstrained = _field.Void("unconstrained")
     unconstrained = _field.Union(0, unconstrained)
-    parameter = _field.Group(Type__group_anyPointer__group_parameter)
+    parameter = _field.Group(Type_anyPointer_parameter)
     parameter = _field.Union(1, parameter)
-    implicitMethodParameter = _field.Group(Type__group_anyPointer__group_implicitMethodParameter)
+    implicitMethodParameter = _field.Group(Type_anyPointer_implicitMethodParameter)
     implicitMethodParameter = _field.Union(2, implicitMethodParameter)
     @staticmethod
     def __new_unconstrained():
@@ -347,8 +347,8 @@ class Type__group_anyPointer(_Struct):
             ]
         return "".join(parts)
 
-@Type__group_struct.__extend__
-class Type__group_struct(_Struct):
+@Type_struct.__extend__
+class Type_struct(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
     typeId = _field.Primitive("typeId", 8, _Types.uint64, 0)
@@ -372,8 +372,8 @@ class Type__group_struct(_Struct):
             ]
         return "".join(parts)
 
-@Type__group_enum.__extend__
-class Type__group_enum(_Struct):
+@Type_enum.__extend__
+class Type_enum(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
     typeId = _field.Primitive("typeId", 8, _Types.uint64, 0)
@@ -397,8 +397,8 @@ class Type__group_enum(_Struct):
             ]
         return "".join(parts)
 
-@Type__group_interface.__extend__
-class Type__group_interface(_Struct):
+@Type_interface.__extend__
+class Type_interface(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
     typeId = _field.Primitive("typeId", 8, _Types.uint64, 0)
@@ -422,8 +422,8 @@ class Type__group_interface(_Struct):
             ]
         return "".join(parts)
 
-@Type__group_list.__extend__
-class Type__group_list(_Struct):
+@Type_list.__extend__
+class Type_list(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
     elementType = _field.Struct("elementType", 0, Type)
@@ -449,11 +449,11 @@ class Type__group_list(_Struct):
 class Type(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
-    _group_anyPointer = Type__group_anyPointer
-    _group_struct = Type__group_struct
-    _group_enum = Type__group_enum
-    _group_interface = Type__group_interface
-    _group_list = Type__group_list
+    anyPointer = Type_anyPointer
+    struct = Type_struct
+    enum = Type_enum
+    interface = Type_interface
+    list = Type_list
     __tag_offset__ = 0
     __tag__ = _enum('Type.__tag__', ('void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer'))
     void = _field.Void("void")
@@ -484,15 +484,15 @@ class Type(_Struct):
     text = _field.Union(12, text)
     data = _field.Void("data")
     data = _field.Union(13, data)
-    list = _field.Group(Type__group_list)
+    list = _field.Group(Type_list)
     list = _field.Union(14, list)
-    enum = _field.Group(Type__group_enum)
+    enum = _field.Group(Type_enum)
     enum = _field.Union(15, enum)
-    struct = _field.Group(Type__group_struct)
+    struct = _field.Group(Type_struct)
     struct = _field.Union(16, struct)
-    interface = _field.Group(Type__group_interface)
+    interface = _field.Group(Type_interface)
     interface = _field.Union(17, interface)
-    anyPointer = _field.Group(Type__group_anyPointer)
+    anyPointer = _field.Group(Type_anyPointer)
     anyPointer = _field.Union(18, anyPointer)
     @staticmethod
     def __new_void():
@@ -1115,8 +1115,8 @@ class Type(_Struct):
             ]
         return "".join(parts)
 
-@Field__group_group.__extend__
-class Field__group_group(_Struct):
+@Field_group.__extend__
+class Field_group(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 4
     typeId = _field.Primitive("typeId", 16, _Types.uint64, 0)
@@ -1137,12 +1137,12 @@ class Field__group_group(_Struct):
             ]
         return "".join(parts)
 
-@Field__group_ordinal.__extend__
-class Field__group_ordinal(_Struct):
+@Field_ordinal.__extend__
+class Field_ordinal(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 4
     __tag_offset__ = 10
-    __tag__ = _enum('_group_ordinal.__tag__', ('implicit', 'explicit'))
+    __tag__ = _enum('ordinal.__tag__', ('implicit', 'explicit'))
     implicit = _field.Void("implicit")
     implicit = _field.Union(0, implicit)
     explicit = _field.Primitive("explicit", 12, _Types.uint16, 0)
@@ -1188,8 +1188,8 @@ class Field__group_ordinal(_Struct):
             ]
         return "".join(parts)
 
-@Field__group_slot.__extend__
-class Field__group_slot(_Struct):
+@Field_slot.__extend__
+class Field_slot(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 4
     offset = _field.Primitive("offset", 4, _Types.uint32, 0)
@@ -1198,7 +1198,7 @@ class Field__group_slot(_Struct):
     hadExplicitDefault = _field.Bool("hadExplicitDefault", 16, 0, False)
     @staticmethod
     def __new(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43e9c02a90>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa241bca350>')
     
     def __init__(self, *args):
         buf = self.__new(*args)
@@ -1218,9 +1218,9 @@ class Field__group_slot(_Struct):
 class Field(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 4
-    _group_group = Field__group_group
-    _group_ordinal = Field__group_ordinal
-    _group_slot = Field__group_slot
+    group = Field_group
+    ordinal = Field_ordinal
+    slot = Field_slot
     noDiscriminant = 65535
     __tag_offset__ = 8
     __tag__ = _enum('Field.__tag__', ('slot', 'group'))
@@ -1228,11 +1228,11 @@ class Field(_Struct):
     codeOrder = _field.Primitive("codeOrder", 0, _Types.uint16, 0)
     annotations = _field.List("annotations", 8, Annotation)
     discriminantValue = _field.Primitive("discriminantValue", 2, _Types.uint16, 65535)
-    slot = _field.Group(Field__group_slot)
+    slot = _field.Group(Field_slot)
     slot = _field.Union(0, slot)
-    group = _field.Group(Field__group_group)
+    group = _field.Group(Field_group)
     group = _field.Union(1, group)
-    ordinal = _field.Group(Field__group_ordinal)
+    ordinal = _field.Group(Field_ordinal)
     @staticmethod
     def __new_slot(*args, **kwargs):
         raise NotImplementedError('Group fields not supported yet')
@@ -1354,7 +1354,7 @@ class Value(_Struct):
         return cls.from_buffer(buf, 0, 2, 1)
     @staticmethod
     def __new_bool(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43e9c18a10>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa241bcf110>')
     @classmethod
     def new_bool(cls, *args):
         buf = cls.__new_bool(*args)
@@ -1474,7 +1474,7 @@ class Value(_Struct):
     def __new_data(data):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 13
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43e9c18c50>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa241bcf5d0>')
         buf = builder.build(__which__, data)
         return buf
     @classmethod
@@ -1485,7 +1485,7 @@ class Value(_Struct):
     def __new_list(list):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 14
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43e9c18c90>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa241bcf610>')
         buf = builder.build(__which__, list)
         return buf
     @classmethod
@@ -1506,7 +1506,7 @@ class Value(_Struct):
     def __new_struct(struct):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 16
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43e9c18d10>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa241bcf690>')
         buf = builder.build(__which__, struct)
         return buf
     @classmethod
@@ -1527,7 +1527,7 @@ class Value(_Struct):
     def __new_anyPointer(anyPointer):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 18
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43e9c18d90>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa241bcf710>')
         buf = builder.build(__which__, anyPointer)
         return buf
     @classmethod
@@ -2139,8 +2139,8 @@ class Annotation(_Struct):
             ]
         return "".join(parts)
 
-@Node__group_interface.__extend__
-class Node__group_interface(_Struct):
+@Node_interface.__extend__
+class Node_interface(_Struct):
     __static_data_size__ = 5
     __static_ptrs_size__ = 6
     methods = _field.List("methods", 24, Method)
@@ -2165,8 +2165,8 @@ class Node__group_interface(_Struct):
             ]
         return "".join(parts)
 
-@Node__group_const.__extend__
-class Node__group_const(_Struct):
+@Node_const.__extend__
+class Node_const(_Struct):
     __static_data_size__ = 5
     __static_ptrs_size__ = 6
     type = _field.Struct("type", 24, Type)
@@ -2191,8 +2191,8 @@ class Node__group_const(_Struct):
             ]
         return "".join(parts)
 
-@Node__group_struct.__extend__
-class Node__group_struct(_Struct):
+@Node_struct.__extend__
+class Node_struct(_Struct):
     __static_data_size__ = 5
     __static_ptrs_size__ = 6
     dataWordCount = _field.Primitive("dataWordCount", 14, _Types.uint16, 0)
@@ -2204,7 +2204,7 @@ class Node__group_struct(_Struct):
     fields = _field.List("fields", 24, Field)
     @staticmethod
     def __new(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43e9bad890>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa241be0390>')
     
     def __init__(self, *args):
         buf = self.__new(*args)
@@ -2223,8 +2223,8 @@ class Node__group_struct(_Struct):
             ]
         return "".join(parts)
 
-@Node__group_annotation.__extend__
-class Node__group_annotation(_Struct):
+@Node_annotation.__extend__
+class Node_annotation(_Struct):
     __static_data_size__ = 5
     __static_ptrs_size__ = 6
     type = _field.Struct("type", 24, Type)
@@ -2242,7 +2242,7 @@ class Node__group_annotation(_Struct):
     targetsAnnotation = _field.Bool("targetsAnnotation", 15, 3, False)
     @staticmethod
     def __new(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43e9badb10>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa241be06d0>')
     
     def __init__(self, *args):
         buf = self.__new(*args)
@@ -2267,8 +2267,8 @@ class Node__group_annotation(_Struct):
             ]
         return "".join(parts)
 
-@Node__group_enum.__extend__
-class Node__group_enum(_Struct):
+@Node_enum.__extend__
+class Node_enum(_Struct):
     __static_data_size__ = 5
     __static_ptrs_size__ = 6
     enumerants = _field.List("enumerants", 24, Enumerant)
@@ -2342,11 +2342,11 @@ class Node_Parameter(_Struct):
 class Node(_Struct):
     __static_data_size__ = 5
     __static_ptrs_size__ = 6
-    _group_interface = Node__group_interface
-    _group_const = Node__group_const
-    _group_struct = Node__group_struct
-    _group_annotation = Node__group_annotation
-    _group_enum = Node__group_enum
+    interface = Node_interface
+    const = Node_const
+    struct = Node_struct
+    annotation = Node_annotation
+    enum = Node_enum
     NestedNode = Node_NestedNode
     Parameter = Node_Parameter
     __tag_offset__ = 12
@@ -2359,21 +2359,21 @@ class Node(_Struct):
     annotations = _field.List("annotations", 16, Annotation)
     file = _field.Void("file")
     file = _field.Union(0, file)
-    struct = _field.Group(Node__group_struct)
+    struct = _field.Group(Node_struct)
     struct = _field.Union(1, struct)
-    enum = _field.Group(Node__group_enum)
+    enum = _field.Group(Node_enum)
     enum = _field.Union(2, enum)
-    interface = _field.Group(Node__group_interface)
+    interface = _field.Group(Node_interface)
     interface = _field.Union(3, interface)
-    const = _field.Group(Node__group_const)
+    const = _field.Group(Node_const)
     const = _field.Union(4, const)
-    annotation = _field.Group(Node__group_annotation)
+    annotation = _field.Group(Node_annotation)
     annotation = _field.Union(5, annotation)
     parameters = _field.List("parameters", 40, Node_Parameter)
     isGeneric = _field.Bool("isGeneric", 36, 0, False)
     @staticmethod
     def __new_file(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43e9badfd0>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa241be0c10>')
     @classmethod
     def new_file(cls, *args):
         buf = cls.__new_file(*args)
@@ -2493,23 +2493,23 @@ class Node(_Struct):
 
 del globals()['CodeGeneratorRequest_RequestedFile']
 del globals()['CodeGeneratorRequest_RequestedFile_Import']
-del globals()['Type__group_anyPointer']
-del globals()['Type__group_anyPointer__group_parameter']
-del globals()['Type__group_anyPointer__group_implicitMethodParameter']
-del globals()['Type__group_struct']
-del globals()['Type__group_enum']
-del globals()['Type__group_interface']
-del globals()['Type__group_list']
-del globals()['Field__group_group']
-del globals()['Field__group_ordinal']
-del globals()['Field__group_slot']
+del globals()['Type_anyPointer']
+del globals()['Type_anyPointer_parameter']
+del globals()['Type_anyPointer_implicitMethodParameter']
+del globals()['Type_struct']
+del globals()['Type_enum']
+del globals()['Type_interface']
+del globals()['Type_list']
+del globals()['Field_group']
+del globals()['Field_ordinal']
+del globals()['Field_slot']
 del globals()['Brand_Binding']
 del globals()['Brand_Scope']
-del globals()['Node__group_interface']
-del globals()['Node__group_const']
-del globals()['Node__group_struct']
-del globals()['Node__group_annotation']
-del globals()['Node__group_enum']
+del globals()['Node_interface']
+del globals()['Node_const']
+del globals()['Node_struct']
+del globals()['Node_annotation']
+del globals()['Node_enum']
 del globals()['Node_NestedNode']
 del globals()['Node_Parameter']
 
