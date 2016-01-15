@@ -46,7 +46,9 @@ class ModuleGenerator(object):
         return self.code.block(*args, **kwargs)
 
     def register_import(self, fname):
-        name = '_%s_capnp' % py.path.local(fname).purebasename
+        name = py.path.local(fname).purebasename
+        name = name.replace('+', 'PLUS')
+        name = '_%s_capnp' % name
         if name in self.importnames.values():
             # avoid name clashes
             name = '%s_%s' % (name, len(self.filenames))

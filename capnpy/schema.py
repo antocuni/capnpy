@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2016-01-15 16:58
+# generated on 2016-01-15 17:08
 # input files: 
 #   - capnpy/schema.capnp
 
@@ -13,7 +13,7 @@ from capnpy.builder import StructBuilder as _StructBuilder
 from capnpy.list import PrimitiveList as _PrimitiveList
 from capnpy.list import StructList as _StructList
 from capnpy.list import StringList as _StringList
-#_c++_capnp = __compiler.load_schema("/capnp/c++.capnp")
+#_cPLUSPLUS_capnp = __compiler.load_schema("/capnp/c++.capnp")
 
 #### FORWARD DECLARATIONS ####
 
@@ -1198,7 +1198,7 @@ class Field_slot(_Struct):
     hadExplicitDefault = _field.Bool("hadExplicitDefault", 16, 0, False)
     @staticmethod
     def __new(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa241bca350>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa7d9308310>')
     
     def __init__(self, *args):
         buf = self.__new(*args)
@@ -1354,7 +1354,7 @@ class Value(_Struct):
         return cls.from_buffer(buf, 0, 2, 1)
     @staticmethod
     def __new_bool(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa241bcf110>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa7d9319190>')
     @classmethod
     def new_bool(cls, *args):
         buf = cls.__new_bool(*args)
@@ -1474,7 +1474,7 @@ class Value(_Struct):
     def __new_data(data):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 13
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa241bcf5d0>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa7d9319410>')
         buf = builder.build(__which__, data)
         return buf
     @classmethod
@@ -1485,7 +1485,7 @@ class Value(_Struct):
     def __new_list(list):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 14
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa241bcf610>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa7d9319450>')
         buf = builder.build(__which__, list)
         return buf
     @classmethod
@@ -1506,7 +1506,7 @@ class Value(_Struct):
     def __new_struct(struct):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 16
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa241bcf690>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa7d93194d0>')
         buf = builder.build(__which__, struct)
         return buf
     @classmethod
@@ -1527,7 +1527,7 @@ class Value(_Struct):
     def __new_anyPointer(anyPointer):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 18
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa241bcf710>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa7d9319550>')
         buf = builder.build(__which__, anyPointer)
         return buf
     @classmethod
@@ -2204,7 +2204,7 @@ class Node_struct(_Struct):
     fields = _field.List("fields", 24, Field)
     @staticmethod
     def __new(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa241be0390>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa7d931e210>')
     
     def __init__(self, *args):
         buf = self.__new(*args)
@@ -2242,7 +2242,7 @@ class Node_annotation(_Struct):
     targetsAnnotation = _field.Bool("targetsAnnotation", 15, 3, False)
     @staticmethod
     def __new(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa241be06d0>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa7d931e510>')
     
     def __init__(self, *args):
         buf = self.__new(*args)
@@ -2373,7 +2373,7 @@ class Node(_Struct):
     isGeneric = _field.Bool("isGeneric", 36, 0, False)
     @staticmethod
     def __new_file(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa241be0c10>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa7d931ea50>')
     @classmethod
     def new_file(cls, *args):
         buf = cls.__new_file(*args)
