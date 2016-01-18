@@ -23,13 +23,13 @@ class CompilerTest:
         self.tmpdir = tmpdir
         self.pyx = request.param == 'pyx'
 
-    def compile(self, s):
+    def compile(self, s, **kwds):
         # root is needed to be able to import capnpy/py.capnp
         root = py.path.local(capnpy.__file__).dirpath('..')
         comp = Compiler([root, self.tmpdir], pyx=self.pyx)
         tmp_capnp = self.tmpdir.join('tmp.capnp')
         tmp_capnp.write(s)
-        return comp.load_schema('/tmp.capnp')
+        return comp.load_schema('/tmp.capnp', **kwds)
 
 
 class TestAttribute(CompilerTest):
@@ -479,6 +479,22 @@ class TestCompiler(CompilerTest):
         else:
             assert mod.MyStruct.first_attr.name == 'first_attr'
             assert mod.MyStruct.second_attr.name == 'second_attr'
+
+    def test_no_convert_case(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct MyStruct {
+            firstAttr @0 :Int64;
+            secondAttr @1 :Int64;
+        }
+        """
+        mod = self.compile(schema, convert_case=False)
+        if self.pyx:
+            assert mod.MyStruct.firstAttr.__name__ == 'firstAttr'
+            assert mod.MyStruct.secondAttr.__name__ == 'secondAttr'
+        else:
+            assert mod.MyStruct.firstAttr.name == 'firstAttr'
+            assert mod.MyStruct.secondAttr.name == 'secondAttr'
 
 
     def test_convert_case_enum(self):

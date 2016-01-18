@@ -85,9 +85,8 @@ class ModuleGenerator(object):
 
 class Compiler(object):
 
-    def __init__(self, path, convert_case=True, pyx=False):
+    def __init__(self, path, pyx=False):
         self.path = [py.path.local(dirname) for dirname in path]
-        self.convert_case = convert_case
         self.modules = {}
         self.pyx = pyx
         if self.pyx:
@@ -95,28 +94,28 @@ class Compiler(object):
         else:
             self.tmpdir = None
 
-    def load_schema(self, filename):
+    def load_schema(self, filename, convert_case=True):
         filename = self._find_file(filename)
         try:
             return self.modules[filename]
         except KeyError:
-            mod = self.compile_file(filename)
+            mod = self._compile_file(filename, convert_case)
             self.modules[filename] = mod
             return mod
 
-    def generate_py_source(self, filename):
-        data = self._capnp_compile(filename)
-        request = loads(data, schema.CodeGeneratorRequest)
-        m = ModuleGenerator(request, self.convert_case, self.pyx)
-        src = m.generate()
-        return m, py.code.Source(src)
-
-    def compile_file(self, filename):
-        m, src = self.generate_py_source(filename)
+    def _compile_file(self, filename, convert_case):
+        m, src = self.generate_py_source(filename, convert_case)
         if self.pyx:
             return self._compile_pyx(filename, m, src)
         else:
             return self._compile_py(filename, m, src)
+
+    def generate_py_source(self, filename, convert_case):
+        data = self._capnp_compile(filename)
+        request = loads(data, schema.CodeGeneratorRequest)
+        m = ModuleGenerator(request, convert_case, self.pyx)
+        src = m.generate()
+        return m, py.code.Source(src)
 
     def _compile_py(self, filename, m, src):
         """
