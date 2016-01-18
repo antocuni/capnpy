@@ -75,14 +75,14 @@ class Blob(object):
         val = self._read_data(offset, Types.int16)
         return enumtype(val)
 
-    def _read_struct(self, offset, structcls):
+    def _read_struct(self, offset, structcls, default_=None):
         """
         Read and dereference a struct pointer at the given offset.  It returns an
         instance of ``structcls`` pointing to the dereferenced struct.
         """
         offset, ptr = self._read_ptr(offset)
         if ptr == 0:
-            return None
+            return default_
         assert ptr.kind == StructPtr.KIND
         ptr = ptr.specialize()
         struct_offset = ptr.deref(offset)
@@ -92,10 +92,10 @@ class Blob(object):
                                      ptr.ptrs_size)
 
 
-    def _read_list(self, offset, listcls, item_type):
+    def _read_list(self, offset, listcls, item_type, default_=None):
         offset, ptr = self._read_ptr(offset)
         if ptr == 0:
-            return None
+            return default_
         assert ptr.kind == ListPtr.KIND
         ptr = ptr.specialize()
         list_offset = ptr.deref(offset)
@@ -105,13 +105,13 @@ class Blob(object):
                                    ptr.item_count,
                                    item_type)
 
-    def _read_string(self, offset):
-        return self._read_data_string(offset, additional_size=-1)
+    def _read_string(self, offset, default_=None):
+        return self._read_data_string(offset, default_, additional_size=-1)
 
-    def _read_data_string(self, offset, additional_size=0):
+    def _read_data_string(self, offset, default_=None, additional_size=0):
         offset, ptr = self._read_ptr(offset)
         if ptr == 0:
-            return None
+            return default_
         ptr = ptr.specialize()
         assert ptr.kind == ListPtr.KIND
         assert ptr.size_tag == ListPtr.SIZE_8
@@ -119,10 +119,10 @@ class Blob(object):
         end = start + ptr.item_count + additional_size
         return self._buf.s[start:end]
 
-    def _read_list_or_struct(self, ptr_offset):
+    def _read_list_or_struct(self, ptr_offset, default_=None):
         ptr_offset, ptr = self._read_ptr(ptr_offset)
         if ptr == 0:
-            return None
+            return default_
         ptr = ptr.specialize()
         blob_offet = ptr.deref(ptr_offset)
         if ptr.kind == StructPtr.KIND:
