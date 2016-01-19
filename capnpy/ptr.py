@@ -41,6 +41,9 @@ class Ptr(baseint):
         ptr = struct.unpack('q', s)[0]
         return cls(ptr)
 
+    def to_bytes(self):
+        return struct.pack('q', self)
+
     @property
     def kind(self):
         return self & 0x3

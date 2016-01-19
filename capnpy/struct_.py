@@ -21,11 +21,12 @@ class Struct(Blob):
 
     def __init__(self, buf, offset, data_size, ptrs_size):
         Blob.__init__(self, buf)
-        assert offset < len(self._buf.s)
         self._data_offset = offset
         self._ptrs_offset = offset + data_size*8
         self._data_size = data_size
         self._ptrs_size = ptrs_size
+        assert self._data_offset + data_size*8 <= len(self._buf.s)
+        assert self._ptrs_offset + ptrs_size*8 <= len(self._buf.s)
 
     @classmethod
     def from_buffer(cls, buf, offset, data_size, ptrs_size):

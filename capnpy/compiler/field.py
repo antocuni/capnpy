@@ -65,21 +65,43 @@ class Field__Slot:
             name=name, byteoffset=byteoffset, bitoffset=bitoffset, default=default)
 
     def _emit_text(self, m, name, offset):
-        m.w('{name} = _field.String("{name}", {offset})', name=name, offset=offset)
+        ns = m.code.new_scope()
+        ns.name = name
+        ns.offset = offset
+        ns.w('{name} = _field.String("{name}", {offset})')
+        self._emit_has_method(ns)
 
     def _emit_data(self, m, name, offset):
-        m.w('{name} = _field.Data("{name}", {offset})', name=name, offset=offset)
+        ns = m.code.new_scope()
+        ns.name = name
+        ns.offset = offset
+        ns.w('{name} = _field.Data("{name}", {offset})')
+        self._emit_has_method(ns)
 
     def _emit_struct(self, m, name, offset):
-        structname = self.slot.type.compile_name(m)
-        m.w('{name} = _field.Struct("{name}", {offset}, {structname})',
-            name=name, offset=offset, structname=structname)
+        ns = m.code.new_scope()
+        ns.name = name
+        ns.offset = offset
+        ns.structname = self.slot.type.compile_name(m)
+        ns.w('{name} = _field.Struct("{name}", {offset}, {structname})')
+        self._emit_has_method(ns)
 
     def _emit_list(self, m, name, offset):
-        itemtype = self.slot.type.list.elementType.compile_name(m)
-        m.w('{name} = _field.List("{name}", {offset}, {itemtype})',
-            name=name, offset=offset, itemtype=itemtype)
-        
+        ns = m.code.new_scope()
+        ns.name = name
+        ns.offset = offset
+        ns.itemtype = self.slot.type.list.elementType.compile_name(m)
+        ns.w('{name} = _field.List("{name}", {offset}, {itemtype})')
+        self._emit_has_method(ns)
+
+    def _emit_has_method(self, ns):
+        ns.ww("""
+            def has_{name}(self):
+                offset, ptr = self._read_ptr({offset})
+                return ptr != 0
+
+        """)
+
     def _emit_enum(self, m, name, offset):
         enumname = self.slot.type.compile_name(m)
         m.w('{name} = _field.Enum("{name}", {offset}, {enumname})',
