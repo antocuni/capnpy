@@ -51,7 +51,8 @@ class Field__Slot:
                         if {use_tag}: # "compile time" switch
                             self._ensure_union({tag})
                         value = _upf("{fmt}", self._buf.s, self._data_offset+{offset})
-                        value = value ^ {default_}
+                        if {default_} != 0:
+                            value = value ^ {default_}
                         return value
             """)
             return True
