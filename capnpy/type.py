@@ -7,7 +7,7 @@ class BuiltinType(object):
         if fmt is not None:
             self.ifmt = ord(fmt)
         else:
-            self.ifmt = None
+            self.ifmt = -1
 
     def __repr__(self):
         return '<capnp type %s>' % self.name
