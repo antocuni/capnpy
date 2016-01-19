@@ -52,7 +52,7 @@ class Node__Struct:
         ns.w()
 
     def emit_reference_as_child(self, m):
-        if self.is_nested(m):
+        if self.is_nested(m) and not self.struct.isGroup:
             m.w('{shortname} = {name}', shortname=self.shortname(m),
                 name=self.compile_name(m))
 
