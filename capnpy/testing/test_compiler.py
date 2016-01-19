@@ -22,6 +22,8 @@ class CompilerTest:
     def initargs(self, request, tmpdir):
         self.tmpdir = tmpdir
         self.pyx = request.param == 'pyx'
+        if self.pyx and not request.config.option.pyx:
+            py.test.skip('no pyx')
 
     def compile(self, s, **kwds):
         # root is needed to be able to import capnpy/py.capnp
@@ -354,7 +356,7 @@ class TestNullPointers(CompilerTest):
         assert not f.has_y()
         assert not f.has_z()
 
-    def test_default_is_null(self, mod):
+    def test_default_when_null(self, mod):
         buf = ''
         f = mod.Foo.from_buffer(buf, 0, data_size=0, ptrs_size=0)
         assert f.x is None
