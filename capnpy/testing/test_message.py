@@ -11,8 +11,8 @@ def test_loads():
 
     p = loads(buf, Struct)
     assert isinstance(p, Struct)
-    assert p._read_data(0, Types.int64) == 1
-    assert p._read_data(8, Types.int64) == 2
+    assert p._read_data(0, Types.int64.ifmt) == 1
+    assert p._read_data(8, Types.int64.ifmt) == 2
 
 def test_wrong_size():
     buf = ('\x00\x00\x00\x00\x04\x00\x00\x00'   # message header: 1 segment, size 4 words

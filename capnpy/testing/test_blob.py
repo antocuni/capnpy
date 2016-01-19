@@ -18,15 +18,15 @@ class BlobForTests(Blob):
 
 def test_unpack_primitive():
     s = struct.pack('q', 1234)
-    assert unpack_primitive('q', s, 0) == 1234
+    assert unpack_primitive(ord('q'), s, 0) == 1234
     #
     # left bound check
     with py.test.raises(IndexError):
-        unpack_primitive('q', s, -8)
+        unpack_primitive(ord('q'), s, -8)
     #
     # right bound check
     with py.test.raises(IndexError):
-        unpack_primitive('q', s, 1) # not enough bytes
+        unpack_primitive(ord('q'), s, 1) # not enough bytes
 
 
 def test_CapnpBuffer():
@@ -34,14 +34,14 @@ def test_CapnpBuffer():
     buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
     b1 = CapnpBuffer(buf, None)
-    assert b1.read_primitive(0, Types.int64) == 1
-    assert b1.read_primitive(8, Types.int64) == 2
+    assert b1.read_primitive(0, Types.int64.ifmt) == 1
+    assert b1.read_primitive(8, Types.int64.ifmt) == 2
 
 
 def test_float64():
     buf = '\x58\x39\xb4\xc8\x76\xbe\xf3\x3f'   # 1.234
     b = CapnpBuffer(buf, None)
-    assert b.read_primitive(0, Types.float64) == 1.234
+    assert b.read_primitive(0, Types.float64.ifmt) == 1.234
 
 def test_read_ptr():
     buf = '\x90\x01\x00\x00\x02\x00\x04\x00'
@@ -64,8 +64,8 @@ def test_read_struct():
     assert p._data_offset == 8
     assert p._data_size == 2
     assert p._ptrs_size == 0
-    assert p._read_data(0, Types.int64) == 1
-    assert p._read_data(8, Types.int64) == 2
+    assert p._read_data(0, Types.int64.ifmt) == 1
+    assert p._read_data(8, Types.int64.ifmt) == 2
 
 def test_nested_struct():
     ## struct Rectangle {
@@ -81,10 +81,10 @@ def test_nested_struct():
     rect = BlobForTests(buf, 0)
     p1 = rect._read_struct(0, Struct)
     p2 = rect._read_struct(8, Struct)
-    assert p1._read_data(0, Types.int64) == 1
-    assert p1._read_data(8, Types.int64) == 2
-    assert p2._read_data(0, Types.int64) == 3
-    assert p2._read_data(8, Types.int64) == 4
+    assert p1._read_data(0, Types.int64.ifmt) == 1
+    assert p1._read_data(8, Types.int64.ifmt) == 2
+    assert p2._read_data(0, Types.int64.ifmt) == 3
+    assert p2._read_data(8, Types.int64.ifmt) == 4
     
 
 def test_null_pointers():
@@ -131,13 +131,13 @@ def test_read_group():
     assert isinstance(a, GroupA)
     assert a._data_size == 4
     assert a._ptrs_size == 0
-    assert a._read_data(0, Types.int64) == 1  # a.x
+    assert a._read_data(0, Types.int64.ifmt) == 1  # a.x
     #
     b = blob._read_group(GroupB)
     assert isinstance(b, GroupB)
     assert b._data_size == 4
     assert b._ptrs_size == 0
-    assert b._read_data(16, Types.int64) == 3 # b.x
+    assert b._read_data(16, Types.int64.ifmt) == 3 # b.x
 
 
 def test_far_pointer():
@@ -152,5 +152,5 @@ def test_far_pointer():
     buf = CapnpBuffer(seg0+seg1, segment_offsets=(0, 16))
     blob = BlobForTests(buf, 8)
     p = blob._read_struct(0, Struct)
-    assert p._read_data(0, Types.int64) == 1
-    assert p._read_data(8, Types.int64) == 2
+    assert p._read_data(0, Types.int64.ifmt) == 1
+    assert p._read_data(8, Types.int64.ifmt) == 2

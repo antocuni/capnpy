@@ -4,6 +4,10 @@ class BuiltinType(object):
     def __init__(self, name, fmt=None):
         self.name = name
         self.fmt = fmt
+        if fmt is not None:
+            self.ifmt = ord(fmt)
+        else:
+            self.ifmt = None
 
     def __repr__(self):
         return '<capnp type %s>' % self.name

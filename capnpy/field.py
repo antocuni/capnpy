@@ -26,7 +26,7 @@ class Primitive(object):
     def __get__(self, blob, cls):
         if blob is None:
             return self
-        val = blob._read_data(self.offset, self.type)
+        val = blob._read_data(self.offset, self.type.ifmt)
         if self.default_:
             val ^= self.default_
         return val

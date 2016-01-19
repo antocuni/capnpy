@@ -41,7 +41,7 @@ class Struct(Blob):
         """
         if self.__tag_offset__ is None:
             raise TypeError("Cannot call which() on a non-union type")
-        val = self._read_data(self.__tag_offset__, Types.int16)
+        val = self._read_data(self.__tag_offset__, Types.int16.ifmt)
         return self.__tag__(val)
  
     def _read_data(self, offset, t):

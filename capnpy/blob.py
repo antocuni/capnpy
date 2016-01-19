@@ -18,11 +18,11 @@ class CapnpBuffer(object):
         self.s = s
         self.segment_offsets = segment_offsets
 
-    def read_primitive(self, offset, t):
-        return unpack_primitive(t.fmt, self.s, offset)
+    def read_primitive(self, offset, ifmt):
+        return unpack_primitive(ifmt, self.s, offset)
 
     def read_raw_ptr(self, offset):
-        ptr = self.read_primitive(offset, Types.int64)
+        ptr = self.read_primitive(offset, Types.int64.ifmt)
         return Ptr(ptr)
 
     def read_ptr(self, offset):
@@ -68,11 +68,11 @@ class Blob(object):
         raise NotImplementedError
 
     def _read_bit(self, offset, bitmask):
-        val = self._read_data(offset, Types.uint8)
+        val = self._read_data(offset, Types.uint8.ifmt)
         return bool(val & bitmask)
 
     def _read_enum(self, offset, enumtype):
-        val = self._read_data(offset, Types.int16)
+        val = self._read_data(offset, Types.int16.ifmt)
         return enumtype(val)
 
     def _read_struct(self, offset, structcls, default_=None):

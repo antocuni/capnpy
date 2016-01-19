@@ -29,9 +29,9 @@ def test__read_data():
     buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
     b1 = Struct.from_buffer(buf, 0, data_size=2, ptrs_size=0)
-    assert b1._read_data(0, Types.int64) == 1
-    assert b1._read_data(8, Types.int64) == 2
-    assert b1._read_data(16, Types.int64) == 0 # outside the buffer
+    assert b1._read_data(0, Types.int64.ifmt) == 1
+    assert b1._read_data(8, Types.int64.ifmt) == 2
+    assert b1._read_data(16, Types.int64.ifmt) == 0 # outside the buffer
 
 
 def test_point_range():
