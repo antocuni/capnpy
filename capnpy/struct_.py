@@ -44,11 +44,11 @@ class Struct(Blob):
         val = self._read_data(self.__tag_offset__, Types.int16.ifmt)
         return self.__tag__(val)
  
-    def _read_data(self, offset, t):
+    def _read_data(self, offset, ifmt):
         if offset >= self._data_size*8:
             # reading bytes beyond _data_size is equivalent to read 0
             return 0
-        return self._buf.read_primitive(self._data_offset+offset, t)
+        return self._buf.read_primitive(self._data_offset+offset, ifmt)
 
     def _read_ptr(self, offset):
         if offset >= self._ptrs_size*8:

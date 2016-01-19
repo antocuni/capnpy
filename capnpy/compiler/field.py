@@ -43,15 +43,14 @@ class Field__Slot:
         ns.default_ = self.slot.defaultValue.as_pyobj()
         ns.use_tag = self.discriminantValue != Field.noDiscriminant
         ns.tag = self.discriminantValue
-        ns.fmt = self.slot.get_fmt()
+        ns.ifmt = "ord(%r)" % self.slot.get_fmt()
         if m.pyx:
             ns.ww("""
                 property {name}:
                     def __get__(self):
                         if {use_tag}: # "compile time" switch
                             self._ensure_union({tag})
-                        value = unpack_primitive(ord("{fmt}"), self._buf.s,
-                                                 self._data_offset+{offset})
+                        value = self._read_data({offset}, {ifmt})
                         if {default_} != 0:
                             value = value ^ {default_}
                         return value

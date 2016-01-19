@@ -54,7 +54,6 @@ class RequestedFile:
         m.w("from capnpy.list import StringList as _StringList")
         #
         if m.pyx:
-            m.w("from capnpy.unpack cimport unpack_primitive")
             # load the compiler from the outside. See the comment in
             # _compile_pyx for a detailed explanation
             m.w('from %s import __compiler' % m.tmpname)
