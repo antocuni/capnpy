@@ -50,7 +50,7 @@ class Field__Slot:
                     def __get__(self):
                         if {use_tag}: # "compile time" switch
                             self._ensure_union({tag})
-                        value = _upf("{fmt}", self._buf, self._offset+{offset})
+                        value = _upf("{fmt}", self._buf.s, self._data_offset+{offset})
                         value = value ^ {default_}
                         return value
             """)
