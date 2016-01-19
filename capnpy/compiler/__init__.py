@@ -132,6 +132,7 @@ class Compiler(object):
         """
         Use Cython to compile the schema
         """
+        import capnpy.ext # the package which we will load the .so in
         import imp
         from pyximport.pyxbuild import pyx_to_dll
         pyxname = filename.new(ext='pyx')
@@ -154,7 +155,8 @@ class Compiler(object):
         tmpmod = types.ModuleType(m.tmpname)
         tmpmod.__dict__['__compiler'] = self
         sys.modules[m.tmpname] = tmpmod
-        mod = imp.load_dynamic(m.modname, str(dll))
+        modname = 'capnpy.ext.%s' % m.modname
+        mod = imp.load_dynamic(modname, str(dll))
         #
         # clean-up the cluttered sys.modules
         del sys.modules[mod.__name__]
