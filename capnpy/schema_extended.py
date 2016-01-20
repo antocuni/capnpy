@@ -21,30 +21,6 @@ class Type:
     def is_builtin(self):
         return schema.Type.__tag__.void <= self.which() <= schema.Type.__tag__.data
 
-    def is_bool(self):
-        return self.which() == schema.Type.__tag__.bool
-
-    def is_void(self):
-        return self.which() == schema.Type.__tag__.void
-
-    def is_enum(self):
-        return self.which() == schema.Type.__tag__.enum
-
-    def is_text(self):
-        return self.which() == schema.Type.__tag__.text
-
-    def is_data(self):
-        return self.which() == schema.Type.__tag__.data
-
-    def is_anyPointer(self):
-        return self.which() == schema.Type.__tag__.anyPointer
-
-    def is_list(self):
-        return self.which() == schema.Type.__tag__.list
-
-    def is_struct(self):
-        return self.which() == schema.Type.__tag__.struct
-
     def is_pointer(self):
         return self.which() in (schema.Type.__tag__.text,
                                 schema.Type.__tag__.data,
@@ -57,25 +33,6 @@ class Node:
     def _get_key(self):
         return self.id
 
-    def is_file(self):
-        return self.which() == Node.__tag__.file
-
-    def is_struct(self):
-        return self.which() == Node.__tag__.struct
-
-    def is_enum(self):
-        return self.which() == Node.__tag__.enum
-
-    def is_interface(self):
-        return self.which() == Node.__tag__.interface
-
-    def is_const(self):
-        return self.which() == Node.__tag__.const
-
-    def is_annotation(self):
-        return self.which() == Node.__tag__.annotation
-
-
 
 @schema.Field.__extend__
 class Field:
@@ -86,12 +43,6 @@ class Field:
         # enough to uniquiely identify a field inside the parent struct, which
         # is enough for what we need (in particular, in structor.py)
         return self.name, self.codeOrder
-
-    def is_slot(self):
-        return self.which() == schema.Field.__tag__.slot
-
-    def is_group(self):
-        return self.which() == schema.Field.__tag__.group
 
     def is_void(self):
         return (self.which() == schema.Field.__tag__.slot and

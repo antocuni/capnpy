@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2016-01-20 16:17
+# generated on 2016-01-21 00:56
 # input files: 
 #   - capnpy/schema.capnp
 
@@ -506,6 +506,10 @@ class Type_anyPointer(_Struct):
     __tag_offset__ = 8
     __tag__ = _enum('anyPointer.__tag__', ('unconstrained', 'parameter', 'implicitMethodParameter'))
     
+    def is_unconstrained(self): return self.which() == 0
+    def is_parameter(self): return self.which() == 1
+    def is_implicitMethodParameter(self): return self.which() == 2
+    
     @property
     def unconstrained(self):
         self._ensure_union(0)
@@ -755,6 +759,26 @@ class Type(_Struct):
     
     __tag_offset__ = 0
     __tag__ = _enum('Type.__tag__', ('void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer'))
+    
+    def is_void(self): return self.which() == 0
+    def is_bool(self): return self.which() == 1
+    def is_int8(self): return self.which() == 2
+    def is_int16(self): return self.which() == 3
+    def is_int32(self): return self.which() == 4
+    def is_int64(self): return self.which() == 5
+    def is_uint8(self): return self.which() == 6
+    def is_uint16(self): return self.which() == 7
+    def is_uint32(self): return self.which() == 8
+    def is_uint64(self): return self.which() == 9
+    def is_float32(self): return self.which() == 10
+    def is_float64(self): return self.which() == 11
+    def is_text(self): return self.which() == 12
+    def is_data(self): return self.which() == 13
+    def is_list(self): return self.which() == 14
+    def is_enum(self): return self.which() == 15
+    def is_struct(self): return self.which() == 16
+    def is_interface(self): return self.which() == 17
+    def is_anyPointer(self): return self.which() == 18
     
     @property
     def void(self):
@@ -1535,6 +1559,9 @@ class Field_ordinal(_Struct):
     __tag_offset__ = 10
     __tag__ = _enum('ordinal.__tag__', ('implicit', 'explicit'))
     
+    def is_implicit(self): return self.which() == 0
+    def is_explicit(self): return self.which() == 1
+    
     @property
     def implicit(self):
         self._ensure_union(0)
@@ -1635,7 +1662,7 @@ class Field_slot(_Struct):
     
     @staticmethod
     def __new(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43ada39830>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f036a534490>')
     
     def __init__(self, *args):
         buf = self.__new(*args)
@@ -1662,6 +1689,9 @@ class Field(_Struct):
     
     __tag_offset__ = 8
     __tag__ = _enum('Field.__tag__', ('slot', 'group'))
+    
+    def is_slot(self): return self.which() == 0
+    def is_group(self): return self.which() == 1
     
     @property
     def name(self):
@@ -1808,6 +1838,26 @@ class Value(_Struct):
     
     __tag_offset__ = 0
     __tag__ = _enum('Value.__tag__', ('void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer'))
+    
+    def is_void(self): return self.which() == 0
+    def is_bool(self): return self.which() == 1
+    def is_int8(self): return self.which() == 2
+    def is_int16(self): return self.which() == 3
+    def is_int32(self): return self.which() == 4
+    def is_int64(self): return self.which() == 5
+    def is_uint8(self): return self.which() == 6
+    def is_uint16(self): return self.which() == 7
+    def is_uint32(self): return self.which() == 8
+    def is_uint64(self): return self.which() == 9
+    def is_float32(self): return self.which() == 10
+    def is_float64(self): return self.which() == 11
+    def is_text(self): return self.which() == 12
+    def is_data(self): return self.which() == 13
+    def is_list(self): return self.which() == 14
+    def is_enum(self): return self.which() == 15
+    def is_struct(self): return self.which() == 16
+    def is_interface(self): return self.which() == 17
+    def is_anyPointer(self): return self.which() == 18
     
     @property
     def void(self):
@@ -1973,7 +2023,7 @@ class Value(_Struct):
     
     @staticmethod
     def __new_bool(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43ada39520>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f036a534a10>')
     @classmethod
     def new_bool(cls, *args):
         buf = cls.__new_bool(*args)
@@ -2105,7 +2155,7 @@ class Value(_Struct):
     def __new_data(data):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 13
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43ada39c90>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f036a548790>')
         buf = builder.build(__which__, data)
         return buf
     @classmethod
@@ -2117,7 +2167,7 @@ class Value(_Struct):
     def __new_list(list):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 14
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43ada39d00>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f036a5487d0>')
         buf = builder.build(__which__, list)
         return buf
     @classmethod
@@ -2140,7 +2190,7 @@ class Value(_Struct):
     def __new_struct(struct):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 16
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43ada5da60>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f036a548850>')
         buf = builder.build(__which__, struct)
         return buf
     @classmethod
@@ -2163,7 +2213,7 @@ class Value(_Struct):
     def __new_anyPointer(anyPointer):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 18
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43ada5db40>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f036a5488d0>')
         buf = builder.build(__which__, anyPointer)
         return buf
     @classmethod
@@ -2628,6 +2678,9 @@ class Brand_Binding(_Struct):
     __tag_offset__ = 0
     __tag__ = _enum('Binding.__tag__', ('unbound', 'type'))
     
+    def is_unbound(self): return self.which() == 0
+    def is_type(self): return self.which() == 1
+    
     @property
     def unbound(self):
         self._ensure_union(0)
@@ -2696,6 +2749,9 @@ class Brand_Scope(_Struct):
     
     __tag_offset__ = 8
     __tag__ = _enum('Scope.__tag__', ('bind', 'inherit'))
+    
+    def is_bind(self): return self.which() == 0
+    def is_inherit(self): return self.which() == 1
     
     @property
     def scopeId(self):
@@ -3012,7 +3068,7 @@ class Node_struct(_Struct):
     
     @staticmethod
     def __new(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43ada39b40>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f036a55c090>')
     
     def __init__(self, *args):
         buf = self.__new(*args)
@@ -3146,7 +3202,7 @@ class Node_annotation(_Struct):
     
     @staticmethod
     def __new(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43ada39c90>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f036a55c610>')
     
     def __init__(self, *args):
         buf = self.__new(*args)
@@ -3298,6 +3354,13 @@ class Node(_Struct):
     __tag_offset__ = 12
     __tag__ = _enum('Node.__tag__', ('file', 'struct', 'enum', 'interface', 'const', 'annotation'))
     
+    def is_file(self): return self.which() == 0
+    def is_struct(self): return self.which() == 1
+    def is_enum(self): return self.which() == 2
+    def is_interface(self): return self.which() == 3
+    def is_const(self): return self.which() == 4
+    def is_annotation(self): return self.which() == 5
+    
     @property
     def id(self):
         # no union check
@@ -3398,7 +3461,7 @@ class Node(_Struct):
     
     @staticmethod
     def __new_file(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43ada77980>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f036a564090>')
     @classmethod
     def new_file(cls, *args):
         buf = cls.__new_file(*args)
