@@ -1,7 +1,6 @@
 import py
 from capnpy.testing.compiler.support import CompilerTest
 
-
 class TestField(CompilerTest):
 
     def test_primitive_plain(self):
