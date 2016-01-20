@@ -55,7 +55,8 @@ class Field__Slot:
         return True
 
     def _emit_bool(self, m, ns, name):
-        ns.offset, bitoffset = divmod(self.slot.offset, 8)
+        byteoffset, bitoffset = divmod(self.slot.offset, 8)
+        ns.offset = byteoffset
         ns.bitmask = 1 << bitoffset
         ns.default_ = self.slot.defaultValue.as_pyobj()
         m.def_property(ns, name, """
@@ -69,12 +70,18 @@ class Field__Slot:
 
     def _emit_text(self, m, ns, name):
         ns.name = name
-        ns.w('{name} = _field.String("{name}", {offset})')
+        m.def_property(ns, name, """
+            {ensure_union}
+            return self._read_string({offset})
+        """)
         self._emit_has_method(ns)
 
     def _emit_data(self, m, ns, name):
         ns.name = name
-        ns.w('{name} = _field.Data("{name}", {offset})')
+        m.def_property(ns, name, """
+            {ensure_union}
+            return self._read_data_string({offset})
+        """)
         self._emit_has_method(ns)
 
     def _emit_struct(self, m, ns, name):
