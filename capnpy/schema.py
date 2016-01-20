@@ -6,7 +6,6 @@
 
 from capnpy.struct_ import Struct as _Struct
 from capnpy.struct_ import undefined as _undefined
-from capnpy import field as _field
 from capnpy.enum import enum as _enum
 from capnpy.blob import Types as _Types
 from capnpy.builder import StructBuilder as _StructBuilder
