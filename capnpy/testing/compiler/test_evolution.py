@@ -1,5 +1,5 @@
 import py
-from capnpy.testing.test_compiler import CompilerTest
+from capnpy.testing.compiler.support import CompilerTest
 from capnpy.message import loads, dumps
 
 class TestEvolution(CompilerTest):

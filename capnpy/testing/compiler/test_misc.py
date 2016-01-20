@@ -3,7 +3,7 @@ Integration tests which don't fit anywhere else :)
 """
 
 import py
-from capnpy.testing.test_compiler import CompilerTest
+from capnpy.testing.compiler.support import CompilerTest
 
 class TestIntegration(CompilerTest):
 
