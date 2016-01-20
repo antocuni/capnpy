@@ -82,6 +82,17 @@ class ModuleGenerator(object):
         decl = "%s = _enum(%r, (%s))" % (var_name, enum_name, ', '.join(items))
         self.w(decl)
 
+    def def_property(self, ns, name, src):
+        if self.pyx:
+            with ns.block('property {name}:', name=name):
+                with ns.block('def __get__(self):'):
+                    ns.ww(src)
+        else:
+            ns.w('@property')
+            with ns.block('def {name}(self):', name=name):
+                ns.ww(src)
+        ns.w()
+
 
 class Compiler(object):
 

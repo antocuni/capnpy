@@ -37,27 +37,21 @@ class Field__Slot:
 
     def _emit_primitive(self, m, name, offset):
         ns = m.code.new_scope()
-        ns.name = name
         ns.offset = offset
         ns.typename = '_Types.%s' % self.slot.type.which()
         ns.default_ = self.slot.defaultValue.as_pyobj()
         ns.use_tag = self.discriminantValue != Field.noDiscriminant
         ns.tag = self.discriminantValue
         ns.ifmt = "ord(%r)" % self.slot.get_fmt()
-        if m.pyx:
-            ns.ww("""
-                property {name}:
-                    def __get__(self):
-                        if {use_tag}: # "compile time" switch
-                            self._ensure_union({tag})
-                        value = self._read_data({offset}, {ifmt})
-                        if {default_} != 0:
-                            value = value ^ {default_}
-                        return value
-            """)
-            return True
-        else:
-            ns.w('{name} = _field.Primitive("{name}", {offset}, {typename}, {default_})')
+        m.def_property(ns, name, """
+            if {use_tag}: # "compile time" switch
+                self._ensure_union({tag})
+            value = self._read_data({offset}, {ifmt})
+            if {default_} != 0:
+                value = value ^ {default_}
+            return value
+        """)
+        return True
 
     def _emit_bool(self, m, name):
         byteoffset, bitoffset = divmod(self.slot.offset, 8)
