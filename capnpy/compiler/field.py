@@ -86,8 +86,14 @@ class Field__Slot:
 
     def _emit_struct(self, m, ns, name):
         ns.name = name
-        ns.structname = self.slot.type.compile_name(m)
-        ns.w('{name} = _field.Struct("{name}", {offset}, {structname})')
+        # XXX: in case of nested structs, using the runtime name (such as
+        # Outer.Inner.Point) might be slower in pyx mode, because it has to do
+        # the lookup at runtime.
+        ns.structname = self.slot.type.runtime_name(m)
+        m.def_property(ns, name, """
+            {ensure_union}
+            return self._read_struct({offset}, {structname})
+        """)
         self._emit_has_method(ns)
 
     def _emit_list(self, m, ns, name):

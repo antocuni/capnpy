@@ -133,7 +133,31 @@ class TestField(CompilerTest):
                '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
                '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
                '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
+        r = mod.Rectangle.from_buffer(buf, 0, 0, 2)
+        assert r.a.x == 1
+        assert r.a.y == 2
+        assert r.b.x == 3
+        assert r.b.y == 4
 
+    def test_nested_struct(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Rectangle {
+            struct Point {
+                x @0 :Int64;
+                y @1 :Int64;
+            }
+            a @0 :Point;
+            b @1 :Point;
+        }
+        """
+        mod = self.compile(schema)
+        buf = ('\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+               '\x08\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
+               '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
+               '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
+               '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
         r = mod.Rectangle.from_buffer(buf, 0, 0, 2)
         assert r.a.x == 1
         assert r.a.y == 2
