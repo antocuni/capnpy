@@ -33,7 +33,7 @@ class Field__Slot:
             return self._emit_bool(m, ns, name)
         elif self.slot.type.is_enum():
             return self._emit_enum(m, ns, name)
-        elif self.slot.type.is_string():
+        elif self.slot.type.is_text():
             return self._emit_text(m, ns, name)
         elif self.slot.type.is_data():
             return self._emit_data(m, ns, name)
@@ -119,7 +119,7 @@ class Field__Slot:
         ns.itemtype = element_type.runtime_name(m)
         if element_type.is_primitive():
             ns.listcls = '_PrimitiveList'
-        elif element_type.is_string():
+        elif element_type.is_text():
             ns.listcls = '_StringList'
         elif element_type.is_struct():
             ns.listcls = '_StructList'

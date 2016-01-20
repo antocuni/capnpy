@@ -143,8 +143,8 @@ class Structor(object):
             if self.tag_value is not None:
                 code.w('__which__ = {tag_value}', tag_value=int(self.tag_value))
             for f in self.fields:
-                if f.is_string():
-                    self._field_string(code, f)
+                if f.is_text():
+                    self._field_text(code, f)
                 elif f.is_struct():
                     self._field_struct(code, f)
                 elif f.is_list():
@@ -181,7 +181,7 @@ class Structor(object):
                 {fname}_value = {fname}
         """)
 
-    def _field_string(self, code, f):
+    def _field_text(self, code, f):
         fname = self.field_name[f]
         code.w('{arg} = builder.alloc_string({offset}, {arg})',
                arg=fname, offset=self._slot_offset(f))
@@ -202,7 +202,7 @@ class Structor(object):
         #
         if itemtype.is_primitive():
             ns.listcls = '_PrimitiveList'
-        elif itemtype.is_string():
+        elif itemtype.is_text():
             ns.listcls = '_StringList'
         elif itemtype.is_struct():
             ns.listcls = '_StructList'

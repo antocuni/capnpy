@@ -30,7 +30,7 @@ class Type:
     def is_enum(self):
         return self.which() == schema.Type.__tag__.enum
 
-    def is_string(self):
+    def is_text(self):
         return self.which() == schema.Type.__tag__.text
 
     def is_data(self):
@@ -105,9 +105,9 @@ class Field:
         return (self.which() == schema.Field.__tag__.slot and
                 self.slot.type.is_pointer())
 
-    def is_string(self):
+    def is_text(self):
         return (self.which() == schema.Field.__tag__.slot and
-                self.slot.type.is_string())
+                self.slot.type.is_text())
 
 
     def is_struct(self):
