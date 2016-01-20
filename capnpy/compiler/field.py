@@ -98,8 +98,20 @@ class Field__Slot:
 
     def _emit_list(self, m, ns, name):
         ns.name = name
-        ns.itemtype = self.slot.type.list.elementType.compile_name(m)
-        ns.w('{name} = _field.List("{name}", {offset}, {itemtype})')
+        element_type = self.slot.type.list.elementType
+        ns.itemtype = element_type.runtime_name(m)
+        if element_type.is_primitive():
+            ns.listcls = '_PrimitiveList'
+        elif element_type.is_string():
+            ns.listcls = '_StringList'
+        elif element_type.is_struct():
+            ns.listcls = '_StructList'
+        else:
+            raise ValueError('Unsupported: list of %s', ns.itemtype)
+        m.def_property(ns, name, """
+            {ensure_union}
+            return self._read_list({offset}, {listcls}, {itemtype})
+        """)
         self._emit_has_method(ns)
 
     def _emit_has_method(self, ns):
@@ -107,8 +119,8 @@ class Field__Slot:
             def has_{name}(self):
                 offset, ptr = self._read_ptr({offset})
                 return ptr != 0
-
         """)
+        ns.w()
 
     def _emit_enum(self, m, ns, name):
         enumname = self.slot.type.compile_name(m)
