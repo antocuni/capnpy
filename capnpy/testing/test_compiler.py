@@ -74,6 +74,18 @@ class TestAttribute(CompilerTest):
         assert p.x == 42
         assert p.y is True
 
+    def test_void(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            x @0 :Void;
+        }
+        """
+        mod = self.compile(schema)
+        #
+        p = mod.Foo.from_buffer('', 0, 0, 0)
+        assert p.x is None
+
 
     def test_string(self):
         schema = """
@@ -172,6 +184,7 @@ class TestAttribute(CompilerTest):
           union {
             circle @1 :Int64;      # radius
             square @2 :Int64;      # width
+            empty  @3 :Void;
           }
         }
         """
@@ -183,6 +196,17 @@ class TestAttribute(CompilerTest):
         assert shape.area == 64
         assert shape.which() == mod.Shape.__tag__.square
         assert shape.square == 8
+        py.test.raises(ValueError, "shape.circle")
+        py.test.raises(ValueError, "shape.empty")
+        #
+        buf = ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
+               '\x00\x00\x00\x00\x00\x00\x00\x00'     # unused
+               '\x02\x00\x00\x00\x00\x00\x00\x00')    # which() == empty, padding
+        shape = mod.Shape.from_buffer(buf, 0, 3, 0)
+        assert shape.area == 64
+        assert shape.which() == mod.Shape.__tag__.empty
+        assert shape.empty is None
+        py.test.raises(ValueError, "shape.square")
         py.test.raises(ValueError, "shape.circle")
 
 
@@ -528,12 +552,8 @@ class TestCompiler(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        if self.pyx:
-            assert mod.MyStruct.first_attr.__name__ == 'first_attr'
-            assert mod.MyStruct.second_attr.__name__ == 'second_attr'
-        else:
-            assert mod.MyStruct.first_attr.name == 'first_attr'
-            assert mod.MyStruct.second_attr.name == 'second_attr'
+        assert hasattr(mod.MyStruct, 'first_attr')
+        assert hasattr(mod.MyStruct, 'second_attr')
 
     def test_no_convert_case(self):
         schema = """
@@ -544,13 +564,8 @@ class TestCompiler(CompilerTest):
         }
         """
         mod = self.compile(schema, convert_case=False)
-        if self.pyx:
-            assert mod.MyStruct.firstAttr.__name__ == 'firstAttr'
-            assert mod.MyStruct.secondAttr.__name__ == 'secondAttr'
-        else:
-            assert mod.MyStruct.firstAttr.name == 'firstAttr'
-            assert mod.MyStruct.secondAttr.name == 'secondAttr'
-
+        assert hasattr(mod.MyStruct, 'firstAttr')
+        assert hasattr(mod.MyStruct, 'secondAttr')
 
     def test_convert_case_enum(self):
         schema = """

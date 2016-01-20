@@ -16,12 +16,18 @@ class Field:
 class Field__Slot:
 
     def _emit(self, m, node, name):
-        if self.slot.type.is_bool():
-            return self._emit_bool(m, name)
+        ns = m.code.new_scope()
+        ns.offset = self.slot.offset * self.slot.get_size()
+        if self.discriminantValue != Field.noDiscriminant:
+            ns.ensure_union = 'self._ensure_union(%s)' % self.discriminantValue
+        else:
+            ns.ensure_union = ''
         #
-        offset = self.slot.offset * self.slot.get_size()
+        if self.slot.type.is_bool():
+            return self._emit_bool(m, ns, name)
+        #
         if self.slot.type.is_primitive():
-            return self._emit_primitive(m, name, offset)
+            return self._emit_primitive(m, ns, name)
         elif self.slot.hadExplicitDefault:
             raise ValueError("explicit defaults not supported for field %s" % self)
         else:
@@ -33,19 +39,14 @@ class Field__Slot:
             if _emit is None:
                 raise NotImplementedError('Unknown type: %s' % self.slot.type)
             else:
-                return _emit(m, name, offset)
+                return _emit(m, ns, name)
 
-    def _emit_primitive(self, m, name, offset):
-        ns = m.code.new_scope()
-        ns.offset = offset
+    def _emit_primitive(self, m, ns, name):
         ns.typename = '_Types.%s' % self.slot.type.which()
         ns.default_ = self.slot.defaultValue.as_pyobj()
-        ns.use_tag = self.discriminantValue != Field.noDiscriminant
-        ns.tag = self.discriminantValue
         ns.ifmt = "ord(%r)" % self.slot.get_fmt()
         m.def_property(ns, name, """
-            if {use_tag}: # "compile time" switch
-                self._ensure_union({tag})
+            {ensure_union}
             value = self._read_data({offset}, {ifmt})
             if {default_} != 0:
                 value = value ^ {default_}
@@ -53,38 +54,30 @@ class Field__Slot:
         """)
         return True
 
-    def _emit_bool(self, m, name):
+    def _emit_bool(self, m, ns, name):
         byteoffset, bitoffset = divmod(self.slot.offset, 8)
         default = self.slot.defaultValue.as_pyobj()
         m.w('{name} = _field.Bool("{name}", {byteoffset}, {bitoffset}, {default})',
             name=name, byteoffset=byteoffset, bitoffset=bitoffset, default=default)
 
-    def _emit_text(self, m, name, offset):
-        ns = m.code.new_scope()
+    def _emit_text(self, m, ns, name):
         ns.name = name
-        ns.offset = offset
         ns.w('{name} = _field.String("{name}", {offset})')
         self._emit_has_method(ns)
 
-    def _emit_data(self, m, name, offset):
-        ns = m.code.new_scope()
+    def _emit_data(self, m, ns, name):
         ns.name = name
-        ns.offset = offset
         ns.w('{name} = _field.Data("{name}", {offset})')
         self._emit_has_method(ns)
 
-    def _emit_struct(self, m, name, offset):
-        ns = m.code.new_scope()
+    def _emit_struct(self, m, ns, name):
         ns.name = name
-        ns.offset = offset
         ns.structname = self.slot.type.compile_name(m)
         ns.w('{name} = _field.Struct("{name}", {offset}, {structname})')
         self._emit_has_method(ns)
 
-    def _emit_list(self, m, name, offset):
-        ns = m.code.new_scope()
+    def _emit_list(self, m, ns, name):
         ns.name = name
-        ns.offset = offset
         ns.itemtype = self.slot.type.list.elementType.compile_name(m)
         ns.w('{name} = _field.List("{name}", {offset}, {itemtype})')
         self._emit_has_method(ns)
@@ -97,16 +90,20 @@ class Field__Slot:
 
         """)
 
-    def _emit_enum(self, m, name, offset):
+    def _emit_enum(self, m, ns, name):
         enumname = self.slot.type.compile_name(m)
-        m.w('{name} = _field.Enum("{name}", {offset}, {enumname})',
-            name=name, offset=offset, enumname=enumname)
+        ns.w('{name} = _field.Enum("{name}", {offset}, {enumname})',
+            name=name, enumname=enumname)
         
-    def _emit_void(self, m, name, offset):
-        m.w('{name} = _field.Void("{name}")', name=name)
+    def _emit_void(self, m, ns, name):
+        m.def_property(ns, name, """
+            {ensure_union}
+            return None
+        """)
+        return True
         
-    def _emit_anyPointer(self, m, name, offset):
-        m.w('{name} = _field.AnyPointer("{name}", {offset})', name=name, offset=offset)
+    def _emit_anyPointer(self, m, ns, name):
+        m.w('{name} = _field.AnyPointer("{name}", {offset})', name=name)
 
 
 @schema.Field__Group.__extend__

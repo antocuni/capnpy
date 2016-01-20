@@ -134,6 +134,9 @@ class Field:
             # XXX: even more hackish, we need a better way
             if self.type.is_void():
                 return 0
+            elif self.type.is_bool():
+                # not strictly correct, but we cannot return 1/8
+                return 0
             import struct
             return struct.calcsize(self.get_fmt())
 
