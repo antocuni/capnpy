@@ -11,11 +11,7 @@ class Field:
             ns.ensure_union = 'self._ensure_union(%s)' % self.discriminantValue
         else:
             ns.ensure_union = '# no union check'
-        #
-        union_check_done = self._emit(m, ns, name)
-        if not union_check_done and self.discriminantValue != Field.noDiscriminant:
-            line = '{name} = _field.Union({discriminantValue}, {name})'
-            m.w(line, name=name, discriminantValue=self.discriminantValue)
+        self._emit(m, ns, name)
 
 
 @schema.Field__Slot.__extend__
@@ -47,7 +43,6 @@ class Field__Slot:
             {ensure_union}
             return None
         """)
-        return True
 
     def _emit_primitive(self, m, ns, name):
         ns.typename = '_Types.%s' % self.slot.type.which()
@@ -60,7 +55,6 @@ class Field__Slot:
                 value = value ^ {default_}
             return value
         """)
-        return True
 
     def _emit_bool(self, m, ns, name):
         byteoffset, bitoffset = divmod(self.slot.offset, 8)
@@ -74,7 +68,6 @@ class Field__Slot:
                 value = value ^ {default_}
             return value
         """)
-        return True
 
     def _emit_enum(self, m, ns, name):
         ns.enumcls = self.slot.type.runtime_name(m)

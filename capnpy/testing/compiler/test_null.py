@@ -85,7 +85,6 @@ class TestNullable(CompilerTest):
         assert not foo._x.is_null
         assert foo._x.value == 2
         assert foo.x == 2
-        import pdb;pdb.set_trace()
 
     def test_constructor(self, mod):
         foo = mod.Foo(x=None)
