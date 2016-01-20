@@ -10,7 +10,7 @@ class Field:
         if self.discriminantValue != Field.noDiscriminant:
             ns.ensure_union = 'self._ensure_union(%s)' % self.discriminantValue
         else:
-            ns.ensure_union = ''
+            ns.ensure_union = '# no union check'
         #
         union_check_done = self._emit(m, ns, name)
         if not union_check_done and self.discriminantValue != Field.noDiscriminant:
@@ -152,21 +152,22 @@ class Field__Group:
 
     def _emit(self, m, ns, name):
         groupnode = m.allnodes[self.group.typeId]
+        ns.groupcls = groupnode.compile_name(m)
         ns.name = name
-        ns.clsname = groupnode.compile_name(m)
         if self.is_nullable(m):
             ns.privname = '_' + name
             ns.ww("""
-                {privname} = _field.Group({clsname})
                 @property
                 def {name}(self):
-                    if self.{privname}.is_null:
+                    g = self.{privname}
+                    if g.is_null:
                         return None
-                    return self.{privname}.value
+                    return g.value
             """)
-        else:
-            ns.groupcls = groupnode.compile_name(m)
-            m.def_property(ns, name, """
-                {ensure_union}
-                return self._read_group({groupcls})
-            """)
+            name = ns.privname
+            ns.w()
+        #
+        m.def_property(ns, name, """
+            {ensure_union}
+            return self._read_group({groupcls})
+        """)
