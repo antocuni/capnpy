@@ -55,10 +55,17 @@ class Field__Slot:
         return True
 
     def _emit_bool(self, m, ns, name):
-        byteoffset, bitoffset = divmod(self.slot.offset, 8)
-        default = self.slot.defaultValue.as_pyobj()
-        m.w('{name} = _field.Bool("{name}", {byteoffset}, {bitoffset}, {default})',
-            name=name, byteoffset=byteoffset, bitoffset=bitoffset, default=default)
+        ns.offset, bitoffset = divmod(self.slot.offset, 8)
+        ns.bitmask = 1 << bitoffset
+        ns.default_ = self.slot.defaultValue.as_pyobj()
+        m.def_property(ns, name, """
+            {ensure_union}
+            value = self._read_bit({offset}, {bitmask})
+            if {default_} != 0:
+                value = value ^ {default_}
+            return value
+        """)
+        return True
 
     def _emit_text(self, m, ns, name):
         ns.name = name
