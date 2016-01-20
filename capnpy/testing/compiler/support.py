@@ -1,6 +1,7 @@
 import py
 import pytest
 import capnpy
+from capnpy.blob import PYX
 from capnpy.compiler import Compiler
 
 
@@ -24,6 +25,8 @@ class CompilerTest:
         self.pyx = request.param == 'pyx'
         if self.pyx and not request.config.option.pyx:
             py.test.skip('no pyx')
+        if self.pyx and not PYX:
+            py.test.skip('cannot test pyx if PYX==False')
 
     def compile(self, s, **kwds):
         # root is needed to be able to import capnpy/py.capnp

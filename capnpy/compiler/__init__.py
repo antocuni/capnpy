@@ -7,6 +7,7 @@ from pypytools.codegen import Code
 from capnpy.convert_case import from_camel_case
 from capnpy import schema
 from capnpy.message import loads
+from capnpy.blob import PYX
 
 # the following imports have side-effects, and augment the schema.* classes
 # with emit() methods
@@ -96,11 +97,16 @@ class ModuleGenerator(object):
 
 class Compiler(object):
 
-    def __init__(self, path, pyx=False):
+    def __init__(self, path, pyx):
         self.path = [py.path.local(dirname) for dirname in path]
         self.modules = {}
+        #
+        assert pyx in (True, False, 'auto')
+        if pyx == 'auto':
+            pyx = PYX
         self.pyx = pyx
         if self.pyx:
+            assert PYX, 'Cython extensions are missing; please run setup.py install'
             self.tmpdir = py.path.local.mkdtemp()
         else:
             self.tmpdir = None
@@ -198,5 +204,5 @@ class Compiler(object):
             raise ValueError(stderr)
         return stdout
 
-_compiler = Compiler(sys.path)
+_compiler = Compiler(sys.path, pyx='auto')
 load_schema = _compiler.load_schema

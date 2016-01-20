@@ -5,12 +5,15 @@
 
 
 import struct
+import cython
 import capnpy
 from capnpy.util import extend
 from capnpy.ptr import Ptr, StructPtr, ListPtr, FarPtr
 from capnpy.type import Types
 from capnpy.printer import BufferPrinter
 from capnpy.unpack import unpack_primitive
+
+PYX = cython.compiled
 
 class CapnpBuffer(object):
 
