@@ -103,6 +103,7 @@ class Node__Enum:
         name = self.shortname(m)
         items = [m._field_name(item) for item in self.enum.enumerants]
         m.declare_enum(name, name, items)
+        m.w()
 
 
 

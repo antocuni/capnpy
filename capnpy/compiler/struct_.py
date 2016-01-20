@@ -18,6 +18,7 @@ class Node__Struct:
         else:
             ns.w("class {name}(_Struct): pass")
             ns.w("{name}.__name__ = '{dotname}'")
+        ns.w()
 
     def emit_definition(self, m):
         for child in m.children[self.id]:
@@ -39,9 +40,11 @@ class Node__Struct:
             ns.ww("""
                 __static_data_size__ = {data_size}
                 __static_ptrs_size__ = {ptrs_size}
+
             """)
             for child in m.children[self.id]:
                 child.emit_reference_as_child(m)
+            m.w()
             if self.struct.discriminantCount:
                 self._emit_tag(m)
             if self.struct.fields is not None:
@@ -49,6 +52,7 @@ class Node__Struct:
                     field.emit(m, self)
                 self._emit_ctors(m)
             self._emit_repr(m)
+        ns.w()
         ns.w()
 
     def emit_reference_as_child(self, m):
@@ -73,6 +77,7 @@ class Node__Struct:
         enum_name = '%s.__tag__' % self.shortname(m)
         m.w("__tag_offset__ = %s" % tag_offset)
         m.declare_enum('__tag__', enum_name, enum_items)
+        m.w()
 
     def _emit_ctors(self, m):
         if self.struct.discriminantCount:
@@ -92,6 +97,7 @@ class Node__Struct:
             call = m.code.call('self.__new', ctor.argnames)
             ns.w('buf = {call}', call=call)
             ns.w('_Struct.__init__(self, buf, 0, {data_size}, {ptrs_size})')
+        ns.w()
 
     def _emit_ctors_union(self, m):
         # suppose we have a tag whose members are 'circle' and 'square': we
@@ -134,6 +140,7 @@ class Node__Struct:
                 call = m.code.call('cls.' + ctor_name, ctor.argnames)
                 ns.w('buf = {call}', call=call)
                 ns.w('return cls.from_buffer(buf, 0, {data_size}, {ptrs_size})')
+            ns.w()
         #
         # finally, create the __init__
         # def __init__(cls, x, y, square=undefined, circle=undefined):
@@ -176,6 +183,7 @@ class Node__Struct:
             tags = ', '.join(tags)
             ns.w('raise TypeError("one of the following args is required: {tags}")',
                  tags=tags)
+        ns.w()
 
     def _emit_repr(self, m):
         # def shortrepr(self):
