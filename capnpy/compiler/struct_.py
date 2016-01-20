@@ -57,7 +57,7 @@ class Node__Struct:
                 name=self.compile_name(m))
 
     def emit_delete_nested_from_globals(self, m):
-        if self.is_nested(m):
+        if self.is_nested(m) and not self.struct.isGroup:
             m.w("del globals()['{name}']", name=self.compile_name(m))
         for child in m.children[self.id]:
             child.emit_delete_nested_from_globals(m)

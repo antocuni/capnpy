@@ -6,7 +6,13 @@ class Field:
 
     def emit(self, m, node):
         name = m._field_name(self)
-        union_check_done = self._emit(m, node, name)
+        ns = m.code.new_scope()
+        if self.discriminantValue != Field.noDiscriminant:
+            ns.ensure_union = 'self._ensure_union(%s)' % self.discriminantValue
+        else:
+            ns.ensure_union = ''
+        #
+        union_check_done = self._emit(m, ns, name)
         if not union_check_done and self.discriminantValue != Field.noDiscriminant:
             line = '{name} = _field.Union({discriminantValue}, {name})'
             m.w(line, name=name, discriminantValue=self.discriminantValue)
@@ -15,13 +21,8 @@ class Field:
 @schema.Field__Slot.__extend__
 class Field__Slot:
 
-    def _emit(self, m, node, name):
-        ns = m.code.new_scope()
+    def _emit(self, m, ns, name):
         ns.offset = self.slot.offset * self.slot.get_size()
-        if self.discriminantValue != Field.noDiscriminant:
-            ns.ensure_union = 'self._ensure_union(%s)' % self.discriminantValue
-        else:
-            ns.ensure_union = ''
         #
         if self.slot.type.is_bool():
             return self._emit_bool(m, ns, name)
@@ -149,9 +150,8 @@ class Field__Slot:
 @schema.Field__Group.__extend__
 class Field__Group:
 
-    def _emit(self, m, node, name):
+    def _emit(self, m, ns, name):
         groupnode = m.allnodes[self.group.typeId]
-        ns = m.code.new_scope()
         ns.name = name
         ns.clsname = groupnode.compile_name(m)
         if self.is_nullable(m):
@@ -165,4 +165,8 @@ class Field__Group:
                     return self.{privname}.value
             """)
         else:
-            ns.w('{name} = _field.Group({clsname})')
+            ns.groupcls = groupnode.compile_name(m)
+            m.def_property(ns, name, """
+                {ensure_union}
+                return self._read_group({groupcls})
+            """)
