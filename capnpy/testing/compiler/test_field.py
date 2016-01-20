@@ -225,6 +225,28 @@ class TestField(CompilerTest):
         py.test.raises(ValueError, "shape.circle")
 
 
+    def test_is_union(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Shape {
+          area @0 :Int64;
+          union {
+            circle @1 :Int64;      # radius
+            square @2 :Int64;      # width
+            empty  @3 :Void;
+          }
+        }
+        """
+        mod = self.compile(schema)
+        buf = ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
+               '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
+               '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
+        shape = mod.Shape.from_buffer(buf, 0, 3, 0)
+        assert shape.is_square()
+        assert not shape.is_circle()
+        assert not shape.is_empty()
+
+
     def test_group(self):
         schema = """
         @0xbf5147cbbecf40c1;

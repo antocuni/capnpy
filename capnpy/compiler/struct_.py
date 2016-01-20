@@ -46,7 +46,7 @@ class Node__Struct:
                 child.emit_reference_as_child(m)
             m.w()
             if self.struct.discriminantCount:
-                self._emit_tag(m)
+                self._emit_union_tag(m)
             if self.struct.fields is not None:
                 for field in self.struct.fields:
                     field.emit(m, self)
@@ -66,7 +66,7 @@ class Node__Struct:
         for child in m.children[self.id]:
             child.emit_delete_nested_from_globals(m)
 
-    def _emit_tag(self, m):
+    def _emit_union_tag(self, m):
         # union tags are 16 bits, so *2
         tag_offset = self.struct.discriminantOffset * 2
         enum_items = [None] * self.struct.discriminantCount
@@ -77,6 +77,9 @@ class Node__Struct:
         enum_name = '%s.__tag__' % self.shortname(m)
         m.w("__tag_offset__ = %s" % tag_offset)
         m.declare_enum('__tag__', enum_name, enum_items)
+        m.w()
+        for i, item in enumerate(enum_items):
+            m.w("def is_{item}(self): return self.which() == {i}", item=item, i=i)
         m.w()
 
     def _emit_ctors(self, m):
