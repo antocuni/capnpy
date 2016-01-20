@@ -41,6 +41,13 @@ class Field__Slot:
             else:
                 return _emit(m, ns, name)
 
+    def _emit_void(self, m, ns, name):
+        m.def_property(ns, name, """
+            {ensure_union}
+            return None
+        """)
+        return True
+
     def _emit_primitive(self, m, ns, name):
         ns.typename = '_Types.%s' % self.slot.type.which()
         ns.default_ = self.slot.defaultValue.as_pyobj()
@@ -67,6 +74,13 @@ class Field__Slot:
             return value
         """)
         return True
+
+    def _emit_enum(self, m, ns, name):
+        ns.enumcls = self.slot.type.runtime_name(m)
+        m.def_property(ns, name, """
+            {ensure_union}
+            return self._read_enum({offset}, {enumcls})
+        """)
 
     def _emit_text(self, m, ns, name):
         ns.name = name
@@ -108,6 +122,7 @@ class Field__Slot:
             ns.listcls = '_StructList'
         else:
             raise ValueError('Unsupported: list of %s', ns.itemtype)
+        #
         m.def_property(ns, name, """
             {ensure_union}
             return self._read_list({offset}, {listcls}, {itemtype})
@@ -122,18 +137,6 @@ class Field__Slot:
         """)
         ns.w()
 
-    def _emit_enum(self, m, ns, name):
-        enumname = self.slot.type.compile_name(m)
-        ns.w('{name} = _field.Enum("{name}", {offset}, {enumname})',
-            name=name, enumname=enumname)
-        
-    def _emit_void(self, m, ns, name):
-        m.def_property(ns, name, """
-            {ensure_union}
-            return None
-        """)
-        return True
-        
     def _emit_anyPointer(self, m, ns, name):
         ns.w('{name} = _field.AnyPointer("{name}", {offset})', name=name)
 
