@@ -146,13 +146,13 @@ def test_equality_many_ptrs():
     x = Struct.from_buffer(buf1, 0, data_size=0, ptrs_size=3)
     y = Struct.from_buffer(buf2, 0, data_size=0, ptrs_size=3)
     
-    assert x._read_string(0) == 'ABCDEFG'
-    assert x._read_string(8) == '1234567'
-    assert x._read_string(16) == '1234567\x00ABCDEFG'
+    assert x._read_str_text(0) == 'ABCDEFG'
+    assert x._read_str_text(8) == '1234567'
+    assert x._read_str_text(16) == '1234567\x00ABCDEFG'
 
-    assert y._read_string(0) == 'ABCDEFG'
-    assert y._read_string(8) == '1234567\x001234567'
-    assert y._read_string(16) == 'ABCDEFG'
+    assert y._read_str_text(0) == 'ABCDEFG'
+    assert y._read_str_text(8) == '1234567\x001234567'
+    assert y._read_str_text(16) == 'ABCDEFG'
 
     assert x != y # this is the whole point of the test :)
 

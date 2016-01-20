@@ -180,5 +180,5 @@ class StringList(List):
     ItemBuilder = listbuilder.StringItemBuilder
 
     def _read_list_item(self, offset):
-        return self._read_string(offset)
+        return self._read_str_text(offset)
 

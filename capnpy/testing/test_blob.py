@@ -91,13 +91,13 @@ def test_null_pointers():
     buf = '\x00\x00\x00\x00\x00\x00\x00\x00'    # NULL pointer
     blob = BlobForTests(buf, 0)
     assert blob._read_list(0, None, None) is None
-    assert blob._read_string(0) is None
+    assert blob._read_str_text(0) is None
     assert blob._read_struct(0, Struct) is None
     assert blob._read_list_or_struct(0) is None
     #
     val = 'dummy default value'
     assert blob._read_list(0, None, None, default_=val) is val
-    assert blob._read_string(0, default_=val) is val
+    assert blob._read_str_text(0, default_=val) is val
     assert blob._read_struct(0, Struct, default_=val) is val
     assert blob._read_list_or_struct(0, default_=val) is val
 

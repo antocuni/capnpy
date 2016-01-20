@@ -108,10 +108,10 @@ class Blob(object):
                                    ptr.item_count,
                                    item_type)
 
-    def _read_string(self, offset, default_=None):
-        return self._read_data_string(offset, default_, additional_size=-1)
+    def _read_str_text(self, offset, default_=None):
+        return self._read_str_data(offset, default_, additional_size=-1)
 
-    def _read_data_string(self, offset, default_=None, additional_size=0):
+    def _read_str_data(self, offset, default_=None, additional_size=0):
         offset, ptr = self._read_ptr(offset)
         if ptr == 0:
             return default_

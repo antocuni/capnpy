@@ -79,7 +79,7 @@ def test_string():
     buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
            'hello capnproto\0')                 # string
     blob = BlobForTests(buf, 0)
-    s = blob._read_string(0)
+    s = blob._read_str_text(0)
     assert s == 'hello capnproto'
 
 def test_string_with_offset():
@@ -87,14 +87,14 @@ def test_string_with_offset():
            '\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
            'hello capnproto\0')                 # string
     blob = BlobForTests(buf, 4)
-    s = blob._read_string(0)
+    s = blob._read_str_text(0)
     assert s == 'hello capnproto'
 
 def test_data_string():
     buf = ('\x01\x00\x00\x00\x42\x00\x00\x00'   # ptrlist
            'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H')     # data
     blob = BlobForTests(buf, 0)
-    s = blob._read_data_string(0)
+    s = blob._read_str_data(0)
     assert s == 'ABCDEFGH'
     
 

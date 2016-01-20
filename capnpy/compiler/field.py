@@ -72,7 +72,7 @@ class Field__Slot:
         ns.name = name
         m.def_property(ns, name, """
             {ensure_union}
-            return self._read_string({offset})
+            return self._read_str_text({offset})
         """)
         self._emit_has_method(ns)
 
@@ -80,7 +80,7 @@ class Field__Slot:
         ns.name = name
         m.def_property(ns, name, """
             {ensure_union}
-            return self._read_data_string({offset})
+            return self._read_str_data({offset})
         """)
         self._emit_has_method(ns)
 
