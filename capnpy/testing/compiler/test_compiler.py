@@ -5,8 +5,7 @@ from capnpy.compiler import Compiler
 from capnpy.testing.compiler.support import CompilerTest
 
 
-
-class TestCompiler(CompilerTest):
+class TestCompilerOptions(CompilerTest):
     
     def test_convert_case_fields(self):
         schema = """
