@@ -33,6 +33,15 @@ class Type:
     def is_string(self):
         return self.which() == schema.Type.__tag__.text
 
+    def is_data(self):
+        return self.which() == schema.Type.__tag__.data
+
+    def is_anyPointer(self):
+        return self.which() == schema.Type.__tag__.anyPointer
+
+    def is_list(self):
+        return self.which() == schema.Type.__tag__.list
+
     def is_struct(self):
         return self.which() == schema.Type.__tag__.struct
 

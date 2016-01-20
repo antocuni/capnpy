@@ -18,25 +18,34 @@ class Field:
 class Field__Slot:
 
     def _emit(self, m, ns, name):
+        if self.slot.hadExplicitDefault:
+            if not (self.slot.type.is_primitive() or
+                    self.slot.type.is_bool()):
+                raise ValueError("explicit defaults not supported for field %s" % self)
+
         ns.offset = self.slot.offset * self.slot.get_size()
         #
-        if self.slot.type.is_bool():
+        if self.slot.type.is_void():
+            self._emit_void(m, ns, name)
+        elif self.slot.type.is_primitive():
+            self._emit_primitive(m, ns, name)
+        elif self.slot.type.is_bool():
             return self._emit_bool(m, ns, name)
-        #
-        if self.slot.type.is_primitive():
-            return self._emit_primitive(m, ns, name)
-        elif self.slot.hadExplicitDefault:
-            raise ValueError("explicit defaults not supported for field %s" % self)
+        elif self.slot.type.is_enum():
+            return self._emit_enum(m, ns, name)
+        elif self.slot.type.is_string():
+            return self._emit_text(m, ns, name)
+        elif self.slot.type.is_data():
+            return self._emit_data(m, ns, name)
+        elif self.slot.type.is_struct():
+            return self._emit_struct(m, ns, name)
+        elif self.slot.type.is_list():
+            return self._emit_list(m, ns, name)
+        elif self.slot.type.is_anyPointer():
+            return self._emit_anyPointer(m, ns, name)
         else:
-            # a bit of metaprogramming: call _emit_text, _emit_struct, etc,
-            # depending on the type
-            #
-            methname = '_emit_%s' % self.slot.type.which()
-            _emit = getattr(self, methname, None)
-            if _emit is None:
-                raise NotImplementedError('Unknown type: %s' % self.slot.type)
-            else:
-                return _emit(m, ns, name)
+            raise NotImplementedError('Unknown type: %s' %
+                                      self.slot.type.runtime_name(m))
 
     def _emit_void(self, m, ns, name):
         m.def_property(ns, name, """
