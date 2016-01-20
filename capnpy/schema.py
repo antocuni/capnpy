@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2016-01-15 17:08
+# generated on 2016-01-20 16:17
 # input files: 
 #   - capnpy/schema.capnp
 
@@ -19,67 +19,99 @@ from capnpy.list import StringList as _StringList
 
 class CodeGeneratorRequest_RequestedFile_Import(_Struct): pass
 CodeGeneratorRequest_RequestedFile_Import.__name__ = 'CodeGeneratorRequest.RequestedFile.Import'
+
 class CodeGeneratorRequest_RequestedFile(_Struct): pass
 CodeGeneratorRequest_RequestedFile.__name__ = 'CodeGeneratorRequest.RequestedFile'
+
 class CodeGeneratorRequest(_Struct): pass
 CodeGeneratorRequest.__name__ = 'CodeGeneratorRequest'
+
 class Method(_Struct): pass
 Method.__name__ = 'Method'
+
 class Enumerant(_Struct): pass
 Enumerant.__name__ = 'Enumerant'
+
 ElementSize = _enum('ElementSize', ('empty', 'bit', 'byte', 'twoBytes', 'fourBytes', 'eightBytes', 'pointer', 'inlineComposite'))
+
 class Type_anyPointer_parameter(_Struct): pass
 Type_anyPointer_parameter.__name__ = 'Type.anyPointer.parameter'
+
 class Type_anyPointer_implicitMethodParameter(_Struct): pass
 Type_anyPointer_implicitMethodParameter.__name__ = 'Type.anyPointer.implicitMethodParameter'
+
 class Type_anyPointer(_Struct): pass
 Type_anyPointer.__name__ = 'Type.anyPointer'
+
 class Type_struct(_Struct): pass
 Type_struct.__name__ = 'Type.struct'
+
 class Type_enum(_Struct): pass
 Type_enum.__name__ = 'Type.enum'
+
 class Type_interface(_Struct): pass
 Type_interface.__name__ = 'Type.interface'
+
 class Type_list(_Struct): pass
 Type_list.__name__ = 'Type.list'
+
 class Type(_Struct): pass
 Type.__name__ = 'Type'
+
 class Field_group(_Struct): pass
 Field_group.__name__ = 'Field.group'
+
 class Field_ordinal(_Struct): pass
 Field_ordinal.__name__ = 'Field.ordinal'
+
 class Field_slot(_Struct): pass
 Field_slot.__name__ = 'Field.slot'
+
 class Field(_Struct): pass
 Field.__name__ = 'Field'
+
 class Superclass(_Struct): pass
 Superclass.__name__ = 'Superclass'
+
 class Value(_Struct): pass
 Value.__name__ = 'Value'
+
 class Brand_Binding(_Struct): pass
 Brand_Binding.__name__ = 'Brand.Binding'
+
 class Brand_Scope(_Struct): pass
 Brand_Scope.__name__ = 'Brand.Scope'
+
 class Brand(_Struct): pass
 Brand.__name__ = 'Brand'
+
 class Annotation(_Struct): pass
 Annotation.__name__ = 'Annotation'
+
 class Node_interface(_Struct): pass
 Node_interface.__name__ = 'Node.interface'
+
 class Node_const(_Struct): pass
 Node_const.__name__ = 'Node.const'
+
 class Node_struct(_Struct): pass
 Node_struct.__name__ = 'Node.struct'
+
 class Node_annotation(_Struct): pass
 Node_annotation.__name__ = 'Node.annotation'
+
 class Node_enum(_Struct): pass
 Node_enum.__name__ = 'Node.enum'
+
 class Node_NestedNode(_Struct): pass
 Node_NestedNode.__name__ = 'Node.NestedNode'
+
 class Node_Parameter(_Struct): pass
 Node_Parameter.__name__ = 'Node.Parameter'
+
 class Node(_Struct): pass
 Node.__name__ = 'Node'
+
 
 #### DEFINITIONS ####
 
@@ -87,8 +119,25 @@ Node.__name__ = 'Node'
 class CodeGeneratorRequest_RequestedFile_Import(_Struct):
     __static_data_size__ = 1
     __static_ptrs_size__ = 1
-    id = _field.Primitive("id", 0, _Types.uint64, 0)
-    name = _field.String("name", 0)
+    
+    
+    @property
+    def id(self):
+        # no union check
+        value = self._read_data(0, ord('Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def name(self):
+        # no union check
+        return self._read_str_text(0)
+    
+    def has_name(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
     @staticmethod
     def __new(id, name):
         builder = _StructBuilder('Qq')
@@ -99,6 +148,7 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
     def __init__(self, id, name):
         buf = self.__new(id, name)
         _Struct.__init__(self, buf, 0, 1, 1)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -108,14 +158,40 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
             ]
         return "".join(parts)
 
+
 @CodeGeneratorRequest_RequestedFile.__extend__
 class CodeGeneratorRequest_RequestedFile(_Struct):
     __static_data_size__ = 1
     __static_ptrs_size__ = 2
+    
     Import = CodeGeneratorRequest_RequestedFile_Import
-    id = _field.Primitive("id", 0, _Types.uint64, 0)
-    filename = _field.String("filename", 0)
-    imports = _field.List("imports", 8, CodeGeneratorRequest_RequestedFile_Import)
+    
+    @property
+    def id(self):
+        # no union check
+        value = self._read_data(0, ord('Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def filename(self):
+        # no union check
+        return self._read_str_text(0)
+    
+    def has_filename(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
+    @property
+    def imports(self):
+        # no union check
+        return self._read_list(8, _StructList, CodeGeneratorRequest.RequestedFile.Import)
+    
+    def has_imports(self):
+        offset, ptr = self._read_ptr(8)
+        return ptr != 0
+    
     @staticmethod
     def __new(id, filename, imports):
         builder = _StructBuilder('Qqq')
@@ -127,6 +203,7 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
     def __init__(self, id, filename, imports):
         buf = self.__new(id, filename, imports)
         _Struct.__init__(self, buf, 0, 1, 2)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -137,13 +214,32 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
             ]
         return "".join(parts)
 
+
 @CodeGeneratorRequest.__extend__
 class CodeGeneratorRequest(_Struct):
     __static_data_size__ = 0
     __static_ptrs_size__ = 2
+    
     RequestedFile = CodeGeneratorRequest_RequestedFile
-    nodes = _field.List("nodes", 0, Node)
-    requestedFiles = _field.List("requestedFiles", 8, CodeGeneratorRequest_RequestedFile)
+    
+    @property
+    def nodes(self):
+        # no union check
+        return self._read_list(0, _StructList, Node)
+    
+    def has_nodes(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
+    @property
+    def requestedFiles(self):
+        # no union check
+        return self._read_list(8, _StructList, CodeGeneratorRequest.RequestedFile)
+    
+    def has_requestedFiles(self):
+        offset, ptr = self._read_ptr(8)
+        return ptr != 0
+    
     @staticmethod
     def __new(nodes, requestedFiles):
         builder = _StructBuilder('qq')
@@ -155,6 +251,7 @@ class CodeGeneratorRequest(_Struct):
     def __init__(self, nodes, requestedFiles):
         buf = self.__new(nodes, requestedFiles)
         _Struct.__init__(self, buf, 0, 0, 2)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -164,18 +261,82 @@ class CodeGeneratorRequest(_Struct):
             ]
         return "".join(parts)
 
+
 @Method.__extend__
 class Method(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 5
-    name = _field.String("name", 0)
-    codeOrder = _field.Primitive("codeOrder", 0, _Types.uint16, 0)
-    paramStructType = _field.Primitive("paramStructType", 8, _Types.uint64, 0)
-    resultStructType = _field.Primitive("resultStructType", 16, _Types.uint64, 0)
-    annotations = _field.List("annotations", 8, Annotation)
-    paramBrand = _field.Struct("paramBrand", 16, Brand)
-    resultBrand = _field.Struct("resultBrand", 24, Brand)
-    implicitParameters = _field.List("implicitParameters", 32, Node_Parameter)
+    
+    
+    @property
+    def name(self):
+        # no union check
+        return self._read_str_text(0)
+    
+    def has_name(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
+    @property
+    def codeOrder(self):
+        # no union check
+        value = self._read_data(0, ord('H'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def paramStructType(self):
+        # no union check
+        value = self._read_data(8, ord('Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def resultStructType(self):
+        # no union check
+        value = self._read_data(16, ord('Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def annotations(self):
+        # no union check
+        return self._read_list(8, _StructList, Annotation)
+    
+    def has_annotations(self):
+        offset, ptr = self._read_ptr(8)
+        return ptr != 0
+    
+    @property
+    def paramBrand(self):
+        # no union check
+        return self._read_struct(16, Brand)
+    
+    def has_paramBrand(self):
+        offset, ptr = self._read_ptr(16)
+        return ptr != 0
+    
+    @property
+    def resultBrand(self):
+        # no union check
+        return self._read_struct(24, Brand)
+    
+    def has_resultBrand(self):
+        offset, ptr = self._read_ptr(24)
+        return ptr != 0
+    
+    @property
+    def implicitParameters(self):
+        # no union check
+        return self._read_list(32, _StructList, Node.Parameter)
+    
+    def has_implicitParameters(self):
+        offset, ptr = self._read_ptr(32)
+        return ptr != 0
+    
     @staticmethod
     def __new(name, codeOrder, paramStructType, resultStructType, annotations, paramBrand, resultBrand, implicitParameters):
         builder = _StructBuilder('HxxxxxxQQqqqqq')
@@ -190,6 +351,7 @@ class Method(_Struct):
     def __init__(self, name, codeOrder, paramStructType, resultStructType, annotations, paramBrand, resultBrand, implicitParameters):
         buf = self.__new(name, codeOrder, paramStructType, resultStructType, annotations, paramBrand, resultBrand, implicitParameters)
         _Struct.__init__(self, buf, 0, 3, 5)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -205,13 +367,39 @@ class Method(_Struct):
             ]
         return "".join(parts)
 
+
 @Enumerant.__extend__
 class Enumerant(_Struct):
     __static_data_size__ = 1
     __static_ptrs_size__ = 2
-    name = _field.String("name", 0)
-    codeOrder = _field.Primitive("codeOrder", 0, _Types.uint16, 0)
-    annotations = _field.List("annotations", 8, Annotation)
+    
+    
+    @property
+    def name(self):
+        # no union check
+        return self._read_str_text(0)
+    
+    def has_name(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
+    @property
+    def codeOrder(self):
+        # no union check
+        value = self._read_data(0, ord('H'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def annotations(self):
+        # no union check
+        return self._read_list(8, _StructList, Annotation)
+    
+    def has_annotations(self):
+        offset, ptr = self._read_ptr(8)
+        return ptr != 0
+    
     @staticmethod
     def __new(name, codeOrder, annotations):
         builder = _StructBuilder('Hxxxxxxqq')
@@ -223,6 +411,7 @@ class Enumerant(_Struct):
     def __init__(self, name, codeOrder, annotations):
         buf = self.__new(name, codeOrder, annotations)
         _Struct.__init__(self, buf, 0, 1, 2)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -233,12 +422,29 @@ class Enumerant(_Struct):
             ]
         return "".join(parts)
 
+
 @Type_anyPointer_parameter.__extend__
 class Type_anyPointer_parameter(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
-    scopeId = _field.Primitive("scopeId", 16, _Types.uint64, 0)
-    parameterIndex = _field.Primitive("parameterIndex", 10, _Types.uint16, 0)
+    
+    
+    @property
+    def scopeId(self):
+        # no union check
+        value = self._read_data(16, ord('Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def parameterIndex(self):
+        # no union check
+        value = self._read_data(10, ord('H'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
     @staticmethod
     def __new(scopeId, parameterIndex):
         builder = _StructBuilder('xxxxxxxxxxHxxxxQxxxxxxxx')
@@ -248,6 +454,7 @@ class Type_anyPointer_parameter(_Struct):
     def __init__(self, scopeId, parameterIndex):
         buf = self.__new(scopeId, parameterIndex)
         _Struct.__init__(self, buf, 0, 3, 1)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -257,11 +464,21 @@ class Type_anyPointer_parameter(_Struct):
             ]
         return "".join(parts)
 
+
 @Type_anyPointer_implicitMethodParameter.__extend__
 class Type_anyPointer_implicitMethodParameter(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
-    parameterIndex = _field.Primitive("parameterIndex", 10, _Types.uint16, 0)
+    
+    
+    @property
+    def parameterIndex(self):
+        # no union check
+        value = self._read_data(10, ord('H'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
     @staticmethod
     def __new(parameterIndex):
         builder = _StructBuilder('xxxxxxxxxxHxxxxxxxxxxxxxxxxxxxx')
@@ -271,6 +488,7 @@ class Type_anyPointer_implicitMethodParameter(_Struct):
     def __init__(self, parameterIndex):
         buf = self.__new(parameterIndex)
         _Struct.__init__(self, buf, 0, 3, 1)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -279,20 +497,31 @@ class Type_anyPointer_implicitMethodParameter(_Struct):
             ]
         return "".join(parts)
 
+
 @Type_anyPointer.__extend__
 class Type_anyPointer(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
-    parameter = Type_anyPointer_parameter
-    implicitMethodParameter = Type_anyPointer_implicitMethodParameter
+    
+    
     __tag_offset__ = 8
     __tag__ = _enum('anyPointer.__tag__', ('unconstrained', 'parameter', 'implicitMethodParameter'))
-    unconstrained = _field.Void("unconstrained")
-    unconstrained = _field.Union(0, unconstrained)
-    parameter = _field.Group(Type_anyPointer_parameter)
-    parameter = _field.Union(1, parameter)
-    implicitMethodParameter = _field.Group(Type_anyPointer_implicitMethodParameter)
-    implicitMethodParameter = _field.Union(2, implicitMethodParameter)
+    
+    @property
+    def unconstrained(self):
+        self._ensure_union(0)
+        return None
+    
+    @property
+    def parameter(self):
+        self._ensure_union(1)
+        return self._read_group(Type_anyPointer_parameter)
+    
+    @property
+    def implicitMethodParameter(self):
+        self._ensure_union(2)
+        return self._read_group(Type_anyPointer_implicitMethodParameter)
+    
     @staticmethod
     def __new_unconstrained():
         builder = _StructBuilder('xxxxxxxxhxxxxxxxxxxxxxxxxxxxxxx')
@@ -303,6 +532,7 @@ class Type_anyPointer(_Struct):
     def new_unconstrained(cls):
         buf = cls.__new_unconstrained()
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_parameter(*args, **kwargs):
         raise NotImplementedError('Group fields not supported yet')
@@ -310,6 +540,7 @@ class Type_anyPointer(_Struct):
     def new_parameter(cls, *args):
         buf = cls.__new_parameter(*args)
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_implicitMethodParameter(*args, **kwargs):
         raise NotImplementedError('Group fields not supported yet')
@@ -317,6 +548,7 @@ class Type_anyPointer(_Struct):
     def new_implicitMethodParameter(cls, *args):
         buf = cls.__new_implicitMethodParameter(*args)
         return cls.from_buffer(buf, 0, 3, 1)
+    
     def __init__(self, unconstrained=_undefined, parameter=_undefined, implicitMethodParameter=_undefined):
         if unconstrained is not _undefined:
             self._assert_undefined(parameter, "parameter", "unconstrained")
@@ -337,6 +569,7 @@ class Type_anyPointer(_Struct):
             _Struct.__init__(self, buf, 0, 3, 1)
             return
         raise TypeError("one of the following args is required: unconstrained, parameter, implicitMethodParameter")
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -347,12 +580,30 @@ class Type_anyPointer(_Struct):
             ]
         return "".join(parts)
 
+
 @Type_struct.__extend__
 class Type_struct(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
-    typeId = _field.Primitive("typeId", 8, _Types.uint64, 0)
-    brand = _field.Struct("brand", 0, Brand)
+    
+    
+    @property
+    def typeId(self):
+        # no union check
+        value = self._read_data(8, ord('Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def brand(self):
+        # no union check
+        return self._read_struct(0, Brand)
+    
+    def has_brand(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
     @staticmethod
     def __new(typeId, brand):
         builder = _StructBuilder('xxxxxxxxQxxxxxxxxq')
@@ -363,6 +614,7 @@ class Type_struct(_Struct):
     def __init__(self, typeId, brand):
         buf = self.__new(typeId, brand)
         _Struct.__init__(self, buf, 0, 3, 1)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -371,13 +623,31 @@ class Type_struct(_Struct):
             ")"
             ]
         return "".join(parts)
+
 
 @Type_enum.__extend__
 class Type_enum(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
-    typeId = _field.Primitive("typeId", 8, _Types.uint64, 0)
-    brand = _field.Struct("brand", 0, Brand)
+    
+    
+    @property
+    def typeId(self):
+        # no union check
+        value = self._read_data(8, ord('Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def brand(self):
+        # no union check
+        return self._read_struct(0, Brand)
+    
+    def has_brand(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
     @staticmethod
     def __new(typeId, brand):
         builder = _StructBuilder('xxxxxxxxQxxxxxxxxq')
@@ -388,6 +658,7 @@ class Type_enum(_Struct):
     def __init__(self, typeId, brand):
         buf = self.__new(typeId, brand)
         _Struct.__init__(self, buf, 0, 3, 1)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -396,13 +667,31 @@ class Type_enum(_Struct):
             ")"
             ]
         return "".join(parts)
+
 
 @Type_interface.__extend__
 class Type_interface(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
-    typeId = _field.Primitive("typeId", 8, _Types.uint64, 0)
-    brand = _field.Struct("brand", 0, Brand)
+    
+    
+    @property
+    def typeId(self):
+        # no union check
+        value = self._read_data(8, ord('Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def brand(self):
+        # no union check
+        return self._read_struct(0, Brand)
+    
+    def has_brand(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
     @staticmethod
     def __new(typeId, brand):
         builder = _StructBuilder('xxxxxxxxQxxxxxxxxq')
@@ -413,6 +702,7 @@ class Type_interface(_Struct):
     def __init__(self, typeId, brand):
         buf = self.__new(typeId, brand)
         _Struct.__init__(self, buf, 0, 3, 1)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -422,11 +712,22 @@ class Type_interface(_Struct):
             ]
         return "".join(parts)
 
+
 @Type_list.__extend__
 class Type_list(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
-    elementType = _field.Struct("elementType", 0, Type)
+    
+    
+    @property
+    def elementType(self):
+        # no union check
+        return self._read_struct(0, Type)
+    
+    def has_elementType(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
     @staticmethod
     def __new(elementType):
         builder = _StructBuilder('xxxxxxxxxxxxxxxxxxxxxxxxq')
@@ -437,6 +738,7 @@ class Type_list(_Struct):
     def __init__(self, elementType):
         buf = self.__new(elementType)
         _Struct.__init__(self, buf, 0, 3, 1)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -445,55 +747,111 @@ class Type_list(_Struct):
             ]
         return "".join(parts)
 
+
 @Type.__extend__
 class Type(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
-    anyPointer = Type_anyPointer
-    struct = Type_struct
-    enum = Type_enum
-    interface = Type_interface
-    list = Type_list
+    
+    
     __tag_offset__ = 0
     __tag__ = _enum('Type.__tag__', ('void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer'))
-    void = _field.Void("void")
-    void = _field.Union(0, void)
-    bool = _field.Void("bool")
-    bool = _field.Union(1, bool)
-    int8 = _field.Void("int8")
-    int8 = _field.Union(2, int8)
-    int16 = _field.Void("int16")
-    int16 = _field.Union(3, int16)
-    int32 = _field.Void("int32")
-    int32 = _field.Union(4, int32)
-    int64 = _field.Void("int64")
-    int64 = _field.Union(5, int64)
-    uint8 = _field.Void("uint8")
-    uint8 = _field.Union(6, uint8)
-    uint16 = _field.Void("uint16")
-    uint16 = _field.Union(7, uint16)
-    uint32 = _field.Void("uint32")
-    uint32 = _field.Union(8, uint32)
-    uint64 = _field.Void("uint64")
-    uint64 = _field.Union(9, uint64)
-    float32 = _field.Void("float32")
-    float32 = _field.Union(10, float32)
-    float64 = _field.Void("float64")
-    float64 = _field.Union(11, float64)
-    text = _field.Void("text")
-    text = _field.Union(12, text)
-    data = _field.Void("data")
-    data = _field.Union(13, data)
-    list = _field.Group(Type_list)
-    list = _field.Union(14, list)
-    enum = _field.Group(Type_enum)
-    enum = _field.Union(15, enum)
-    struct = _field.Group(Type_struct)
-    struct = _field.Union(16, struct)
-    interface = _field.Group(Type_interface)
-    interface = _field.Union(17, interface)
-    anyPointer = _field.Group(Type_anyPointer)
-    anyPointer = _field.Union(18, anyPointer)
+    
+    @property
+    def void(self):
+        self._ensure_union(0)
+        return None
+    
+    @property
+    def bool(self):
+        self._ensure_union(1)
+        return None
+    
+    @property
+    def int8(self):
+        self._ensure_union(2)
+        return None
+    
+    @property
+    def int16(self):
+        self._ensure_union(3)
+        return None
+    
+    @property
+    def int32(self):
+        self._ensure_union(4)
+        return None
+    
+    @property
+    def int64(self):
+        self._ensure_union(5)
+        return None
+    
+    @property
+    def uint8(self):
+        self._ensure_union(6)
+        return None
+    
+    @property
+    def uint16(self):
+        self._ensure_union(7)
+        return None
+    
+    @property
+    def uint32(self):
+        self._ensure_union(8)
+        return None
+    
+    @property
+    def uint64(self):
+        self._ensure_union(9)
+        return None
+    
+    @property
+    def float32(self):
+        self._ensure_union(10)
+        return None
+    
+    @property
+    def float64(self):
+        self._ensure_union(11)
+        return None
+    
+    @property
+    def text(self):
+        self._ensure_union(12)
+        return None
+    
+    @property
+    def data(self):
+        self._ensure_union(13)
+        return None
+    
+    @property
+    def list(self):
+        self._ensure_union(14)
+        return self._read_group(Type_list)
+    
+    @property
+    def enum(self):
+        self._ensure_union(15)
+        return self._read_group(Type_enum)
+    
+    @property
+    def struct(self):
+        self._ensure_union(16)
+        return self._read_group(Type_struct)
+    
+    @property
+    def interface(self):
+        self._ensure_union(17)
+        return self._read_group(Type_interface)
+    
+    @property
+    def anyPointer(self):
+        self._ensure_union(18)
+        return self._read_group(Type_anyPointer)
+    
     @staticmethod
     def __new_void():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -504,6 +862,7 @@ class Type(_Struct):
     def new_void(cls):
         buf = cls.__new_void()
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_bool():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -514,6 +873,7 @@ class Type(_Struct):
     def new_bool(cls):
         buf = cls.__new_bool()
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_int8():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -524,6 +884,7 @@ class Type(_Struct):
     def new_int8(cls):
         buf = cls.__new_int8()
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_int16():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -534,6 +895,7 @@ class Type(_Struct):
     def new_int16(cls):
         buf = cls.__new_int16()
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_int32():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -544,6 +906,7 @@ class Type(_Struct):
     def new_int32(cls):
         buf = cls.__new_int32()
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_int64():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -554,6 +917,7 @@ class Type(_Struct):
     def new_int64(cls):
         buf = cls.__new_int64()
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_uint8():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -564,6 +928,7 @@ class Type(_Struct):
     def new_uint8(cls):
         buf = cls.__new_uint8()
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_uint16():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -574,6 +939,7 @@ class Type(_Struct):
     def new_uint16(cls):
         buf = cls.__new_uint16()
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_uint32():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -584,6 +950,7 @@ class Type(_Struct):
     def new_uint32(cls):
         buf = cls.__new_uint32()
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_uint64():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -594,6 +961,7 @@ class Type(_Struct):
     def new_uint64(cls):
         buf = cls.__new_uint64()
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_float32():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -604,6 +972,7 @@ class Type(_Struct):
     def new_float32(cls):
         buf = cls.__new_float32()
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_float64():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -614,6 +983,7 @@ class Type(_Struct):
     def new_float64(cls):
         buf = cls.__new_float64()
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_text():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -624,6 +994,7 @@ class Type(_Struct):
     def new_text(cls):
         buf = cls.__new_text()
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_data():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -634,6 +1005,7 @@ class Type(_Struct):
     def new_data(cls):
         buf = cls.__new_data()
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_list(*args, **kwargs):
         raise NotImplementedError('Group fields not supported yet')
@@ -641,6 +1013,7 @@ class Type(_Struct):
     def new_list(cls, *args):
         buf = cls.__new_list(*args)
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_enum(*args, **kwargs):
         raise NotImplementedError('Group fields not supported yet')
@@ -648,6 +1021,7 @@ class Type(_Struct):
     def new_enum(cls, *args):
         buf = cls.__new_enum(*args)
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_struct(*args, **kwargs):
         raise NotImplementedError('Group fields not supported yet')
@@ -655,6 +1029,7 @@ class Type(_Struct):
     def new_struct(cls, *args):
         buf = cls.__new_struct(*args)
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_interface(*args, **kwargs):
         raise NotImplementedError('Group fields not supported yet')
@@ -662,6 +1037,7 @@ class Type(_Struct):
     def new_interface(cls, *args):
         buf = cls.__new_interface(*args)
         return cls.from_buffer(buf, 0, 3, 1)
+    
     @staticmethod
     def __new_anyPointer(*args, **kwargs):
         raise NotImplementedError('Group fields not supported yet')
@@ -669,6 +1045,7 @@ class Type(_Struct):
     def new_anyPointer(cls, *args):
         buf = cls.__new_anyPointer(*args)
         return cls.from_buffer(buf, 0, 3, 1)
+    
     def __init__(self, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined):
         if void is not _undefined:
             self._assert_undefined(bool, "bool", "void")
@@ -1089,6 +1466,7 @@ class Type(_Struct):
             _Struct.__init__(self, buf, 0, 3, 1)
             return
         raise TypeError("one of the following args is required: void, bool, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, text, data, list, enum, struct, interface, anyPointer")
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -1115,11 +1493,21 @@ class Type(_Struct):
             ]
         return "".join(parts)
 
+
 @Field_group.__extend__
 class Field_group(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 4
-    typeId = _field.Primitive("typeId", 16, _Types.uint64, 0)
+    
+    
+    @property
+    def typeId(self):
+        # no union check
+        value = self._read_data(16, ord('Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
     @staticmethod
     def __new(typeId):
         builder = _StructBuilder('xxxxxxxxxxxxxxxxQxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -1129,6 +1517,7 @@ class Field_group(_Struct):
     def __init__(self, typeId):
         buf = self.__new(typeId)
         _Struct.__init__(self, buf, 0, 3, 4)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -1137,16 +1526,29 @@ class Field_group(_Struct):
             ]
         return "".join(parts)
 
+
 @Field_ordinal.__extend__
 class Field_ordinal(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 4
+    
+    
     __tag_offset__ = 10
     __tag__ = _enum('ordinal.__tag__', ('implicit', 'explicit'))
-    implicit = _field.Void("implicit")
-    implicit = _field.Union(0, implicit)
-    explicit = _field.Primitive("explicit", 12, _Types.uint16, 0)
-    explicit = _field.Union(1, explicit)
+    
+    @property
+    def implicit(self):
+        self._ensure_union(0)
+        return None
+    
+    @property
+    def explicit(self):
+        self._ensure_union(1)
+        value = self._read_data(12, ord('H'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
     @staticmethod
     def __new_implicit():
         builder = _StructBuilder('xxxxxxxxxxhxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -1157,6 +1559,7 @@ class Field_ordinal(_Struct):
     def new_implicit(cls):
         buf = cls.__new_implicit()
         return cls.from_buffer(buf, 0, 3, 4)
+    
     @staticmethod
     def __new_explicit(explicit):
         builder = _StructBuilder('xxxxxxxxxxhHxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -1167,6 +1570,7 @@ class Field_ordinal(_Struct):
     def new_explicit(cls, explicit):
         buf = cls.__new_explicit(explicit)
         return cls.from_buffer(buf, 0, 3, 4)
+    
     def __init__(self, implicit=_undefined, explicit=_undefined):
         if implicit is not _undefined:
             self._assert_undefined(explicit, "explicit", "implicit")
@@ -1179,6 +1583,7 @@ class Field_ordinal(_Struct):
             _Struct.__init__(self, buf, 0, 3, 4)
             return
         raise TypeError("one of the following args is required: implicit, explicit")
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -1188,21 +1593,55 @@ class Field_ordinal(_Struct):
             ]
         return "".join(parts)
 
+
 @Field_slot.__extend__
 class Field_slot(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 4
-    offset = _field.Primitive("offset", 4, _Types.uint32, 0)
-    type = _field.Struct("type", 16, Type)
-    defaultValue = _field.Struct("defaultValue", 24, Value)
-    hadExplicitDefault = _field.Bool("hadExplicitDefault", 16, 0, False)
+    
+    
+    @property
+    def offset(self):
+        # no union check
+        value = self._read_data(4, ord('I'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def type(self):
+        # no union check
+        return self._read_struct(16, Type)
+    
+    def has_type(self):
+        offset, ptr = self._read_ptr(16)
+        return ptr != 0
+    
+    @property
+    def defaultValue(self):
+        # no union check
+        return self._read_struct(24, Value)
+    
+    def has_defaultValue(self):
+        offset, ptr = self._read_ptr(24)
+        return ptr != 0
+    
+    @property
+    def hadExplicitDefault(self):
+        # no union check
+        value = self._read_bit(16, 1)
+        if False != 0:
+            value = value ^ False
+        return value
+    
     @staticmethod
     def __new(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa7d9308310>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43ada39830>')
     
     def __init__(self, *args):
         buf = self.__new(*args)
         _Struct.__init__(self, buf, 0, 3, 4)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -1214,25 +1653,66 @@ class Field_slot(_Struct):
             ]
         return "".join(parts)
 
+
 @Field.__extend__
 class Field(_Struct):
     __static_data_size__ = 3
     __static_ptrs_size__ = 4
-    group = Field_group
-    ordinal = Field_ordinal
-    slot = Field_slot
+    
     noDiscriminant = 65535
+    
     __tag_offset__ = 8
     __tag__ = _enum('Field.__tag__', ('slot', 'group'))
-    name = _field.String("name", 0)
-    codeOrder = _field.Primitive("codeOrder", 0, _Types.uint16, 0)
-    annotations = _field.List("annotations", 8, Annotation)
-    discriminantValue = _field.Primitive("discriminantValue", 2, _Types.uint16, 65535)
-    slot = _field.Group(Field_slot)
-    slot = _field.Union(0, slot)
-    group = _field.Group(Field_group)
-    group = _field.Union(1, group)
-    ordinal = _field.Group(Field_ordinal)
+    
+    @property
+    def name(self):
+        # no union check
+        return self._read_str_text(0)
+    
+    def has_name(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
+    @property
+    def codeOrder(self):
+        # no union check
+        value = self._read_data(0, ord('H'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def annotations(self):
+        # no union check
+        return self._read_list(8, _StructList, Annotation)
+    
+    def has_annotations(self):
+        offset, ptr = self._read_ptr(8)
+        return ptr != 0
+    
+    @property
+    def discriminantValue(self):
+        # no union check
+        value = self._read_data(2, ord('H'))
+        if 65535 != 0:
+            value = value ^ 65535
+        return value
+    
+    @property
+    def slot(self):
+        self._ensure_union(0)
+        return self._read_group(Field_slot)
+    
+    @property
+    def group(self):
+        self._ensure_union(1)
+        return self._read_group(Field_group)
+    
+    @property
+    def ordinal(self):
+        # no union check
+        return self._read_group(Field_ordinal)
+    
     @staticmethod
     def __new_slot(*args, **kwargs):
         raise NotImplementedError('Group fields not supported yet')
@@ -1240,6 +1720,7 @@ class Field(_Struct):
     def new_slot(cls, *args):
         buf = cls.__new_slot(*args)
         return cls.from_buffer(buf, 0, 3, 4)
+    
     @staticmethod
     def __new_group(*args, **kwargs):
         raise NotImplementedError('Group fields not supported yet')
@@ -1247,6 +1728,7 @@ class Field(_Struct):
     def new_group(cls, *args):
         buf = cls.__new_group(*args)
         return cls.from_buffer(buf, 0, 3, 4)
+    
     def __init__(self, name, codeOrder, annotations, discriminantValue, ordinal, slot=_undefined, group=_undefined):
         if slot is not _undefined:
             self._assert_undefined(group, "group", "slot")
@@ -1259,6 +1741,7 @@ class Field(_Struct):
             _Struct.__init__(self, buf, 0, 3, 4)
             return
         raise TypeError("one of the following args is required: slot, group")
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -1273,12 +1756,30 @@ class Field(_Struct):
             ]
         return "".join(parts)
 
+
 @Superclass.__extend__
 class Superclass(_Struct):
     __static_data_size__ = 1
     __static_ptrs_size__ = 1
-    id = _field.Primitive("id", 0, _Types.uint64, 0)
-    brand = _field.Struct("brand", 0, Brand)
+    
+    
+    @property
+    def id(self):
+        # no union check
+        value = self._read_data(0, ord('Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def brand(self):
+        # no union check
+        return self._read_struct(0, Brand)
+    
+    def has_brand(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
     @staticmethod
     def __new(id, brand):
         builder = _StructBuilder('Qq')
@@ -1289,6 +1790,7 @@ class Superclass(_Struct):
     def __init__(self, id, brand):
         buf = self.__new(id, brand)
         _Struct.__init__(self, buf, 0, 1, 1)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -1298,50 +1800,167 @@ class Superclass(_Struct):
             ]
         return "".join(parts)
 
+
 @Value.__extend__
 class Value(_Struct):
     __static_data_size__ = 2
     __static_ptrs_size__ = 1
+    
+    
     __tag_offset__ = 0
     __tag__ = _enum('Value.__tag__', ('void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer'))
-    void = _field.Void("void")
-    void = _field.Union(0, void)
-    bool = _field.Bool("bool", 2, 0, False)
-    bool = _field.Union(1, bool)
-    int8 = _field.Primitive("int8", 2, _Types.int8, 0)
-    int8 = _field.Union(2, int8)
-    int16 = _field.Primitive("int16", 2, _Types.int16, 0)
-    int16 = _field.Union(3, int16)
-    int32 = _field.Primitive("int32", 4, _Types.int32, 0)
-    int32 = _field.Union(4, int32)
-    int64 = _field.Primitive("int64", 8, _Types.int64, 0)
-    int64 = _field.Union(5, int64)
-    uint8 = _field.Primitive("uint8", 2, _Types.uint8, 0)
-    uint8 = _field.Union(6, uint8)
-    uint16 = _field.Primitive("uint16", 2, _Types.uint16, 0)
-    uint16 = _field.Union(7, uint16)
-    uint32 = _field.Primitive("uint32", 4, _Types.uint32, 0)
-    uint32 = _field.Union(8, uint32)
-    uint64 = _field.Primitive("uint64", 8, _Types.uint64, 0)
-    uint64 = _field.Union(9, uint64)
-    float32 = _field.Primitive("float32", 4, _Types.float32, 0.0)
-    float32 = _field.Union(10, float32)
-    float64 = _field.Primitive("float64", 8, _Types.float64, 0.0)
-    float64 = _field.Union(11, float64)
-    text = _field.String("text", 0)
-    text = _field.Union(12, text)
-    data = _field.Data("data", 0)
-    data = _field.Union(13, data)
-    list = _field.AnyPointer("list", 0)
-    list = _field.Union(14, list)
-    enum = _field.Primitive("enum", 2, _Types.uint16, 0)
-    enum = _field.Union(15, enum)
-    struct = _field.AnyPointer("struct", 0)
-    struct = _field.Union(16, struct)
-    interface = _field.Void("interface")
-    interface = _field.Union(17, interface)
-    anyPointer = _field.AnyPointer("anyPointer", 0)
-    anyPointer = _field.Union(18, anyPointer)
+    
+    @property
+    def void(self):
+        self._ensure_union(0)
+        return None
+    
+    @property
+    def bool(self):
+        self._ensure_union(1)
+        value = self._read_bit(2, 1)
+        if False != 0:
+            value = value ^ False
+        return value
+    
+    @property
+    def int8(self):
+        self._ensure_union(2)
+        value = self._read_data(2, ord('b'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def int16(self):
+        self._ensure_union(3)
+        value = self._read_data(2, ord('h'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def int32(self):
+        self._ensure_union(4)
+        value = self._read_data(4, ord('i'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def int64(self):
+        self._ensure_union(5)
+        value = self._read_data(8, ord('q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def uint8(self):
+        self._ensure_union(6)
+        value = self._read_data(2, ord('B'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def uint16(self):
+        self._ensure_union(7)
+        value = self._read_data(2, ord('H'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def uint32(self):
+        self._ensure_union(8)
+        value = self._read_data(4, ord('I'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def uint64(self):
+        self._ensure_union(9)
+        value = self._read_data(8, ord('Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def float32(self):
+        self._ensure_union(10)
+        value = self._read_data(4, ord('f'))
+        if 0.0 != 0:
+            value = value ^ 0.0
+        return value
+    
+    @property
+    def float64(self):
+        self._ensure_union(11)
+        value = self._read_data(8, ord('d'))
+        if 0.0 != 0:
+            value = value ^ 0.0
+        return value
+    
+    @property
+    def text(self):
+        self._ensure_union(12)
+        return self._read_str_text(0)
+    
+    def has_text(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
+    @property
+    def data(self):
+        self._ensure_union(13)
+        return self._read_str_data(0)
+    
+    def has_data(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
+    @property
+    def list(self):
+        self._ensure_union(14)
+        raise ValueError("Cannot get fields of type AnyPointer")
+    
+    def has_list(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
+    @property
+    def enum(self):
+        self._ensure_union(15)
+        value = self._read_data(2, ord('H'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def struct(self):
+        self._ensure_union(16)
+        raise ValueError("Cannot get fields of type AnyPointer")
+    
+    def has_struct(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
+    @property
+    def interface(self):
+        self._ensure_union(17)
+        return None
+    
+    @property
+    def anyPointer(self):
+        self._ensure_union(18)
+        raise ValueError("Cannot get fields of type AnyPointer")
+    
+    def has_anyPointer(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
     @staticmethod
     def __new_void():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxx')
@@ -1352,13 +1971,15 @@ class Value(_Struct):
     def new_void(cls):
         buf = cls.__new_void()
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_bool(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa7d9319190>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43ada39520>')
     @classmethod
     def new_bool(cls, *args):
         buf = cls.__new_bool(*args)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_int8(int8):
         builder = _StructBuilder('hbxxxxxxxxxxxxxxxxxxxxx')
@@ -1369,6 +1990,7 @@ class Value(_Struct):
     def new_int8(cls, int8):
         buf = cls.__new_int8(int8)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_int16(int16):
         builder = _StructBuilder('hhxxxxxxxxxxxxxxxxxxxx')
@@ -1379,6 +2001,7 @@ class Value(_Struct):
     def new_int16(cls, int16):
         buf = cls.__new_int16(int16)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_int32(int32):
         builder = _StructBuilder('hxxixxxxxxxxxxxxxxxx')
@@ -1389,6 +2012,7 @@ class Value(_Struct):
     def new_int32(cls, int32):
         buf = cls.__new_int32(int32)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_int64(int64):
         builder = _StructBuilder('hxxxxxxqxxxxxxxx')
@@ -1399,6 +2023,7 @@ class Value(_Struct):
     def new_int64(cls, int64):
         buf = cls.__new_int64(int64)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_uint8(uint8):
         builder = _StructBuilder('hBxxxxxxxxxxxxxxxxxxxxx')
@@ -1409,6 +2034,7 @@ class Value(_Struct):
     def new_uint8(cls, uint8):
         buf = cls.__new_uint8(uint8)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_uint16(uint16):
         builder = _StructBuilder('hHxxxxxxxxxxxxxxxxxxxx')
@@ -1419,6 +2045,7 @@ class Value(_Struct):
     def new_uint16(cls, uint16):
         buf = cls.__new_uint16(uint16)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_uint32(uint32):
         builder = _StructBuilder('hxxIxxxxxxxxxxxxxxxx')
@@ -1429,6 +2056,7 @@ class Value(_Struct):
     def new_uint32(cls, uint32):
         buf = cls.__new_uint32(uint32)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_uint64(uint64):
         builder = _StructBuilder('hxxxxxxQxxxxxxxx')
@@ -1439,6 +2067,7 @@ class Value(_Struct):
     def new_uint64(cls, uint64):
         buf = cls.__new_uint64(uint64)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_float32(float32):
         builder = _StructBuilder('hxxfxxxxxxxxxxxxxxxx')
@@ -1449,6 +2078,7 @@ class Value(_Struct):
     def new_float32(cls, float32):
         buf = cls.__new_float32(float32)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_float64(float64):
         builder = _StructBuilder('hxxxxxxdxxxxxxxx')
@@ -1459,6 +2089,7 @@ class Value(_Struct):
     def new_float64(cls, float64):
         buf = cls.__new_float64(float64)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_text(text):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
@@ -1470,28 +2101,31 @@ class Value(_Struct):
     def new_text(cls, text):
         buf = cls.__new_text(text)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_data(data):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 13
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa7d9319410>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43ada39c90>')
         buf = builder.build(__which__, data)
         return buf
     @classmethod
     def new_data(cls, data):
         buf = cls.__new_data(data)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_list(list):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 14
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa7d9319450>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43ada39d00>')
         buf = builder.build(__which__, list)
         return buf
     @classmethod
     def new_list(cls, list):
         buf = cls.__new_list(list)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_enum(enum):
         builder = _StructBuilder('hHxxxxxxxxxxxxxxxxxxxx')
@@ -1502,17 +2136,19 @@ class Value(_Struct):
     def new_enum(cls, enum):
         buf = cls.__new_enum(enum)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_struct(struct):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 16
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa7d93194d0>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43ada5da60>')
         buf = builder.build(__which__, struct)
         return buf
     @classmethod
     def new_struct(cls, struct):
         buf = cls.__new_struct(struct)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_interface():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxx')
@@ -1523,17 +2159,19 @@ class Value(_Struct):
     def new_interface(cls):
         buf = cls.__new_interface()
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_anyPointer(anyPointer):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 18
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa7d9319550>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43ada5db40>')
         buf = builder.build(__which__, anyPointer)
         return buf
     @classmethod
     def new_anyPointer(cls, anyPointer):
         buf = cls.__new_anyPointer(anyPointer)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     def __init__(self, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined):
         if void is not _undefined:
             self._assert_undefined(bool, "bool", "void")
@@ -1954,6 +2592,7 @@ class Value(_Struct):
             _Struct.__init__(self, buf, 0, 2, 1)
             return
         raise TypeError("one of the following args is required: void, bool, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, text, data, list, enum, struct, interface, anyPointer")
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -1980,16 +2619,30 @@ class Value(_Struct):
             ]
         return "".join(parts)
 
+
 @Brand_Binding.__extend__
 class Brand_Binding(_Struct):
     __static_data_size__ = 1
     __static_ptrs_size__ = 1
+    
+    
     __tag_offset__ = 0
     __tag__ = _enum('Binding.__tag__', ('unbound', 'type'))
-    unbound = _field.Void("unbound")
-    unbound = _field.Union(0, unbound)
-    type = _field.Struct("type", 0, Type)
-    type = _field.Union(1, type)
+    
+    @property
+    def unbound(self):
+        self._ensure_union(0)
+        return None
+    
+    @property
+    def type(self):
+        self._ensure_union(1)
+        return self._read_struct(0, Type)
+    
+    def has_type(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
     @staticmethod
     def __new_unbound():
         builder = _StructBuilder('hxxxxxxxxxxxxxx')
@@ -2000,6 +2653,7 @@ class Brand_Binding(_Struct):
     def new_unbound(cls):
         buf = cls.__new_unbound()
         return cls.from_buffer(buf, 0, 1, 1)
+    
     @staticmethod
     def __new_type(type):
         builder = _StructBuilder('hxxxxxxq')
@@ -2011,6 +2665,7 @@ class Brand_Binding(_Struct):
     def new_type(cls, type):
         buf = cls.__new_type(type)
         return cls.from_buffer(buf, 0, 1, 1)
+    
     def __init__(self, unbound=_undefined, type=_undefined):
         if unbound is not _undefined:
             self._assert_undefined(type, "type", "unbound")
@@ -2023,6 +2678,7 @@ class Brand_Binding(_Struct):
             _Struct.__init__(self, buf, 0, 1, 1)
             return
         raise TypeError("one of the following args is required: unbound, type")
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -2032,17 +2688,38 @@ class Brand_Binding(_Struct):
             ]
         return "".join(parts)
 
+
 @Brand_Scope.__extend__
 class Brand_Scope(_Struct):
     __static_data_size__ = 2
     __static_ptrs_size__ = 1
+    
+    
     __tag_offset__ = 8
     __tag__ = _enum('Scope.__tag__', ('bind', 'inherit'))
-    scopeId = _field.Primitive("scopeId", 0, _Types.uint64, 0)
-    bind = _field.List("bind", 0, Brand_Binding)
-    bind = _field.Union(0, bind)
-    inherit = _field.Void("inherit")
-    inherit = _field.Union(1, inherit)
+    
+    @property
+    def scopeId(self):
+        # no union check
+        value = self._read_data(0, ord('Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def bind(self):
+        self._ensure_union(0)
+        return self._read_list(0, _StructList, Brand.Binding)
+    
+    def has_bind(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
+    @property
+    def inherit(self):
+        self._ensure_union(1)
+        return None
+    
     @staticmethod
     def __new_bind(bind, scopeId):
         builder = _StructBuilder('Qhxxxxxxq')
@@ -2054,6 +2731,7 @@ class Brand_Scope(_Struct):
     def new_bind(cls, bind, scopeId):
         buf = cls.__new_bind(bind, scopeId)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     @staticmethod
     def __new_inherit(scopeId):
         builder = _StructBuilder('Qhxxxxxxxxxxxxxx')
@@ -2064,6 +2742,7 @@ class Brand_Scope(_Struct):
     def new_inherit(cls, scopeId):
         buf = cls.__new_inherit(scopeId)
         return cls.from_buffer(buf, 0, 2, 1)
+    
     def __init__(self, scopeId, bind=_undefined, inherit=_undefined):
         if bind is not _undefined:
             self._assert_undefined(inherit, "inherit", "bind")
@@ -2076,6 +2755,7 @@ class Brand_Scope(_Struct):
             _Struct.__init__(self, buf, 0, 2, 1)
             return
         raise TypeError("one of the following args is required: bind, inherit")
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -2086,13 +2766,24 @@ class Brand_Scope(_Struct):
             ]
         return "".join(parts)
 
+
 @Brand.__extend__
 class Brand(_Struct):
     __static_data_size__ = 0
     __static_ptrs_size__ = 1
+    
     Binding = Brand_Binding
     Scope = Brand_Scope
-    scopes = _field.List("scopes", 0, Brand_Scope)
+    
+    @property
+    def scopes(self):
+        # no union check
+        return self._read_list(0, _StructList, Brand.Scope)
+    
+    def has_scopes(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
     @staticmethod
     def __new(scopes):
         builder = _StructBuilder('q')
@@ -2103,6 +2794,7 @@ class Brand(_Struct):
     def __init__(self, scopes):
         buf = self.__new(scopes)
         _Struct.__init__(self, buf, 0, 0, 1)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -2111,13 +2803,39 @@ class Brand(_Struct):
             ]
         return "".join(parts)
 
+
 @Annotation.__extend__
 class Annotation(_Struct):
     __static_data_size__ = 1
     __static_ptrs_size__ = 2
-    id = _field.Primitive("id", 0, _Types.uint64, 0)
-    value = _field.Struct("value", 0, Value)
-    brand = _field.Struct("brand", 8, Brand)
+    
+    
+    @property
+    def id(self):
+        # no union check
+        value = self._read_data(0, ord('Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def value(self):
+        # no union check
+        return self._read_struct(0, Value)
+    
+    def has_value(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
+    @property
+    def brand(self):
+        # no union check
+        return self._read_struct(8, Brand)
+    
+    def has_brand(self):
+        offset, ptr = self._read_ptr(8)
+        return ptr != 0
+    
     @staticmethod
     def __new(id, value, brand):
         builder = _StructBuilder('Qqq')
@@ -2129,6 +2847,7 @@ class Annotation(_Struct):
     def __init__(self, id, value, brand):
         buf = self.__new(id, value, brand)
         _Struct.__init__(self, buf, 0, 1, 2)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -2139,12 +2858,31 @@ class Annotation(_Struct):
             ]
         return "".join(parts)
 
+
 @Node_interface.__extend__
 class Node_interface(_Struct):
     __static_data_size__ = 5
     __static_ptrs_size__ = 6
-    methods = _field.List("methods", 24, Method)
-    superclasses = _field.List("superclasses", 32, Superclass)
+    
+    
+    @property
+    def methods(self):
+        # no union check
+        return self._read_list(24, _StructList, Method)
+    
+    def has_methods(self):
+        offset, ptr = self._read_ptr(24)
+        return ptr != 0
+    
+    @property
+    def superclasses(self):
+        # no union check
+        return self._read_list(32, _StructList, Superclass)
+    
+    def has_superclasses(self):
+        offset, ptr = self._read_ptr(32)
+        return ptr != 0
+    
     @staticmethod
     def __new(methods, superclasses):
         builder = _StructBuilder('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxqqxxxxxxxx')
@@ -2156,6 +2894,7 @@ class Node_interface(_Struct):
     def __init__(self, methods, superclasses):
         buf = self.__new(methods, superclasses)
         _Struct.__init__(self, buf, 0, 5, 6)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -2165,12 +2904,31 @@ class Node_interface(_Struct):
             ]
         return "".join(parts)
 
+
 @Node_const.__extend__
 class Node_const(_Struct):
     __static_data_size__ = 5
     __static_ptrs_size__ = 6
-    type = _field.Struct("type", 24, Type)
-    value = _field.Struct("value", 32, Value)
+    
+    
+    @property
+    def type(self):
+        # no union check
+        return self._read_struct(24, Type)
+    
+    def has_type(self):
+        offset, ptr = self._read_ptr(24)
+        return ptr != 0
+    
+    @property
+    def value(self):
+        # no union check
+        return self._read_struct(32, Value)
+    
+    def has_value(self):
+        offset, ptr = self._read_ptr(32)
+        return ptr != 0
+    
     @staticmethod
     def __new(type, value):
         builder = _StructBuilder('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxqqxxxxxxxx')
@@ -2182,6 +2940,7 @@ class Node_const(_Struct):
     def __init__(self, type, value):
         buf = self.__new(type, value)
         _Struct.__init__(self, buf, 0, 5, 6)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -2191,24 +2950,75 @@ class Node_const(_Struct):
             ]
         return "".join(parts)
 
+
 @Node_struct.__extend__
 class Node_struct(_Struct):
     __static_data_size__ = 5
     __static_ptrs_size__ = 6
-    dataWordCount = _field.Primitive("dataWordCount", 14, _Types.uint16, 0)
-    pointerCount = _field.Primitive("pointerCount", 24, _Types.uint16, 0)
-    preferredListEncoding = _field.Enum("preferredListEncoding", 26, ElementSize)
-    isGroup = _field.Bool("isGroup", 28, 0, False)
-    discriminantCount = _field.Primitive("discriminantCount", 30, _Types.uint16, 0)
-    discriminantOffset = _field.Primitive("discriminantOffset", 32, _Types.uint32, 0)
-    fields = _field.List("fields", 24, Field)
+    
+    
+    @property
+    def dataWordCount(self):
+        # no union check
+        value = self._read_data(14, ord('H'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def pointerCount(self):
+        # no union check
+        value = self._read_data(24, ord('H'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def preferredListEncoding(self):
+        # no union check
+        return self._read_enum(26, ElementSize)
+    
+    @property
+    def isGroup(self):
+        # no union check
+        value = self._read_bit(28, 1)
+        if False != 0:
+            value = value ^ False
+        return value
+    
+    @property
+    def discriminantCount(self):
+        # no union check
+        value = self._read_data(30, ord('H'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def discriminantOffset(self):
+        # no union check
+        value = self._read_data(32, ord('I'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def fields(self):
+        # no union check
+        return self._read_list(24, _StructList, Field)
+    
+    def has_fields(self):
+        offset, ptr = self._read_ptr(24)
+        return ptr != 0
+    
     @staticmethod
     def __new(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa7d931e210>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43ada39b40>')
     
     def __init__(self, *args):
         buf = self.__new(*args)
         _Struct.__init__(self, buf, 0, 5, 6)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -2223,30 +3033,126 @@ class Node_struct(_Struct):
             ]
         return "".join(parts)
 
+
 @Node_annotation.__extend__
 class Node_annotation(_Struct):
     __static_data_size__ = 5
     __static_ptrs_size__ = 6
-    type = _field.Struct("type", 24, Type)
-    targetsFile = _field.Bool("targetsFile", 14, 0, False)
-    targetsConst = _field.Bool("targetsConst", 14, 1, False)
-    targetsEnum = _field.Bool("targetsEnum", 14, 2, False)
-    targetsEnumerant = _field.Bool("targetsEnumerant", 14, 3, False)
-    targetsStruct = _field.Bool("targetsStruct", 14, 4, False)
-    targetsField = _field.Bool("targetsField", 14, 5, False)
-    targetsUnion = _field.Bool("targetsUnion", 14, 6, False)
-    targetsGroup = _field.Bool("targetsGroup", 14, 7, False)
-    targetsInterface = _field.Bool("targetsInterface", 15, 0, False)
-    targetsMethod = _field.Bool("targetsMethod", 15, 1, False)
-    targetsParam = _field.Bool("targetsParam", 15, 2, False)
-    targetsAnnotation = _field.Bool("targetsAnnotation", 15, 3, False)
+    
+    
+    @property
+    def type(self):
+        # no union check
+        return self._read_struct(24, Type)
+    
+    def has_type(self):
+        offset, ptr = self._read_ptr(24)
+        return ptr != 0
+    
+    @property
+    def targetsFile(self):
+        # no union check
+        value = self._read_bit(14, 1)
+        if False != 0:
+            value = value ^ False
+        return value
+    
+    @property
+    def targetsConst(self):
+        # no union check
+        value = self._read_bit(14, 2)
+        if False != 0:
+            value = value ^ False
+        return value
+    
+    @property
+    def targetsEnum(self):
+        # no union check
+        value = self._read_bit(14, 4)
+        if False != 0:
+            value = value ^ False
+        return value
+    
+    @property
+    def targetsEnumerant(self):
+        # no union check
+        value = self._read_bit(14, 8)
+        if False != 0:
+            value = value ^ False
+        return value
+    
+    @property
+    def targetsStruct(self):
+        # no union check
+        value = self._read_bit(14, 16)
+        if False != 0:
+            value = value ^ False
+        return value
+    
+    @property
+    def targetsField(self):
+        # no union check
+        value = self._read_bit(14, 32)
+        if False != 0:
+            value = value ^ False
+        return value
+    
+    @property
+    def targetsUnion(self):
+        # no union check
+        value = self._read_bit(14, 64)
+        if False != 0:
+            value = value ^ False
+        return value
+    
+    @property
+    def targetsGroup(self):
+        # no union check
+        value = self._read_bit(14, 128)
+        if False != 0:
+            value = value ^ False
+        return value
+    
+    @property
+    def targetsInterface(self):
+        # no union check
+        value = self._read_bit(15, 1)
+        if False != 0:
+            value = value ^ False
+        return value
+    
+    @property
+    def targetsMethod(self):
+        # no union check
+        value = self._read_bit(15, 2)
+        if False != 0:
+            value = value ^ False
+        return value
+    
+    @property
+    def targetsParam(self):
+        # no union check
+        value = self._read_bit(15, 4)
+        if False != 0:
+            value = value ^ False
+        return value
+    
+    @property
+    def targetsAnnotation(self):
+        # no union check
+        value = self._read_bit(15, 8)
+        if False != 0:
+            value = value ^ False
+        return value
+    
     @staticmethod
     def __new(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa7d931e510>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43ada39c90>')
     
     def __init__(self, *args):
         buf = self.__new(*args)
         _Struct.__init__(self, buf, 0, 5, 6)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -2267,11 +3173,22 @@ class Node_annotation(_Struct):
             ]
         return "".join(parts)
 
+
 @Node_enum.__extend__
 class Node_enum(_Struct):
     __static_data_size__ = 5
     __static_ptrs_size__ = 6
-    enumerants = _field.List("enumerants", 24, Enumerant)
+    
+    
+    @property
+    def enumerants(self):
+        # no union check
+        return self._read_list(24, _StructList, Enumerant)
+    
+    def has_enumerants(self):
+        offset, ptr = self._read_ptr(24)
+        return ptr != 0
+    
     @staticmethod
     def __new(enumerants):
         builder = _StructBuilder('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxqxxxxxxxxxxxxxxxx')
@@ -2282,6 +3199,7 @@ class Node_enum(_Struct):
     def __init__(self, enumerants):
         buf = self.__new(enumerants)
         _Struct.__init__(self, buf, 0, 5, 6)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -2290,12 +3208,30 @@ class Node_enum(_Struct):
             ]
         return "".join(parts)
 
+
 @Node_NestedNode.__extend__
 class Node_NestedNode(_Struct):
     __static_data_size__ = 1
     __static_ptrs_size__ = 1
-    name = _field.String("name", 0)
-    id = _field.Primitive("id", 0, _Types.uint64, 0)
+    
+    
+    @property
+    def name(self):
+        # no union check
+        return self._read_str_text(0)
+    
+    def has_name(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
+    @property
+    def id(self):
+        # no union check
+        value = self._read_data(0, ord('Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
     @staticmethod
     def __new(name, id):
         builder = _StructBuilder('Qq')
@@ -2306,6 +3242,7 @@ class Node_NestedNode(_Struct):
     def __init__(self, name, id):
         buf = self.__new(name, id)
         _Struct.__init__(self, buf, 0, 1, 1)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -2315,11 +3252,22 @@ class Node_NestedNode(_Struct):
             ]
         return "".join(parts)
 
+
 @Node_Parameter.__extend__
 class Node_Parameter(_Struct):
     __static_data_size__ = 0
     __static_ptrs_size__ = 1
-    name = _field.String("name", 0)
+    
+    
+    @property
+    def name(self):
+        # no union check
+        return self._read_str_text(0)
+    
+    def has_name(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
     @staticmethod
     def __new(name):
         builder = _StructBuilder('q')
@@ -2330,6 +3278,7 @@ class Node_Parameter(_Struct):
     def __init__(self, name):
         buf = self.__new(name)
         _Struct.__init__(self, buf, 0, 0, 1)
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -2338,46 +3287,124 @@ class Node_Parameter(_Struct):
             ]
         return "".join(parts)
 
+
 @Node.__extend__
 class Node(_Struct):
     __static_data_size__ = 5
     __static_ptrs_size__ = 6
-    interface = Node_interface
-    const = Node_const
-    struct = Node_struct
-    annotation = Node_annotation
-    enum = Node_enum
+    
     NestedNode = Node_NestedNode
     Parameter = Node_Parameter
+    
     __tag_offset__ = 12
     __tag__ = _enum('Node.__tag__', ('file', 'struct', 'enum', 'interface', 'const', 'annotation'))
-    id = _field.Primitive("id", 0, _Types.uint64, 0)
-    displayName = _field.String("displayName", 0)
-    displayNamePrefixLength = _field.Primitive("displayNamePrefixLength", 8, _Types.uint32, 0)
-    scopeId = _field.Primitive("scopeId", 16, _Types.uint64, 0)
-    nestedNodes = _field.List("nestedNodes", 8, Node_NestedNode)
-    annotations = _field.List("annotations", 16, Annotation)
-    file = _field.Void("file")
-    file = _field.Union(0, file)
-    struct = _field.Group(Node_struct)
-    struct = _field.Union(1, struct)
-    enum = _field.Group(Node_enum)
-    enum = _field.Union(2, enum)
-    interface = _field.Group(Node_interface)
-    interface = _field.Union(3, interface)
-    const = _field.Group(Node_const)
-    const = _field.Union(4, const)
-    annotation = _field.Group(Node_annotation)
-    annotation = _field.Union(5, annotation)
-    parameters = _field.List("parameters", 40, Node_Parameter)
-    isGeneric = _field.Bool("isGeneric", 36, 0, False)
+    
+    @property
+    def id(self):
+        # no union check
+        value = self._read_data(0, ord('Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def displayName(self):
+        # no union check
+        return self._read_str_text(0)
+    
+    def has_displayName(self):
+        offset, ptr = self._read_ptr(0)
+        return ptr != 0
+    
+    @property
+    def displayNamePrefixLength(self):
+        # no union check
+        value = self._read_data(8, ord('I'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def scopeId(self):
+        # no union check
+        value = self._read_data(16, ord('Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def nestedNodes(self):
+        # no union check
+        return self._read_list(8, _StructList, Node.NestedNode)
+    
+    def has_nestedNodes(self):
+        offset, ptr = self._read_ptr(8)
+        return ptr != 0
+    
+    @property
+    def annotations(self):
+        # no union check
+        return self._read_list(16, _StructList, Annotation)
+    
+    def has_annotations(self):
+        offset, ptr = self._read_ptr(16)
+        return ptr != 0
+    
+    @property
+    def file(self):
+        self._ensure_union(0)
+        return None
+    
+    @property
+    def struct(self):
+        self._ensure_union(1)
+        return self._read_group(Node_struct)
+    
+    @property
+    def enum(self):
+        self._ensure_union(2)
+        return self._read_group(Node_enum)
+    
+    @property
+    def interface(self):
+        self._ensure_union(3)
+        return self._read_group(Node_interface)
+    
+    @property
+    def const(self):
+        self._ensure_union(4)
+        return self._read_group(Node_const)
+    
+    @property
+    def annotation(self):
+        self._ensure_union(5)
+        return self._read_group(Node_annotation)
+    
+    @property
+    def parameters(self):
+        # no union check
+        return self._read_list(40, _StructList, Node.Parameter)
+    
+    def has_parameters(self):
+        offset, ptr = self._read_ptr(40)
+        return ptr != 0
+    
+    @property
+    def isGeneric(self):
+        # no union check
+        value = self._read_bit(36, 1)
+        if False != 0:
+            value = value ^ False
+        return value
+    
     @staticmethod
     def __new_file(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7fa7d931ea50>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f43ada77980>')
     @classmethod
     def new_file(cls, *args):
         buf = cls.__new_file(*args)
         return cls.from_buffer(buf, 0, 5, 6)
+    
     @staticmethod
     def __new_struct(*args, **kwargs):
         raise NotImplementedError('Group fields not supported yet')
@@ -2385,6 +3412,7 @@ class Node(_Struct):
     def new_struct(cls, *args):
         buf = cls.__new_struct(*args)
         return cls.from_buffer(buf, 0, 5, 6)
+    
     @staticmethod
     def __new_enum(*args, **kwargs):
         raise NotImplementedError('Group fields not supported yet')
@@ -2392,6 +3420,7 @@ class Node(_Struct):
     def new_enum(cls, *args):
         buf = cls.__new_enum(*args)
         return cls.from_buffer(buf, 0, 5, 6)
+    
     @staticmethod
     def __new_interface(*args, **kwargs):
         raise NotImplementedError('Group fields not supported yet')
@@ -2399,6 +3428,7 @@ class Node(_Struct):
     def new_interface(cls, *args):
         buf = cls.__new_interface(*args)
         return cls.from_buffer(buf, 0, 5, 6)
+    
     @staticmethod
     def __new_const(*args, **kwargs):
         raise NotImplementedError('Group fields not supported yet')
@@ -2406,6 +3436,7 @@ class Node(_Struct):
     def new_const(cls, *args):
         buf = cls.__new_const(*args)
         return cls.from_buffer(buf, 0, 5, 6)
+    
     @staticmethod
     def __new_annotation(*args, **kwargs):
         raise NotImplementedError('Group fields not supported yet')
@@ -2413,6 +3444,7 @@ class Node(_Struct):
     def new_annotation(cls, *args):
         buf = cls.__new_annotation(*args)
         return cls.from_buffer(buf, 0, 5, 6)
+    
     def __init__(self, id, displayName, displayNamePrefixLength, scopeId, nestedNodes, annotations, parameters, isGeneric, file=_undefined, struct=_undefined, enum=_undefined, interface=_undefined, const=_undefined, annotation=_undefined):
         if file is not _undefined:
             self._assert_undefined(struct, "struct", "file")
@@ -2469,6 +3501,7 @@ class Node(_Struct):
             _Struct.__init__(self, buf, 0, 5, 6)
             return
         raise TypeError("one of the following args is required: file, struct, enum, interface, const, annotation")
+    
     def shortrepr(self):
         parts = [
             "(",
@@ -2491,25 +3524,11 @@ class Node(_Struct):
         return "".join(parts)
 
 
+
 del globals()['CodeGeneratorRequest_RequestedFile']
 del globals()['CodeGeneratorRequest_RequestedFile_Import']
-del globals()['Type_anyPointer']
-del globals()['Type_anyPointer_parameter']
-del globals()['Type_anyPointer_implicitMethodParameter']
-del globals()['Type_struct']
-del globals()['Type_enum']
-del globals()['Type_interface']
-del globals()['Type_list']
-del globals()['Field_group']
-del globals()['Field_ordinal']
-del globals()['Field_slot']
 del globals()['Brand_Binding']
 del globals()['Brand_Scope']
-del globals()['Node_interface']
-del globals()['Node_const']
-del globals()['Node_struct']
-del globals()['Node_annotation']
-del globals()['Node_enum']
 del globals()['Node_NestedNode']
 del globals()['Node_Parameter']
 

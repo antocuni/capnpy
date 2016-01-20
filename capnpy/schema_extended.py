@@ -127,27 +127,27 @@ class Field:
         return False
 
 
-    @schema.Field.slot.field.groupcls.__extend__
-    class _:
-        def get_fmt(self):
-            # XXX: this method is very hackish, we absolutely need to find a
-            # cleaner way than the forest of ifs
-            if self.type.is_primitive():
-                return self.type.as_type().fmt
-            elif self.type.is_pointer():
-                return 'q'
-            elif self.type.is_enum():
-                return 'h'
+@schema.Field_slot.__extend__
+class Field_slot:
+    def get_fmt(self):
+        # XXX: this method is very hackish, we absolutely need to find a
+        # cleaner way than the forest of ifs
+        if self.type.is_primitive():
+            return self.type.as_type().fmt
+        elif self.type.is_pointer():
+            return 'q'
+        elif self.type.is_enum():
+            return 'h'
 
-        def get_size(self):
-            # XXX: even more hackish, we need a better way
-            if self.type.is_void():
-                return 0
-            elif self.type.is_bool():
-                # not strictly correct, but we cannot return 1/8
-                return 0
-            import struct
-            return struct.calcsize(self.get_fmt())
+    def get_size(self):
+        # XXX: even more hackish, we need a better way
+        if self.type.is_void():
+            return 0
+        elif self.type.is_bool():
+            # not strictly correct, but we cannot return 1/8
+            return 0
+        import struct
+        return struct.calcsize(self.get_fmt())
 
 
 # =============================================
