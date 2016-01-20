@@ -62,6 +62,47 @@ class TestCompilerOptions(CompilerTest):
         assert p.x == 1
         assert p.y == 2
 
+    def test_nested_struct(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Outer {
+            struct Point {
+                x @0 :Int64;
+                y @1 :Int64;
+            }
+        }
+        """
+        mod = self.compile(schema)
+        #
+        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        p = mod.Outer.Point.from_buffer(buf, 0, 2, 0)
+        assert p.x == 1
+        assert p.y == 2
+        #
+        assert not hasattr(mod, 'Outer_Point')
+        if not self.pyx:
+            # unfortunately, the nice dotted name works only in pure Python
+            assert mod.Outer.Point.__name__ == 'Outer.Point'
+
+    def test_const(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            const bar :UInt16 = 42;
+        }
+        """
+        mod = self.compile(schema)
+        assert mod.Foo.bar == 42
+
+    def test_global_const(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        const bar :UInt16 = 42;
+        """
+        mod = self.compile(schema)
+        assert mod.bar == 42
+
 
 class TestRepr(CompilerTest):
 

@@ -40,6 +40,13 @@ class TestField(CompilerTest):
         p = mod.Foo.from_buffer(buf, 0, 2, 0)
         assert p.x == 42
         assert p.y is True
+        #
+        buf = ('\x2a\x00\x00\x00\x00\x00\x00\x00'
+               '\x01\x00\x00\x00\x00\x00\x00\x00')
+        p = mod.Foo.from_buffer(buf, 0, 2, 0)
+        assert p.x == 0
+        assert p.y is False
+
 
     def test_void(self):
         schema = """
@@ -71,6 +78,22 @@ class TestField(CompilerTest):
         f = mod.Foo.from_buffer(buf, 0, 1, 1)
         assert f.x == 1
         assert f.name == 'hello capnproto'
+
+    def test_data(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            x @0 :Int64;
+            data @1 :Data;
+        }
+        """
+        mod = self.compile(schema)
+        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
+               '\x01\x00\x00\x00\x42\x00\x00\x00'   # ptrlist
+               'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H')     # data
+
+        f = mod.Foo.from_buffer(buf, 0, 1, 1)
+        assert f.data == 'ABCDEFGH'
 
 
     def test_list(self):
@@ -137,6 +160,7 @@ class TestField(CompilerTest):
         }
         """
         mod = self.compile(schema)
+        #      color      gender     padding
         buf = '\x02\x00' '\x01\x00' '\x00\x00\x00\x00'
         f = mod.Foo.from_buffer(buf, 0, 1, 0)
         assert f.color == mod.Color.blue
@@ -227,50 +251,7 @@ class TestField(CompilerTest):
         assert shape.which() == mod.Shape.__tag__.rectangle
         assert shape.rectangle.width == 4
         assert shape.rectangle.height == 5
-
-
-    def test_nested_struct(self):
-        schema = """
-        @0xbf5147cbbecf40c1;
-        struct Outer {
-            struct Point {
-                x @0 :Int64;
-                y @1 :Int64;
-            }
-        }
-        """
-        mod = self.compile(schema)
-        #
-        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
-        p = mod.Outer.Point.from_buffer(buf, 0, 2, 0)
-        assert p.x == 1
-        assert p.y == 2
-        #
-        assert not hasattr(mod, 'Outer_Point')
-        if not self.pyx:
-            # unfortunately, the nice dotted name works only in pure Python
-            assert mod.Outer.Point.__name__ == 'Outer.Point'
-
-
-    def test_const(self):
-        schema = """
-        @0xbf5147cbbecf40c1;
-        struct Foo {
-            const bar :UInt16 = 42;
-        }
-        """
-        mod = self.compile(schema)
-        assert mod.Foo.bar == 42
-
-    def test_global_const(self):
-        schema = """
-        @0xbf5147cbbecf40c1;
-        const bar :UInt16 = 42;
-        """
-        mod = self.compile(schema)
-        assert mod.bar == 42
-
+        py.test.raises(ValueError, "shape.circle.radius")
 
     def test_list_of_structs(self):
         schema = """
@@ -316,3 +297,14 @@ class TestField(CompilerTest):
         assert p.a == True
         assert p.b == False
         assert p.c == True
+
+    def test_anyPointer(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            x @0 :AnyPointer;
+        }
+        """
+        mod = self.compile(schema)
+        f = mod.Foo.from_buffer('somedata', 0, 0, 1)
+        py.test.raises(ValueError, "f.x")

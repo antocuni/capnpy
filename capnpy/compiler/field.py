@@ -103,7 +103,7 @@ class Field__Slot:
         return True
         
     def _emit_anyPointer(self, m, ns, name):
-        m.w('{name} = _field.AnyPointer("{name}", {offset})', name=name)
+        ns.w('{name} = _field.AnyPointer("{name}", {offset})', name=name)
 
 
 @schema.Field__Group.__extend__
