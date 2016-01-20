@@ -129,6 +129,14 @@ class Field__Slot:
         """)
         self._emit_has_method(ns)
 
+    def _emit_anyPointer(self, m, ns, name):
+        ns.name = name
+        m.def_property(ns, name, """
+            {ensure_union}
+            raise ValueError("Cannot get fields of type AnyPointer")
+        """)
+        self._emit_has_method(ns)
+
     def _emit_has_method(self, ns):
         ns.ww("""
             def has_{name}(self):
@@ -136,9 +144,6 @@ class Field__Slot:
                 return ptr != 0
         """)
         ns.w()
-
-    def _emit_anyPointer(self, m, ns, name):
-        ns.w('{name} = _field.AnyPointer("{name}", {offset})', name=name)
 
 
 @schema.Field__Group.__extend__
