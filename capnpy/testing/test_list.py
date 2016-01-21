@@ -267,7 +267,8 @@ def test_list_composite_noptr_body_range():
     points = blob._read_list(0, StructList, Blob)
     start, end = points._get_body_range()
     assert start == 16
-    assert end == 48
+    assert end == 56
+    assert buf[end:] == 'garbage1garbage2'
 
 def test_list_of_pointers():
     buf = ('garbage0'

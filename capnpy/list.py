@@ -107,7 +107,7 @@ class List(Blob):
 
         if self._tag.ptrs_size == 0:
             # case 1
-            return self._get_body_end_scalar() # +8 is for the tag
+            return self._get_body_end_scalar()+8 # +8 is for the tag
 
         i = self._item_count-1
         while i >= 0:
