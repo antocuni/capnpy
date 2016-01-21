@@ -1,3 +1,5 @@
+from json import dumps as text_repr
+
 def extend(cls):
     def decorator(new_class):
         for key, value in new_class.__dict__.iteritems():

@@ -87,13 +87,17 @@ class TestShortRepr(CompilerTest):
         struct P {
             ints @0 :List(Int64);
             structs @1 :List(Point);
+            texts @2 :List(Text);
         }
         """
         self.mod = self.compile(schema)
-        p = self.mod.P(ints=[1, 2, 3], structs=None)
+        p = self.mod.P(ints=[1, 2, 3], structs=None, texts=None)
         self.check(p, '(ints = [1, 2, 3])')
         #
         p1 = self.mod.Point(1, 2)
         p2 = self.mod.Point(3, 4)
-        p = self.mod.P(ints=None, structs=[p1, p2])
+        p = self.mod.P(ints=None, structs=[p1, p2], texts=None)
         self.check(p, '(structs = [(x = 1, y = 2), (x = 3, y = 4)])')
+        #
+        p = self.mod.P(ints=None, structs=None, texts=['foo', 'bar', 'baz'])
+        self.check(p, '(texts = ["foo", "bar", "baz"])')

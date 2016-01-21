@@ -51,7 +51,7 @@ class RequestedFile:
         m.w("from capnpy.list import PrimitiveList as _PrimitiveList")
         m.w("from capnpy.list import StructList as _StructList")
         m.w("from capnpy.list import StringList as _StringList")
-        m.w("import json as _json # for shortrepr()")
+        m.w("from capnpy.util import text_repr as _text_repr")
         #
         if m.pyx:
             # load the compiler from the outside. See the comment in

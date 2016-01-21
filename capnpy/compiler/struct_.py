@@ -205,7 +205,7 @@ class Node__Struct:
                 elif f.is_text():
                     ns.ww("""
                         if self.has_{fname}():
-                            parts.append('{fname} = %s' % _json.dumps(self.{fname}))
+                            parts.append('{fname} = %s' % _text_repr(self.{fname}))
                     """)
                 elif f.is_struct() or f.is_list():
                     ns.ww("""

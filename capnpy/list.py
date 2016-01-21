@@ -3,6 +3,7 @@ import capnpy
 from capnpy.blob import Blob, Types
 from capnpy.ptr import Ptr, StructPtr, ListPtr
 from capnpy import listbuilder
+from capnpy.util import text_repr
 
 class List(Blob):
 
@@ -188,3 +189,6 @@ class StringList(List):
     def _read_list_item(self, offset):
         return self._read_str_text(offset)
 
+    def shortrepr(self):
+        parts = [text_repr(item) for item in self]
+        return '[%s]' % (', '.join(parts))
