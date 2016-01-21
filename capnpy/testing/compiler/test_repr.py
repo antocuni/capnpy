@@ -37,6 +37,18 @@ class TestShortRepr(CompilerTest):
         p = self.mod.Point(1, 1.23)
         self.check(p, '(x = 1, y = 1.23)')
 
+    def test_void(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Void;
+        }
+        """
+        self.mod = self.compile(schema)
+        p = self.mod.Point(1)
+        self.check(p, '(x = 1, y = void)')
+
     def test_text(self):
         schema = """
         @0xbf5147cbbecf40c1;

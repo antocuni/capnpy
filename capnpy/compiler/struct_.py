@@ -202,6 +202,8 @@ class Node__Struct:
                 ns.fname = f.name
                 if f.is_primitive():
                     ns.w('parts.append("{fname} = %s" % self.{fname})')
+                elif f.is_void():
+                    ns.w('parts.append("{fname} = void")')
                 elif f.is_text():
                     ns.ww("""
                         if self.has_{fname}():
