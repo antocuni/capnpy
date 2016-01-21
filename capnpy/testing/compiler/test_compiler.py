@@ -104,9 +104,28 @@ class TestCompilerOptions(CompilerTest):
         assert mod.bar == 42
 
 
-class TestRepr(CompilerTest):
+class TestShortRepr(CompilerTest):
 
-    def test_shortrepr_primitive(self):
+    def decode(self, obj):
+        from capnpy.message import dumps
+        from subprocess import Popen, PIPE
+        cmd = ['capnp', 'decode', '--short', self.mod.__file__, obj.__class__.__name__]
+        proc = Popen(cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE)
+        proc.stdin.write(dumps(obj))
+        stdout, stderr = proc.communicate()
+        ret = proc.wait()
+        if ret != 0:
+            raise ValueError(stderr)
+        return stdout.strip()
+
+    def check(self, obj, expected=None):
+        myrepr = obj.shortrepr()
+        if expected is not None:
+            assert myrepr == expected
+        capnp_repr = self.decode(obj)
+        assert myrepr == capnp_repr
+
+    def test_primitive(self):
         schema = """
         @0xbf5147cbbecf40c1;
         struct Point {
@@ -114,13 +133,11 @@ class TestRepr(CompilerTest):
             y @1 :Float64;
         }
         """
-        mod = self.compile(schema)
-        #
-        p = mod.Point(1, 1.23)
-        myrepr = p.shortrepr()
-        assert myrepr == '(x = 1, y = 1.23)'
+        self.mod = self.compile(schema)
+        p = self.mod.Point(1, 1.23)
+        self.check(p, '(x = 1, y = 1.23)')
 
-    def test_shortrepr_text(self):
+    def test_text(self):
         schema = """
         @0xbf5147cbbecf40c1;
         struct Person {
@@ -128,16 +145,15 @@ class TestRepr(CompilerTest):
             surname @1 :Text;
         }
         """
-        mod = self.compile(schema)
+        self.mod = self.compile(schema)
+        p = self.mod.Person(name=None, surname=None)
+        self.check(p, '()')
         #
-        p = mod.Person(name=None, surname=None)
-        assert p.shortrepr() == '()'
+        p = self.mod.Person(name="foo", surname=None)
+        self.check(p, '(name = "foo")')
         #
-        p = mod.Person(name="foo", surname=None)
-        assert p.shortrepr() == '(name = "foo")'
+        p = self.mod.Person(name=None, surname="bar")
+        self.check(p, '(surname = "bar")')
         #
-        p = mod.Person(name=None, surname="bar")
-        assert p.shortrepr() == '(surname = "bar")'
-        #
-        p = mod.Person(name="foo", surname='bar with "quotes"')
-        assert p.shortrepr() == r'(name = "foo", surname = "bar with \"quotes\"")'
+        p = self.mod.Person(name="foo", surname='bar with "quotes"')
+        self.check(p, r'(name = "foo", surname = "bar with \"quotes\"")')
