@@ -1,15 +1,62 @@
 import py
+import pytest
+from capnpy.schema import Field, Type
+from capnpy.compiler.structor import Structor
 from capnpy.testing.compiler.support import CompilerTest
+
+class TestComputeFormat(object):
+
+    @pytest.fixture
+    def m(self):
+        class FakeModuleGenerator:
+            def _field_name(self, f):
+                return f.name
+        return FakeModuleGenerator()
+
+    def test_compute_format_simple(self, m):
+        fields = [Field.new_slot('x', 0, Type.new_int64()),
+                  Field.new_slot('y', 1, Type.new_int64())]
+        s = Structor(m, 'fake', data_size=2, ptrs_size=0, fields=fields)
+        assert s.fmt == 'qq'
+
+    def test_compute_format_holes(self, m):
+        fields = [Field.new_slot('x', 0, Type.new_int32()),
+                  Field.new_slot('y', 1, Type.new_int64())]
+        s = Structor(m, 'fake', data_size=2, ptrs_size=0, fields=fields)
+        assert s.fmt == 'ixxxxq'
 
 
 class TestConstructors(CompilerTest):
 
-    def test_simple(self):
+    def test_primitive(self):
         schema = """
         @0xbf5147cbbecf40c1;
         struct Point {
             x @0 :Int64;
             y @1 :Int64;
+        }
+        """
+        mod = self.compile(schema)
+        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        #
+        p = mod.Point(1, 2)
+        assert p.x == 1
+        assert p.y == 2
+        assert p._buf.s == buf
+        #
+        p = mod.Point(y=2, x=1)
+        assert p.x == 1
+        assert p.y == 2
+        assert p._buf.s == buf
+
+    def test_void(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+            z @2 :Void;
         }
         """
         mod = self.compile(schema)
@@ -113,12 +160,22 @@ class TestUnionConstructors(CompilerTest):
         assert s.area == 1
         assert s.circle == 2
         assert s.perimeter == 3
+        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'   # area == 1
+               '\x03\x00\x00\x00\x00\x00\x00\x00'   # perimeter == 3
+               '\x02\x00\x00\x00\x00\x00\x00\x00'   # circle == 2
+               '\x00\x00\x00\x00\x00\x00\x00\x00')  # __tag__ == 0 (circle)
+        assert s._buf.s == buf
         #
         s = mod.Shape.new_square(area=1, square=2, perimeter=3)
         assert s.which() == mod.Shape.__tag__.square
         assert s.area == 1
         assert s.square == 2
         assert s.perimeter == 3
+        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'   # area == 1
+               '\x03\x00\x00\x00\x00\x00\x00\x00'   # perimeter == 3
+               '\x02\x00\x00\x00\x00\x00\x00\x00'   # squadre == 2
+               '\x01\x00\x00\x00\x00\x00\x00\x00')  # __tag__ == 1 (square)
+        assert s._buf.s == buf
 
     def test_generic_ctor(self, mod):
         # test the __init__
