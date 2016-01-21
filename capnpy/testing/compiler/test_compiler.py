@@ -111,14 +111,14 @@ class TestRepr(CompilerTest):
         @0xbf5147cbbecf40c1;
         struct Point {
             x @0 :Int64;
-            y @1 :Int64;
+            y @1 :Float64;
         }
         """
         mod = self.compile(schema)
         #
-        p = mod.Point(1, 2)
+        p = mod.Point(1, 1.23)
         myrepr = p.shortrepr()
-        assert myrepr == '(x = 1, y = 2)'
+        assert myrepr == '(x = 1, y = 1.23)'
 
     def test_shortrepr_text(self):
         schema = """
@@ -141,4 +141,3 @@ class TestRepr(CompilerTest):
         #
         p = mod.Person(name="foo", surname='bar with "quotes"')
         assert p.shortrepr() == r'(name = "foo", surname = "bar with \"quotes\"")'
-

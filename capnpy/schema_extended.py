@@ -60,7 +60,6 @@ class Field:
         return (self.which() == schema.Field.__tag__.slot and
                 self.slot.type.is_text())
 
-
     def is_struct(self):
         return (self.which() == schema.Field.__tag__.slot and
                 self.slot.type.is_struct())
