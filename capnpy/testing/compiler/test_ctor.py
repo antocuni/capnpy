@@ -186,6 +186,14 @@ class TestUnionConstructors(CompilerTest):
         assert s.square == 2
         assert s.perimeter == 3
 
+    @py.test.mark.xfail
+    def test_generic_ctor_void_arg(Self, mod):
+        s = mod.Shape(area=1, empty=None, perimeter=3)
+        assert s.which() == mod.Shape.__tag__.empty
+        assert s.area == 1
+        assert s.empty is None
+        assert s.perimeter == 3
+
     def test_multiple_tags(self, mod):
         einfo = py.test.raises(TypeError,
                               "mod.Shape(area=0, perimeter=0, circle=1, square=2)")
