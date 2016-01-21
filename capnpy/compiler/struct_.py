@@ -71,9 +71,8 @@ class Node__Struct:
         tag_offset = self.struct.discriminantOffset * 2
         enum_items = [None] * self.struct.discriminantCount
         for field in self.struct.fields:
-            i = field.discriminantValue
-            if i != schema.Field.noDiscriminant:
-                enum_items[i] = m._field_name(field)
+            if field.is_part_of_union():
+                enum_items[field.discriminantValue] = m._field_name(field)
         enum_name = '%s.__tag__' % self.shortname(m)
         m.w("__tag_offset__ = %s" % tag_offset)
         m.declare_enum('__tag__', enum_name, enum_items)
@@ -124,10 +123,10 @@ class Node__Struct:
         std_fields = [] # non-union fields
         tag_fields = [] # union fields
         for f in self.struct.fields:
-            if f.discriminantValue == schema.Field.noDiscriminant:
-                std_fields.append(f)
-            else:
+            if f.is_part_of_union():
                 tag_fields.append(f)
+            else:
+                std_fields.append(f)
         #
         # now, we create a separate ctor for each tag value
         for tag_field in tag_fields:
@@ -200,22 +199,26 @@ class Node__Struct:
             ns.w('parts = []')
             for f in fields:
                 ns.fname = f.name
-                if f.is_primitive():
-                    ns.w('parts.append("{fname} = %s" % self.{fname})')
-                elif f.is_void():
-                    ns.w('parts.append("{fname} = void")')
-                elif f.is_text():
-                    ns.ww("""
-                        if self.has_{fname}():
-                            parts.append('{fname} = %s' % _text_repr(self.{fname}))
-                    """)
-                elif f.is_struct() or f.is_list():
-                    ns.ww("""
-                        if self.has_{fname}():
-                            parts.append('{fname} = %s' % self.{fname}.shortrepr())
-                    """)
-                elif f.is_group():
-                    ns.w("parts.append('{fname} = %s' % self.{fname}.shortrepr())")
-                else:
-                    ns.w('parts.append("{fname} = ???")')
+                ns.has_condition = 'True'
+                ns.is_condition = 'True'
+                if f.is_pointer():
+                    ns.has_condition = ns.format('self.has_{fname}()')
+                if f.is_part_of_union():
+                    ns.is_condition = ns.format('self.is_{fname}()')
+                #
+                ns.fieldrepr = self._shortrepr_for_field(ns, f)
+                ns.w('if {is_condition} and {has_condition}: parts.append("{fname} = %s" % {fieldrepr})')
             ns.w('return "(%s)" % ", ".join(parts)')
+
+    def _shortrepr_for_field(self, ns, f):
+        if f.is_primitive():
+            return ns.format('self.{fname}')
+        elif f.is_void():
+            return '"void"'
+        elif f.is_text():
+            return ns.format('_text_repr(self.{fname})')
+        elif f.is_struct() or f.is_list() or f.is_group():
+            return ns.format('self.{fname}.shortrepr()')
+        else:
+            return '"???"'
+

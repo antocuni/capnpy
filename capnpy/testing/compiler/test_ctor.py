@@ -149,6 +149,7 @@ class TestUnionConstructors(CompilerTest):
           union {
             circle @2 :Int64;      # radius
             square @3 :Int64;      # width
+            empty  @4 :Void;
           }
         }
         """
@@ -188,8 +189,10 @@ class TestUnionConstructors(CompilerTest):
     def test_multiple_tags(self, mod):
         einfo = py.test.raises(TypeError,
                               "mod.Shape(area=0, perimeter=0, circle=1, square=2)")
-        assert str(einfo.value) == 'got multiple values for the union tag: square, circle'
+        assert str(einfo.value) == ('got multiple values for the union tag: '
+                                    'square, circle')
 
     def test_no_tags(self, mod):
         einfo = py.test.raises(TypeError, "mod.Shape(area=0, perimeter=0)")
-        assert str(einfo.value) == "one of the following args is required: circle, square"
+        assert str(einfo.value) == ("one of the following args is required: "
+                                    "circle, square, empty")

@@ -76,6 +76,8 @@ class Field:
                 return True
         return False
 
+    def is_part_of_union(self):
+        return self.discriminantValue != Field.noDiscriminant
 
 @schema.Field_slot.__extend__
 class Field_slot:

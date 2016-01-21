@@ -129,3 +129,24 @@ class TestShortRepr(CompilerTest):
                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
         p = self.mod.P.from_buffer(buf, 0, 2, 0)
         self.check(p, '(foo = (x = 1, y = 2))')
+
+    def test_union(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct P {
+            union {
+                x @0 :Int64;
+                y @1 :Void;
+                z @2 :Text;
+            }
+        }
+        """
+        self.mod = self.compile(schema)
+        p = self.mod.P.new_x(x=1)
+        self.check(p, '(x = 1)')
+        #
+        p = self.mod.P.new_y()
+        self.check(p, '(y = void)')
+        #
+        p = self.mod.P.new_z(z='hello')
+        self.check(p, '(z = "hello")')
