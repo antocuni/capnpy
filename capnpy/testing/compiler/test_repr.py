@@ -20,10 +20,10 @@ class TestShortRepr(CompilerTest):
 
     def check(self, obj, expected=None):
         myrepr = obj.shortrepr()
-        if expected is not None:
-            assert myrepr == expected
         capnp_repr = self.decode(obj)
         assert myrepr == capnp_repr
+        if expected is not None:
+            assert myrepr == expected
 
     def test_primitive(self):
         schema = """
@@ -113,3 +113,19 @@ class TestShortRepr(CompilerTest):
         #
         p = self.mod.P(ints=None, structs=None, texts=['foo', 'bar', 'baz'])
         self.check(p, '(texts = ["foo", "bar", "baz"])')
+
+    def test_group(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct P {
+            foo :group {
+                x @0 :Int64;
+                y @1 :Int64;
+            }
+        }
+        """
+        self.mod = self.compile(schema)
+        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        p = self.mod.P.from_buffer(buf, 0, 2, 0)
+        self.check(p, '(foo = (x = 1, y = 2))')
