@@ -96,5 +96,4 @@ class TestShortRepr(CompilerTest):
         p1 = self.mod.Point(1, 2)
         p2 = self.mod.Point(3, 4)
         p = self.mod.P(ints=None, structs=[p1, p2])
-        py.test.skip('fixme!')
-        self.check(p)#, '(ints = [1, 2, 3])')
+        self.check(p, '(structs = [(x = 1, y = 2), (x = 3, y = 4)])')

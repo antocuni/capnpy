@@ -179,7 +179,8 @@ class StructList(List):
                                            self._tag.ptrs_size)
 
     def shortrepr(self):
-        return '...'
+        parts = [item.shortrepr() for item in self]
+        return '[%s]' % (', '.join(parts))
 
 class StringList(List):
     ItemBuilder = listbuilder.StringItemBuilder
