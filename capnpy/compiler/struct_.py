@@ -190,24 +190,21 @@ class Node__Struct:
 
     def _emit_repr(self, m):
         # def shortrepr(self):
-        #     parts = [
-        #         "(",
-        #         "x = ", str(self.x), ",",
-        #         "y = ", str(self.y),
-        #         ")"
-        #         ]
-        #     return "".join(parts)
+        #     parts = []
+        #     parts.append("x = %s" % self.x)
+        #     parts.append("x = %s" % self.x)
+        #     return "(%s)" % ", ".join(parts)
         #
-        fields = self.struct.fields or []
-        with m.block('def shortrepr(self):'):
-            with m.block('parts = ['):
-                m.w('"(",')
-                for i, f in enumerate(fields):
-                    is_last = (i == len(fields)-1)
-                    ns = m.code.new_scope()
-                    ns.fname = f.name
-                    ns.comma = '' if is_last else '", ",'
-                    ns.w('"{fname} = ", str(self.{fname}), {comma}')
-                m.w('")"')
-                m.w(']')
-            m.w('return "".join(parts)')
+        with m.block('def shortrepr(self):') as ns:
+            fields = self.struct.fields or []
+            ns.w('parts = []')
+            for f in fields:
+                ns.fname = f.name
+                if f.is_primitive():
+                    ns.w('parts.append("{fname} = %s" % self.{fname})')
+                elif f.is_text():
+                    ns.ww("""
+                        if self.has_{fname}():
+                            parts.append('{fname} = %s' % _json.dumps(self.{fname}))
+                    """)
+            ns.w('return "(%s)" % ", ".join(parts)')

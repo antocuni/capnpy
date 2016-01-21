@@ -148,7 +148,7 @@ class Blob(object):
             end = self._get_body_end()
         elif end is None:
             end = len(self._buf)
-        p = BufferPrinter(self._buf)
+        p = BufferPrinter(self._buf.s)
         p.printbuf(start=start, end=end, **kwds)
 
 

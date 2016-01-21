@@ -106,7 +106,7 @@ class TestCompilerOptions(CompilerTest):
 
 class TestRepr(CompilerTest):
 
-    def test_shortrepr_simple(self):
+    def test_shortrepr_primitive(self):
         schema = """
         @0xbf5147cbbecf40c1;
         struct Point {
@@ -119,3 +119,26 @@ class TestRepr(CompilerTest):
         p = mod.Point(1, 2)
         myrepr = p.shortrepr()
         assert myrepr == '(x = 1, y = 2)'
+
+    def test_shortrepr_text(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Person {
+            name @0 :Text;
+            surname @1 :Text;
+        }
+        """
+        mod = self.compile(schema)
+        #
+        p = mod.Person(name=None, surname=None)
+        assert p.shortrepr() == '()'
+        #
+        p = mod.Person(name="foo", surname=None)
+        assert p.shortrepr() == '(name = "foo")'
+        #
+        p = mod.Person(name=None, surname="bar")
+        assert p.shortrepr() == '(surname = "bar")'
+        #
+        p = mod.Person(name="foo", surname='bar with "quotes"')
+        assert p.shortrepr() == r'(name = "foo", surname = "bar with \"quotes\"")'
+
