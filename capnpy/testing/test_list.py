@@ -135,12 +135,14 @@ def test_list_of_strings():
 
 def test_list_primitive_body_range():
     buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
-           'hello capnproto\0')                 # string
+           'hello capnproto\0'                  # string
+           'garbage1')
     blob = BlobForTests(buf, 0)
     lst = blob._read_list(0, PrimitiveList, Types.int8)
     body_start, body_end = lst._get_body_range()
     assert body_start == 8
     assert body_end == 24
+    assert buf[body_end:] == 'garbage1'
 
 
 def test_list_composite_body_range():
@@ -163,13 +165,15 @@ def test_list_composite_body_range():
            '\x09\x00\x00\x00\x42\x00\x00\x00'   # points[2].name == ptr
            'P' 'o' 'i' 'n' 't' ' ' 'A' '\x00'
            'P' 'o' 'i' 'n' 't' ' ' 'B' '\x00'
-           'P' 'o' 'i' 'n' 't' ' ' 'C' '\x00')
+           'P' 'o' 'i' 'n' 't' ' ' 'C' '\x00'
+           'garbage1')
 
     blob = BlobForTests(buf, 8)
     points = blob._read_list(0, StructList, Blob)
     start, end = points._get_body_range()
     assert start == 16
     assert end == 120
+    assert buf[end:] == 'garbage1'
 
 
 def test_list_composite_body_range():
@@ -192,13 +196,15 @@ def test_list_composite_body_range():
            '\x09\x00\x00\x00\x42\x00\x00\x00'   # points[2].name == ptr
            'P' 'o' 'i' 'n' 't' ' ' 'A' '\x00'
            'P' 'o' 'i' 'n' 't' ' ' 'B' '\x00'
-           'P' 'o' 'i' 'n' 't' ' ' 'C' '\x00')
+           'P' 'o' 'i' 'n' 't' ' ' 'C' '\x00'
+           'garbage1')
 
     blob = BlobForTests(buf, 8)
     points = blob._read_list(0, StructList, Blob)
     start, end = points._get_body_range()
     assert start == 16
     assert end == 120
+    assert buf[end:] == 'garbage1'
 
 def test_list_composite_nullptr_body_range():
     ## struct Point {
@@ -219,13 +225,15 @@ def test_list_composite_nullptr_body_range():
            '\x06\x00\x00\x00\x00\x00\x00\x00'   # points[2].y == 6
            '\x00\x00\x00\x00\x00\x00\x00\x00'   # points[2].name == NULL
            'P' 'o' 'i' 'n' 't' ' ' 'A' '\x00'
-           'P' 'o' 'i' 'n' 't' ' ' 'B' '\x00')
+           'P' 'o' 'i' 'n' 't' ' ' 'B' '\x00'
+           'garbage1')
 
     blob = BlobForTests(buf, 8)
     points = blob._read_list(0, StructList, Blob)
     start, end = points._get_body_range()
     assert start == 16
     assert end == 112
+    assert buf[end:] == 'garbage1'
 
 
 def test_list_composite_all_nullptr_body_range():
@@ -245,13 +253,15 @@ def test_list_composite_all_nullptr_body_range():
            '\x00\x00\x00\x00\x00\x00\x00\x00'   # points[1].name == NULL
            '\x05\x00\x00\x00\x00\x00\x00\x00'   # points[2].x == 5
            '\x06\x00\x00\x00\x00\x00\x00\x00'   # points[2].y == 6
-           '\x00\x00\x00\x00\x00\x00\x00\x00')  # points[2].name == NULL
+           '\x00\x00\x00\x00\x00\x00\x00\x00'   # points[2].name == NULL
+           'garbage1')
 
     blob = BlobForTests(buf, 8)
     points = blob._read_list(0, StructList, Blob)
     start, end = points._get_body_range()
     assert start == 16
     assert end == 96
+    assert buf[end:] == 'garbage1'
 
 def test_list_composite_noptr_body_range():
     buf = ('garbage0'
@@ -290,6 +300,7 @@ def test_list_of_pointers():
     # note that the end if 88, not 86: the last two \x00\x00 are not counted,
     # because they are padding, not actual data
     assert end == 86
+    assert buf[end:] == '\x00\x00'
 
 
 def test_list_comparisons():
