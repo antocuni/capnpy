@@ -207,7 +207,7 @@ class Node__Struct:
                         if self.has_{fname}():
                             parts.append('{fname} = %s' % _json.dumps(self.{fname}))
                     """)
-                elif f.is_struct():
+                elif f.is_struct() or f.is_list():
                     ns.ww("""
                         if self.has_{fname}():
                             parts.append('{fname} = %s' % self.{fname}.shortrepr())

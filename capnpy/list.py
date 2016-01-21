@@ -166,6 +166,9 @@ class PrimitiveList(List):
     def _read_list_item(self, offset):
         return self._read_data(offset, self._item_type.ifmt)
 
+    def shortrepr(self):
+        return str(list(self))
+
 class StructList(List):
     ItemBuilder = listbuilder.StructItemBuilder
 
@@ -175,6 +178,8 @@ class StructList(List):
                                            self._tag.data_size,
                                            self._tag.ptrs_size)
 
+    def shortrepr(self):
+        return '...'
 
 class StringList(List):
     ItemBuilder = listbuilder.StringItemBuilder

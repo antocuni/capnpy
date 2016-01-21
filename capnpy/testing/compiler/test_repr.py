@@ -58,7 +58,7 @@ class TestShortRepr(CompilerTest):
         p = self.mod.Person(name="foo", surname='bar with "quotes"')
         self.check(p, r'(name = "foo", surname = "bar with \"quotes\"")')
 
-    def test_shortrepr_struct(self):
+    def test_struct(self):
         schema = """
         @0xbf5147cbbecf40c1;
         struct Point {
@@ -76,3 +76,25 @@ class TestShortRepr(CompilerTest):
         p2 = self.mod.Point(3, 4)
         r = self.mod.Rectangle(p1, p2, None)
         self.check(r, '(a = (x = 1, y = 2), b = (x = 3, y = 4))')
+
+    def test_list(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        struct P {
+            ints @0 :List(Int64);
+            structs @1 :List(Point);
+        }
+        """
+        self.mod = self.compile(schema)
+        p = self.mod.P(ints=[1, 2, 3], structs=None)
+        self.check(p, '(ints = [1, 2, 3])')
+        #
+        p1 = self.mod.Point(1, 2)
+        p2 = self.mod.Point(3, 4)
+        p = self.mod.P(ints=None, structs=[p1, p2])
+        py.test.skip('fixme!')
+        self.check(p)#, '(ints = [1, 2, 3])')
