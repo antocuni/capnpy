@@ -213,6 +213,8 @@ class Node__Struct:
     def _shortrepr_for_field(self, ns, f):
         if f.is_primitive():
             return ns.format('self.{fname}')
+        elif f.is_bool():
+            return ns.format('str(self.{fname}).lower()')
         elif f.is_void():
             return '"void"'
         elif f.is_text():

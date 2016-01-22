@@ -37,6 +37,19 @@ class TestShortRepr(CompilerTest):
         p = self.mod.Point(1, 1.23)
         self.check(p, '(x = 1, y = 1.23)')
 
+    def test_bool(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct P {
+            x @0 :Bool;
+            y @1 :Bool;
+        }
+        """
+        self.mod = self.compile(schema)
+        buf = '\x01\x00\x00\x00\x00\x00\x00\x00'
+        p = self.mod.P.from_buffer(buf, 0, 1, 0)
+        self.check(p, '(x = true, y = false)')
+
     def test_void(self):
         schema = """
         @0xbf5147cbbecf40c1;
