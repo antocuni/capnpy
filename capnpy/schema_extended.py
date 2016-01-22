@@ -56,6 +56,10 @@ class Field:
         return (self.which() == schema.Field.__tag__.slot and
                 self.slot.type.is_bool())
 
+    def is_enum(self):
+        return (self.which() == schema.Field.__tag__.slot and
+                self.slot.type.is_enum())
+
     def is_pointer(self):
         return (self.which() == schema.Field.__tag__.slot and
                 self.slot.type.is_pointer())

@@ -211,7 +211,7 @@ class Node__Struct:
             ns.w('return "(%s)" % ", ".join(parts)')
 
     def _shortrepr_for_field(self, ns, f):
-        if f.is_primitive():
+        if f.is_primitive() or f.is_enum():
             return ns.format('self.{fname}')
         elif f.is_bool():
             return ns.format('str(self.{fname}).lower()')

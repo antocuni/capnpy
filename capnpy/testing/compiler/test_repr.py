@@ -50,6 +50,24 @@ class TestShortRepr(CompilerTest):
         p = self.mod.P.from_buffer(buf, 0, 1, 0)
         self.check(p, '(x = true, y = false)')
 
+    def test_enum(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        enum Color {
+            red @0;
+            green @1;
+            blue @2;
+        }
+        struct P {
+            x @0 :Color;
+            y @1 :Color;
+        }
+        """
+        self.mod = self.compile(schema)
+        buf = '\x01\x00\x00\x00\x00\x00\x00\x00'
+        p = self.mod.P.from_buffer(buf, 0, 1, 0)
+        self.check(p, '(x = green, y = red)')
+
     def test_void(self):
         schema = """
         @0xbf5147cbbecf40c1;
