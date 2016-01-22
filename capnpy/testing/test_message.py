@@ -16,6 +16,23 @@ def test_load():
     assert p._read_data(0, Types.int64.ifmt) == 1
     assert p._read_data(8, Types.int64.ifmt) == 2
 
+def test_load_multiple_messages():
+    one = ('\x00\x00\x00\x00\x03\x00\x00\x00'   # message header: 1 segment, size 3 words
+           '\x00\x00\x00\x00\x02\x00\x00\x00'   # ptr to payload (Point {x, y})
+           '\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
+    two = ('\x00\x00\x00\x00\x03\x00\x00\x00'   # message header: 1 segment, size 3 words
+           '\x00\x00\x00\x00\x02\x00\x00\x00'   # ptr to payload (Point {x, y})
+           '\x03\x00\x00\x00\x00\x00\x00\x00'   # x == 1
+           '\x04\x00\x00\x00\x00\x00\x00\x00')  # y == 2
+    f = StringIO(one+two)
+    p1 = load(f, Struct)
+    assert p1._read_data(0, Types.int64.ifmt) == 1
+    assert p1._read_data(8, Types.int64.ifmt) == 2
+    p2 = load(f, Struct)
+    assert p2._read_data(0, Types.int64.ifmt) == 3
+    assert p2._read_data(8, Types.int64.ifmt) == 4
+
 def test_loads():
     buf = ('\x00\x00\x00\x00\x03\x00\x00\x00'   # message header: 1 segment, size 3 words
            '\x00\x00\x00\x00\x02\x00\x00\x00'   # ptr to payload (Point {x, y})
