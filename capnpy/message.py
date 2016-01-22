@@ -1,12 +1,12 @@
 import struct
+from cStringIO import StringIO
 from capnpy.blob import CapnpBuffer
 from capnpy.struct_ import Struct
 from capnpy.ptr import StructPtr
 
-
-def loads(buf, payload_type):
+def load(f, payload_type):
     """
-    Load a message of type ``payload_type`` from buf.
+    Load a message of type ``payload_type`` from f.
 
     The message is encoded using the recommended capnp format for serializing
     messages over a stream:
@@ -20,33 +20,41 @@ def loads(buf, payload_type):
 
       - The content of each segment, in order.
     """
-    msg = _load_message(buf)
+    msg = _load_message(f)
     return msg._read_struct(0, payload_type)
 
-def _load_message(buf):
-    offset = 0
+def loads(buf, payload_type):
+    """
+    Same as load(), but load from a string instead of a file
+    """
+    f = StringIO(buf)
+    obj = load(f, payload_type)
+    if f.tell() != len(buf):
+        remaining = len(buf)-f.tell()
+        raise ValueError("Not all bytes were consumed: %d bytes left" % remaining)
+    return obj
+
+def _load_message(f):
     # total number of segments
-    n = struct.unpack_from('<I', buf, offset)[0] + 1
-    offset += 4
-    fmt = '<' + ('I'*n)
-    segments = struct.unpack_from(fmt, buf, offset) # size of each segment
-    offset += 4*n
+    n = struct.unpack('<I', f.read(4))[0] + 1
+    segments = [struct.unpack('<I', f.read(4))[0] for _ in range(n)]
     #
     # add enough padding so that the message starts at word boundary
-    if offset % 8 != 0:
-        padding = 8-(offset % 8)
-        offset += padding
+    bytes_read = 4 + n*4 # 4 bytes for the n, plus 4 bytes for each segment
+    if bytes_read % 8 != 0:
+        padding = 8-(bytes_read % 8)
+        f.read(padding)
     #
-    message_offset = offset
-    total_size = sum(segments)*8 + message_offset
-    if len(buf) != total_size:
-        raise ValueError("The length of the buffer does not correspond to the length of "
-                         "the segments %s: expected %s, got %s" %
-                         (segments, total_size, len(buf)))
+    message_lenght = sum(segments)*8
+    buf = f.read(message_lenght)
+    if len(buf) < message_lenght:
+        raise ValueError("Unexpected EOF: expected %d bytes, got only %s. "
+                         "Segments size: %s" % (message_lenght, len(buf), segments))
 
     # precompute the offset of each segment starting from the beginning of buf
     segment_offsets = []
-    segment_offsets.append(message_offset)
+    segment_offsets.append(0)
+    offset = 0
     for size in segments[:-1]:
         offset += size*8
         segment_offsets.append(offset)
@@ -59,7 +67,7 @@ def _load_message(buf):
     # Thus, the root of the message is equivalent to a struct with
     # data_size==0 and ptrs_size==1
     buf = CapnpBuffer(buf, tuple(segment_offsets))
-    return Struct.from_buffer(buf, message_offset, data_size=0, ptrs_size=1)
+    return Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
 
 def dumps(obj):
     """
