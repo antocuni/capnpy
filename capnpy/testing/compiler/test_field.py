@@ -190,6 +190,15 @@ class TestField(CompilerTest):
         assert f.color == mod.Color.blue
         assert f.gender == mod.Gender.female
 
+    def test_enum_single_member(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        enum Color {
+            red @0;
+        }
+        """
+        mod = self.compile(schema)
+        assert mod.Color.red == 0
 
     def test_union(self):
         schema = """

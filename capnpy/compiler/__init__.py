@@ -80,7 +80,7 @@ class ModuleGenerator(object):
         # this method cannot go on Node__Enum because it's also called by
         # Node__Struct (for __tag__)
         items = map(repr, items)
-        decl = "%s = _enum(%r, (%s))" % (var_name, enum_name, ', '.join(items))
+        decl = "%s = _enum(%r, [%s])" % (var_name, enum_name, ', '.join(items))
         self.w(decl)
 
     def def_property(self, ns, name, src):
