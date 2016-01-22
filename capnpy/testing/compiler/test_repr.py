@@ -1,3 +1,5 @@
+# -*- encoding: utf-8 -*-
+
 import py
 import pytest
 import capnpy
@@ -98,8 +100,28 @@ class TestShortRepr(CompilerTest):
         p = self.mod.Person(name=None, surname="bar")
         self.check(p, '(surname = "bar")')
         #
-        p = self.mod.Person(name="foo", surname='bar with "quotes"')
-        self.check(p, r'(name = "foo", surname = "bar with \"quotes\"")')
+        p = self.mod.Person(name="foo", surname="bar")
+        self.check(p, '(name = "foo", surname = "bar")')
+
+    def test_text_special_chars(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct P {
+            txt @0 :Text;
+        }
+        """
+        self.mod = self.compile(schema)
+        p = self.mod.P(txt='double "quotes"')
+        self.check(p, r'(txt = "double \"quotes\"")')
+        #
+        p = self.mod.P(txt="single 'quotes'")
+        self.check(p, r'(txt = "single \'quotes\'")')
+        #
+        p = self.mod.P(txt="tricky \" '")
+        self.check(p, r'(txt = "tricky \" \'")')
+        #
+        p = self.mod.P(txt=u'hellò'.encode('utf-8'))
+        self.check(p, r'(txt = "hell\xc3\xb2")')
 
     def test_struct(self):
         schema = """
