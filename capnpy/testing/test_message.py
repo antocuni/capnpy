@@ -50,15 +50,17 @@ def test_loads_not_whole_string():
            '\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
            '\x02\x00\x00\x00\x00\x00\x00\x00'   # y == 2
            'garbage0')
-    py.test.raises(ValueError, "p = loads(buf, Struct)")
-
+    exc = py.test.raises(ValueError, "p = loads(buf, Struct)")
+    assert exc.value.message == 'Not all bytes were consumed: 8 bytes left'
 
 def test_wrong_size():
     buf = ('\x00\x00\x00\x00\x04\x00\x00\x00'   # message header: 1 segment, size 4 words
            '\x00\x00\x00\x00\x02\x00\x01\x00'   # ptr to payload (Point {x, y})
            '\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
            '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
-    py.test.raises(ValueError, "loads(buf, Struct)")
+    exc = py.test.raises(ValueError, "loads(buf, Struct)")
+    assert exc.value.message == ("Unexpected EOF: expected 32 bytes, got only 24. "
+                                 "Segments size: [4]")
 
 def test_segments():
     header = ('\x03\x00\x00\x00'  # 3+1 segments
