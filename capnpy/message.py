@@ -34,10 +34,17 @@ def loads(buf, payload_type):
         raise ValueError("Not all bytes were consumed: %d bytes left" % remaining)
     return obj
 
+def _unpack_from_file(fmt, f):
+    size = struct.calcsize(fmt)
+    buf = f.read(size)
+    if len(buf) < size:
+        raise ValueError("Unexpected EOF when reading the header")
+    return struct.unpack(fmt, buf)
+
 def _load_message(f):
     # total number of segments
-    n = struct.unpack('<I', f.read(4))[0] + 1
-    segments = [struct.unpack('<I', f.read(4))[0] for _ in range(n)]
+    n = _unpack_from_file('<I', f)[0] + 1
+    segments = _unpack_from_file('<'+'I'*n, f)
     #
     # add enough padding so that the message starts at word boundary
     bytes_read = 4 + n*4 # 4 bytes for the n, plus 4 bytes for each segment
