@@ -44,13 +44,21 @@ class Field:
         # is enough for what we need (in particular, in structor.py)
         return self.name, self.codeOrder
 
+    def is_primitive(self):
+        return (self.which() == schema.Field.__tag__.slot and
+                self.slot.type.is_primitive())
+
     def is_void(self):
         return (self.which() == schema.Field.__tag__.slot and
                 self.slot.type.is_void())
 
-    def is_primitive(self):
+    def is_float32(self):
         return (self.which() == schema.Field.__tag__.slot and
-                self.slot.type.is_primitive())
+                self.slot.type.is_float32())
+
+    def is_float64(self):
+        return (self.which() == schema.Field.__tag__.slot and
+                self.slot.type.is_float64())
 
     def is_bool(self):
         return (self.which() == schema.Field.__tag__.slot and

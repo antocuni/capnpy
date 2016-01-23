@@ -18,3 +18,8 @@ def text_repr(s):
                       # extra quotes we added above
     s = s.replace('"', r'\"')
     return '"%s"' % s
+
+try:
+    from capnpy.floatrepr import float32_repr, float64_repr
+except ImportError:
+    float32_repr = float64_repr = repr

@@ -211,6 +211,10 @@ class Node__Struct:
             ns.w('return "(%s)" % ", ".join(parts)')
 
     def _shortrepr_for_field(self, ns, f):
+        if f.is_float32():
+            return ns.format('_float32_repr(self.{fname})')
+        elif f.is_float64():
+            return ns.format('_float64_repr(self.{fname})')
         if f.is_primitive() or f.is_enum():
             return ns.format('self.{fname}')
         elif f.is_bool():

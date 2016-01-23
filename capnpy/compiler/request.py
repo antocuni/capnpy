@@ -52,6 +52,8 @@ class RequestedFile:
         m.w("from capnpy.list import StructList as _StructList")
         m.w("from capnpy.list import StringList as _StringList")
         m.w("from capnpy.util import text_repr as _text_repr")
+        m.w("from capnpy.util import float32_repr as _float32_repr")
+        m.w("from capnpy.util import float64_repr as _float64_repr")
         #
         if m.pyx:
             # load the compiler from the outside. See the comment in
