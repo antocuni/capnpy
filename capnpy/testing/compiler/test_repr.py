@@ -210,14 +210,28 @@ class TestShortRepr(CompilerTest):
         struct Empty {}
         struct P {
             union {
-                x @0 :Empty;
-                y @1 :Empty;
+                a @0 :Empty;
+                b @1 :Empty;
+                c @2 :Text;
+                d @3 :List(Int64);
             }
         }
         """
         self.mod = self.compile(schema)
-        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # tag == y
+        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # tag == b
                '\x00\x00\x00\x00\x00\x00\x00\x00') # null ptr
         p = self.mod.P.from_buffer(buf, 0, 1, 1)
-        assert p.is_y()
-        self.check(p, '(y = ())')
+        assert p.is_b()
+        self.check(p, '(b = ())')
+        #
+        buf = ('\x02\x00\x00\x00\x00\x00\x00\x00'  # tag == c
+               '\x00\x00\x00\x00\x00\x00\x00\x00') # null ptr
+        p = self.mod.P.from_buffer(buf, 0, 1, 1)
+        assert p.is_c()
+        self.check(p, '(c = "")')
+        #
+        buf = ('\x03\x00\x00\x00\x00\x00\x00\x00'  # tag == d
+               '\x00\x00\x00\x00\x00\x00\x00\x00') # null ptr
+        p = self.mod.P.from_buffer(buf, 0, 1, 1)
+        assert p.is_d()
+        self.check(p, '(d = [])')

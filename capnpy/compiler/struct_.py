@@ -203,12 +203,13 @@ class Node__Struct:
                 ns.append = ns.format('parts.append("{fname} = %s" % {fieldrepr})')
                 #
                 if f.is_part_of_union() and f.is_pointer():
+                    ns.defaultrepr = self._defaultrepr_for_type(f.slot.type)
                     ns.ww("""
                     if self.is_{fname}():
                         if self.has_{fname}():
                             {append}
                         else:
-                            parts.append("{fname} = ()")
+                            parts.append('{fname} = {defaultrepr}')
                     """)
                 elif f.is_part_of_union():
                     ns.w("if self.is_{fname}(): {append}")
@@ -236,3 +237,12 @@ class Node__Struct:
         else:
             return '"???"'
 
+    def _defaultrepr_for_type(self, t):
+        if t.is_struct():
+            return '()'
+        elif t.is_text() or t.is_data():
+            return '""'
+        elif t.is_list():
+            return '[]'
+        else:
+            raise NotImplementedError("Unknown type")
