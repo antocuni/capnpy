@@ -202,7 +202,7 @@ class Node__Struct:
                 ns.fieldrepr = self._shortrepr_for_field(ns, f)
                 ns.append = ns.format('parts.append("{fname} = %s" % {fieldrepr})')
                 #
-                if f.is_part_of_union() and f.is_pointer():
+                if f.is_part_of_union() and f.discriminantValue != 0 and f.is_pointer():
                     ns.defaultrepr = self._defaultrepr_for_type(f.slot.type)
                     ns.ww("""
                     if self.is_{fname}():
@@ -211,7 +211,7 @@ class Node__Struct:
                         else:
                             parts.append('{fname} = {defaultrepr}')
                     """)
-                elif f.is_part_of_union():
+                elif f.is_part_of_union() and f.discriminantValue != 0:
                     ns.w("if self.is_{fname}(): {append}")
                 elif f.is_pointer():
                     ns.w("if self.has_{fname}(): {append}")

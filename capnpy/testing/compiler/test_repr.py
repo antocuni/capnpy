@@ -218,6 +218,12 @@ class TestShortRepr(CompilerTest):
         }
         """
         self.mod = self.compile(schema)
+        buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'  # tag == a
+               '\x00\x00\x00\x00\x00\x00\x00\x00') # null ptr
+        p = self.mod.P.from_buffer(buf, 0, 1, 1)
+        assert p.is_a()
+        self.check(p, '()') # the default value is always empty
+        #
         buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # tag == b
                '\x00\x00\x00\x00\x00\x00\x00\x00') # null ptr
         p = self.mod.P.from_buffer(buf, 0, 1, 1)
