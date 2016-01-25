@@ -203,3 +203,21 @@ class TestShortRepr(CompilerTest):
         #
         p = self.mod.P.new_z(z='hello')
         self.check(p, '(z = "hello")')
+
+    def test_union_set_but_null_pointer(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Empty {}
+        struct P {
+            union {
+                x @0 :Empty;
+                y @1 :Empty;
+            }
+        }
+        """
+        self.mod = self.compile(schema)
+        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # tag == y
+               '\x00\x00\x00\x00\x00\x00\x00\x00') # null ptr
+        p = self.mod.P.from_buffer(buf, 0, 1, 1)
+        assert p.is_y()
+        self.check(p, '(y = ())')

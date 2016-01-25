@@ -191,7 +191,7 @@ class Node__Struct:
         # def shortrepr(self):
         #     parts = []
         #     parts.append("x = %s" % self.x)
-        #     parts.append("x = %s" % self.x)
+        #     parts.append("x = %s" % self.y)
         #     return "(%s)" % ", ".join(parts)
         #
         with m.block('def shortrepr(self):') as ns:
@@ -199,15 +199,23 @@ class Node__Struct:
             ns.w('parts = []')
             for f in fields:
                 ns.fname = f.name
-                ns.has_condition = 'True'
-                ns.is_condition = 'True'
-                if f.is_pointer():
-                    ns.has_condition = ns.format('self.has_{fname}()')
-                if f.is_part_of_union():
-                    ns.is_condition = ns.format('self.is_{fname}()')
-                #
                 ns.fieldrepr = self._shortrepr_for_field(ns, f)
-                ns.w('if {is_condition} and {has_condition}: parts.append("{fname} = %s" % {fieldrepr})')
+                ns.append = ns.format('parts.append("{fname} = %s" % {fieldrepr})')
+                #
+                if f.is_part_of_union() and f.is_pointer():
+                    ns.ww("""
+                    if self.is_{fname}():
+                        if self.has_{fname}():
+                            {append}
+                        else:
+                            parts.append("{fname} = ()")
+                    """)
+                elif f.is_part_of_union():
+                    ns.w("if self.is_{fname}(): {append}")
+                elif f.is_pointer():
+                    ns.w("if self.has_{fname}(): {append}")
+                else:
+                    ns.w("{append}")
             ns.w('return "(%s)" % ", ".join(parts)')
 
     def _shortrepr_for_field(self, ns, f):
