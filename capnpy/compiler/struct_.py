@@ -201,17 +201,18 @@ class Node__Struct:
                 ns.fname = f.name
                 ns.fieldrepr = self._shortrepr_for_field(ns, f)
                 ns.append = ns.format('parts.append("{fname} = %s" % {fieldrepr})')
+                ns.is_default_field = bool(f.discriminantValue == 0)
                 #
-                if f.is_part_of_union() and f.discriminantValue != 0 and f.is_pointer():
+                if f.is_part_of_union() and f.is_pointer():
                     ns.defaultrepr = self._defaultrepr_for_type(f.slot.type)
                     ns.ww("""
                     if self.is_{fname}():
                         if self.has_{fname}():
                             {append}
-                        else:
+                        elif not {is_default_field}:
                             parts.append('{fname} = {defaultrepr}')
                     """)
-                elif f.is_part_of_union() and f.discriminantValue != 0:
+                elif f.is_part_of_union():
                     ns.w("if self.is_{fname}(): {append}")
                 elif f.is_pointer():
                     ns.w("if self.has_{fname}(): {append}")
