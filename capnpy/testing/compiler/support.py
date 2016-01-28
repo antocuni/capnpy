@@ -34,5 +34,5 @@ class CompilerTest:
         comp = Compiler([root, self.tmpdir], pyx=self.pyx)
         tmp_capnp = self.tmpdir.join('tmp.capnp')
         tmp_capnp.write(s)
-        return comp.load_schema('/tmp.capnp', **kwds)
+        return comp.load_schema(importname='/tmp.capnp', **kwds)
 

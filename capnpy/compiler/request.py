@@ -94,6 +94,6 @@ class RequestedFile:
             fname = filenode.displayName
             importname = m.register_import(fname)
             fullpath = imp.name
-            m.w('{importname} = __compiler.load_schema("{fullpath}")',
+            m.w('{importname} = __compiler.load_schema(importname="{fullpath}")',
                 importname = importname,
                 fullpath = fullpath)

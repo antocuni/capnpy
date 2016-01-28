@@ -111,8 +111,26 @@ class Compiler(object):
         else:
             self.tmpdir = None
 
-    def load_schema(self, filename, convert_case=True):
-        filename = self._find_file(filename)
+    def load_schema(self, modname=None, importname=None, filename=None, convert_case=True):
+        """
+        Compile and load a capnp schema, which can be specified by setting one
+        (and only one) of the following params:
+
+          - *modname*: in the form 'a.b.c', it will search the file
+             a/b/c.capnp in the directories of the path. This is useful if you
+             want to distribute the schema file together with your python
+             package
+
+          - *importname*: similar to *modname*, but using the same syntax as
+             the ``import`` expression in capnp schemas; in the example above,
+             it becomes "/a/b/c.capnp". The starting slash indicates that it
+             is an non-relative import, i.e. that it will be looked in all the
+             directories listed in path
+
+          - *filename*: the (relative or absolute) file containing the schema;
+             no search if performed
+        """
+        filename = self._get_filename(modname, importname, filename)
         try:
             return self.modules[filename]
         except KeyError:
@@ -180,14 +198,27 @@ class Compiler(object):
         del sys.modules[tmpmod.__name__]
         return mod
 
-    def _find_file(self, filename):
-        if not filename.startswith('/'):
-            raise ValueError("schema paths must be absolute: %s" % filename)
+    def _get_filename(self, modname, importname, filename):
+        n = (modname, importname, filename).count(None)
+        if n != 2:
+            raise ValueError("You have to specify exactly 1 of modname, importname or filename")
+        #
+        if modname is not None:
+            importname = '%s.capnp' % modname.replace('.', '/')
+            return self._find_file(importname)
+        elif importname is not None:
+            if not importname.startswith('/'):
+                raise ValueError("schema paths must be absolute: %s" % importname)
+            return self._find_file(importname)
+        else:
+            return py.path.local(filename)
+
+    def _find_file(self, importname):
         for dirpath in self.path:
-            f = dirpath.join(filename)
+            f = dirpath.join(importname)
             if f.check(file=True):
                 return f
-        raise ValueError("Cannot find %s in the given path" % filename)
+        raise ValueError("Cannot find %s in the given path" % importname)
 
     def _capnp_compile(self, filename):
         # this is a hack: we use cat as a plugin of capnp compile to get the
