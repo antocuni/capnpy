@@ -8,7 +8,6 @@ if USE_CYTHON:
 
     files = ["capnpy/blob.py",
              "capnpy/struct_.py",
-             "capnpy/field.py",
              "capnpy/type.py",
              "capnpy/unpack.pyx"]
 
