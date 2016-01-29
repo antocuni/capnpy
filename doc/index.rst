@@ -108,12 +108,29 @@ Additionally, you can also specify the ``convert_case`` parameter. By default,
 ``convert_case=False``.
 
 
-
-
 Reading and writing messages
 -----------------------------
 
-XXX write me
+The API to read and write capnproto messages is inspired by the ones offered
+by ``pickle`` and ``json``:
+
+  - ``capnpy.load(f, payload_type)``: load a message from a file-like object
+
+  - ``capnpy.loads(s, payload)``: load a message from a string
+
+  - ``capnpy.dumps(obj)``: write a message to a string
+
+For example::
+
+    >>> import capnpy
+    >>> example = capnpy.load_schema('example')
+    >>> p = example.Point(x=100, y=200)
+    >>> mybuf = capnpy.dumps(p)
+    >>> mybuf
+    '\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00d\x00\x00\x00\x00\x00\x00\x00\xc8\x00\x00\x00\x00\x00\x00\x00'
+    >>> p2 = capnpy.loads(mybuf, example.Point)
+    >>> print p2.x, p2.y
+    100 200
 
 
 Struct
@@ -161,6 +178,8 @@ easily use both the numeric and the symbolic values::
 
 ::
 
+    >>> example = capnpy.load_schema('example')
+    >>> Color = example.Color
     >>> Color.green
     <Color.green: 1>
     >>> int(Color.green)
@@ -192,6 +211,9 @@ automatically creating an enum whose members correspond to fields of the union::
     }
 
 ::
+
+    >>> example = capnpy.load_schema('example')
+    >>> Shape = example.Shape
     >>> Shape.__tag__
     <class 'capnpy.enum.Shape.__tag__'>
     >>> Shape.__tag__.__members__
