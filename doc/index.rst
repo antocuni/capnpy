@@ -60,7 +60,54 @@ in particular:
 Loading a schema
 -----------------
 
-XXX write me
+To dynamically load a capnproto schema, use ``capnpy.load_schema``; its full
+signature is::
+
+    def load_schema(self, modname=None, importname=None, filename=None, convert_case=True):
+        ...
+
+``modname``, ``importname`` and ``filename`` corresponds to three different
+ways to specify and locate the schema file to load. You need to pass exactly
+one of them.
+
+``modname`` (the default) is interpreted as if it were the name of a Python
+module with the ``.capnp`` extension. This means that it is searched in all
+the directories listed in ``sys.path`` and that you can use dotted names to
+load a schema inside packages or subpackages::
+
+    >>> import capnpy
+    >>> import mypackage
+    >>> mypackage
+    <module 'mypackage' from '/tmp/mypackage/__init__.pyc'>
+    >>> example = capnpy.load_schema('mypackage.mysub.example')
+    >>> example
+    <module 'example' from '/tmp/mypackage/mysub/example.capnp'>
+
+This is handy because it allows you to distribute the capnproto schemas along
+the Python packages, and to load them with no need to care where they are on
+the filesystem, as long as the package is importable by Python.
+
+``importname`` is similar to ``modname``, with the difference that it uses the
+same syntax you would use in capnproto's *import expressions*. In particular,
+if you use an absolute path, ``load_schema`` searches for the file in each of
+the search path directories, which by default correspond to the ones listed in
+``sys.path``. Thus, the example above is completely equivalent to this::
+
+    >>> example = capnpy.load_schema(importname='/mypackage/mysub/example.capnp')
+    >>> example
+    <module 'example' from '/tmp/mypackage/mysub/example.capnp'>
+
+Finally, ``filename`` specifies the exact file name of the schema file. No
+search will be performed.
+
+Additionally, you can also specify the ``convert_case`` parameter. By default,
+``capnpy`` will translate names from **camelCase** to
+**underscore_delimiter**; e.g., if the capnproto schema contains a field named
+``personName``, the compiled Python module will contain a field named
+``person_name``. You can disable this automatic translation by passing
+``convert_case=False``.
+
+
 
 
 Reading and writing messages
