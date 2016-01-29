@@ -290,10 +290,41 @@ More on equality
 XXX write me
 
 
-Object oriented capnproto
---------------------------
+Adding methods to capnproto structs
+------------------------------------
 
-XXX write me
+As described above, each capnproto Struct is converted into a Python class,
+whose attributes are specified by the capnproto schema. Moreover, with
+``capnpy`` you can easily add methods to such classes.
+
+To add methods, use the ``__extend__`` class decorator as shown here::
+
+    >>> import math
+    >>> import capnpy
+    >>> example = capnpy.load_schema('example')
+    >>> @example.Point.__extend__
+    ... class Point:
+    ...     def distance(self):
+    ...         return math.sqrt(self.x**2 + self.y**2)
+    ...
+    >>> p = example.Point(x=3, y=4)
+    >>> print p.distance()
+    5.0
+
+Although it seems magical, ``__extend__`` is much simpler than it looks: what
+it does is simply to copy the content of the new class body ``Point`` into the
+body of the automatically-generated ``example.Point``; the result is that
+``example.Point`` contains both the original fields and the new methods.
+
+XXX: currently it does not work in pyx mode :(
+
+The best place where to put the ``@__extend__`` code for ``example.capnp`` is
+inside a file named ``example_extended.py``: if present, ``capnpy`` will
+automatically import such a file immediately after loading the schema, thus
+ensuring that the methods are attached to the structs before you use them. For
+example::
+
+XXX this cannot work in dynamic mode so far, fix it
 
 
 ``capnpy`` vs ``pycapnp``
