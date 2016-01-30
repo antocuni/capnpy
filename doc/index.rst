@@ -6,13 +6,25 @@ capnpy Documentation
 provide a library which is fast, both on CPython and PyPy, and which offers a
 pythonic API and feeling whenever possible.
 
-``capnpy`` can be used in two ways:
+``capnpy`` supports two different ways of loading schemas:
 
-  1. Dynamic mode: to dynamically load capnproto schemas on the fly
+  1. **Dynamic loading**: to compile load capnproto schemas on the fly
 
-  2. Precompiled mode: to generate Python bindings for a schema, to be
+  2. **Precompiled mode**: to generate Python bindings for a schema, to be
      imported later (NOTE: this mode is not fully implemented as of now, but
      will be soon)
+
+Moreover, it supports two different ways of compilation:
+
+  1. **py mode**: generate pure Python modules, which can be used either on
+     CPython or PyPy. This is optimized to be super fast on PyPy, but slowish
+     on CPython, although it has the advantage of working with no extra setup
+     (``capnpy`` itself uses ``schema.py``, a py-compiled version of
+     ``schema.capnp``)
+
+  2. **pyx mode**: generate pyx modules, which are then compiled into native
+     extension modules by Cython and GCC. It is optimized for speed on CPython.
+
 
 
 Quick example
@@ -49,7 +61,7 @@ files, so it needs to be able to find the ``capnp`` executable on the path
 whenever you load or compile a schema.  This depends on the mode of operation;
 in particular:
 
-  1. in **dynamic mode**, you always need ``capnp`` to load a schema
+  1. for **dynamic loading**, you always need ``capnp`` to load a schema
 
   2. in **precompiled mode**, you need ``capnp`` to compile the schema, but not to
      load it later; this means that you can distribute the precompiled
@@ -57,7 +69,7 @@ in particular:
      to install the official capnproto distribution.
 
 
-Loading a schema
+Dynamic loading
 -----------------
 
 To dynamically load a capnproto schema, use ``capnpy.load_schema``; its full
