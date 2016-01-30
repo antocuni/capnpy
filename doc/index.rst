@@ -302,29 +302,49 @@ To add methods, use the ``__extend__`` class decorator as shown here::
     >>> import math
     >>> import capnpy
     >>> example = capnpy.load_schema('example')
+    >>> p = example.Point(x=3, y=4)
+    >>> print p.distance()
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+    AttributeError: 'Point' object has no attribute 'distance'
+    >>>
     >>> @example.Point.__extend__
     ... class Point:
     ...     def distance(self):
     ...         return math.sqrt(self.x**2 + self.y**2)
     ...
-    >>> p = example.Point(x=3, y=4)
     >>> print p.distance()
     5.0
 
 Although it seems magical, ``__extend__`` is much simpler than it looks: what
 it does is simply to copy the content of the new class body ``Point`` into the
 body of the automatically-generated ``example.Point``; the result is that
-``example.Point`` contains both the original fields and the new methods.
+``example.Point`` contains both the original fields and the new methods; as
+shown above, this affects also the objects created before the call to
+``__extend__``.
 
-XXX: currently it does not work in pyx mode :(
+When loading a schema, e.g. ``example.capnp``, ``capnpy`` also searches for a
+file named ``example_extended.py`` in the same directory. If it exists, the
+code is executed in the same namespace as the schema being loaded, meaning
+that it is the perfect place where to put the ``__extend__`` code to be sure
+that it will be immediately available. For example, suppose to have the
+following ``example_extended.py`` in the same directory as ``example.capnp``::
 
-The best place where to put the ``@__extend__`` code for ``example.capnp`` is
-inside a file named ``example_extended.py``: if present, ``capnpy`` will
-automatically import such a file immediately after loading the schema, thus
-ensuring that the methods are attached to the structs before you use them. For
-example::
+    # example_extended.py
+    import math
+    @Point.__extend__
+    class Point:
+        def distance(self):
+            return math.sqrt(self.x**2 + self.y**2)
 
-XXX this cannot work in dynamic mode so far, fix it
+Then, the ``distance`` method will be immediately available as soon as we load
+the schema::
+
+    >>> import capnpy
+    >>> example = capnpy.load_schema('example')
+    >>> p = example.Point(3, 4)
+    >>> print p.distance()
+    5.0
 
 
 ``capnpy`` vs ``pycapnp``
