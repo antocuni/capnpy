@@ -195,13 +195,13 @@ class TestShortRepr(CompilerTest):
         }
         """
         self.mod = self.compile(schema)
-        p = self.mod.P.new_x(x=1)
+        p = self.mod.P.new_x(1)
         self.check(p, '(x = 1)')
         #
         p = self.mod.P.new_y()
         self.check(p, '(y = void)')
         #
-        p = self.mod.P.new_z(z='hello')
+        p = self.mod.P.new_z('hello')
         self.check(p, '(z = "hello")')
 
     def test_union_set_but_null_pointer(self):
