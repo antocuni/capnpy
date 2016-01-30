@@ -11,7 +11,7 @@ class TestShortRepr(CompilerTest):
     def decode(self, obj):
         from capnpy.message import dumps
         from subprocess import Popen, PIPE
-        cmd = ['capnp', 'decode', '--short', self.mod.__file__, obj.__class__.__name__]
+        cmd = ['capnp', 'decode', '--short', self.mod.__schema__, obj.__class__.__name__]
         proc = Popen(cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE)
         proc.stdin.write(dumps(obj))
         stdout, stderr = proc.communicate()

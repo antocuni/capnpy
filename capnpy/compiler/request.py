@@ -59,7 +59,7 @@ class RequestedFile:
         if m.pyx:
             # load the compiler from the outside. See the comment in
             # _compile_pyx for a detailed explanation
-            m.w('from %s import __compiler, __file__' % m.tmpname)
+            m.w('from %s import __compiler, __schema__' % m.tmpname)
         #
         f._declare_imports(m)
         m.w("")
@@ -85,7 +85,7 @@ class RequestedFile:
             child.emit_delete_nested_from_globals(m)
         #
         m.w()
-        m.w('_extend_module_maybe(__file__, globals())')
+        m.w('_extend_module_maybe(__schema__, globals())')
 
     def _declare_imports(self, m):
         for imp in self.imports:
