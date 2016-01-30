@@ -59,7 +59,7 @@ class RequestedFile:
         if m.pyx:
             # load the compiler from the outside. See the comment in
             # _compile_pyx for a detailed explanation
-            m.w('from %s import __compiler' % m.tmpname)
+            m.w('from %s import __compiler, __file__' % m.tmpname)
         #
         f._declare_imports(m)
         m.w("")

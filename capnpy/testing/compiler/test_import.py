@@ -70,6 +70,8 @@ class TestImport(CompilerTest):
         mod = comp.load_schema(importname="/two/tmp.capnp")
 
     def test_extended(self, monkeypatch):
+        if self.pyx:
+            py.test.xfail('cannot use __extend__ on pyx')
         myschema = self.tmpdir.join('myschema.capnp')
         myschema_extended = self.tmpdir.join('myschema_extended.py')
 

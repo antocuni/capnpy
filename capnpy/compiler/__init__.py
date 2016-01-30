@@ -189,6 +189,7 @@ class Compiler(object):
         #
         tmpmod = types.ModuleType(m.tmpname)
         tmpmod.__dict__['__compiler'] = self
+        tmpmod.__dict__['__file__'] = str(filename)
         sys.modules[m.tmpname] = tmpmod
         modname = 'capnpy.ext.%s' % m.modname
         mod = imp.load_dynamic(modname, str(dll))
