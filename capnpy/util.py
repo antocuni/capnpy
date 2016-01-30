@@ -1,3 +1,5 @@
+import imp
+
 def extend(cls):
     def decorator(new_class):
         for key, value in new_class.__dict__.iteritems():
@@ -5,6 +7,17 @@ def extend(cls):
                 setattr(cls, key, value)
         return cls
     return decorator
+
+def exec_extended(modname, globals):
+    try:
+        f, filename, _ = imp.find_module(modname)
+    except ImportError:
+        return
+    src = f.read()
+    f.close()
+    code = compile(src, filename, 'exec')
+    exec code in globals
+
 
 def text_repr(s):
     # abuse the python string repr algo: make sure that the string contains at

@@ -1,4 +1,6 @@
 import py
+import textwrap
+import capnpy
 from capnpy.testing.compiler.support import CompilerTest
 from capnpy.compiler import Compiler
 
@@ -81,3 +83,26 @@ class TestImport(CompilerTest):
         }
         """)
         mod = comp.load_schema(importname="/two/tmp.capnp")
+
+    def test_extended(self, monkeypatch):
+        myschema = self.tmpdir.join('myschema.capnp')
+        myschema_extended = self.tmpdir.join('myschema_extended.py')
+
+        comp = Compiler([self.tmpdir], pyx=self.pyx)
+        myschema.write("""
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        """)
+        myschema_extended.write(textwrap.dedent("""
+        @Point.__extend__
+        class Point:
+            foo = 'foo'
+        """))
+        #
+        monkeypatch.setattr(capnpy, 'mycompiler', comp, raising=False)
+        monkeypatch.syspath_prepend(self.tmpdir)
+        mod = comp.load_schema('myschema')
+        assert mod.Point.foo == 'foo'

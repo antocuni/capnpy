@@ -20,8 +20,8 @@ class RequestedFile:
 
     def emit(self, m):
         m.modname = py.path.local(self.filename).purebasename
-        m.extname = '%s_extended' % m.modname
         m.tmpname = '%s_tmp' % m.modname
+        m.code.global_scope.extname = '%s_extended' % m.modname
         #
         # some lines need to be different when in pyx mode: here we define
         # some global kwarg which are "turned off" when in pure python mode
@@ -54,6 +54,7 @@ class RequestedFile:
         m.w("from capnpy.util import text_repr as _text_repr")
         m.w("from capnpy.util import float32_repr as _float32_repr")
         m.w("from capnpy.util import float64_repr as _float64_repr")
+        m.w("from capnpy.util import exec_extended as _exec_extended")
         #
         if m.pyx:
             # load the compiler from the outside. See the comment in
@@ -82,11 +83,9 @@ class RequestedFile:
         m.w()
         for child in children:
             child.emit_delete_nested_from_globals(m)
+        #
         m.w()
-        m.w("try:")
-        m.w("    import %s # side effects" % m.extname)
-        m.w("except ImportError:")
-        m.w("    pass")
+        m.w('_exec_extended("{extname}", globals())')
 
     def _declare_imports(self, m):
         for imp in self.imports:
