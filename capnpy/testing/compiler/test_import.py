@@ -28,21 +28,6 @@ class TestImport(CompilerTest):
         mod4 = comp.load_schema(filename=myschema)
         assert mod4 is mod1
 
-    def test_dont_load_twice(self):
-        schema = """
-        @0xbf5147cbbecf40c1;
-        struct Point {
-            x @0 :Int64;
-            y @1 :Int64;
-        }
-        """
-        self.tmpdir.join("tmp.capnp").write(schema)
-        comp = Compiler([self.tmpdir], pyx=self.pyx)
-        mod1 = comp.load_schema(importname="/tmp.capnp")
-        mod2 = comp.load_schema(importname="/tmp.capnp")
-        assert mod1 is mod2
-
-
     def test_import(self):
         comp = Compiler([self.tmpdir], pyx=self.pyx)
         self.tmpdir.join("p.capnp").write("""
