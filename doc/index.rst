@@ -10,7 +10,7 @@ pythonic API and feeling whenever possible.
 
   1. Dynamic mode: to dynamically load capnproto schemas on the fly
 
-  2. Static mode:  to generate Python bindings for a schema, to be
+  2. Precompiled mode: to generate Python bindings for a schema, to be
      imported later (NOTE: this mode is not fully implemented as of now, but
      will be soon)
 
@@ -51,7 +51,7 @@ in particular:
 
   1. in **dynamic mode**, you always need ``capnp`` to load a schema
 
-  2. in **static mode**, you need ``capnp`` to compile the schema, but not to
+  2. in **precompiled mode**, you need ``capnp`` to compile the schema, but not to
      load it later; this means that you can distribute the precompiled
      schemas, and the client machines will be able to load it without having
      to install the official capnproto distribution.
