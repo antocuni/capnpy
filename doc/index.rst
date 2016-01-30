@@ -26,6 +26,7 @@ Moreover, it supports two different ways of compilation:
      extension modules by Cython and GCC. It is optimized for speed on CPython.
 
 
+XXX explain how to enable cython support with setup.py
 
 Quick example
 -------------
