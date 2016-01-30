@@ -8,7 +8,7 @@ def extend(cls):
         return cls
     return decorator
 
-def exec_extended(modname, globals):
+def exec_module_maybe(modname, globals):
     try:
         f, filename, _ = imp.find_module(modname)
     except ImportError:
