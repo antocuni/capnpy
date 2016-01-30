@@ -1,4 +1,4 @@
-import imp
+import py
 
 def extend(cls):
     def decorator(new_class):
@@ -8,14 +8,15 @@ def extend(cls):
         return cls
     return decorator
 
-def exec_module_maybe(modname, globals):
-    try:
-        f, filename, _ = imp.find_module(modname)
-    except ImportError:
+def extend_module_maybe(filename, globals):
+    # /path/to/foo.py --> /path/to/foo_extended.py
+    filename = py.path.local(filename)
+    extname = filename.purebasename + '_extended'
+    extmod = filename.new(purebasename=extname, ext='.py')
+    if extmod.check(file=False):
         return
-    src = f.read()
-    f.close()
-    code = compile(src, filename, 'exec')
+    src = extmod.read()
+    code = compile(src, extname, 'exec')
     exec code in globals
 
 

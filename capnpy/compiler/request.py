@@ -54,7 +54,7 @@ class RequestedFile:
         m.w("from capnpy.util import text_repr as _text_repr")
         m.w("from capnpy.util import float32_repr as _float32_repr")
         m.w("from capnpy.util import float64_repr as _float64_repr")
-        m.w("from capnpy.util import exec_module_maybe as _exec_module_maybe")
+        m.w("from capnpy.util import extend_module_maybe as _extend_module_maybe")
         #
         if m.pyx:
             # load the compiler from the outside. See the comment in
@@ -85,7 +85,7 @@ class RequestedFile:
             child.emit_delete_nested_from_globals(m)
         #
         m.w()
-        m.w('_exec_module_maybe("{extname}", globals())')
+        m.w('_extend_module_maybe(__file__, globals())')
 
     def _declare_imports(self, m):
         for imp in self.imports:

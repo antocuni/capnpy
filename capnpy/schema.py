@@ -12,6 +12,7 @@ from capnpy.builder import StructBuilder as _StructBuilder
 from capnpy.list import PrimitiveList as _PrimitiveList
 from capnpy.list import StructList as _StructList
 from capnpy.list import StringList as _StringList
+from capnpy.util import extend_module_maybe as _extend_module_maybe
 #_cPLUSPLUS_capnp = __compiler.load_schema("/capnp/c++.capnp")
 
 #### FORWARD DECLARATIONS ####
@@ -3594,7 +3595,5 @@ del globals()['Brand_Scope']
 del globals()['Node_NestedNode']
 del globals()['Node_Parameter']
 
-try:
-    import schema_extended # side effects
-except ImportError:
-    pass
+_extend_module_maybe(__file__, globals())
+

@@ -1,8 +1,6 @@
-import sys
-from capnpy.type import Types
-schema = sys.modules['capnpy.schema']
+from capnpy.type import Types as _Types
 
-@schema.Type.__extend__
+@Type.__extend__
 class Type:
 
     def as_type(self):
@@ -11,30 +9,30 @@ class Type:
         We should unify the twos eventually
         """
         typename = str(self.which())
-        return getattr(Types, typename)
+        return getattr(_Types, typename)
 
     def is_primitive(self):
         # note that bool is NOT considered primitive, i.e. it is handled
         # specially everywhere
-        return schema.Type.__tag__.int8 <= self.which() <= schema.Type.__tag__.float64
+        return Type.__tag__.int8 <= self.which() <= Type.__tag__.float64
 
     def is_builtin(self):
-        return schema.Type.__tag__.void <= self.which() <= schema.Type.__tag__.data
+        return Type.__tag__.void <= self.which() <= Type.__tag__.data
 
     def is_pointer(self):
-        return self.which() in (schema.Type.__tag__.text,
-                                schema.Type.__tag__.data,
-                                schema.Type.__tag__.struct,
-                                schema.Type.__tag__.list,
-                                schema.Type.__tag__.anyPointer)
+        return self.which() in (Type.__tag__.text,
+                                Type.__tag__.data,
+                                Type.__tag__.struct,
+                                Type.__tag__.list,
+                                Type.__tag__.anyPointer)
 
-@schema.Node.__extend__
+@Node.__extend__
 class Node:
     def _get_key(self):
         return self.id
 
 
-@schema.Field.__extend__
+@Field.__extend__
 class Field:
 
     def _get_key(self):
@@ -45,44 +43,44 @@ class Field:
         return self.name, self.codeOrder
 
     def is_primitive(self):
-        return (self.which() == schema.Field.__tag__.slot and
+        return (self.which() == Field.__tag__.slot and
                 self.slot.type.is_primitive())
 
     def is_void(self):
-        return (self.which() == schema.Field.__tag__.slot and
+        return (self.which() == Field.__tag__.slot and
                 self.slot.type.is_void())
 
     def is_float32(self):
-        return (self.which() == schema.Field.__tag__.slot and
+        return (self.which() == Field.__tag__.slot and
                 self.slot.type.is_float32())
 
     def is_float64(self):
-        return (self.which() == schema.Field.__tag__.slot and
+        return (self.which() == Field.__tag__.slot and
                 self.slot.type.is_float64())
 
     def is_bool(self):
-        return (self.which() == schema.Field.__tag__.slot and
+        return (self.which() == Field.__tag__.slot and
                 self.slot.type.is_bool())
 
     def is_enum(self):
-        return (self.which() == schema.Field.__tag__.slot and
+        return (self.which() == Field.__tag__.slot and
                 self.slot.type.is_enum())
 
     def is_pointer(self):
-        return (self.which() == schema.Field.__tag__.slot and
+        return (self.which() == Field.__tag__.slot and
                 self.slot.type.is_pointer())
 
     def is_text(self):
-        return (self.which() == schema.Field.__tag__.slot and
+        return (self.which() == Field.__tag__.slot and
                 self.slot.type.is_text())
 
     def is_struct(self):
-        return (self.which() == schema.Field.__tag__.slot and
+        return (self.which() == Field.__tag__.slot and
                 self.slot.type.is_struct())
 
     def is_list(self):
-        return (self.which() == schema.Field.__tag__.slot and
-                self.slot.type.which() == schema.Type.__tag__.list)
+        return (self.which() == Field.__tag__.slot and
+                self.slot.type.which() == Type.__tag__.list)
 
     def is_nullable(self, m):
         for ann in self.annotations or []:
@@ -95,7 +93,7 @@ class Field:
     def is_part_of_union(self):
         return self.discriminantValue != Field.noDiscriminant
 
-@schema.Field_slot.__extend__
+@Field_slot.__extend__
 class Field_slot:
     def get_fmt(self):
         # XXX: this method is very hackish, we absolutely need to find a
@@ -125,14 +123,11 @@ class Field_slot:
 # As of now, the compiler is not capable of generating different subclasses
 # for each union tag. In the meantime, write it by hand
 
-class Node__Struct(schema.Node): pass
-class Node__Enum(schema.Node): pass
-class Node__Const(schema.Node): pass
-schema.Node__Struct = Node__Struct
-schema.Node__Enum = Node__Enum
-schema.Node__Const = Node__Const
+class Node__Struct(Node): pass
+class Node__Enum(Node): pass
+class Node__Const(Node): pass
 
-@schema.Node.__extend__
+@Node.__extend__
 class Node:
 
     @classmethod
@@ -148,12 +143,11 @@ class Node:
 
 
 
-class Field__Slot(schema.Field): pass
-class Field__Group(schema.Field): pass
-schema.Field__Slot = Field__Slot
-schema.Field__Group = Field__Group
+class Field__Slot(Field): pass
+class Field__Group(Field): pass
 
-@schema.Field.__extend__
+
+@Field.__extend__
 class Field:
 
     @classmethod
@@ -176,7 +170,7 @@ class Field:
 import struct
 from capnpy.builder import StructBuilder
 
-@schema.Type.__extend__
+@Type.__extend__
 class Type:
 
     @classmethod
@@ -205,7 +199,7 @@ class Type:
     new_data = classmethod(lambda cls: cls.__new_primitive(13))
 
 
-@schema.Field.__extend__
+@Field.__extend__
 class Field:
 
     @classmethod
@@ -245,7 +239,7 @@ class Field:
         group_typeId = 0
         ptr_name = builder.alloc_string(24, name)
         ptr_annotations = 0
-        ptr_slot_type = builder.alloc_struct(40, schema.Type, type)
+        ptr_slot_type = builder.alloc_struct(40, Type, type)
         ptr_slot_defaultValue = 0
         #
         buf = builder.build(codeOrder, discriminantValue, slot_offset,
