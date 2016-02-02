@@ -70,8 +70,6 @@ class TestImport(CompilerTest):
         mod = comp.load_schema(importname="/two/tmp.capnp")
 
     def test_extended(self, monkeypatch):
-        if self.pyx:
-            py.test.xfail('cannot use __extend__ on pyx')
         myschema = self.tmpdir.join('myschema.capnp')
         myschema_extended = self.tmpdir.join('myschema_extended.py')
 
@@ -87,9 +85,15 @@ class TestImport(CompilerTest):
         @Point.__extend__
         class Point:
             foo = 'foo'
+            def x2(self):
+                return self.x * 2
         """))
         #
         monkeypatch.setattr(capnpy, 'mycompiler', comp, raising=False)
         monkeypatch.syspath_prepend(self.tmpdir)
         mod = comp.load_schema('myschema')
         assert mod.Point.foo == 'foo'
+        #
+        p = mod.Point(5, 6)
+        assert p.x == 5
+        assert p.x2() == 10

@@ -1,10 +1,28 @@
 import py
+try:
+    from capnpy._util import setattr_builtin
+except ImportError:
+    setattr_builtin = None
+
+Py_TPFLAGS_HEAPTYPE = (1<<9)  # from object.h
+
+def magic_setattr(cls, attr, value):
+    if cls.__flags__ & Py_TPFLAGS_HEAPTYPE:
+        # normal case
+        setattr(cls, attr, value)
+    else:
+        if setattr_builtin:
+            setattr_builtin(cls, attr, value)
+        else:
+            raise TypeError("Cannot set attributes on C types. "
+                            "Run setup.py to compile capnpy._utils and enable the hack")
+
 
 def extend(cls):
     def decorator(new_class):
         for key, value in new_class.__dict__.iteritems():
             if key not in ('__dict__', '__doc__', '__module__', '__weakref__'):
-                setattr(cls, key, value)
+                magic_setattr(cls, key, value)
         return cls
     return decorator
 
