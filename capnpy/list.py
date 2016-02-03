@@ -3,7 +3,7 @@ import capnpy
 from capnpy.blob import Blob, Types
 from capnpy.ptr import Ptr, StructPtr, ListPtr
 from capnpy import listbuilder
-from capnpy.util import text_repr
+from capnpy.util import text_repr, float32_repr, float64_repr
 
 class List(Blob):
 
@@ -160,6 +160,9 @@ class List(Blob):
     __gt__ = __lt__
     __ge__ = __lt__
 
+    def shortrepr(self):
+        parts = [self._item_repr(item) for item in self]
+        return '[%s]' % (', '.join(parts))
 
 class PrimitiveList(List):
     ItemBuilder = listbuilder.PrimitiveItemBuilder
@@ -167,8 +170,13 @@ class PrimitiveList(List):
     def _read_list_item(self, offset):
         return self._read_data(offset, self._item_type.ifmt)
 
-    def shortrepr(self):
-        return str(list(self))
+    def _item_repr(self, item):
+        if self._item_type is Types.float32:
+            return float32_repr(item)
+        elif self._item_type is Types.float64:
+            return float64_repr(item)
+        else:
+            return repr(item)
 
 class StructList(List):
     ItemBuilder = listbuilder.StructItemBuilder
@@ -179,9 +187,8 @@ class StructList(List):
                                            self._tag.data_size,
                                            self._tag.ptrs_size)
 
-    def shortrepr(self):
-        parts = [item.shortrepr() for item in self]
-        return '[%s]' % (', '.join(parts))
+    def _item_repr(self, item):
+        return item.shortrepr()
 
 class StringList(List):
     ItemBuilder = listbuilder.StringItemBuilder
@@ -189,6 +196,5 @@ class StringList(List):
     def _read_list_item(self, offset):
         return self._read_str_text(offset)
 
-    def shortrepr(self):
-        parts = [text_repr(item) for item in self]
-        return '[%s]' % (', '.join(parts))
+    def _item_repr(self, item):
+        return text_repr(item)
