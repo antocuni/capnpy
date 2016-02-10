@@ -204,14 +204,18 @@ class TestShortRepr(CompilerTest):
         p = self.mod.P.new_z('hello')
         self.check(p, '(z = "hello")')
 
+    @py.test.mark.xfail
     def test_union_set_but_null_pointer(self):
         schema = """
         @0xbf5147cbbecf40c1;
-        struct Empty {}
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
         struct P {
             union {
-                a @0 :Empty;
-                b @1 :Empty;
+                a @0 :Point;
+                b @1 :Point;
                 c @2 :Text;
                 d @3 :List(Int64);
             }
