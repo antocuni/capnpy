@@ -111,6 +111,14 @@ class Field__Slot:
             {ensure_union}
             return self._read_struct({offset}, {structname})
         """)
+        ns.ww("""
+            def get_{name}(self):
+                res = self.{name}
+                if res is None:
+                    return {structname}.from_buffer('', 0, data_size=0, ptrs_size=0)
+                return res
+        """)
+        ns.w()
         self._emit_has_method(ns)
 
     def _emit_list(self, m, ns, name):

@@ -8,6 +8,8 @@ class TestNullPointers(CompilerTest):
         schema = """
         @0xbf5147cbbecf40c1;
         struct P {
+            a @0 :Int64;
+            b @1 :Int64;
         }
 
         struct Foo {
@@ -29,6 +31,17 @@ class TestNullPointers(CompilerTest):
         assert not f.has_x()
         assert not f.has_y()
         assert not f.has_z()
+
+    def test_get_methods(self, mod):
+        buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'   # null
+               '\x00\x00\x00\x00\x00\x00\x00\x00'   # null
+               '\x00\x00\x00\x00\x00\x00\x00\x00')  # null
+        f = mod.Foo.from_buffer(buf, 0, data_size=0, ptrs_size=3)
+        ## assert f.x is None
+        ## assert f.y is None
+        assert f.z is None
+        assert f.get_z().a == 0
+        assert f.get_z().b == 0
 
     def test_default_when_null(self, mod):
         buf = ''
