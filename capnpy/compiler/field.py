@@ -91,6 +91,11 @@ class Field__Slot:
             {ensure_union}
             return self._read_str_text({offset})
         """)
+        ns.ww("""
+            def get_{name}(self):
+                return self._read_str_text({offset}, default_="")
+        """)
+        ns.w()
         self._emit_has_method(ns)
 
     def _emit_data(self, m, ns, name):
@@ -99,6 +104,11 @@ class Field__Slot:
             {ensure_union}
             return self._read_str_data({offset})
         """)
+        ns.ww("""
+            def get_{name}(self):
+                return self._read_str_data({offset}, default_="")
+        """)
+        ns.w()
         self._emit_has_method(ns)
 
     def _emit_struct(self, m, ns, name):
