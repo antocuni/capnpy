@@ -148,6 +148,14 @@ class Field__Slot:
             {ensure_union}
             return self._read_list({offset}, {listcls}, {itemtype})
         """)
+        ns.ww("""
+            def get_{name}(self):
+                res = self.{name}
+                if res is None:
+                    return {listcls}.from_buffer('', 0, 0, 0, {itemtype})
+                return res
+        """)
+        ns.w()
         self._emit_has_method(ns)
 
     def _emit_anyPointer(self, m, ns, name):

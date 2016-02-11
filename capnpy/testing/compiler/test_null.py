@@ -39,7 +39,10 @@ class TestNullPointers(CompilerTest):
         f = mod.Foo.from_buffer(buf, 0, data_size=0, ptrs_size=3)
         assert f.x is None
         assert f.get_x() == ''
-        ## assert f.y is None
+        #
+        assert f.y is None
+        assert f.get_y() == []
+        #
         assert f.z is None
         assert f.get_z().a == 0
         assert f.get_z().b == 0
