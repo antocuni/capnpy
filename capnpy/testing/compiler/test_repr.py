@@ -204,7 +204,6 @@ class TestShortRepr(CompilerTest):
         p = self.mod.P.new_z('hello')
         self.check(p, '(z = "hello")')
 
-    @py.test.mark.xfail
     def test_union_set_but_null_pointer(self):
         schema = """
         @0xbf5147cbbecf40c1;
@@ -232,7 +231,7 @@ class TestShortRepr(CompilerTest):
                '\x00\x00\x00\x00\x00\x00\x00\x00') # null ptr
         p = self.mod.P.from_buffer(buf, 0, 1, 1)
         assert p.is_b()
-        self.check(p, '(b = ())')
+        self.check(p, '(b = (x = 0, y = 0))')
         #
         buf = ('\x02\x00\x00\x00\x00\x00\x00\x00'  # tag == c
                '\x00\x00\x00\x00\x00\x00\x00\x00') # null ptr

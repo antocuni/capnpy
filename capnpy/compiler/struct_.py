@@ -204,13 +204,16 @@ class Node__Struct:
                 ns.is_default_field = bool(f.discriminantValue == 0)
                 #
                 if f.is_part_of_union() and f.is_pointer():
-                    ns.defaultrepr = self._defaultrepr_for_type(f.slot.type)
+                    # normally, null fields are never shown. However, in case
+                    # of unions, the currently-tagged field is always shown
+                    # (and if it's null we simply show its default value).
+                    # HOWEVER, if the tagged field is the default one AND if
+                    # it's null, we don't show anything; see
+                    # test_union_set_but_null_pointer for examples.
                     ns.ww("""
-                    if self.is_{fname}():
-                        if self.has_{fname}():
-                            {append}
-                        elif not {is_default_field}:
-                            parts.append('{fname} = {defaultrepr}')
+                    if self.is_{fname}() and (self.has_{fname}() or
+                                              not {is_default_field}):
+                        {append}
                     """)
                 elif f.is_part_of_union():
                     ns.w("if self.is_{fname}(): {append}")
@@ -232,18 +235,10 @@ class Node__Struct:
         elif f.is_void():
             return '"void"'
         elif f.is_text():
-            return ns.format('_text_repr(self.{fname})')
-        elif f.is_struct() or f.is_list() or f.is_group():
+            return ns.format('_text_repr(self.get_{fname}())')
+        elif f.is_struct() or f.is_list():
+            return ns.format('self.get_{fname}().shortrepr()')
+        elif f.is_group():
             return ns.format('self.{fname}.shortrepr()')
         else:
             return '"???"'
-
-    def _defaultrepr_for_type(self, t):
-        if t.is_struct():
-            return '()'
-        elif t.is_text() or t.is_data():
-            return '""'
-        elif t.is_list():
-            return '[]'
-        else:
-            raise NotImplementedError("Unknown type")
