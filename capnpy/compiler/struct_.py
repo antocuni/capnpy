@@ -138,7 +138,7 @@ class Node__Struct:
             ctor.declare(m.code)
             #
             ns.w('@classmethod')
-            with ns.def_('new_' + tag_name, ['cls'] + m.robust_arglist(ctor.argnames)):
+            with ns.cpdef_('new_' + tag_name, ['cls'] + m.robust_arglist(ctor.argnames)):
                 call = m.code.call('cls.' + ctor_name, ctor.argnames)
                 ns.w('buf = {call}', call=call)
                 ns.w('return cls.from_buffer(buf, 0, {data_size}, {ptrs_size})')
@@ -195,7 +195,7 @@ class Node__Struct:
         #     parts.append("x = %s" % self.y)
         #     return "(%s)" % ", ".join(parts)
         #
-        with m.block('def shortrepr(self):') as ns:
+        with m.block('{cpdef} shortrepr(self):') as ns:
             fields = self.struct.fields or []
             ns.w('parts = []')
             for f in fields:

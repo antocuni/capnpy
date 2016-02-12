@@ -149,7 +149,7 @@ class Field__Slot:
             return self._read_list({offset}, {listcls}, {itemtype})
         """)
         ns.ww("""
-            def get_{name}(self):
+            {cpdef} get_{name}(self):
                 res = self.{name}
                 if res is None:
                     return {listcls}.from_buffer('', 0, 0, 0, {itemtype})
@@ -168,7 +168,7 @@ class Field__Slot:
 
     def _emit_has_method(self, ns):
         ns.ww("""
-            def has_{name}(self):
+            {cpdef} has_{name}(self):
                 offset, ptr = self._read_ptr({offset})
                 return ptr != 0
         """)

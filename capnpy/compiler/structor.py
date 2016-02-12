@@ -116,7 +116,7 @@ class Structor(object):
 
     def _decl_unsupported(self, code):
         code.w('@staticmethod')
-        with code.def_(self.name, ['*args', '**kwargs']):
+        with code.cpdef_(self.name, self.m.robust_arglist(self.argnames)):
             code.w('raise NotImplementedError({msg})', msg=repr(self._unsupported))
 
     def _decl_ctor(self, code):
@@ -138,7 +138,7 @@ class Structor(object):
         if len(argnames) != len(set(argnames)):
             raise ValueError("Duplicate field name(s): %s" % argnames)
         code.w('@staticmethod')
-        with code.def_(self.name, self.m.robust_arglist(argnames)):
+        with code.cpdef_(self.name, self.m.robust_arglist(argnames)):
             code.w('builder = _StructBuilder({fmt})', fmt=repr(self.fmt))
             if self.tag_value is not None:
                 code.w('__which__ = {tag_value}', tag_value=int(self.tag_value))
