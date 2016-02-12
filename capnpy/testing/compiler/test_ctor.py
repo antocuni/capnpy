@@ -86,7 +86,7 @@ class TestConstructors(CompilerTest):
         assert p.y == 2
         assert p._buf.s == buf
 
-    def test_string(self):
+    def test_text(self):
         schema = """
         @0xbf5147cbbecf40c1;
         struct Foo {

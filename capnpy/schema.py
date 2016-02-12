@@ -141,7 +141,7 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
     @staticmethod
     def __new(id, name):
         builder = _StructBuilder('Qq')
-        name = builder.alloc_string(8, name)
+        name = builder.alloc_text(8, name)
         buf = builder.build(id, name)
         return buf
     
@@ -195,7 +195,7 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
     @staticmethod
     def __new(id, filename, imports):
         builder = _StructBuilder('Qqq')
-        filename = builder.alloc_string(8, filename)
+        filename = builder.alloc_text(8, filename)
         imports = builder.alloc_list(16, _StructList, CodeGeneratorRequest.RequestedFile.Import, imports)
         buf = builder.build(id, filename, imports)
         return buf
@@ -340,7 +340,7 @@ class Method(_Struct):
     @staticmethod
     def __new(name, codeOrder, paramStructType, resultStructType, annotations, paramBrand, resultBrand, implicitParameters):
         builder = _StructBuilder('HxxxxxxQQqqqqq')
-        name = builder.alloc_string(24, name)
+        name = builder.alloc_text(24, name)
         annotations = builder.alloc_list(32, _StructList, Annotation, annotations)
         paramBrand = builder.alloc_struct(40, Brand, paramBrand)
         resultBrand = builder.alloc_struct(48, Brand, resultBrand)
@@ -403,7 +403,7 @@ class Enumerant(_Struct):
     @staticmethod
     def __new(name, codeOrder, annotations):
         builder = _StructBuilder('Hxxxxxxqq')
-        name = builder.alloc_string(8, name)
+        name = builder.alloc_text(8, name)
         annotations = builder.alloc_list(16, _StructList, Annotation, annotations)
         buf = builder.build(codeOrder, name, annotations)
         return buf
@@ -2144,7 +2144,7 @@ class Value(_Struct):
     def __new_text(text):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 12
-        text = builder.alloc_string(16, text)
+        text = builder.alloc_text(16, text)
         buf = builder.build(__which__, text)
         return buf
     @classmethod
@@ -3291,7 +3291,7 @@ class Node_NestedNode(_Struct):
     @staticmethod
     def __new(name, id):
         builder = _StructBuilder('Qq')
-        name = builder.alloc_string(8, name)
+        name = builder.alloc_text(8, name)
         buf = builder.build(id, name)
         return buf
     
@@ -3327,7 +3327,7 @@ class Node_Parameter(_Struct):
     @staticmethod
     def __new(name):
         builder = _StructBuilder('q')
-        name = builder.alloc_string(0, name)
+        name = builder.alloc_text(0, name)
         buf = builder.build(name)
         return buf
     

@@ -3,6 +3,7 @@ from capnpy.builder import StructBuilder
 from capnpy.blob import Types
 from capnpy.list import PrimitiveList, StructList, StringList
 from capnpy.struct_ import Struct
+from capnpy.printer import print_buffer
 
 def test_primitive():
     builder = StructBuilder('qqd')
@@ -44,10 +45,10 @@ def test_alloc_struct_with_offset():
                    + mybuf[8:])
 
 
-def test_alloc_string():
+def test_alloc_text():
     builder = StructBuilder('qq')
-    ptr1 = builder.alloc_string(0, 'hello capnp')
-    ptr2 = builder.alloc_string(8, 'hi world')
+    ptr1 = builder.alloc_text(0, 'hello capnp')
+    ptr2 = builder.alloc_text(8, 'hi world')
     buf = builder.build(ptr1, ptr2)
     expected_buf = ('\x05\x00\x00\x00\x62\x00\x00\x00'
                     '\x09\x00\x00\x00\x4a\x00\x00\x00'
@@ -55,6 +56,18 @@ def test_alloc_string():
                     'p' 'n' 'p' '\x00\x00\x00\x00\x00'
                     'h' 'i' ' ' 'w' 'o' 'r' 'l' 'd'
                     '\x00\x00\x00\x00\x00\x00\x00\x00')
+    assert buf == expected_buf
+
+def test_alloc_data():
+    builder = StructBuilder('qq')
+    ptr1 = builder.alloc_data(0, 'hello capnp')
+    ptr2 = builder.alloc_data(8, 'hi world')
+    buf = builder.build(ptr1, ptr2)
+    expected_buf = ('\x05\x00\x00\x00\x5a\x00\x00\x00'
+                    '\x09\x00\x00\x00\x42\x00\x00\x00'
+                    'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
+                    'p' 'n' 'p' '\x00\x00\x00\x00\x00'
+                    'h' 'i' ' ' 'w' 'o' 'r' 'l' 'd')
     assert buf == expected_buf
 
 
@@ -124,7 +137,7 @@ def test_null_pointers():
     NULL = '\x00\x00\x00\x00\x00\x00\x00\x00' # NULL pointer
     builder = StructBuilder('qqq')
     ptr1 = builder.alloc_struct(0, Struct, None)
-    ptr2 = builder.alloc_string(8, None)
+    ptr2 = builder.alloc_text(8, None)
     ptr3 = builder.alloc_list(16, PrimitiveList, Types.int64, None)
     buf = builder.build(ptr1, ptr2, ptr3)
     assert buf == NULL*3

@@ -237,7 +237,7 @@ class Field:
         ordinal_explicit = 0
         padding = 0
         group_typeId = 0
-        ptr_name = builder.alloc_string(24, name)
+        ptr_name = builder.alloc_text(24, name)
         ptr_annotations = 0
         ptr_slot_type = builder.alloc_struct(40, Type, type)
         ptr_slot_defaultValue = 0

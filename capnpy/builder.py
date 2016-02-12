@@ -41,14 +41,18 @@ class AbstractBuilder(object):
         ptr = StructPtr.new(ptr_offset, data_size, ptrs_size)
         return ptr
 
-    def alloc_string(self, offset, value):
+    def alloc_data(self, offset, value, suffix=None):
         if value is None:
             return 0 # NULL
-        value += '\0'
+        if suffix:
+            value += suffix
         ptr_offset = self._calc_relative_offset(offset)
         ptr = ListPtr.new(ptr_offset, ListPtr.SIZE_8, len(value))
         self._alloc(value)
         return ptr
+
+    def alloc_text(self, offset, value):
+        return self.alloc_data(offset, value, suffix='\0')
 
     def _new_ptrlist(self, size_tag, ptr_offset, item_type, item_count):
         if size_tag != ListPtr.SIZE_COMPOSITE:

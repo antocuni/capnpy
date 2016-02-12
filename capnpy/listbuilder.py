@@ -106,7 +106,7 @@ class StringItemBuilder(object):
     @classmethod
     def pack_item(cls, listbuilder, i, item):
         offset = i * listbuilder.item_length
-        ptr = listbuilder.alloc_string(offset, item)
+        ptr = listbuilder.alloc_text(offset, item)
         packed = struct.pack('q', ptr)
         return packed
 

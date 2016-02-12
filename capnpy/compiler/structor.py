@@ -124,7 +124,7 @@ class Structor(object):
         ## @staticmethod
         ## def ctor(x, y, z):
         ##     builder = _StructBuilder('qqq')
-        ##     z = builder.alloc_string(16, z)
+        ##     z = builder.alloc_text(16, z)
         ##     buf = builder.build(x, y)
         ##     return buf
         #
@@ -183,7 +183,7 @@ class Structor(object):
 
     def _field_text(self, code, f):
         fname = self.field_name[f]
-        code.w('{arg} = builder.alloc_string({offset}, {arg})',
+        code.w('{arg} = builder.alloc_text({offset}, {arg})',
                arg=fname, offset=self._slot_offset(f))
 
     def _field_struct(self, code, f):
