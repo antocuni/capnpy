@@ -92,7 +92,7 @@ class Field__Slot:
             return self._read_str_text({offset})
         """)
         ns.ww("""
-            def get_{name}(self):
+            {cpdef} get_{name}(self):
                 return self._read_str_text({offset}, default_="")
         """)
         ns.w()
@@ -105,7 +105,7 @@ class Field__Slot:
             return self._read_str_data({offset})
         """)
         ns.ww("""
-            def get_{name}(self):
+            {cpdef} get_{name}(self):
                 return self._read_str_data({offset}, default_="")
         """)
         ns.w()
@@ -122,7 +122,7 @@ class Field__Slot:
             return self._read_struct({offset}, {structname})
         """)
         ns.ww("""
-            def get_{name}(self):
+            {cpdef} get_{name}(self):
                 res = self.{name}
                 if res is None:
                     return {structname}.from_buffer('', 0, data_size=0, ptrs_size=0)
