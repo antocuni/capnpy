@@ -123,6 +123,27 @@ class TestShortRepr(CompilerTest):
         p = self.mod.P(txt=u'hellò'.encode('utf-8'))
         self.check(p, r'(txt = "hell\xc3\xb2")')
 
+    @py.test.mark.xfail
+    def test_data_special_chars(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct P {
+            data @0 :Data;
+        }
+        """
+        self.mod = self.compile(schema)
+        p = self.mod.P(data='double "quotes"')
+        self.check(p, r'(data = "double \"quotes\"")')
+        #
+        p = self.mod.P(data="single 'quotes'")
+        self.check(p, r'(data = "single \'quotes\'")')
+        #
+        p = self.mod.P(data="tricky \" '")
+        self.check(p, r'(data = "tricky \" \'")')
+        #
+        p = self.mod.P(data=u'hellò'.encode('utf-8'))
+        self.check(p, r'(data = "hell\xc3\xb2")')
+
     def test_struct(self):
         schema = """
         @0xbf5147cbbecf40c1;
