@@ -3,6 +3,7 @@ import sys
 import types
 from collections import defaultdict
 import subprocess
+import keyword
 from pypytools.codegen import Code
 from capnpy.convert_case import from_camel_case
 from capnpy import schema
@@ -74,7 +75,14 @@ class ModuleGenerator(object):
             return name
 
     def _field_name(self, field):
-        return self._convert_name(field.name)
+        name = self._convert_name(field.name)
+        name = self._mangle_name(name)
+        return name
+
+    def _mangle_name(self, name):
+        if name in keyword.kwlist:
+            return name + '_'
+        return name
 
     def declare_enum(self, var_name, enum_name, items):
         # this method cannot go on Node__Enum because it's also called by

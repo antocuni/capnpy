@@ -62,6 +62,22 @@ class TestCompilerOptions(CompilerTest):
         assert p.x == 1
         assert p.y == 2
 
+    def test_keyword_as_fieldname(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct P {
+            def @0 :Int64;
+            if @1 :Int64;
+        }
+        """
+        mod = self.compile(schema)
+        #
+        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        p = mod.P.from_buffer(buf, 0, 2, 0)
+        assert p.def_ == 1
+        assert p.if_ == 2
+
     def test_nested_struct(self):
         schema = """
         @0xbf5147cbbecf40c1;

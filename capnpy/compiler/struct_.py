@@ -198,7 +198,7 @@ class Node__Struct:
             fields = self.struct.fields or []
             ns.w('parts = []')
             for f in fields:
-                ns.fname = f.name
+                ns.fname = m._field_name(f)
                 ns.fieldrepr = self._shortrepr_for_field(ns, f)
                 ns.append = ns.format('parts.append("{fname} = %s" % {fieldrepr})')
                 ns.is_default_field = bool(f.discriminantValue == 0)
