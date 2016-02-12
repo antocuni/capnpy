@@ -102,6 +102,12 @@ class ModuleGenerator(object):
                 ns.ww(src)
         ns.w()
 
+    def robust_arglist(self, argnames):
+        # in pyx mode, we cannot use e.g. 'void' as argname: we need to use
+        # 'object void', else cython complains.
+        if self.pyx:
+            argnames = ['object %s' % arg for arg in argnames]
+        return argnames
 
 class Compiler(object):
 

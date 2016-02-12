@@ -78,6 +78,23 @@ class TestCompilerOptions(CompilerTest):
         assert p.def_ == 1
         assert p.if_ == 2
 
+    def test_c_type_as_fieldname(self):
+        # this used to fail in pyx mode
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct P {
+            void @0 :Int64;
+            int @1 :Int64;
+        }
+        """
+        mod = self.compile(schema)
+        #
+        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        p = mod.P.from_buffer(buf, 0, 2, 0)
+        assert p.void == 1
+        assert p.int == 2
+
     def test_nested_struct(self):
         schema = """
         @0xbf5147cbbecf40c1;

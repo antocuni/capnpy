@@ -95,7 +95,7 @@ class Node__Struct:
         ctor.declare(m.code)
         ns.w()
         #
-        with ns.def_('__init__', ['self'] + ctor.argnames):
+        with ns.def_('__init__', ['self'] + m.robust_arglist(ctor.argnames)):
             call = m.code.call('self.__new', ctor.argnames)
             ns.w('buf = {call}', call=call)
             ns.w('_Struct.__init__(self, buf, 0, {data_size}, {ptrs_size})')
