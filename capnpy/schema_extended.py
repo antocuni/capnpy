@@ -74,6 +74,10 @@ class Field:
         return (self.which() == Field.__tag__.slot and
                 self.slot.type.is_text())
 
+    def is_data(self):
+        return (self.which() == Field.__tag__.slot and
+                self.slot.type.is_data())
+
     def is_struct(self):
         return (self.which() == Field.__tag__.slot and
                 self.slot.type.is_struct())

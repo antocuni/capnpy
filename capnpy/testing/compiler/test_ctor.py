@@ -101,6 +101,21 @@ class TestConstructors(CompilerTest):
                               'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
                               'p' 'n' 'p' '\x00\x00\x00\x00\x00')
 
+    def test_data(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            x @0 :Int64;
+            y @1 :Data;
+        }
+        """
+        mod = self.compile(schema)
+        foo = mod.Foo(1, 'hello capnp')
+        assert foo._buf.s == ('\x01\x00\x00\x00\x00\x00\x00\x00'
+                              '\x01\x00\x00\x00\x5a\x00\x00\x00'
+                              'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
+                              'p' 'n' 'p' '\x00\x00\x00\x00\x00')
+
     def test_struct(self):
         schema = """
         @0xbf5147cbbecf40c1;

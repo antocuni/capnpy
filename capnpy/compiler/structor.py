@@ -145,6 +145,8 @@ class Structor(object):
             for f in self.fields:
                 if f.is_text():
                     self._field_text(code, f)
+                elif f.is_data():
+                    self._field_data(code, f)
                 elif f.is_struct():
                     self._field_struct(code, f)
                 elif f.is_list():
@@ -184,6 +186,11 @@ class Structor(object):
     def _field_text(self, code, f):
         fname = self.field_name[f]
         code.w('{arg} = builder.alloc_text({offset}, {arg})',
+               arg=fname, offset=self._slot_offset(f))
+
+    def _field_data(self, code, f):
+        fname = self.field_name[f]
+        code.w('{arg} = builder.alloc_data({offset}, {arg})',
                arg=fname, offset=self._slot_offset(f))
 
     def _field_struct(self, code, f):
