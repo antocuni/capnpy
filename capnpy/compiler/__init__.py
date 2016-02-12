@@ -106,7 +106,11 @@ class ModuleGenerator(object):
         # in pyx mode, we cannot use e.g. 'void' as argname: we need to use
         # 'object void', else cython complains.
         if self.pyx:
-            argnames = ['object %s' % arg for arg in argnames]
+            def addtype(name):
+                if name.startswith('*'):
+                    return name
+                return 'object %s' % name
+            argnames = [addtype(name) for name in argnames]
         return argnames
 
 class Compiler(object):
