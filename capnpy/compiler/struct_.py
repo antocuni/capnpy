@@ -234,7 +234,7 @@ class Node__Struct:
             return ns.format('str(self.{fname}).lower()')
         elif f.is_void():
             return '"void"'
-        elif f.is_text():
+        elif f.is_text() or f.is_data():
             return ns.format('_text_repr(self.get_{fname}())')
         elif f.is_struct() or f.is_list():
             return ns.format('self.get_{fname}().shortrepr()')

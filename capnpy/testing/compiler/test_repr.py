@@ -123,7 +123,6 @@ class TestShortRepr(CompilerTest):
         p = self.mod.P(txt=u'hellò'.encode('utf-8'))
         self.check(p, r'(txt = "hell\xc3\xb2")')
 
-    @py.test.mark.xfail
     def test_data_special_chars(self):
         schema = """
         @0xbf5147cbbecf40c1;
