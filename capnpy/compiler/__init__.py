@@ -125,7 +125,7 @@ class Compiler(object):
         self.pyx = pyx
         if self.pyx:
             assert PYX, 'Cython extensions are missing; please run setup.py install'
-            self.tmpdir = py.path.local.mkdtemp()
+            self.tmpdir = py.path.local.make_numbered_dir('capnpy-pyx-')
         else:
             self.tmpdir = None
 
