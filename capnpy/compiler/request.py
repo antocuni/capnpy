@@ -28,9 +28,11 @@ class RequestedFile:
         if m.pyx:
             # pyx mode
             m.code.global_scope.cimport = 'cimport'
+            m.code.global_scope.cpdef = 'cpdef'
             m.code.global_scope.__dict__['cdef class'] = 'cdef class'
         else:
             m.code.global_scope.cimport = 'import'
+            m.code.global_scope.cpdef = 'def'
             m.code.global_scope.__dict__['cdef class'] = 'class'
         #
         filenode = m.allnodes[self.id]
