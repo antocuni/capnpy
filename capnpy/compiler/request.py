@@ -87,7 +87,10 @@ class RequestedFile:
             child.emit_delete_nested_from_globals(m)
         #
         m.w()
-        m.w('_extend_module_maybe(__schema__, globals())')
+        if m.standalone:
+            m.w('_extend_module_maybe(__file__, globals())')
+        else:
+            m.w('_extend_module_maybe(__schema__, globals())')
 
     def _declare_imports(self, m):
         for imp in self.imports:

@@ -10,6 +10,8 @@ from capnpy.compiler.module import ModuleGenerator
 
 class BaseCompiler(object):
 
+    standalone = None
+
     def __init__(self, path, pyx):
         self.path = [py.path.local(dirname) for dirname in path]
         self.modules = {}
@@ -27,7 +29,7 @@ class BaseCompiler(object):
     def generate_py_source(self, filename, convert_case):
         data = self._capnp_compile(filename)
         request = loads(data, schema.CodeGeneratorRequest)
-        m = ModuleGenerator(request, convert_case, self.pyx)
+        m = ModuleGenerator(request, convert_case, self.pyx, self.standalone)
         src = m.generate()
         return m, py.code.Source(src)
 
@@ -51,6 +53,8 @@ class DynamicCompiler(BaseCompiler):
     """
     A compiler to compile and load schemas on the fly
     """
+
+    standalone = False
 
     def load_schema(self, modname=None, importname=None, filename=None, convert_case=True):
         """
@@ -156,3 +160,13 @@ class DynamicCompiler(BaseCompiler):
                 return f
         raise ValueError("Cannot find %s in the given path" % importname)
 
+
+class StandaloneCompiler(BaseCompiler):
+
+    standalone = True
+
+    def compile(self, filename, convert_case=True):
+        infile = py.path.local(filename)
+        outfile = infile.new(ext='.py') # or .pyx?
+        m, src = self.generate_py_source(infile, convert_case=convert_case)
+        outfile.write(src)
