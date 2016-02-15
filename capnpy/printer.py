@@ -54,9 +54,9 @@ class BufferPrinter(object):
         else:
             return Color.set(Color.lightgray, str(val))
 
-    def double(self, s):
+    def float64(self, s):
         d = struct.unpack('d', s)[0]
-        s = str(d)
+        s = str(d).rjust(9)
         if len(s) > 9:
             s = '{:<9.2E}'.format(d)
             return Color.set(Color.lightgray, s)
@@ -118,18 +118,18 @@ class BufferPrinter(object):
         hex = self.hex(line)
         string = self.string(line)
         int64 = self.int64(line)
-        double = self.double(line)
+        float64 = self.float64(line)
         ptr = self.ptr(offset, line)
         # addr is aligned to 16 because 11 chars are ANSI codes for setting colors
-        fmt = '{addr:>16}:  {hex}  {string:>8}  {ptr} {double}  {int64}'
+        fmt = '{addr:>16}:  {hex}  {string:>8}  {ptr} {float64}  {int64}'
         return fmt.format(**locals())
 
     def printbuf(self, start=0, end=None, human=True):
         if human:
-            fmt = '{addr:>5}  {hex:24}  {string:8}  {ptr:23} {double:>11}  {int64}'
+            fmt = '{addr:>5}  {hex:24}  {string:8}  {ptr:23} {float64:>11}  {int64}'
             header = fmt.format(addr='Offset', hex=' Hex view', string='ASCII',
-                                ptr='Pointer', double='double', int64='int64')
-            print(Color.set(Color.yellow, header), file=self.stream)
+                                ptr='Pointer', float64='float64', int64='int64')
+            print Color.set(Color.yellow, header)
 
         if end is None:
             end = len(self.buf)
