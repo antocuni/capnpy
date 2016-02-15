@@ -129,7 +129,7 @@ class BufferPrinter(object):
             fmt = '{addr:>5}  {hex:24}  {string:8}  {ptr:23} {float64:>11}  {int64}'
             header = fmt.format(addr='Offset', hex=' Hex view', string='ASCII',
                                 ptr='Pointer', float64='float64', int64='int64')
-            print Color.set(Color.yellow, header)
+            print(Color.set(Color.yellow, header))
 
         if end is None:
             end = len(self.buf)
