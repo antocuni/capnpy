@@ -1,4 +1,5 @@
 import py
+import imp
 try:
     from capnpy._util import setattr_builtin
 except ImportError:
@@ -32,16 +33,23 @@ def extend_module_maybe(globals, filename=None, modname=None):
         filename = py.path.local(filename)
         extname = filename.purebasename + '_extended'
         extmod = filename.new(purebasename=extname, ext='.py')
+        if extmod.check(file=False):
+            return
+        f = extmod.open()
     elif modname is not None:
-        return # XXX
+        extname = modname + '_extended'
+        try:
+            f, filename, description = imp.find_module(extname)
+        except ImportError:
+            return
     else:
         raise ValueError('You must pass either filename or modname')
-    if extmod.check(file=False):
-        return
-    src = extmod.read()
+    try:
+        src = f.read()
+    finally:
+        f.close()
     code = compile(src, extname, 'exec')
     exec code in globals
-
 
 def text_repr(s):
     # abuse the python string repr algo: make sure that the string contains at

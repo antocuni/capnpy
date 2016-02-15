@@ -1,5 +1,6 @@
 import py
 import sys
+import textwrap
 from capnpy.testing.compiler.support import CompilerTest
 from capnpy.compiler.compiler import StandaloneCompiler
 
@@ -29,6 +30,7 @@ class TestStandalone(CompilerTest):
             del sys.modules[modname]
 
     def write(self, filename, src):
+        src = textwrap.dedent(src)
         filename = self.tmpdir.join(filename)
         filename.write(src)
         return filename
@@ -43,3 +45,19 @@ class TestStandalone(CompilerTest):
         """)
         example = self.import_('example')
         p = example.Point(x=1, y=2)
+
+    def test_extended(self):
+        self.compile("example.capnp", """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0: Int64;
+            y @1: Int64;
+        }
+        """)
+        self.write("example_extended.py", """
+        @Point.__extend__
+        class Point:
+            foo = 'bar'
+        """)
+        example = self.import_('example')
+        assert example.Point.foo == 'bar'
