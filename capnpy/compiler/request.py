@@ -58,7 +58,7 @@ class RequestedFile:
         m.w("from capnpy.util import float64_repr as _float64_repr")
         m.w("from capnpy.util import extend_module_maybe as _extend_module_maybe")
         #
-        if m.pyx:
+        if m.pyx and not m.standalone:
             # load the compiler from the outside. See the comment in
             # _compile_pyx for a detailed explanation
             m.w('from %s import __compiler, __schema__' % m.tmpname)
@@ -88,9 +88,9 @@ class RequestedFile:
         #
         m.w()
         if m.standalone:
-            m.w('_extend_module_maybe(__file__, globals())')
+            m.w('_extend_module_maybe(globals(), modname=__name__)')
         else:
-            m.w('_extend_module_maybe(__schema__, globals())')
+            m.w('_extend_module_maybe(globals(), filename=__schema__)')
 
     def _declare_imports(self, m):
         for imp in self.imports:

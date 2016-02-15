@@ -3595,5 +3595,5 @@ del globals()['Brand_Scope']
 del globals()['Node_NestedNode']
 del globals()['Node_Parameter']
 
-_extend_module_maybe(__file__, globals())
+_extend_module_maybe(globals(), filename=__file__)
 

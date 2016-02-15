@@ -26,11 +26,16 @@ def extend(cls):
         return cls
     return decorator
 
-def extend_module_maybe(filename, globals):
-    # /path/to/foo.py --> /path/to/foo_extended.py
-    filename = py.path.local(filename)
-    extname = filename.purebasename + '_extended'
-    extmod = filename.new(purebasename=extname, ext='.py')
+def extend_module_maybe(globals, filename=None, modname=None):
+    if filename is not None:
+        # /path/to/foo.py --> /path/to/foo_extended.py
+        filename = py.path.local(filename)
+        extname = filename.purebasename + '_extended'
+        extmod = filename.new(purebasename=extname, ext='.py')
+    elif modname is not None:
+        return # XXX
+    else:
+        raise ValueError('You must pass either filename or modname')
     if extmod.check(file=False):
         return
     src = extmod.read()
