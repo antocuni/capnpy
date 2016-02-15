@@ -1,7 +1,6 @@
 import py
 import pytest
 import capnpy
-from capnpy.compiler import Compiler
 from capnpy.testing.compiler.support import CompilerTest
 
 

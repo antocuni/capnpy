@@ -2,7 +2,7 @@ import py
 import textwrap
 import capnpy
 from capnpy.testing.compiler.support import CompilerTest
-from capnpy.compiler import Compiler
+from capnpy.compiler.compiler import DynamicCompiler
 
 class TestImport(CompilerTest):
 
@@ -17,7 +17,7 @@ class TestImport(CompilerTest):
         mypkg = self.tmpdir.join("mypkg").ensure(dir=True)
         myschema = mypkg.join("myschema.capnp")
         myschema.write(schema)
-        comp = Compiler([self.tmpdir], pyx=self.pyx)
+        comp = DynamicCompiler([self.tmpdir], pyx=self.pyx)
         mod1 = comp.load_schema(modname="mypkg.myschema")
         mod2 = comp.load_schema(modname="mypkg.myschema")
         assert mod1 is mod2
@@ -29,7 +29,7 @@ class TestImport(CompilerTest):
         assert mod4 is mod1
 
     def test_import(self):
-        comp = Compiler([self.tmpdir], pyx=self.pyx)
+        comp = DynamicCompiler([self.tmpdir], pyx=self.pyx)
         self.tmpdir.join("p.capnp").write("""
         @0xbf5147cbbecf40c1;
         struct Point {
@@ -51,7 +51,7 @@ class TestImport(CompilerTest):
         one = self.tmpdir.join('one').ensure(dir=True)
         two = self.tmpdir.join('two').ensure(dir=True)
 
-        comp = Compiler([self.tmpdir], pyx=self.pyx)
+        comp = DynamicCompiler([self.tmpdir], pyx=self.pyx)
         one.join("p.capnp").write("""
         @0xbf5147cbbecf40c1;
         struct Point {
@@ -73,7 +73,7 @@ class TestImport(CompilerTest):
         myschema = self.tmpdir.join('myschema.capnp')
         myschema_extended = self.tmpdir.join('myschema_extended.py')
 
-        comp = Compiler([self.tmpdir], pyx=self.pyx)
+        comp = DynamicCompiler([self.tmpdir], pyx=self.pyx)
         myschema.write("""
         @0xbf5147cbbecf40c1;
         struct Point {

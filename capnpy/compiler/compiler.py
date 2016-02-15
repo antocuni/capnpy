@@ -8,7 +8,7 @@ from capnpy.blob import PYX
 from capnpy.compiler.module import ModuleGenerator
 
 
-class Compiler(object):
+class BaseCompiler(object):
 
     def __init__(self, path, pyx):
         self.path = [py.path.local(dirname) for dirname in path]
@@ -23,6 +23,34 @@ class Compiler(object):
             self.tmpdir = py.path.local.make_numbered_dir('capnpy-pyx-')
         else:
             self.tmpdir = None
+
+    def generate_py_source(self, filename, convert_case):
+        data = self._capnp_compile(filename)
+        request = loads(data, schema.CodeGeneratorRequest)
+        m = ModuleGenerator(request, convert_case, self.pyx)
+        src = m.generate()
+        return m, py.code.Source(src)
+
+    def _capnp_compile(self, filename):
+        # this is a hack: we use cat as a plugin of capnp compile to get the
+        # CodeGeneratorRequest bytes. There MUST be a more proper way to do that
+        cmd = ['capnp', 'compile', '-o', '/bin/cat']
+        for dirname in self.path:
+            cmd.append('-I%s' % dirname)
+        cmd.append(str(filename))
+        #print ' '.join(cmd)
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = proc.communicate()
+        ret = proc.wait()
+        if ret != 0:
+            raise ValueError(stderr)
+        return stdout
+
+
+class DynamicCompiler(BaseCompiler):
+    """
+    A compiler to compile and load schemas on the fly
+    """
 
     def load_schema(self, modname=None, importname=None, filename=None, convert_case=True):
         """
@@ -57,13 +85,6 @@ class Compiler(object):
             return self._compile_pyx(filename, m, src)
         else:
             return self._compile_py(filename, m, src)
-
-    def generate_py_source(self, filename, convert_case):
-        data = self._capnp_compile(filename)
-        request = loads(data, schema.CodeGeneratorRequest)
-        m = ModuleGenerator(request, convert_case, self.pyx)
-        src = m.generate()
-        return m, py.code.Source(src)
 
     def _compile_py(self, filename, m, src):
         """
@@ -135,20 +156,3 @@ class Compiler(object):
                 return f
         raise ValueError("Cannot find %s in the given path" % importname)
 
-    def _capnp_compile(self, filename):
-        # this is a hack: we use cat as a plugin of capnp compile to get the
-        # CodeGeneratorRequest bytes. There MUST be a more proper way to do that
-        cmd = ['capnp', 'compile', '-o', '/bin/cat']
-        for dirname in self.path:
-            cmd.append('-I%s' % dirname)
-        cmd.append(str(filename))
-        #print ' '.join(cmd)
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = proc.communicate()
-        ret = proc.wait()
-        if ret != 0:
-            raise ValueError(stderr)
-        return stdout
-
-_compiler = Compiler(sys.path, pyx='auto')
-load_schema = _compiler.load_schema

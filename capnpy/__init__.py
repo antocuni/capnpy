@@ -1,2 +1,6 @@
-from capnpy.compiler import load_schema
+import sys
+from capnpy.compiler.compiler import DynamicCompiler
 from capnpy.message import load, loads, dumps
+
+_compiler = DynamicCompiler(sys.path, pyx='auto')
+load_schema = _compiler.load_schema

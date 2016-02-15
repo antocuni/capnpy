@@ -2,7 +2,7 @@ import py
 import pytest
 import capnpy
 from capnpy.blob import PYX
-from capnpy.compiler import Compiler
+from capnpy.compiler.compiler import DynamicCompiler
 
 
 @pytest.mark.usefixtures('initargs')
@@ -31,7 +31,7 @@ class CompilerTest:
     def compile(self, s, **kwds):
         # root is needed to be able to import capnpy/py.capnp
         root = py.path.local(capnpy.__file__).dirpath('..')
-        comp = Compiler([root, self.tmpdir], pyx=self.pyx)
+        comp = DynamicCompiler([root, self.tmpdir], pyx=self.pyx)
         tmp_capnp = self.tmpdir.join('tmp.capnp')
         tmp_capnp.write(s)
         return comp.load_schema(importname='/tmp.capnp', **kwds)
