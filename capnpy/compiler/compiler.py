@@ -33,6 +33,14 @@ class BaseCompiler(object):
         src = m.generate()
         return m, py.code.Source(src)
 
+    def _pyx_to_dll(self, filename, m, src):
+        from pyximport.pyxbuild import pyx_to_dll
+        pyxname = filename.new(ext='pyx')
+        pyxfile = self.tmpdir.join(pyxname).ensure(file=True)
+        pyxfile.write(src)
+        dll = pyx_to_dll(str(pyxfile), pyxbuild_dir=str(self.tmpdir))
+        return dll
+
     def _capnp_compile(self, filename):
         # this is a hack: we use cat as a plugin of capnp compile to get the
         # CodeGeneratorRequest bytes. There MUST be a more proper way to do that
@@ -108,11 +116,6 @@ class DynamicCompiler(BaseCompiler):
         """
         import capnpy.ext # the package which we will load the .so in
         import imp
-        from pyximport.pyxbuild import pyx_to_dll
-        pyxname = filename.new(ext='pyx')
-        pyxfile = self.tmpdir.join(pyxname).ensure(file=True)
-        pyxfile.write(src)
-        dll = pyx_to_dll(str(pyxfile), pyxbuild_dir=str(self.tmpdir))
         #
         # the generated file needs a reference to __compiler to be able to
         # import other schemas. In pure-python mode, we simply inject
@@ -126,6 +129,7 @@ class DynamicCompiler(BaseCompiler):
         # contains __compiler. Then, in foo.pyx, we import it:
         #     from foo_tmp import __compiler
         #
+        dll = self._pyx_to_dll(filename, m, src)
         tmpmod = types.ModuleType(m.tmpname)
         tmpmod.__dict__['__compiler'] = self
         tmpmod.__dict__['__schema__'] = str(filename)
@@ -167,6 +171,18 @@ class StandaloneCompiler(BaseCompiler):
 
     def compile(self, filename, convert_case=True):
         infile = py.path.local(filename)
-        outfile = infile.new(ext='.py') # or .pyx?
         m, src = self.generate_py_source(infile, convert_case=convert_case)
+        if self.pyx:
+            self._compile_pyx(infile, m, src)
+        else:
+            self._compile_py(infile, m, src)
+
+    def _compile_py(self, infile, m, src):
+        outfile = infile.new(ext='.py')
         outfile.write(src)
+
+    def _compile_pyx(self, infile, m, src):
+        dll = self._pyx_to_dll(infile, m, src)
+        dll = py.path.local(dll)
+        outdir = infile.dirpath()
+        dll.copy(outdir)
