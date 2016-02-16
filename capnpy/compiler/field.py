@@ -199,3 +199,16 @@ class Field__Group:
             {ensure_union}
             return self._read_group({groupcls})
         """)
+        #
+        # emit also a "constructor-like" function, to be used as a parameter
+        # of __init__
+        if not self.is_nullable(m):
+            argnames = [m._field_name(f) for f in groupnode.struct.fields]
+            ns.arglist = m.code.args(argnames)
+            ns.capitalname = ns.name.capitalize()
+            ns.ww("""
+                @staticmethod
+                def {capitalname}({arglist}):
+                    return {arglist}
+            """)
+            ns.w()

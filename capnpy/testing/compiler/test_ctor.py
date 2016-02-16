@@ -186,7 +186,6 @@ class TestConstructors(CompilerTest):
         assert p.position.y == 2
         assert p.color == 'red'
 
-    @py.test.mark.xfail
     def test_group_named_params(self):
         schema = """
         @0xbf5147cbbecf40c1;
@@ -199,7 +198,7 @@ class TestConstructors(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        p = mod.Point(position=Point.Position(x=1, y=2), color='red')
+        p = mod.Point(position=mod.Point.Position(x=1, y=2), color='red')
         assert p.position.x == 1
         assert p.position.y == 2
         assert p.color == 'red'
