@@ -42,7 +42,8 @@ class Structor(object):
                 self.argnames.append(fname)
                 f_value.nullable_group = fname
             elif f.is_group():
-                raise Unsupported("Group fields not supported yet")
+                fname = self._append_group(f)
+                self.argnames.append(fname)
             elif f.is_void():
                 continue # ignore void fields
             else:
@@ -80,6 +81,14 @@ class Structor(object):
         self.fields.append(f)
         self.field_name[f] = name
         return name
+
+    def _append_group(self, f):
+        groupname = self.m._field_name(f)
+        group = self.m.allnodes[f.group.typeId]
+        for i, f in enumerate(group.struct.fields):
+            self.fields.append(f)
+            self.field_name[f] = '%s[%d]' % (groupname, i)
+        return groupname
 
     def _slot_offset(self, f):
         offset = f.slot.offset * f.slot.get_size()
