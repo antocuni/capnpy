@@ -194,14 +194,17 @@ class TestConstructors(CompilerTest):
                 x @0 :Int64;
                 y @1 :Int64;
             }
-            color @2 :Text;
+            color :group {
+                alpha @2 :Float64;
+            }
         }
         """
         mod = self.compile(schema)
-        p = mod.Point(position=mod.Point.Position(x=1, y=2), color='red')
+        p = mod.Point(position=mod.Point.Position(x=1, y=2),
+                      color=mod.Point.Color(alpha=1.0))
         assert p.position.x == 1
         assert p.position.y == 2
-        assert p.color == 'red'
+        assert p.color.alpha == 1.0
 
 
 class TestUnionConstructors(CompilerTest):

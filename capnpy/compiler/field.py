@@ -209,6 +209,6 @@ class Field__Group:
             ns.ww("""
                 @staticmethod
                 def {capitalname}({arglist}):
-                    return {arglist}
+                    return {arglist},
             """)
             ns.w()
