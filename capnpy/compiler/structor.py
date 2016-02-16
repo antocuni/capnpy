@@ -25,6 +25,7 @@ class Structor(object):
         self.fields = []      # the fields as passed to StructBuilder
         self.field_name = {}  # for plain fields is simply f.name, but in case
                               # of groups it's groupname_fieldname
+        self.groups = []
         try:
             self.init_fields(fields)
             self.fmt = self._compute_format()
@@ -85,9 +86,10 @@ class Structor(object):
     def _append_group(self, f):
         groupname = self.m._field_name(f)
         group = self.m.allnodes[f.group.typeId]
+        self.groups.append((groupname, group))
         for i, f in enumerate(group.struct.fields):
             self.fields.append(f)
-            self.field_name[f] = '%s[%d]' % (groupname, i)
+            self.field_name[f] = '%s_%d' % (groupname, i)
         return groupname
 
     def _slot_offset(self, f):
@@ -151,6 +153,12 @@ class Structor(object):
             code.w('builder = _StructBuilder({fmt})', fmt=repr(self.fmt))
             if self.tag_value is not None:
                 code.w('__which__ = {tag_value}', tag_value=int(self.tag_value))
+            #
+            for groupname, group in self.groups:
+                argnames = [self.field_name[f] for f in group.struct.fields]
+                code.w('{args} = {groupname}',
+                       args=code.args(argnames), groupname=groupname)
+            #
             for f in self.fields:
                 if f.is_text():
                     self._field_text(code, f)
