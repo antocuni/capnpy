@@ -15,4 +15,7 @@ struct CapnpStruct {
     float32 @10 :Float32;
     float64 @11 :Float64;
     text @12 :Text;
+    group :group {
+        field @13 :Int64;
+    }
 }

@@ -18,11 +18,12 @@ schema = capnpy.load_schema('capnpy.benchmarks.benchmarks')
 
 NamedTuple = namedtuple('NamedTuple', ['padding', 'bool', 'int8', 'int16', 'int32', 'int64',
                                        'uint8', 'uint16', 'uint32', 'uint64', 'float32',
-                                       'float64', 'text'])
+                                       'float64', 'text', 'group'])
+NamedTuple_Group = namedtuple('NamedTuple_Group', ['field'])
 
 class Instance(object):
     def __init__(self, padding, bool, int8, int16, int32, int64, uint8,
-                 uint16, uint32, uint64, float32, float64, text):
+                 uint16, uint32, uint64, float32, float64, text, group):
         self.padding = padding
         self.bool = bool
         self.int8 = int8
@@ -36,10 +37,16 @@ class Instance(object):
         self.float32 = float32
         self.float64 = float64
         self.text = text
+        self.group = Instance_Group(group[0])
+
+class Instance_Group(object):
+    def __init__(self, field):
+        self.field = field
+
 
 
 def pycapnp_struct(padding, bool, int8, int16, int32, int64, uint8, uint16, uint32,
-                   uint64, float32, float64, text):
+                   uint64, float32, float64, text, group):
     if pycapnp is None:
         pytest.skip('cannot import pycapnp')
     s = pycapnp_schema.CapnpStruct.new_message()
@@ -56,6 +63,7 @@ def pycapnp_struct(padding, bool, int8, int16, int32, int64, uint8, uint16, uint
     s.float32 = float32
     s.float64 = float64
     s.text = text
+    s.group.field = group[0]
     return pycapnp_schema.CapnpStruct.from_bytes(s.to_bytes())
 
 @pytest.fixture(params=('instance', 'namedtuple', 'capnpy_', 'pycapnp'))
@@ -74,7 +82,7 @@ def Storage(request):
 
 # XXX: we should include bool as soon as it's supported by structor
 @pytest.fixture(params=('int64', 'int8', 'int16', 'int32', 'uint8', 'uint16',
-                        'uint32', 'uint64', 'float32', 'float64'))
+                        'uint32', 'uint64', 'float32', 'float64', 'group.field'))
 def numeric_type(request):
     return request.param
 
@@ -98,8 +106,12 @@ class TestGetAttr(object):
         """)
         code.compile()
         sum_attr = code['sum_attr']
+        if Storage is NamedTuple:
+            group = NamedTuple_Group(100)
+        else:
+            group = (100,)
         obj = Storage(padding=0, bool=100, int8=100, int16=100, int32=100, int64=100,
                       uint8=100, uint16=100, uint32=100, uint64=100, float32=100,
-                      float64=100, text='some text')
+                      float64=100, text='some text', group=group)
         res = benchmark(sum_attr, obj)
         assert res == 100*self.N

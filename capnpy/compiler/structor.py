@@ -156,7 +156,7 @@ class Structor(object):
             #
             for groupname, group in self.groups:
                 argnames = [self.field_name[f] for f in group.struct.fields]
-                code.w('{args} = {groupname}',
+                code.w('{args}, = {groupname}',
                        args=code.args(argnames), groupname=groupname)
             #
             for f in self.fields:
