@@ -180,8 +180,6 @@ Enum
 capnproto enums are represented as subclasses of ``int``, so that we can
 easily use both the numeric and the symbolic values::
 
-    @0xe62e66ea90a396da;
-
     enum Color {
         red @0;
         green @1;
@@ -295,6 +293,49 @@ field::
     <Type.__tag__.int64: 2>
     >>> t.is_int64()
     True
+
+
+Groups
+------
+
+Group fields are accessed using the usual dot notation::
+
+    struct Point {
+        position :group {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        color @2 :Text;
+    }
+
+::
+
+    >>> p = capnpy.load(f, Point)
+    >>> p.position.x
+    1
+    >>> p.position.y
+    2
+
+When creating new objects, group fields are initialized using a tuple::
+
+    >>> p2 = Point(position=(3, 4), 'red')
+    >>> p2.position.x
+    3
+    >>> p2.position.y
+    4
+
+It is also possible to construct the tuple using keyword arguments, by using
+an helper::
+
+    >>> p3 = Point(position=Point.Position(x=5, y=6), color='red')
+    >>> p3.position.x
+    5
+    >>> p3.position.y
+    6
+
+Note the difference between the lowercase ``Point.position`` which is used to
+access the field, and the capitalized ``Point.Position`` which is used to
+construct new objects.
 
 
 More on equality
