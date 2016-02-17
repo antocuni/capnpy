@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2016-01-21 00:56
+# generated on 2016-02-17 17:01
 # input files: 
 #   - capnpy/schema.capnp
 
@@ -12,8 +12,11 @@ from capnpy.builder import StructBuilder as _StructBuilder
 from capnpy.list import PrimitiveList as _PrimitiveList
 from capnpy.list import StructList as _StructList
 from capnpy.list import StringList as _StringList
+from capnpy.util import text_repr as _text_repr
+from capnpy.util import float32_repr as _float32_repr
+from capnpy.util import float64_repr as _float64_repr
 from capnpy.util import extend_module_maybe as _extend_module_maybe
-#_cPLUSPLUS_capnp = __compiler.load_schema("/capnp/c++.capnp")
+#_cPLUSPLUS_capnp = __compiler.load_schema(importname="/capnp/c++.capnp")
 
 #### FORWARD DECLARATIONS ####
 
@@ -32,7 +35,7 @@ Method.__name__ = 'Method'
 class Enumerant(_Struct): pass
 Enumerant.__name__ = 'Enumerant'
 
-ElementSize = _enum('ElementSize', ('empty', 'bit', 'byte', 'twoBytes', 'fourBytes', 'eightBytes', 'pointer', 'inlineComposite'))
+ElementSize = _enum('ElementSize', ['empty', 'bit', 'byte', 'twoBytes', 'fourBytes', 'eightBytes', 'pointer', 'inlineComposite'])
 
 class Type_anyPointer_parameter(_Struct): pass
 Type_anyPointer_parameter.__name__ = 'Type.anyPointer.parameter'
@@ -134,6 +137,9 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
         # no union check
         return self._read_str_text(0)
     
+    def get_name(self):
+        return self._read_str_text(0, default_="")
+    
     def has_name(self):
         offset, ptr = self._read_ptr(0)
         return ptr != 0
@@ -150,13 +156,10 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
         _Struct.__init__(self, buf, 0, 1, 1)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "id = ", str(self.id), ", ",
-            "name = ", str(self.name), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        parts.append("id = %s" % self.id)
+        if self.has_name(): parts.append("name = %s" % _text_repr(self.get_name()))
+        return "(%s)" % ", ".join(parts)
 
 
 @CodeGeneratorRequest_RequestedFile.__extend__
@@ -179,6 +182,9 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
         # no union check
         return self._read_str_text(0)
     
+    def get_filename(self):
+        return self._read_str_text(0, default_="")
+    
     def has_filename(self):
         offset, ptr = self._read_ptr(0)
         return ptr != 0
@@ -187,6 +193,12 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
     def imports(self):
         # no union check
         return self._read_list(8, _StructList, CodeGeneratorRequest.RequestedFile.Import)
+    
+    def get_imports(self):
+        res = self.imports
+        if res is None:
+            return _StructList.from_buffer('', 0, 0, 0, CodeGeneratorRequest.RequestedFile.Import)
+        return res
     
     def has_imports(self):
         offset, ptr = self._read_ptr(8)
@@ -205,14 +217,11 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
         _Struct.__init__(self, buf, 0, 1, 2)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "id = ", str(self.id), ", ",
-            "filename = ", str(self.filename), ", ",
-            "imports = ", str(self.imports), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        parts.append("id = %s" % self.id)
+        if self.has_filename(): parts.append("filename = %s" % _text_repr(self.get_filename()))
+        if self.has_imports(): parts.append("imports = %s" % self.get_imports().shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @CodeGeneratorRequest.__extend__
@@ -227,6 +236,12 @@ class CodeGeneratorRequest(_Struct):
         # no union check
         return self._read_list(0, _StructList, Node)
     
+    def get_nodes(self):
+        res = self.nodes
+        if res is None:
+            return _StructList.from_buffer('', 0, 0, 0, Node)
+        return res
+    
     def has_nodes(self):
         offset, ptr = self._read_ptr(0)
         return ptr != 0
@@ -235,6 +250,12 @@ class CodeGeneratorRequest(_Struct):
     def requestedFiles(self):
         # no union check
         return self._read_list(8, _StructList, CodeGeneratorRequest.RequestedFile)
+    
+    def get_requestedFiles(self):
+        res = self.requestedFiles
+        if res is None:
+            return _StructList.from_buffer('', 0, 0, 0, CodeGeneratorRequest.RequestedFile)
+        return res
     
     def has_requestedFiles(self):
         offset, ptr = self._read_ptr(8)
@@ -253,13 +274,10 @@ class CodeGeneratorRequest(_Struct):
         _Struct.__init__(self, buf, 0, 0, 2)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "nodes = ", str(self.nodes), ", ",
-            "requestedFiles = ", str(self.requestedFiles), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        if self.has_nodes(): parts.append("nodes = %s" % self.get_nodes().shortrepr())
+        if self.has_requestedFiles(): parts.append("requestedFiles = %s" % self.get_requestedFiles().shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @Method.__extend__
@@ -272,6 +290,9 @@ class Method(_Struct):
     def name(self):
         # no union check
         return self._read_str_text(0)
+    
+    def get_name(self):
+        return self._read_str_text(0, default_="")
     
     def has_name(self):
         offset, ptr = self._read_ptr(0)
@@ -306,6 +327,12 @@ class Method(_Struct):
         # no union check
         return self._read_list(8, _StructList, Annotation)
     
+    def get_annotations(self):
+        res = self.annotations
+        if res is None:
+            return _StructList.from_buffer('', 0, 0, 0, Annotation)
+        return res
+    
     def has_annotations(self):
         offset, ptr = self._read_ptr(8)
         return ptr != 0
@@ -314,6 +341,12 @@ class Method(_Struct):
     def paramBrand(self):
         # no union check
         return self._read_struct(16, Brand)
+    
+    def get_paramBrand(self):
+        res = self.paramBrand
+        if res is None:
+            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
+        return res
     
     def has_paramBrand(self):
         offset, ptr = self._read_ptr(16)
@@ -324,6 +357,12 @@ class Method(_Struct):
         # no union check
         return self._read_struct(24, Brand)
     
+    def get_resultBrand(self):
+        res = self.resultBrand
+        if res is None:
+            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
+        return res
+    
     def has_resultBrand(self):
         offset, ptr = self._read_ptr(24)
         return ptr != 0
@@ -332,6 +371,12 @@ class Method(_Struct):
     def implicitParameters(self):
         # no union check
         return self._read_list(32, _StructList, Node.Parameter)
+    
+    def get_implicitParameters(self):
+        res = self.implicitParameters
+        if res is None:
+            return _StructList.from_buffer('', 0, 0, 0, Node.Parameter)
+        return res
     
     def has_implicitParameters(self):
         offset, ptr = self._read_ptr(32)
@@ -353,19 +398,16 @@ class Method(_Struct):
         _Struct.__init__(self, buf, 0, 3, 5)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "name = ", str(self.name), ", ",
-            "codeOrder = ", str(self.codeOrder), ", ",
-            "paramStructType = ", str(self.paramStructType), ", ",
-            "resultStructType = ", str(self.resultStructType), ", ",
-            "annotations = ", str(self.annotations), ", ",
-            "paramBrand = ", str(self.paramBrand), ", ",
-            "resultBrand = ", str(self.resultBrand), ", ",
-            "implicitParameters = ", str(self.implicitParameters), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        if self.has_name(): parts.append("name = %s" % _text_repr(self.get_name()))
+        parts.append("codeOrder = %s" % self.codeOrder)
+        parts.append("paramStructType = %s" % self.paramStructType)
+        parts.append("resultStructType = %s" % self.resultStructType)
+        if self.has_annotations(): parts.append("annotations = %s" % self.get_annotations().shortrepr())
+        if self.has_paramBrand(): parts.append("paramBrand = %s" % self.get_paramBrand().shortrepr())
+        if self.has_resultBrand(): parts.append("resultBrand = %s" % self.get_resultBrand().shortrepr())
+        if self.has_implicitParameters(): parts.append("implicitParameters = %s" % self.get_implicitParameters().shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @Enumerant.__extend__
@@ -378,6 +420,9 @@ class Enumerant(_Struct):
     def name(self):
         # no union check
         return self._read_str_text(0)
+    
+    def get_name(self):
+        return self._read_str_text(0, default_="")
     
     def has_name(self):
         offset, ptr = self._read_ptr(0)
@@ -396,6 +441,12 @@ class Enumerant(_Struct):
         # no union check
         return self._read_list(8, _StructList, Annotation)
     
+    def get_annotations(self):
+        res = self.annotations
+        if res is None:
+            return _StructList.from_buffer('', 0, 0, 0, Annotation)
+        return res
+    
     def has_annotations(self):
         offset, ptr = self._read_ptr(8)
         return ptr != 0
@@ -413,14 +464,11 @@ class Enumerant(_Struct):
         _Struct.__init__(self, buf, 0, 1, 2)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "name = ", str(self.name), ", ",
-            "codeOrder = ", str(self.codeOrder), ", ",
-            "annotations = ", str(self.annotations), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        if self.has_name(): parts.append("name = %s" % _text_repr(self.get_name()))
+        parts.append("codeOrder = %s" % self.codeOrder)
+        if self.has_annotations(): parts.append("annotations = %s" % self.get_annotations().shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @Type_anyPointer_parameter.__extend__
@@ -456,13 +504,10 @@ class Type_anyPointer_parameter(_Struct):
         _Struct.__init__(self, buf, 0, 3, 1)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "scopeId = ", str(self.scopeId), ", ",
-            "parameterIndex = ", str(self.parameterIndex), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        parts.append("scopeId = %s" % self.scopeId)
+        parts.append("parameterIndex = %s" % self.parameterIndex)
+        return "(%s)" % ", ".join(parts)
 
 
 @Type_anyPointer_implicitMethodParameter.__extend__
@@ -490,12 +535,9 @@ class Type_anyPointer_implicitMethodParameter(_Struct):
         _Struct.__init__(self, buf, 0, 3, 1)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "parameterIndex = ", str(self.parameterIndex), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        parts.append("parameterIndex = %s" % self.parameterIndex)
+        return "(%s)" % ", ".join(parts)
 
 
 @Type_anyPointer.__extend__
@@ -505,7 +547,7 @@ class Type_anyPointer(_Struct):
     
     
     __tag_offset__ = 8
-    __tag__ = _enum('anyPointer.__tag__', ('unconstrained', 'parameter', 'implicitMethodParameter'))
+    __tag__ = _enum('anyPointer.__tag__', ['unconstrained', 'parameter', 'implicitMethodParameter'])
     
     def is_unconstrained(self): return self.which() == 0
     def is_parameter(self): return self.which() == 1
@@ -519,12 +561,26 @@ class Type_anyPointer(_Struct):
     @property
     def parameter(self):
         self._ensure_union(1)
-        return self._read_group(Type_anyPointer_parameter)
+        obj = Type_anyPointer_parameter.__new__(Type_anyPointer_parameter)
+        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
+    
+    @staticmethod
+    def Parameter(scopeId, parameterIndex):
+        return scopeId, parameterIndex,
     
     @property
     def implicitMethodParameter(self):
         self._ensure_union(2)
-        return self._read_group(Type_anyPointer_implicitMethodParameter)
+        obj = Type_anyPointer_implicitMethodParameter.__new__(Type_anyPointer_implicitMethodParameter)
+        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
+    
+    @staticmethod
+    def Implicitmethodparameter(parameterIndex):
+        return parameterIndex,
     
     @staticmethod
     def __new_unconstrained():
@@ -538,19 +594,27 @@ class Type_anyPointer(_Struct):
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_parameter(*args, **kwargs):
-        raise NotImplementedError('Group fields not supported yet')
+    def __new_parameter(parameter):
+        builder = _StructBuilder('xxxxxxxxhHxxxxQxxxxxxxx')
+        __which__ = 1
+        parameter_0, parameter_1, = parameter
+        buf = builder.build(__which__, parameter_1, parameter_0)
+        return buf
     @classmethod
-    def new_parameter(cls, *args):
-        buf = cls.__new_parameter(*args)
+    def new_parameter(cls, parameter):
+        buf = cls.__new_parameter(parameter)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_implicitMethodParameter(*args, **kwargs):
-        raise NotImplementedError('Group fields not supported yet')
+    def __new_implicitMethodParameter(implicitMethodParameter):
+        builder = _StructBuilder('xxxxxxxxhHxxxxxxxxxxxxxxxxxxxx')
+        __which__ = 2
+        implicitMethodParameter_0, = implicitMethodParameter
+        buf = builder.build(__which__, implicitMethodParameter_0)
+        return buf
     @classmethod
-    def new_implicitMethodParameter(cls, *args):
-        buf = cls.__new_implicitMethodParameter(*args)
+    def new_implicitMethodParameter(cls, implicitMethodParameter):
+        buf = cls.__new_implicitMethodParameter(implicitMethodParameter)
         return cls.from_buffer(buf, 0, 3, 1)
     
     def __init__(self, unconstrained=_undefined, parameter=_undefined, implicitMethodParameter=_undefined):
@@ -575,14 +639,11 @@ class Type_anyPointer(_Struct):
         raise TypeError("one of the following args is required: unconstrained, parameter, implicitMethodParameter")
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "unconstrained = ", str(self.unconstrained), ", ",
-            "parameter = ", str(self.parameter), ", ",
-            "implicitMethodParameter = ", str(self.implicitMethodParameter), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        if self.is_unconstrained(): parts.append("unconstrained = %s" % "void")
+        if self.is_parameter(): parts.append("parameter = %s" % self.parameter.shortrepr())
+        if self.is_implicitMethodParameter(): parts.append("implicitMethodParameter = %s" % self.implicitMethodParameter.shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @Type_struct.__extend__
@@ -604,6 +665,12 @@ class Type_struct(_Struct):
         # no union check
         return self._read_struct(0, Brand)
     
+    def get_brand(self):
+        res = self.brand
+        if res is None:
+            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
+        return res
+    
     def has_brand(self):
         offset, ptr = self._read_ptr(0)
         return ptr != 0
@@ -620,13 +687,10 @@ class Type_struct(_Struct):
         _Struct.__init__(self, buf, 0, 3, 1)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "typeId = ", str(self.typeId), ", ",
-            "brand = ", str(self.brand), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        parts.append("typeId = %s" % self.typeId)
+        if self.has_brand(): parts.append("brand = %s" % self.get_brand().shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @Type_enum.__extend__
@@ -648,6 +712,12 @@ class Type_enum(_Struct):
         # no union check
         return self._read_struct(0, Brand)
     
+    def get_brand(self):
+        res = self.brand
+        if res is None:
+            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
+        return res
+    
     def has_brand(self):
         offset, ptr = self._read_ptr(0)
         return ptr != 0
@@ -664,13 +734,10 @@ class Type_enum(_Struct):
         _Struct.__init__(self, buf, 0, 3, 1)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "typeId = ", str(self.typeId), ", ",
-            "brand = ", str(self.brand), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        parts.append("typeId = %s" % self.typeId)
+        if self.has_brand(): parts.append("brand = %s" % self.get_brand().shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @Type_interface.__extend__
@@ -692,6 +759,12 @@ class Type_interface(_Struct):
         # no union check
         return self._read_struct(0, Brand)
     
+    def get_brand(self):
+        res = self.brand
+        if res is None:
+            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
+        return res
+    
     def has_brand(self):
         offset, ptr = self._read_ptr(0)
         return ptr != 0
@@ -708,13 +781,10 @@ class Type_interface(_Struct):
         _Struct.__init__(self, buf, 0, 3, 1)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "typeId = ", str(self.typeId), ", ",
-            "brand = ", str(self.brand), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        parts.append("typeId = %s" % self.typeId)
+        if self.has_brand(): parts.append("brand = %s" % self.get_brand().shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @Type_list.__extend__
@@ -727,6 +797,12 @@ class Type_list(_Struct):
     def elementType(self):
         # no union check
         return self._read_struct(0, Type)
+    
+    def get_elementType(self):
+        res = self.elementType
+        if res is None:
+            return Type.from_buffer('', 0, data_size=0, ptrs_size=0)
+        return res
     
     def has_elementType(self):
         offset, ptr = self._read_ptr(0)
@@ -744,12 +820,9 @@ class Type_list(_Struct):
         _Struct.__init__(self, buf, 0, 3, 1)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "elementType = ", str(self.elementType), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        if self.has_elementType(): parts.append("elementType = %s" % self.get_elementType().shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @Type.__extend__
@@ -759,7 +832,7 @@ class Type(_Struct):
     
     
     __tag_offset__ = 0
-    __tag__ = _enum('Type.__tag__', ('void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer'))
+    __tag__ = _enum('Type.__tag__', ['void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer'])
     
     def is_void(self): return self.which() == 0
     def is_bool(self): return self.which() == 1
@@ -854,27 +927,62 @@ class Type(_Struct):
     @property
     def list(self):
         self._ensure_union(14)
-        return self._read_group(Type_list)
+        obj = Type_list.__new__(Type_list)
+        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
+    
+    @staticmethod
+    def List(elementType):
+        return elementType,
     
     @property
     def enum(self):
         self._ensure_union(15)
-        return self._read_group(Type_enum)
+        obj = Type_enum.__new__(Type_enum)
+        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
+    
+    @staticmethod
+    def Enum(typeId, brand):
+        return typeId, brand,
     
     @property
     def struct(self):
         self._ensure_union(16)
-        return self._read_group(Type_struct)
+        obj = Type_struct.__new__(Type_struct)
+        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
+    
+    @staticmethod
+    def Struct(typeId, brand):
+        return typeId, brand,
     
     @property
     def interface(self):
         self._ensure_union(17)
-        return self._read_group(Type_interface)
+        obj = Type_interface.__new__(Type_interface)
+        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
+    
+    @staticmethod
+    def Interface(typeId, brand):
+        return typeId, brand,
     
     @property
     def anyPointer(self):
         self._ensure_union(18)
-        return self._read_group(Type_anyPointer)
+        obj = Type_anyPointer.__new__(Type_anyPointer)
+        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
+    
+    @staticmethod
+    def Anypointer(unconstrained, parameter, implicitMethodParameter):
+        return unconstrained, parameter, implicitMethodParameter,
     
     @staticmethod
     def __new_void():
@@ -1031,40 +1139,60 @@ class Type(_Struct):
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_list(*args, **kwargs):
-        raise NotImplementedError('Group fields not supported yet')
+    def __new_list(list):
+        builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxq')
+        __which__ = 14
+        list_0, = list
+        list_0 = builder.alloc_struct(24, Type, list_0)
+        buf = builder.build(__which__, list_0)
+        return buf
     @classmethod
-    def new_list(cls, *args):
-        buf = cls.__new_list(*args)
+    def new_list(cls, list):
+        buf = cls.__new_list(list)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_enum(*args, **kwargs):
-        raise NotImplementedError('Group fields not supported yet')
+    def __new_enum(enum):
+        builder = _StructBuilder('hxxxxxxQxxxxxxxxq')
+        __which__ = 15
+        enum_0, enum_1, = enum
+        enum_1 = builder.alloc_struct(24, Brand, enum_1)
+        buf = builder.build(__which__, enum_0, enum_1)
+        return buf
     @classmethod
-    def new_enum(cls, *args):
-        buf = cls.__new_enum(*args)
+    def new_enum(cls, enum):
+        buf = cls.__new_enum(enum)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_struct(*args, **kwargs):
-        raise NotImplementedError('Group fields not supported yet')
+    def __new_struct(struct):
+        builder = _StructBuilder('hxxxxxxQxxxxxxxxq')
+        __which__ = 16
+        struct_0, struct_1, = struct
+        struct_1 = builder.alloc_struct(24, Brand, struct_1)
+        buf = builder.build(__which__, struct_0, struct_1)
+        return buf
     @classmethod
-    def new_struct(cls, *args):
-        buf = cls.__new_struct(*args)
+    def new_struct(cls, struct):
+        buf = cls.__new_struct(struct)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_interface(*args, **kwargs):
-        raise NotImplementedError('Group fields not supported yet')
+    def __new_interface(interface):
+        builder = _StructBuilder('hxxxxxxQxxxxxxxxq')
+        __which__ = 17
+        interface_0, interface_1, = interface
+        interface_1 = builder.alloc_struct(24, Brand, interface_1)
+        buf = builder.build(__which__, interface_0, interface_1)
+        return buf
     @classmethod
-    def new_interface(cls, *args):
-        buf = cls.__new_interface(*args)
+    def new_interface(cls, interface):
+        buf = cls.__new_interface(interface)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_anyPointer(*args, **kwargs):
-        raise NotImplementedError('Group fields not supported yet')
+    def __new_anyPointer(*args):
+        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Group object at 0x7fe96d874d00>')
     @classmethod
     def new_anyPointer(cls, *args):
         buf = cls.__new_anyPointer(*args)
@@ -1492,30 +1620,27 @@ class Type(_Struct):
         raise TypeError("one of the following args is required: void, bool, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, text, data, list, enum, struct, interface, anyPointer")
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "void = ", str(self.void), ", ",
-            "bool = ", str(self.bool), ", ",
-            "int8 = ", str(self.int8), ", ",
-            "int16 = ", str(self.int16), ", ",
-            "int32 = ", str(self.int32), ", ",
-            "int64 = ", str(self.int64), ", ",
-            "uint8 = ", str(self.uint8), ", ",
-            "uint16 = ", str(self.uint16), ", ",
-            "uint32 = ", str(self.uint32), ", ",
-            "uint64 = ", str(self.uint64), ", ",
-            "float32 = ", str(self.float32), ", ",
-            "float64 = ", str(self.float64), ", ",
-            "text = ", str(self.text), ", ",
-            "data = ", str(self.data), ", ",
-            "list = ", str(self.list), ", ",
-            "enum = ", str(self.enum), ", ",
-            "struct = ", str(self.struct), ", ",
-            "interface = ", str(self.interface), ", ",
-            "anyPointer = ", str(self.anyPointer), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        if self.is_void(): parts.append("void = %s" % "void")
+        if self.is_bool(): parts.append("bool = %s" % "void")
+        if self.is_int8(): parts.append("int8 = %s" % "void")
+        if self.is_int16(): parts.append("int16 = %s" % "void")
+        if self.is_int32(): parts.append("int32 = %s" % "void")
+        if self.is_int64(): parts.append("int64 = %s" % "void")
+        if self.is_uint8(): parts.append("uint8 = %s" % "void")
+        if self.is_uint16(): parts.append("uint16 = %s" % "void")
+        if self.is_uint32(): parts.append("uint32 = %s" % "void")
+        if self.is_uint64(): parts.append("uint64 = %s" % "void")
+        if self.is_float32(): parts.append("float32 = %s" % "void")
+        if self.is_float64(): parts.append("float64 = %s" % "void")
+        if self.is_text(): parts.append("text = %s" % "void")
+        if self.is_data(): parts.append("data = %s" % "void")
+        if self.is_list(): parts.append("list = %s" % self.list.shortrepr())
+        if self.is_enum(): parts.append("enum = %s" % self.enum.shortrepr())
+        if self.is_struct(): parts.append("struct = %s" % self.struct.shortrepr())
+        if self.is_interface(): parts.append("interface = %s" % self.interface.shortrepr())
+        if self.is_anyPointer(): parts.append("anyPointer = %s" % self.anyPointer.shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @Field_group.__extend__
@@ -1543,12 +1668,9 @@ class Field_group(_Struct):
         _Struct.__init__(self, buf, 0, 3, 4)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "typeId = ", str(self.typeId), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        parts.append("typeId = %s" % self.typeId)
+        return "(%s)" % ", ".join(parts)
 
 
 @Field_ordinal.__extend__
@@ -1558,7 +1680,7 @@ class Field_ordinal(_Struct):
     
     
     __tag_offset__ = 10
-    __tag__ = _enum('ordinal.__tag__', ('implicit', 'explicit'))
+    __tag__ = _enum('ordinal.__tag__', ['implicit', 'explicit'])
     
     def is_implicit(self): return self.which() == 0
     def is_explicit(self): return self.which() == 1
@@ -1612,13 +1734,10 @@ class Field_ordinal(_Struct):
         raise TypeError("one of the following args is required: implicit, explicit")
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "implicit = ", str(self.implicit), ", ",
-            "explicit = ", str(self.explicit), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        if self.is_implicit(): parts.append("implicit = %s" % "void")
+        if self.is_explicit(): parts.append("explicit = %s" % self.explicit)
+        return "(%s)" % ", ".join(parts)
 
 
 @Field_slot.__extend__
@@ -1640,6 +1759,12 @@ class Field_slot(_Struct):
         # no union check
         return self._read_struct(16, Type)
     
+    def get_type(self):
+        res = self.type
+        if res is None:
+            return Type.from_buffer('', 0, data_size=0, ptrs_size=0)
+        return res
+    
     def has_type(self):
         offset, ptr = self._read_ptr(16)
         return ptr != 0
@@ -1648,6 +1773,12 @@ class Field_slot(_Struct):
     def defaultValue(self):
         # no union check
         return self._read_struct(24, Value)
+    
+    def get_defaultValue(self):
+        res = self.defaultValue
+        if res is None:
+            return Value.from_buffer('', 0, data_size=0, ptrs_size=0)
+        return res
     
     def has_defaultValue(self):
         offset, ptr = self._read_ptr(24)
@@ -1662,23 +1793,20 @@ class Field_slot(_Struct):
         return value
     
     @staticmethod
-    def __new(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f036a534490>')
+    def __new(*args):
+        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x7fe96d874600>')
     
     def __init__(self, *args):
         buf = self.__new(*args)
         _Struct.__init__(self, buf, 0, 3, 4)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "offset = ", str(self.offset), ", ",
-            "type = ", str(self.type), ", ",
-            "defaultValue = ", str(self.defaultValue), ", ",
-            "hadExplicitDefault = ", str(self.hadExplicitDefault), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        parts.append("offset = %s" % self.offset)
+        if self.has_type(): parts.append("type = %s" % self.get_type().shortrepr())
+        if self.has_defaultValue(): parts.append("defaultValue = %s" % self.get_defaultValue().shortrepr())
+        parts.append("hadExplicitDefault = %s" % str(self.hadExplicitDefault).lower())
+        return "(%s)" % ", ".join(parts)
 
 
 @Field.__extend__
@@ -1689,7 +1817,7 @@ class Field(_Struct):
     noDiscriminant = 65535
     
     __tag_offset__ = 8
-    __tag__ = _enum('Field.__tag__', ('slot', 'group'))
+    __tag__ = _enum('Field.__tag__', ['slot', 'group'])
     
     def is_slot(self): return self.which() == 0
     def is_group(self): return self.which() == 1
@@ -1698,6 +1826,9 @@ class Field(_Struct):
     def name(self):
         # no union check
         return self._read_str_text(0)
+    
+    def get_name(self):
+        return self._read_str_text(0, default_="")
     
     def has_name(self):
         offset, ptr = self._read_ptr(0)
@@ -1716,6 +1847,12 @@ class Field(_Struct):
         # no union check
         return self._read_list(8, _StructList, Annotation)
     
+    def get_annotations(self):
+        res = self.annotations
+        if res is None:
+            return _StructList.from_buffer('', 0, 0, 0, Annotation)
+        return res
+    
     def has_annotations(self):
         offset, ptr = self._read_ptr(8)
         return ptr != 0
@@ -1731,32 +1868,60 @@ class Field(_Struct):
     @property
     def slot(self):
         self._ensure_union(0)
-        return self._read_group(Field_slot)
+        obj = Field_slot.__new__(Field_slot)
+        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
+    
+    @staticmethod
+    def Slot(offset, type, defaultValue, hadExplicitDefault):
+        return offset, type, defaultValue, hadExplicitDefault,
     
     @property
     def group(self):
         self._ensure_union(1)
-        return self._read_group(Field_group)
+        obj = Field_group.__new__(Field_group)
+        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
+    
+    @staticmethod
+    def Group(typeId):
+        return typeId,
     
     @property
     def ordinal(self):
         # no union check
-        return self._read_group(Field_ordinal)
+        obj = Field_ordinal.__new__(Field_ordinal)
+        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
     
     @staticmethod
-    def __new_slot(*args, **kwargs):
-        raise NotImplementedError('Group fields not supported yet')
+    def Ordinal(implicit, explicit):
+        return implicit, explicit,
+    
+    @staticmethod
+    def __new_slot(*args):
+        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x7fe96d874a60>')
     @classmethod
     def new_slot(cls, *args):
         buf = cls.__new_slot(*args)
         return cls.from_buffer(buf, 0, 3, 4)
     
     @staticmethod
-    def __new_group(*args, **kwargs):
-        raise NotImplementedError('Group fields not supported yet')
+    def __new_group(group, name, codeOrder, annotations, discriminantValue, ordinal):
+        builder = _StructBuilder('HHxxxxhxxHxxQqqxxxxxxxxxxxxxxxx')
+        __which__ = 1
+        group_0, = group
+        ordinal_1, = ordinal
+        name = builder.alloc_text(24, name)
+        annotations = builder.alloc_list(32, _StructList, Annotation, annotations)
+        buf = builder.build(codeOrder, discriminantValue, __which__, ordinal_1, group_0, name, annotations)
+        return buf
     @classmethod
-    def new_group(cls, *args):
-        buf = cls.__new_group(*args)
+    def new_group(cls, group, name, codeOrder, annotations, discriminantValue, ordinal):
+        buf = cls.__new_group(group, name, codeOrder, annotations, discriminantValue, ordinal)
         return cls.from_buffer(buf, 0, 3, 4)
     
     def __init__(self, name, codeOrder, annotations, discriminantValue, ordinal, slot=_undefined, group=_undefined):
@@ -1773,18 +1938,15 @@ class Field(_Struct):
         raise TypeError("one of the following args is required: slot, group")
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "name = ", str(self.name), ", ",
-            "codeOrder = ", str(self.codeOrder), ", ",
-            "annotations = ", str(self.annotations), ", ",
-            "discriminantValue = ", str(self.discriminantValue), ", ",
-            "slot = ", str(self.slot), ", ",
-            "group = ", str(self.group), ", ",
-            "ordinal = ", str(self.ordinal), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        if self.has_name(): parts.append("name = %s" % _text_repr(self.get_name()))
+        parts.append("codeOrder = %s" % self.codeOrder)
+        if self.has_annotations(): parts.append("annotations = %s" % self.get_annotations().shortrepr())
+        parts.append("discriminantValue = %s" % self.discriminantValue)
+        if self.is_slot(): parts.append("slot = %s" % self.slot.shortrepr())
+        if self.is_group(): parts.append("group = %s" % self.group.shortrepr())
+        parts.append("ordinal = %s" % self.ordinal.shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @Superclass.__extend__
@@ -1806,6 +1968,12 @@ class Superclass(_Struct):
         # no union check
         return self._read_struct(0, Brand)
     
+    def get_brand(self):
+        res = self.brand
+        if res is None:
+            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
+        return res
+    
     def has_brand(self):
         offset, ptr = self._read_ptr(0)
         return ptr != 0
@@ -1822,13 +1990,10 @@ class Superclass(_Struct):
         _Struct.__init__(self, buf, 0, 1, 1)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "id = ", str(self.id), ", ",
-            "brand = ", str(self.brand), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        parts.append("id = %s" % self.id)
+        if self.has_brand(): parts.append("brand = %s" % self.get_brand().shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @Value.__extend__
@@ -1838,7 +2003,7 @@ class Value(_Struct):
     
     
     __tag_offset__ = 0
-    __tag__ = _enum('Value.__tag__', ('void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer'))
+    __tag__ = _enum('Value.__tag__', ['void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer'])
     
     def is_void(self): return self.which() == 0
     def is_bool(self): return self.which() == 1
@@ -1958,6 +2123,9 @@ class Value(_Struct):
         self._ensure_union(12)
         return self._read_str_text(0)
     
+    def get_text(self):
+        return self._read_str_text(0, default_="")
+    
     def has_text(self):
         offset, ptr = self._read_ptr(0)
         return ptr != 0
@@ -1966,6 +2134,9 @@ class Value(_Struct):
     def data(self):
         self._ensure_union(13)
         return self._read_str_data(0)
+    
+    def get_data(self):
+        return self._read_str_data(0, default_="")
     
     def has_data(self):
         offset, ptr = self._read_ptr(0)
@@ -2023,8 +2194,8 @@ class Value(_Struct):
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_bool(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f036a534a10>')
+    def __new_bool(*args):
+        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x7fe96d874670>')
     @classmethod
     def new_bool(cls, *args):
         buf = cls.__new_bool(*args)
@@ -2156,7 +2327,7 @@ class Value(_Struct):
     def __new_data(data):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 13
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f036a548790>')
+        data = builder.alloc_data(16, data)
         buf = builder.build(__which__, data)
         return buf
     @classmethod
@@ -2168,7 +2339,7 @@ class Value(_Struct):
     def __new_list(list):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 14
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f036a5487d0>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x1016980>')
         buf = builder.build(__which__, list)
         return buf
     @classmethod
@@ -2191,7 +2362,7 @@ class Value(_Struct):
     def __new_struct(struct):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 16
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f036a548850>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x1016b40>')
         buf = builder.build(__which__, struct)
         return buf
     @classmethod
@@ -2214,7 +2385,7 @@ class Value(_Struct):
     def __new_anyPointer(anyPointer):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 18
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f036a5488d0>')
+        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x1016c20>')
         buf = builder.build(__which__, anyPointer)
         return buf
     @classmethod
@@ -2644,30 +2815,37 @@ class Value(_Struct):
         raise TypeError("one of the following args is required: void, bool, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, text, data, list, enum, struct, interface, anyPointer")
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "void = ", str(self.void), ", ",
-            "bool = ", str(self.bool), ", ",
-            "int8 = ", str(self.int8), ", ",
-            "int16 = ", str(self.int16), ", ",
-            "int32 = ", str(self.int32), ", ",
-            "int64 = ", str(self.int64), ", ",
-            "uint8 = ", str(self.uint8), ", ",
-            "uint16 = ", str(self.uint16), ", ",
-            "uint32 = ", str(self.uint32), ", ",
-            "uint64 = ", str(self.uint64), ", ",
-            "float32 = ", str(self.float32), ", ",
-            "float64 = ", str(self.float64), ", ",
-            "text = ", str(self.text), ", ",
-            "data = ", str(self.data), ", ",
-            "list = ", str(self.list), ", ",
-            "enum = ", str(self.enum), ", ",
-            "struct = ", str(self.struct), ", ",
-            "interface = ", str(self.interface), ", ",
-            "anyPointer = ", str(self.anyPointer), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        if self.is_void(): parts.append("void = %s" % "void")
+        if self.is_bool(): parts.append("bool = %s" % str(self.bool).lower())
+        if self.is_int8(): parts.append("int8 = %s" % self.int8)
+        if self.is_int16(): parts.append("int16 = %s" % self.int16)
+        if self.is_int32(): parts.append("int32 = %s" % self.int32)
+        if self.is_int64(): parts.append("int64 = %s" % self.int64)
+        if self.is_uint8(): parts.append("uint8 = %s" % self.uint8)
+        if self.is_uint16(): parts.append("uint16 = %s" % self.uint16)
+        if self.is_uint32(): parts.append("uint32 = %s" % self.uint32)
+        if self.is_uint64(): parts.append("uint64 = %s" % self.uint64)
+        if self.is_float32(): parts.append("float32 = %s" % _float32_repr(self.float32))
+        if self.is_float64(): parts.append("float64 = %s" % _float64_repr(self.float64))
+        if self.is_text() and (self.has_text() or
+                                  not False):
+            parts.append("text = %s" % _text_repr(self.get_text()))
+        if self.is_data() and (self.has_data() or
+                                  not False):
+            parts.append("data = %s" % _text_repr(self.get_data()))
+        if self.is_list() and (self.has_list() or
+                                  not False):
+            parts.append("list = %s" % "???")
+        if self.is_enum(): parts.append("enum = %s" % self.enum)
+        if self.is_struct() and (self.has_struct() or
+                                  not False):
+            parts.append("struct = %s" % "???")
+        if self.is_interface(): parts.append("interface = %s" % "void")
+        if self.is_anyPointer() and (self.has_anyPointer() or
+                                  not False):
+            parts.append("anyPointer = %s" % "???")
+        return "(%s)" % ", ".join(parts)
 
 
 @Brand_Binding.__extend__
@@ -2677,7 +2855,7 @@ class Brand_Binding(_Struct):
     
     
     __tag_offset__ = 0
-    __tag__ = _enum('Binding.__tag__', ('unbound', 'type'))
+    __tag__ = _enum('Binding.__tag__', ['unbound', 'type'])
     
     def is_unbound(self): return self.which() == 0
     def is_type(self): return self.which() == 1
@@ -2691,6 +2869,12 @@ class Brand_Binding(_Struct):
     def type(self):
         self._ensure_union(1)
         return self._read_struct(0, Type)
+    
+    def get_type(self):
+        res = self.type
+        if res is None:
+            return Type.from_buffer('', 0, data_size=0, ptrs_size=0)
+        return res
     
     def has_type(self):
         offset, ptr = self._read_ptr(0)
@@ -2733,13 +2917,12 @@ class Brand_Binding(_Struct):
         raise TypeError("one of the following args is required: unbound, type")
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "unbound = ", str(self.unbound), ", ",
-            "type = ", str(self.type), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        if self.is_unbound(): parts.append("unbound = %s" % "void")
+        if self.is_type() and (self.has_type() or
+                                  not False):
+            parts.append("type = %s" % self.get_type().shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @Brand_Scope.__extend__
@@ -2749,7 +2932,7 @@ class Brand_Scope(_Struct):
     
     
     __tag_offset__ = 8
-    __tag__ = _enum('Scope.__tag__', ('bind', 'inherit'))
+    __tag__ = _enum('Scope.__tag__', ['bind', 'inherit'])
     
     def is_bind(self): return self.which() == 0
     def is_inherit(self): return self.which() == 1
@@ -2766,6 +2949,12 @@ class Brand_Scope(_Struct):
     def bind(self):
         self._ensure_union(0)
         return self._read_list(0, _StructList, Brand.Binding)
+    
+    def get_bind(self):
+        res = self.bind
+        if res is None:
+            return _StructList.from_buffer('', 0, 0, 0, Brand.Binding)
+        return res
     
     def has_bind(self):
         offset, ptr = self._read_ptr(0)
@@ -2813,14 +3002,13 @@ class Brand_Scope(_Struct):
         raise TypeError("one of the following args is required: bind, inherit")
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "scopeId = ", str(self.scopeId), ", ",
-            "bind = ", str(self.bind), ", ",
-            "inherit = ", str(self.inherit), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        parts.append("scopeId = %s" % self.scopeId)
+        if self.is_bind() and (self.has_bind() or
+                                  not True):
+            parts.append("bind = %s" % self.get_bind().shortrepr())
+        if self.is_inherit(): parts.append("inherit = %s" % "void")
+        return "(%s)" % ", ".join(parts)
 
 
 @Brand.__extend__
@@ -2835,6 +3023,12 @@ class Brand(_Struct):
     def scopes(self):
         # no union check
         return self._read_list(0, _StructList, Brand.Scope)
+    
+    def get_scopes(self):
+        res = self.scopes
+        if res is None:
+            return _StructList.from_buffer('', 0, 0, 0, Brand.Scope)
+        return res
     
     def has_scopes(self):
         offset, ptr = self._read_ptr(0)
@@ -2852,12 +3046,9 @@ class Brand(_Struct):
         _Struct.__init__(self, buf, 0, 0, 1)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "scopes = ", str(self.scopes), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        if self.has_scopes(): parts.append("scopes = %s" % self.get_scopes().shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @Annotation.__extend__
@@ -2879,6 +3070,12 @@ class Annotation(_Struct):
         # no union check
         return self._read_struct(0, Value)
     
+    def get_value(self):
+        res = self.value
+        if res is None:
+            return Value.from_buffer('', 0, data_size=0, ptrs_size=0)
+        return res
+    
     def has_value(self):
         offset, ptr = self._read_ptr(0)
         return ptr != 0
@@ -2887,6 +3084,12 @@ class Annotation(_Struct):
     def brand(self):
         # no union check
         return self._read_struct(8, Brand)
+    
+    def get_brand(self):
+        res = self.brand
+        if res is None:
+            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
+        return res
     
     def has_brand(self):
         offset, ptr = self._read_ptr(8)
@@ -2905,14 +3108,11 @@ class Annotation(_Struct):
         _Struct.__init__(self, buf, 0, 1, 2)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "id = ", str(self.id), ", ",
-            "value = ", str(self.value), ", ",
-            "brand = ", str(self.brand), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        parts.append("id = %s" % self.id)
+        if self.has_value(): parts.append("value = %s" % self.get_value().shortrepr())
+        if self.has_brand(): parts.append("brand = %s" % self.get_brand().shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @Node_interface.__extend__
@@ -2926,6 +3126,12 @@ class Node_interface(_Struct):
         # no union check
         return self._read_list(24, _StructList, Method)
     
+    def get_methods(self):
+        res = self.methods
+        if res is None:
+            return _StructList.from_buffer('', 0, 0, 0, Method)
+        return res
+    
     def has_methods(self):
         offset, ptr = self._read_ptr(24)
         return ptr != 0
@@ -2934,6 +3140,12 @@ class Node_interface(_Struct):
     def superclasses(self):
         # no union check
         return self._read_list(32, _StructList, Superclass)
+    
+    def get_superclasses(self):
+        res = self.superclasses
+        if res is None:
+            return _StructList.from_buffer('', 0, 0, 0, Superclass)
+        return res
     
     def has_superclasses(self):
         offset, ptr = self._read_ptr(32)
@@ -2952,13 +3164,10 @@ class Node_interface(_Struct):
         _Struct.__init__(self, buf, 0, 5, 6)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "methods = ", str(self.methods), ", ",
-            "superclasses = ", str(self.superclasses), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        if self.has_methods(): parts.append("methods = %s" % self.get_methods().shortrepr())
+        if self.has_superclasses(): parts.append("superclasses = %s" % self.get_superclasses().shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @Node_const.__extend__
@@ -2972,6 +3181,12 @@ class Node_const(_Struct):
         # no union check
         return self._read_struct(24, Type)
     
+    def get_type(self):
+        res = self.type
+        if res is None:
+            return Type.from_buffer('', 0, data_size=0, ptrs_size=0)
+        return res
+    
     def has_type(self):
         offset, ptr = self._read_ptr(24)
         return ptr != 0
@@ -2980,6 +3195,12 @@ class Node_const(_Struct):
     def value(self):
         # no union check
         return self._read_struct(32, Value)
+    
+    def get_value(self):
+        res = self.value
+        if res is None:
+            return Value.from_buffer('', 0, data_size=0, ptrs_size=0)
+        return res
     
     def has_value(self):
         offset, ptr = self._read_ptr(32)
@@ -2998,13 +3219,10 @@ class Node_const(_Struct):
         _Struct.__init__(self, buf, 0, 5, 6)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "type = ", str(self.type), ", ",
-            "value = ", str(self.value), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        if self.has_type(): parts.append("type = %s" % self.get_type().shortrepr())
+        if self.has_value(): parts.append("value = %s" % self.get_value().shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @Node_struct.__extend__
@@ -3063,31 +3281,34 @@ class Node_struct(_Struct):
         # no union check
         return self._read_list(24, _StructList, Field)
     
+    def get_fields(self):
+        res = self.fields
+        if res is None:
+            return _StructList.from_buffer('', 0, 0, 0, Field)
+        return res
+    
     def has_fields(self):
         offset, ptr = self._read_ptr(24)
         return ptr != 0
     
     @staticmethod
-    def __new(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f036a55c090>')
+    def __new(*args):
+        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x102e980>')
     
     def __init__(self, *args):
         buf = self.__new(*args)
         _Struct.__init__(self, buf, 0, 5, 6)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "dataWordCount = ", str(self.dataWordCount), ", ",
-            "pointerCount = ", str(self.pointerCount), ", ",
-            "preferredListEncoding = ", str(self.preferredListEncoding), ", ",
-            "isGroup = ", str(self.isGroup), ", ",
-            "discriminantCount = ", str(self.discriminantCount), ", ",
-            "discriminantOffset = ", str(self.discriminantOffset), ", ",
-            "fields = ", str(self.fields), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        parts.append("dataWordCount = %s" % self.dataWordCount)
+        parts.append("pointerCount = %s" % self.pointerCount)
+        parts.append("preferredListEncoding = %s" % self.preferredListEncoding)
+        parts.append("isGroup = %s" % str(self.isGroup).lower())
+        parts.append("discriminantCount = %s" % self.discriminantCount)
+        parts.append("discriminantOffset = %s" % self.discriminantOffset)
+        if self.has_fields(): parts.append("fields = %s" % self.get_fields().shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @Node_annotation.__extend__
@@ -3100,6 +3321,12 @@ class Node_annotation(_Struct):
     def type(self):
         # no union check
         return self._read_struct(24, Type)
+    
+    def get_type(self):
+        res = self.type
+        if res is None:
+            return Type.from_buffer('', 0, data_size=0, ptrs_size=0)
+        return res
     
     def has_type(self):
         offset, ptr = self._read_ptr(24)
@@ -3202,32 +3429,29 @@ class Node_annotation(_Struct):
         return value
     
     @staticmethod
-    def __new(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f036a55c610>')
+    def __new(*args):
+        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x102e9f0>')
     
     def __init__(self, *args):
         buf = self.__new(*args)
         _Struct.__init__(self, buf, 0, 5, 6)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "type = ", str(self.type), ", ",
-            "targetsFile = ", str(self.targetsFile), ", ",
-            "targetsConst = ", str(self.targetsConst), ", ",
-            "targetsEnum = ", str(self.targetsEnum), ", ",
-            "targetsEnumerant = ", str(self.targetsEnumerant), ", ",
-            "targetsStruct = ", str(self.targetsStruct), ", ",
-            "targetsField = ", str(self.targetsField), ", ",
-            "targetsUnion = ", str(self.targetsUnion), ", ",
-            "targetsGroup = ", str(self.targetsGroup), ", ",
-            "targetsInterface = ", str(self.targetsInterface), ", ",
-            "targetsMethod = ", str(self.targetsMethod), ", ",
-            "targetsParam = ", str(self.targetsParam), ", ",
-            "targetsAnnotation = ", str(self.targetsAnnotation), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        if self.has_type(): parts.append("type = %s" % self.get_type().shortrepr())
+        parts.append("targetsFile = %s" % str(self.targetsFile).lower())
+        parts.append("targetsConst = %s" % str(self.targetsConst).lower())
+        parts.append("targetsEnum = %s" % str(self.targetsEnum).lower())
+        parts.append("targetsEnumerant = %s" % str(self.targetsEnumerant).lower())
+        parts.append("targetsStruct = %s" % str(self.targetsStruct).lower())
+        parts.append("targetsField = %s" % str(self.targetsField).lower())
+        parts.append("targetsUnion = %s" % str(self.targetsUnion).lower())
+        parts.append("targetsGroup = %s" % str(self.targetsGroup).lower())
+        parts.append("targetsInterface = %s" % str(self.targetsInterface).lower())
+        parts.append("targetsMethod = %s" % str(self.targetsMethod).lower())
+        parts.append("targetsParam = %s" % str(self.targetsParam).lower())
+        parts.append("targetsAnnotation = %s" % str(self.targetsAnnotation).lower())
+        return "(%s)" % ", ".join(parts)
 
 
 @Node_enum.__extend__
@@ -3240,6 +3464,12 @@ class Node_enum(_Struct):
     def enumerants(self):
         # no union check
         return self._read_list(24, _StructList, Enumerant)
+    
+    def get_enumerants(self):
+        res = self.enumerants
+        if res is None:
+            return _StructList.from_buffer('', 0, 0, 0, Enumerant)
+        return res
     
     def has_enumerants(self):
         offset, ptr = self._read_ptr(24)
@@ -3257,12 +3487,9 @@ class Node_enum(_Struct):
         _Struct.__init__(self, buf, 0, 5, 6)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "enumerants = ", str(self.enumerants), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        if self.has_enumerants(): parts.append("enumerants = %s" % self.get_enumerants().shortrepr())
+        return "(%s)" % ", ".join(parts)
 
 
 @Node_NestedNode.__extend__
@@ -3275,6 +3502,9 @@ class Node_NestedNode(_Struct):
     def name(self):
         # no union check
         return self._read_str_text(0)
+    
+    def get_name(self):
+        return self._read_str_text(0, default_="")
     
     def has_name(self):
         offset, ptr = self._read_ptr(0)
@@ -3300,13 +3530,10 @@ class Node_NestedNode(_Struct):
         _Struct.__init__(self, buf, 0, 1, 1)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "name = ", str(self.name), ", ",
-            "id = ", str(self.id), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        if self.has_name(): parts.append("name = %s" % _text_repr(self.get_name()))
+        parts.append("id = %s" % self.id)
+        return "(%s)" % ", ".join(parts)
 
 
 @Node_Parameter.__extend__
@@ -3319,6 +3546,9 @@ class Node_Parameter(_Struct):
     def name(self):
         # no union check
         return self._read_str_text(0)
+    
+    def get_name(self):
+        return self._read_str_text(0, default_="")
     
     def has_name(self):
         offset, ptr = self._read_ptr(0)
@@ -3336,12 +3566,9 @@ class Node_Parameter(_Struct):
         _Struct.__init__(self, buf, 0, 0, 1)
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "name = ", str(self.name), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        if self.has_name(): parts.append("name = %s" % _text_repr(self.get_name()))
+        return "(%s)" % ", ".join(parts)
 
 
 @Node.__extend__
@@ -3353,7 +3580,7 @@ class Node(_Struct):
     Parameter = Node_Parameter
     
     __tag_offset__ = 12
-    __tag__ = _enum('Node.__tag__', ('file', 'struct', 'enum', 'interface', 'const', 'annotation'))
+    __tag__ = _enum('Node.__tag__', ['file', 'struct', 'enum', 'interface', 'const', 'annotation'])
     
     def is_file(self): return self.which() == 0
     def is_struct(self): return self.which() == 1
@@ -3374,6 +3601,9 @@ class Node(_Struct):
     def displayName(self):
         # no union check
         return self._read_str_text(0)
+    
+    def get_displayName(self):
+        return self._read_str_text(0, default_="")
     
     def has_displayName(self):
         offset, ptr = self._read_ptr(0)
@@ -3400,6 +3630,12 @@ class Node(_Struct):
         # no union check
         return self._read_list(8, _StructList, Node.NestedNode)
     
+    def get_nestedNodes(self):
+        res = self.nestedNodes
+        if res is None:
+            return _StructList.from_buffer('', 0, 0, 0, Node.NestedNode)
+        return res
+    
     def has_nestedNodes(self):
         offset, ptr = self._read_ptr(8)
         return ptr != 0
@@ -3408,6 +3644,12 @@ class Node(_Struct):
     def annotations(self):
         # no union check
         return self._read_list(16, _StructList, Annotation)
+    
+    def get_annotations(self):
+        res = self.annotations
+        if res is None:
+            return _StructList.from_buffer('', 0, 0, 0, Annotation)
+        return res
     
     def has_annotations(self):
         offset, ptr = self._read_ptr(16)
@@ -3421,32 +3663,73 @@ class Node(_Struct):
     @property
     def struct(self):
         self._ensure_union(1)
-        return self._read_group(Node_struct)
+        obj = Node_struct.__new__(Node_struct)
+        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
+    
+    @staticmethod
+    def Struct(dataWordCount, pointerCount, preferredListEncoding, isGroup, discriminantCount, discriminantOffset, fields):
+        return dataWordCount, pointerCount, preferredListEncoding, isGroup, discriminantCount, discriminantOffset, fields,
     
     @property
     def enum(self):
         self._ensure_union(2)
-        return self._read_group(Node_enum)
+        obj = Node_enum.__new__(Node_enum)
+        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
+    
+    @staticmethod
+    def Enum(enumerants):
+        return enumerants,
     
     @property
     def interface(self):
         self._ensure_union(3)
-        return self._read_group(Node_interface)
+        obj = Node_interface.__new__(Node_interface)
+        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
+    
+    @staticmethod
+    def Interface(methods, superclasses):
+        return methods, superclasses,
     
     @property
     def const(self):
         self._ensure_union(4)
-        return self._read_group(Node_const)
+        obj = Node_const.__new__(Node_const)
+        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
+    
+    @staticmethod
+    def Const(type, value):
+        return type, value,
     
     @property
     def annotation(self):
         self._ensure_union(5)
-        return self._read_group(Node_annotation)
+        obj = Node_annotation.__new__(Node_annotation)
+        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
+    
+    @staticmethod
+    def Annotation(type, targetsFile, targetsConst, targetsEnum, targetsEnumerant, targetsStruct, targetsField, targetsUnion, targetsGroup, targetsInterface, targetsMethod, targetsParam, targetsAnnotation):
+        return type, targetsFile, targetsConst, targetsEnum, targetsEnumerant, targetsStruct, targetsField, targetsUnion, targetsGroup, targetsInterface, targetsMethod, targetsParam, targetsAnnotation,
     
     @property
     def parameters(self):
         # no union check
         return self._read_list(40, _StructList, Node.Parameter)
+    
+    def get_parameters(self):
+        res = self.parameters
+        if res is None:
+            return _StructList.from_buffer('', 0, 0, 0, Node.Parameter)
+        return res
     
     def has_parameters(self):
         offset, ptr = self._read_ptr(40)
@@ -3461,48 +3744,48 @@ class Node(_Struct):
         return value
     
     @staticmethod
-    def __new_file(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema_extended.Field__Slot object at 0x7f036a564090>')
+    def __new_file(*args):
+        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x1046520>')
     @classmethod
     def new_file(cls, *args):
         buf = cls.__new_file(*args)
         return cls.from_buffer(buf, 0, 5, 6)
     
     @staticmethod
-    def __new_struct(*args, **kwargs):
-        raise NotImplementedError('Group fields not supported yet')
+    def __new_struct(*args):
+        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x1046830>')
     @classmethod
     def new_struct(cls, *args):
         buf = cls.__new_struct(*args)
         return cls.from_buffer(buf, 0, 5, 6)
     
     @staticmethod
-    def __new_enum(*args, **kwargs):
-        raise NotImplementedError('Group fields not supported yet')
+    def __new_enum(*args):
+        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x1046520>')
     @classmethod
     def new_enum(cls, *args):
         buf = cls.__new_enum(*args)
         return cls.from_buffer(buf, 0, 5, 6)
     
     @staticmethod
-    def __new_interface(*args, **kwargs):
-        raise NotImplementedError('Group fields not supported yet')
+    def __new_interface(*args):
+        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x1046520>')
     @classmethod
     def new_interface(cls, *args):
         buf = cls.__new_interface(*args)
         return cls.from_buffer(buf, 0, 5, 6)
     
     @staticmethod
-    def __new_const(*args, **kwargs):
-        raise NotImplementedError('Group fields not supported yet')
+    def __new_const(*args):
+        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x1046520>')
     @classmethod
     def new_const(cls, *args):
         buf = cls.__new_const(*args)
         return cls.from_buffer(buf, 0, 5, 6)
     
     @staticmethod
-    def __new_annotation(*args, **kwargs):
-        raise NotImplementedError('Group fields not supported yet')
+    def __new_annotation(*args):
+        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x1046910>')
     @classmethod
     def new_annotation(cls, *args):
         buf = cls.__new_annotation(*args)
@@ -3566,25 +3849,22 @@ class Node(_Struct):
         raise TypeError("one of the following args is required: file, struct, enum, interface, const, annotation")
     
     def shortrepr(self):
-        parts = [
-            "(",
-            "id = ", str(self.id), ", ",
-            "displayName = ", str(self.displayName), ", ",
-            "displayNamePrefixLength = ", str(self.displayNamePrefixLength), ", ",
-            "scopeId = ", str(self.scopeId), ", ",
-            "nestedNodes = ", str(self.nestedNodes), ", ",
-            "annotations = ", str(self.annotations), ", ",
-            "file = ", str(self.file), ", ",
-            "struct = ", str(self.struct), ", ",
-            "enum = ", str(self.enum), ", ",
-            "interface = ", str(self.interface), ", ",
-            "const = ", str(self.const), ", ",
-            "annotation = ", str(self.annotation), ", ",
-            "parameters = ", str(self.parameters), ", ",
-            "isGeneric = ", str(self.isGeneric), 
-            ")"
-            ]
-        return "".join(parts)
+        parts = []
+        parts.append("id = %s" % self.id)
+        if self.has_displayName(): parts.append("displayName = %s" % _text_repr(self.get_displayName()))
+        parts.append("displayNamePrefixLength = %s" % self.displayNamePrefixLength)
+        parts.append("scopeId = %s" % self.scopeId)
+        if self.has_nestedNodes(): parts.append("nestedNodes = %s" % self.get_nestedNodes().shortrepr())
+        if self.has_annotations(): parts.append("annotations = %s" % self.get_annotations().shortrepr())
+        if self.is_file(): parts.append("file = %s" % "void")
+        if self.is_struct(): parts.append("struct = %s" % self.struct.shortrepr())
+        if self.is_enum(): parts.append("enum = %s" % self.enum.shortrepr())
+        if self.is_interface(): parts.append("interface = %s" % self.interface.shortrepr())
+        if self.is_const(): parts.append("const = %s" % self.const.shortrepr())
+        if self.is_annotation(): parts.append("annotation = %s" % self.annotation.shortrepr())
+        if self.has_parameters(): parts.append("parameters = %s" % self.get_parameters().shortrepr())
+        parts.append("isGeneric = %s" % str(self.isGeneric).lower())
+        return "(%s)" % ", ".join(parts)
 
 
 
@@ -3595,5 +3875,4 @@ del globals()['Brand_Scope']
 del globals()['Node_NestedNode']
 del globals()['Node_Parameter']
 
-_extend_module_maybe(globals(), filename=__file__)
-
+_extend_module_maybe(globals(), modname=__name__)
