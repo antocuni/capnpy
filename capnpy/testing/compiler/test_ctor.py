@@ -208,6 +208,24 @@ class TestConstructors(CompilerTest):
         assert p.color.alpha == 1.0
         assert p.color.name == 'red'
 
+    def test_group_void(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            position :group {
+                x @0 :Int64;
+                y @1 :Int64;
+                empty @2 :Void;
+            }
+        }
+        """
+        mod = self.compile(schema)
+        p = mod.Point(position=(1, 2))
+        assert p.position.x == 1
+        assert p.position.y == 2
+        assert p.position.empty is None
+
+
 class TestUnionConstructors(CompilerTest):
 
     @py.test.fixture

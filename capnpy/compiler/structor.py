@@ -88,6 +88,8 @@ class Structor(object):
         group = self.m.allnodes[f.group.typeId]
         self.groups.append((groupname, group))
         for i, f in enumerate(group.struct.fields):
+            if f.is_void():
+                continue
             self.fields.append(f)
             self.field_name[f] = '%s_%d' % (groupname, i)
         return groupname
@@ -155,7 +157,8 @@ class Structor(object):
                 code.w('__which__ = {tag_value}', tag_value=int(self.tag_value))
             #
             for groupname, group in self.groups:
-                argnames = [self.field_name[f] for f in group.struct.fields]
+                argnames = [self.field_name[f] for f in group.struct.fields
+                            if not f.is_void()]
                 code.w('{args}, = {groupname}',
                        args=code.args(argnames), groupname=groupname)
             #
