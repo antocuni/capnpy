@@ -1,3 +1,4 @@
+import sys
 import py
 import imp
 try:
@@ -27,6 +28,20 @@ def extend(cls):
         return cls
     return decorator
 
+
+def find_module(path, modname, extension='.py'):
+    """
+    Scan ``path`` to search for the file corresponding for the given ``modname``.
+    For example, if ``modname`` is foo.bar.baz, it searches for foo/bar/baz.py.
+    """
+    relpath = modname.replace('.', '/') + extension
+    for dirpath in path:
+        dirpath = py.path.local(dirpath)
+        f = dirpath.join(relpath)
+        if f.check(file=True):
+            return f
+    return None
+
 def extend_module_maybe(globals, filename=None, modname=None):
     if filename is not None:
         # /path/to/foo.py --> /path/to/foo_extended.py
@@ -35,19 +50,15 @@ def extend_module_maybe(globals, filename=None, modname=None):
         extmod = filename.new(purebasename=extname, ext='.py')
         if extmod.check(file=False):
             return
-        f = extmod.open()
     elif modname is not None:
         extname = modname + '_extended'
-        try:
-            f, filename, description = imp.find_module(extname)
-        except ImportError:
+        extmod = find_module(sys.path, extname)
+        if extmod is None:
             return
     else:
         raise ValueError('You must pass either filename or modname')
-    try:
-        src = f.read()
-    finally:
-        f.close()
+    #
+    src = extmod.read()
     code = compile(src, extname, 'exec')
     exec code in globals
 

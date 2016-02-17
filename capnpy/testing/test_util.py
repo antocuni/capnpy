@@ -69,3 +69,14 @@ class TestExtendModuleMaybe(object):
         extend_module_maybe(myglobals, modname='foo')
         assert myglobals == {}
 
+    def test_modname_package(self, monkeypatch):
+        monkeypatch.syspath_prepend(self.tmpdir)
+        mypackage = self.tmpdir.join('mypackage').ensure(dir=True)
+        mypackage.join('__init__.py').write('')
+        self.w('mypackage/foo_extended.py', """
+            answer = 42
+        """)
+        #
+        myglobals = {}
+        extend_module_maybe(myglobals, modname='mypackage.foo')
+        assert myglobals['answer'] == 42
