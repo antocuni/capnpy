@@ -9,4 +9,4 @@ cdef class CapnpBuffer:
 cdef class Blob:
     cdef readonly CapnpBuffer _buf
 
-    
+    cpdef _init_blob(self, object buf)

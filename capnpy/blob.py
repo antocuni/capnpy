@@ -58,6 +58,9 @@ class Blob(object):
         return extend(cls)(newcls)
 
     def __init__(self, buf):
+        self._init_blob(buf)
+
+    def _init_blob(self, buf):
         if isinstance(buf, str):
             buf = CapnpBuffer(buf, None)
         self._buf = buf

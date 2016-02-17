@@ -19,7 +19,7 @@ class List(Blob):
         or a Types.*
         """
         self = cls.__new__(cls)
-        Blob.__init__(self, buf)
+        self._init_blob(buf)
         self._offset = offset
         self._item_type = item_type
         self._set_list_tag(size_tag, item_count)

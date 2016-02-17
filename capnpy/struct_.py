@@ -20,7 +20,10 @@ class Struct(Blob):
     __static_ptrs_size__ = None
 
     def __init__(self, buf, offset, data_size, ptrs_size):
-        Blob.__init__(self, buf)
+        self._init_from_buffer(buf, offset, data_size, ptrs_size)
+
+    def _init_from_buffer(self, buf, offset, data_size, ptrs_size):
+        self._init_blob(buf)
         self._data_offset = offset
         self._ptrs_offset = offset + data_size*8
         self._data_size = data_size
@@ -31,7 +34,7 @@ class Struct(Blob):
     @classmethod
     def from_buffer(cls, buf, offset, data_size, ptrs_size):
         self = cls.__new__(cls)
-        Struct.__init__(self, buf, offset, data_size, ptrs_size)
+        self._init_from_buffer(buf, offset, data_size, ptrs_size)
         return self
 
     def which(self):
