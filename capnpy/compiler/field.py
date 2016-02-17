@@ -197,7 +197,10 @@ class Field__Group:
         #
         m.def_property(ns, name, """
             {ensure_union}
-            return self._read_group({groupcls})
+            obj = {groupcls}.__new__({groupcls})
+            _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+                                      self._data_size, self._ptrs_size)
+            return obj
         """)
         #
         # emit also a "constructor-like" function, to be used as a parameter
