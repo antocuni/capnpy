@@ -64,7 +64,7 @@ class RequestedFile:
             # _compile_pyx for a detailed explanation
             m.w('from %s import __compiler, __schema__' % m.tmpname)
         #
-        f._declare_imports(m)
+        self._declare_imports(m)
         m.w("")
         #
         # visit the children in two passes: first the declaration, then the
@@ -95,10 +95,15 @@ class RequestedFile:
 
     def _declare_imports(self, m):
         for imp in self.imports:
+            ns = m.code.new_scope()
             filenode = m.allnodes[imp.id]
             fname = filenode.displayName
-            importname = m.register_import(fname)
-            fullpath = imp.name
-            m.w('{importname} = __compiler.load_schema(importname="{fullpath}")',
-                importname = importname,
-                fullpath = fullpath)
+            ns.importname = m.register_import(fname)
+            ns.fullpath = imp.name
+            if m.standalone:
+                assert ns.fullpath.startswith('/')
+                assert ns.fullpath.endswith('.capnp')
+                ns.modname = ns.fullpath[1:-6].replace('/', '.')
+                ns.w('import {modname} as {importname}')
+            else:
+                ns.w('{importname} = __compiler.load_schema(importname="{fullpath}")')

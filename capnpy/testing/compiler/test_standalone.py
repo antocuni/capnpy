@@ -61,3 +61,27 @@ class TestStandalone(CompilerTest):
         """)
         example = self.import_('example')
         assert example.Point.foo == 'bar'
+
+    def test_import_schema(self):
+        self.compile("mypoint.capnp", """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        """)
+        self.compile("myrect.capnp", """
+        @0xbf5147cbbecf40c2;
+        using P = import "/mypoint.capnp";
+        struct Rectangle {
+            a @0 :P.Point;
+            b @1 :P.Point;
+        }
+        """)
+        myrect = self.import_('myrect')
+        mypoint = self.import_('mypoint')
+        r = myrect.Rectangle(mypoint.Point(1, 2), mypoint.Point(3, 4))
+        assert r.a.x == 1
+        assert r.a.y == 2
+        assert r.b.x == 3
+        assert r.b.y == 4
