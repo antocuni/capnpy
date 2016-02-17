@@ -46,6 +46,7 @@ class RequestedFile:
             m.w("#   - %s" % self.filename)
         m.w("")
         m.w("from capnpy.struct_ {cimport} Struct as _Struct")
+        m.w("from capnpy.struct_ {cimport} assert_undefined as _assert_undefined")
         m.w("from capnpy.struct_ import undefined as _undefined")
         m.w("from capnpy.enum import enum as _enum")
         m.w("from capnpy.blob import Types as _Types")

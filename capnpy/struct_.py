@@ -4,6 +4,13 @@ from capnpy.blob import Blob, Types
 
 undefined = object()
 
+def assert_undefined(val, name, other_name):
+    if val is not undefined:
+        raise TypeError("got multiple values for the union tag: %s, %s" %
+                        (name, other_name))
+
+
+
 class Struct(Blob):
     """
     Abstract base class: a blob representing a struct.
@@ -65,12 +72,6 @@ class Struct(Blob):
         return groupcls.from_buffer(self._buf, self._data_offset,
                                     self._data_size,
                                     self._ptrs_size)
-
-    @classmethod
-    def _assert_undefined(cls, val, name, other_name):
-        if val is not undefined:
-            raise TypeError("got multiple values for the union tag: %s, %s" %
-                            (name, other_name))
 
     def _ensure_union(self, expected_tag):
         tag = self.which()

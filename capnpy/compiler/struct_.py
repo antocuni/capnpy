@@ -147,12 +147,12 @@ class Node__Struct:
         # finally, create the __init__
         # def __init__(cls, x, y, square=undefined, circle=undefined):
         #     if square is not undefined:
-        #         self._assert_undefined(circle, 'circle', 'square')
+        #         _assert_undefined(circle, 'circle', 'square')
         #         buf = cls.__new_squadre(x=x, y=y)
         #         _Struct.__init__(self, buf, 0, None)
         #         return
         #     if circle is not undefined:
-        #         self._assert_undefined(square, 'square', 'circle')
+        #         _assert_undefined(square, 'square', 'circle')
         #         buf = cls.__new_circle(x=x, y=y)
         #         _Struct.__init__(self, buf, 0, None)
         #         return
@@ -169,7 +169,7 @@ class Node__Struct:
                     for other_tag_field in tag_fields:
                         if other_tag_field is tag_field:
                             continue
-                        ns.w('self._assert_undefined({fname}, "{fname}", "{myname}")',
+                        ns.w('_assert_undefined({fname}, "{fname}", "{myname}")',
                              fname=m._field_name(other_tag_field),
                              myname=tag_field_name)
                     #

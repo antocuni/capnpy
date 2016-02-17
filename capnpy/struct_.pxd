@@ -1,5 +1,7 @@
 from capnpy.blob cimport Blob
 
+cpdef assert_undefined(object val, str name, str other_name)
+
 cdef class Struct(Blob):
     cdef public long _data_offset
     cdef public long _ptrs_offset
