@@ -19,11 +19,14 @@ class List(Blob):
         or a Types.*
         """
         self = cls.__new__(cls)
+        self._init_from_buffer(buf, offset, size_tag, item_count, item_type)
+        return self
+
+    def _init_from_buffer(self, buf, offset, size_tag, item_count, item_type):
         self._init_blob(buf)
         self._offset = offset
         self._item_type = item_type
         self._set_list_tag(size_tag, item_count)
-        return self
 
     def _read_data(self, offset, t):
         return self._buf.read_primitive(self._offset+offset, t)
