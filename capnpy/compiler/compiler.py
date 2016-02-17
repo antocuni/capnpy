@@ -185,4 +185,4 @@ class StandaloneCompiler(BaseCompiler):
         dll = self._pyx_to_dll(infile, m, src)
         dll = py.path.local(dll)
         outdir = infile.dirpath()
-        dll.copy(outdir)
+        dll.copy(outdir, mode=True)

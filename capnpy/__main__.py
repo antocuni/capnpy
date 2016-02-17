@@ -1,8 +1,9 @@
 import sys
 import py
 import time
+from capnpy import load_schema
 from capnpy.message import load
-from capnpy.compiler import load_schema, Compiler
+from capnpy.compiler.compiler import StandaloneCompiler
 
 
 def decode():
@@ -43,16 +44,8 @@ def compile():
     if '--convert-case=no' in sys.argv:
         convert_case = False
     #
-    srcfile = py.path.local(srcfile)
-    dstfile = srcfile.new(ext='.py')
-    comp = Compiler(sys.path, pyx=pyx)
-    m, src = comp.generate_py_source(srcfile, convert_case=convert_case)
-    dstfile.write(src)
-
-    ## mod = load_schema(filename=filename)
-    ## compiled = py.path.local(mod.__file__)
-    ## basedir = py.path.local(filename).dirpath()
-    ## compiled.copy(basedir, mode=True)
+    comp = StandaloneCompiler(sys.path, pyx=pyx)
+    comp.compile(srcfile, convert_case=convert_case)
 
 def main():
     cmd = sys.argv[1]
