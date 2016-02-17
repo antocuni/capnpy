@@ -4,7 +4,6 @@ import textwrap
 from capnpy.testing.compiler.support import CompilerTest
 from capnpy.compiler.compiler import StandaloneCompiler
 
-#@py.test.mark.usefixtures('init')
 class TestStandalone(CompilerTest):
 
     @py.test.fixture(params=['py', 'pyx'])
