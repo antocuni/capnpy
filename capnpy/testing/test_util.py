@@ -42,6 +42,17 @@ class TestExtendModuleMaybe(object):
         extend_module_maybe(myglobals, filename=self.tmpdir.join('foo.py'))
         assert myglobals == {}
 
+    def test_filename_package(self):
+        mypackage = self.tmpdir.join('mypackage').ensure(dir=True)
+        mypackage.join('__init__.py').write('')
+        self.w('mypackage/foo_extended.py', """
+            answer = 42
+        """)
+        #
+        myglobals = {}
+        extend_module_maybe(myglobals, filename=self.tmpdir.join('mypackage', 'foo.py'))
+        assert myglobals['answer'] == 42
+
     def test_modname_simple(self, monkeypatch):
         monkeypatch.syspath_prepend(self.tmpdir)
         self.w("foo_extended.py", """
@@ -51,3 +62,10 @@ class TestExtendModuleMaybe(object):
         myglobals = {}
         extend_module_maybe(myglobals, modname='foo')
         assert myglobals['answer'] == 42
+
+    def test_modname_dont_exist(self, monkeypatch):
+        monkeypatch.syspath_prepend(self.tmpdir)
+        myglobals = {}
+        extend_module_maybe(myglobals, modname='foo')
+        assert myglobals == {}
+
