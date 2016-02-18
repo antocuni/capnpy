@@ -30,7 +30,7 @@ cpdef unpack_primitive(char ifmt, bytes buf, int offset):
         checkbound(8, buf, offset)
         return (<double*>valueaddr)[0]
     elif ifmt == 'f':
-        checkbound(8, buf, offset)
+        checkbound(4, buf, offset)
         return (<float*>valueaddr)[0]
     elif ifmt == 'i':
         checkbound(4, buf, offset)
