@@ -3,7 +3,7 @@ import pytest
 import pypytools
 from pypytools.codegen import Code
 import capnpy
-from capnpy.benchmarks.support import Instance, NamedTuple, pycapnp_struct, NamedTuple_Group
+from capnpy.benchmarks.support import Instance, NamedTuple, pycapnp_struct
 
 schema = capnpy.load_schema('capnpy.benchmarks.benchmarks')
 
