@@ -51,7 +51,7 @@ class Ptr(baseint):
     @property
     def offset(self):
         return cast.as_signed(self>>2 & 0x3fffffff, 30)
-        
+
     @property
     def extra(self):
         return self>>32
