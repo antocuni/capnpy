@@ -66,7 +66,7 @@ else:
 def pycapnp_struct(padding, bool, int8, int16, int32, int64, uint8, uint16, uint32,
                    uint64, float32, float64, text, group):
     if pycapnp is None:
-        pytest.skip('cannot import pycapnp')
+        py.test.skip('cannot import pycapnp')
     s = pycapnp_schema.CapnpStruct.new_message()
     s.padding = padding
     s.bool = bool

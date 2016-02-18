@@ -71,7 +71,7 @@ class TestGetAttr(object):
         assert res == self.N
 
     @pytest.mark.benchmark(group="getattr")
-    def test_text_foo(self, benchmark):
+    def xtest_text_foo(self, benchmark):
         def count_text(obj):
             myobjs = (obj._buf, obj._buf)
             res = 0
