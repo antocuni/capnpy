@@ -1,28 +1,21 @@
-# This is the pure python version. Note that it exists ptr.pyx, which is
-# automatically used if you enable cython compilation. The two versions should
-# stay in-sync, as they are supposed to implement the same API. Make sure that
-# every feature you add is tested by test_ptr.
+# This is the Cython version of ptr.py: the two versions should stay in-sync,
+# as they are supposed to implement the same API. Make sure that every feature
+# you add is tested by test_ptr.
+#
+# We need a separate version because cython is not able to fully optimize
+# propertyso a pyx file allows us to play bit tricks more easily
 
-import sys
 import struct
-from pypytools import cast
+import sys
+from libc.limits cimport LONG_MAX
+from libc.stdint cimport INT64_MAX
 
-if sys.maxint == 2147483647:
-    # capnpy ptrs are 64 bit, which means that they don't fit into a plain int
-    # if we are on a 32bit system.
-    #
-    # It's unclear if it's faster to just subclass long (as we are doing) or
-    # to maintain by hand a pair of two 32bit ints to represent a pointer: in
-    # theory, a pair should be faster, but I suspect that the
-    # heavily-optimized C-coded long is faster, at least on CPython. On PyPy,
-    # it's unclear and we should write proper benchmarks to known. If you are
-    # interested in maximizing performance on 32 bit, please try :)
-    baseint = long
-else:
-    baseint = int
+cdef long as_signed(long x, char bits):
+    if x >= 1<<(bits-1):
+        x -= 1<<bits
+    return x
 
-
-class Ptr(baseint):
+cdef class Ptr(int):
     ## lsb                      generic pointer                      msb
     ## +-+-----------------------------+-------------------------------+
     ## |A|             B               |               C               |
@@ -49,19 +42,19 @@ class Ptr(baseint):
     def to_bytes(self):
         return struct.pack('q', self)
 
-    @property
-    def kind(self):
-        return self & 0x3
+    property kind:
+        def __get__(self):
+            return self & 0x3
 
-    @property
-    def offset(self):
-        return cast.as_signed(self>>2 & 0x3fffffff, 30)
+    property offset:
+        def __get__(self):
+            return as_signed(self>>2 & 0x3fffffff, 30)
 
-    @property
-    def extra(self):
-        return self>>32
+    property extra:
+        def __get__(self):
+            return self>>32
 
-    def deref(self, offset):
+    cpdef deref(self, long offset):
         """
         Compute the offset of the object pointed to, assuming that the Ptr itself
         is at ``offset``
@@ -70,7 +63,7 @@ class Ptr(baseint):
         # pointer itself
         return offset + (self.offset+1)*8
 
-    def specialize(self):
+    cpdef specialize(self):
         """
         Return a StructPtr or ListPtr, depending on self.kind
         """
@@ -85,7 +78,7 @@ class Ptr(baseint):
             raise ValueError("Unknown ptr kind: %d" % kind)
 
 
-class StructPtr(Ptr):
+cdef class StructPtr(Ptr):
     ## lsb                      struct pointer                       msb
     ## +-+-----------------------------+---------------+---------------+
     ## |A|             B               |       C       |       D       |
@@ -108,16 +101,16 @@ class StructPtr(Ptr):
         ptr |= cls.KIND
         return cls(ptr)
 
-    @property
-    def data_size(self):
-        return self>>32 & 0xffff
+    property data_size:
+        def __get__(self):
+            return self>>32 & 0xffff
 
-    @property
-    def ptrs_size(self):
-        return self>>48 & 0xffff
+    property ptrs_size:
+        def __get__(self):
+            return self>>48 & 0xffff
 
 
-class ListPtr(Ptr):
+cdef class ListPtr(Ptr):
     ## lsb                       list pointer                        msb
     ## +-+-----------------------------+--+----------------------------+
     ## |A|             B               |C |             D              |
@@ -161,16 +154,16 @@ class ListPtr(Ptr):
         ptr |= cls.KIND
         return cls(ptr)
 
-    @property
-    def size_tag(self):
-        return self>>32 & 0x7
+    property size_tag:
+        def __get__(self):
+            return self>>32 & 0x7
 
-    @property
-    def item_count(self):
-        return self>>35
+    property item_count:
+        def __get__(self):
+            return self>>35
 
 
-class FarPtr(Ptr):
+cdef class FarPtr(Ptr):
     ## lsb                        far pointer                        msb
     ## +-+-+---------------------------+-------------------------------+
     ## |A|B|            C              |               D               |
@@ -195,14 +188,14 @@ class FarPtr(Ptr):
         ptr |= cls.KIND
         return cls(ptr)
 
-    @property
-    def landing_pad(self):
-        return self>>2 & 1
+    property landing_pad:
+        def __get__(self):
+            return self>>2 & 1
 
-    @property
-    def offset(self):
-        return self>>3 & 0x1fffffff
+    property offset:
+        def __get__(self):
+            return self>>3 & 0x1fffffff
 
-    @property
-    def target(self):
-        return self>>32
+    property target:
+        def __get__(self):
+            return self>>32
