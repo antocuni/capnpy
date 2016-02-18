@@ -112,7 +112,7 @@ class Structor(object):
 
         for f in self.fields:
             if not f.is_slot() or f.slot.type.is_bool():
-                raise Unsupported('Unsupported field type: %s' % f)
+                raise Unsupported('Unsupported field type: %s' % f.shortrepr())
             set(self._slot_offset(f), f.slot.get_fmt())
         #
         # remove all the Nones
@@ -177,7 +177,7 @@ class Structor(object):
                     pass # nothing to do
                 else:
                     code.w("raise NotImplementedError('Unsupported field type: {f}')",
-                           f=str(f))
+                           f=f.shortrepr())
                 #
             code.w('buf =', code.call('builder.build', buildnames))
             code.w('return buf')

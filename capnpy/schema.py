@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2016-02-18 11:14
+# generated on 2016-02-18 14:28
 
 from capnpy.struct_ import Struct as _Struct
 from capnpy.struct_ import assert_undefined as _assert_undefined
@@ -1190,7 +1190,7 @@ class Type(_Struct):
     
     @staticmethod
     def __new_anyPointer(*args):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Group object at 0x2235750>')
+        raise NotImplementedError('Unsupported field type: (name = "parameter", codeOrder = 1, discriminantValue = 1, group = (typeId = 11372142272178113157), ordinal = (implicit = void))')
     @classmethod
     def new_anyPointer(cls, *args):
         buf = cls.__new_anyPointer(*args)
@@ -1792,7 +1792,7 @@ class Field_slot(_Struct):
     
     @staticmethod
     def __new(*args):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x2235750>')
+        raise NotImplementedError('Unsupported field type: (name = "hadExplicitDefault", codeOrder = 3, discriminantValue = 65535, slot = (offset = 128, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 10))')
     
     def __init__(self, *args):
         buf = self.__new(*args)
@@ -1901,7 +1901,7 @@ class Field(_Struct):
     
     @staticmethod
     def __new_slot(*args):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x2235360>')
+        raise NotImplementedError('Unsupported field type: (name = "hadExplicitDefault", codeOrder = 3, discriminantValue = 65535, slot = (offset = 128, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 10))')
     @classmethod
     def new_slot(cls, *args):
         buf = cls.__new_slot(*args)
@@ -2193,7 +2193,7 @@ class Value(_Struct):
     
     @staticmethod
     def __new_bool(*args):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x2235670>')
+        raise NotImplementedError('Unsupported field type: (name = "bool", codeOrder = 1, discriminantValue = 1, slot = (offset = 16, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 1))')
     @classmethod
     def new_bool(cls, *args):
         buf = cls.__new_bool(*args)
@@ -2337,7 +2337,7 @@ class Value(_Struct):
     def __new_list(list):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 14
-        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x22354b0>')
+        raise NotImplementedError('Unsupported field type: (name = "list", codeOrder = 14, discriminantValue = 14, slot = (offset = 0, type = (anyPointer = (unconstrained = void)), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 14))')
         buf = builder.build(__which__, list)
         return buf
     @classmethod
@@ -2360,7 +2360,7 @@ class Value(_Struct):
     def __new_struct(struct):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 16
-        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x2235830>')
+        raise NotImplementedError('Unsupported field type: (name = "struct", codeOrder = 16, discriminantValue = 16, slot = (offset = 0, type = (anyPointer = (unconstrained = void)), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 16))')
         buf = builder.build(__which__, struct)
         return buf
     @classmethod
@@ -2383,7 +2383,7 @@ class Value(_Struct):
     def __new_anyPointer(anyPointer):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 18
-        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x22359f0>')
+        raise NotImplementedError('Unsupported field type: (name = "anyPointer", codeOrder = 18, discriminantValue = 18, slot = (offset = 0, type = (anyPointer = (unconstrained = void)), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 18))')
         buf = builder.build(__which__, anyPointer)
         return buf
     @classmethod
@@ -3291,7 +3291,7 @@ class Node_struct(_Struct):
     
     @staticmethod
     def __new(*args):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x2235b40>')
+        raise NotImplementedError('Unsupported field type: (name = "isGroup", codeOrder = 3, discriminantValue = 65535, slot = (offset = 224, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 10))')
     
     def __init__(self, *args):
         buf = self.__new(*args)
@@ -3428,7 +3428,7 @@ class Node_annotation(_Struct):
     
     @staticmethod
     def __new(*args):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x22357c0>')
+        raise NotImplementedError('Unsupported field type: (name = "targetsFile", codeOrder = 1, discriminantValue = 65535, slot = (offset = 112, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 19))')
     
     def __init__(self, *args):
         buf = self.__new(*args)
@@ -3743,7 +3743,7 @@ class Node(_Struct):
     
     @staticmethod
     def __new_file(*args):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x22b9750>')
+        raise NotImplementedError('Unsupported field type: (name = "isGeneric", codeOrder = 5, discriminantValue = 65535, slot = (offset = 288, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 33))')
     @classmethod
     def new_file(cls, *args):
         buf = cls.__new_file(*args)
@@ -3751,7 +3751,7 @@ class Node(_Struct):
     
     @staticmethod
     def __new_struct(*args):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x22b9a60>')
+        raise NotImplementedError('Unsupported field type: (name = "isGroup", codeOrder = 3, discriminantValue = 65535, slot = (offset = 224, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 10))')
     @classmethod
     def new_struct(cls, *args):
         buf = cls.__new_struct(*args)
@@ -3759,7 +3759,7 @@ class Node(_Struct):
     
     @staticmethod
     def __new_enum(*args):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x22b9750>')
+        raise NotImplementedError('Unsupported field type: (name = "isGeneric", codeOrder = 5, discriminantValue = 65535, slot = (offset = 288, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 33))')
     @classmethod
     def new_enum(cls, *args):
         buf = cls.__new_enum(*args)
@@ -3767,7 +3767,7 @@ class Node(_Struct):
     
     @staticmethod
     def __new_interface(*args):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x22b9750>')
+        raise NotImplementedError('Unsupported field type: (name = "isGeneric", codeOrder = 5, discriminantValue = 65535, slot = (offset = 288, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 33))')
     @classmethod
     def new_interface(cls, *args):
         buf = cls.__new_interface(*args)
@@ -3775,7 +3775,7 @@ class Node(_Struct):
     
     @staticmethod
     def __new_const(*args):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x22b9750>')
+        raise NotImplementedError('Unsupported field type: (name = "isGeneric", codeOrder = 5, discriminantValue = 65535, slot = (offset = 288, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 33))')
     @classmethod
     def new_const(cls, *args):
         buf = cls.__new_const(*args)
@@ -3783,7 +3783,7 @@ class Node(_Struct):
     
     @staticmethod
     def __new_annotation(*args):
-        raise NotImplementedError('Unsupported field type: <capnpy.schema.Field__Slot object at 0x22b9b40>')
+        raise NotImplementedError('Unsupported field type: (name = "targetsFile", codeOrder = 1, discriminantValue = 65535, slot = (offset = 112, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 19))')
     @classmethod
     def new_annotation(cls, *args):
         buf = cls.__new_annotation(*args)
