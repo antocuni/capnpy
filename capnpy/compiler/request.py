@@ -41,9 +41,6 @@ class RequestedFile:
         m.w("# THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy")
         m.w("# do not edit by hand")
         m.w("# generated on %s" % datetime.now().strftime("%Y-%m-%d %H:%M"))
-        m.w("# input files: ")
-        for f in m.request.requestedFiles:
-            m.w("#   - %s" % self.filename)
         m.w("")
         m.w("from capnpy.struct_ {cimport} Struct as _Struct")
         m.w("from capnpy.struct_ {cimport} assert_undefined as _assert_undefined")
@@ -100,7 +97,10 @@ class RequestedFile:
             fname = filenode.displayName
             ns.importname = m.register_import(fname)
             ns.fullpath = imp.name
-            if m.standalone:
+            if ns.fullpath == '/capnp/c++.capnp':
+                # ignore this file as it's useless for python
+                continue
+            elif m.standalone:
                 assert ns.fullpath.startswith('/')
                 assert ns.fullpath.endswith('.capnp')
                 ns.modname = ns.fullpath[1:-6].replace('/', '.')
