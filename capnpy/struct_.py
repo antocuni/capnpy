@@ -68,11 +68,6 @@ class Struct(Blob):
     def _read_raw_ptr(self, offset):
         return self._buf.read_raw_ptr(self._ptrs_offset+offset)
 
-    def _read_group(self, groupcls):
-        return groupcls.from_buffer(self._buf, self._data_offset,
-                                    self._data_size,
-                                    self._ptrs_size)
-
     def _ensure_union(self, expected_tag):
         tag = self.which()
         if tag != expected_tag:

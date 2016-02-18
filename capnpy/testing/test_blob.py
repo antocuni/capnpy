@@ -101,45 +101,6 @@ def test_null_pointers():
     assert blob._read_struct(0, Struct, default_=val) is val
     assert blob._read_list_or_struct(0, default_=val) is val
 
-
-def test_read_group():
-    ## struct Rectangle {
-    ##     a @0 :group {
-    ##         x @1 :Int64;
-    ##         y @2 :Int64;
-    ##     }
-    ##     b @3 :group {
-    ##         x @4 :Int64;
-    ##         y @5 :Int64;
-    ##     }
-    ## }
-    class GroupA(Struct):
-        pass
-    class GroupB(Struct):
-        pass
-    buf = ('garbage0'
-           '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
-           '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
-           '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
-           '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
-    #
-    # Note that the offsets inside groups are always "absolute" from the
-    # beginning of the struct. So, a.x has offset 0, b.x has offset 3.
-    #
-    blob = Struct.from_buffer(buf, 8, data_size=4, ptrs_size=0)
-    a = blob._read_group(GroupA)
-    assert isinstance(a, GroupA)
-    assert a._data_size == 4
-    assert a._ptrs_size == 0
-    assert a._read_data(0, Types.int64.ifmt) == 1  # a.x
-    #
-    b = blob._read_group(GroupB)
-    assert isinstance(b, GroupB)
-    assert b._data_size == 4
-    assert b._ptrs_size == 0
-    assert b._read_data(16, Types.int64.ifmt) == 3 # b.x
-
-
 def test_far_pointer():
     # see also test_list.test_far_pointer
     seg0 = ('\x00\x00\x00\x00\x00\x00\x00\x00'    # some garbage
