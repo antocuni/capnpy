@@ -69,3 +69,25 @@ class TestGetAttr(object):
                       float64=100, text='hello world', group=(100,))
         res = benchmark(count_text, obj)
         assert res == self.N
+
+    @pytest.mark.benchmark(group="getattr")
+    def test_text_foo(self, benchmark):
+        def count_text(obj):
+            myobjs = (obj._buf, obj._buf)
+            res = 0
+            for i in range(self.N):
+                obj = myobjs[i%2]
+                #obj.read_raw_ptr(0)
+                obj.read_ptr_xxx(0)
+                #obj.read_ptr(0)
+                res += 1
+                #res += (obj.text == 'hello world')
+            return res
+        #
+        Storage = schema.CapnpStruct
+        obj = Storage(padding=0, bool=100, int8=100, int16=100, int32=100, int64=100,
+                      uint8=100, uint16=100, uint32=100, uint64=100, float32=100,
+                      float64=100, text='hello world', group=(100,))
+        res = benchmark(count_text, obj)
+        assert res == self.N
+

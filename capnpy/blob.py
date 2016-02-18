@@ -25,7 +25,9 @@ class CapnpBuffer(object):
         return unpack_primitive(ifmt, self.s, offset)
 
     def read_raw_ptr(self, offset):
-        ptr = self.read_primitive(offset, Types.int64.ifmt)
+        # bah, Cython cannot constand-old Types.int64.ifmt at compile time it
+        # seems, hard-code it
+        ptr = self.read_primitive(offset, ord('q')) #Types.int64.ifmt)
         return Ptr(ptr)
 
     def read_ptr(self, offset):

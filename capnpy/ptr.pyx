@@ -7,8 +7,6 @@
 
 import struct
 import sys
-from libc.limits cimport LONG_MAX
-from libc.stdint cimport INT64_MAX
 
 cdef long as_signed(long x, char bits):
     if x >= 1<<(bits-1):
