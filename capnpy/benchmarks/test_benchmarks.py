@@ -48,12 +48,8 @@ class TestGetAttr(object):
         """)
         code.compile()
         sum_attr = code['sum_attr']
-        if Storage is NamedTuple:
-            group = NamedTuple_Group(100)
-        else:
-            group = (100,)
         obj = Storage(padding=0, bool=100, int8=100, int16=100, int32=100, int64=100,
                       uint8=100, uint16=100, uint32=100, uint64=100, float32=100,
-                      float64=100, text='some text', group=group)
+                      float64=100, text='some text', group=(100,))
         res = benchmark(sum_attr, obj)
         assert res == 100*self.N

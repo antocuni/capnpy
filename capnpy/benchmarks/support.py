@@ -1,19 +1,9 @@
 import py
 from collections import namedtuple
 
-try:
-    import capnp as pycapnp
-except ImportError:
-    pycapnp = None
-else:
-    thisdir = py.path.local(__file__).dirpath()
-    pycapnp_schema = pycapnp.load(str(thisdir.join('benchmarks.capnp')))
-
-
-NamedTuple = namedtuple('NamedTuple', ['padding', 'bool', 'int8', 'int16', 'int32', 'int64',
-                                       'uint8', 'uint16', 'uint32', 'uint64', 'float32',
-                                       'float64', 'text', 'group'])
-NamedTuple_Group = namedtuple('NamedTuple_Group', ['field'])
+# ============================================================
+# Instance storage
+# ============================================================
 
 class Instance(object):
     def __init__(self, padding, bool, int8, int16, int32, int64, uint8,
@@ -31,13 +21,47 @@ class Instance(object):
         self.float32 = float32
         self.float64 = float64
         self.text = text
-        self.group = Instance_Group(group[0])
+        self.group = Instance_Group(*group)
 
 class Instance_Group(object):
     def __init__(self, field):
         self.field = field
 
 
+
+
+# ============================================================
+# Namedtuple storage
+# ============================================================
+
+BaseNamedTuple = namedtuple('BaseNamedTuple', ['padding', 'bool', 'int8', 'int16',
+                                               'int32', 'int64', 'uint8', 'uint16',
+                                               'uint32', 'uint64', 'float32',
+                                               'float64', 'text', 'group'])
+NamedTuple_Group = namedtuple('NamedTuple_Group', ['field'])
+
+class NamedTuple(BaseNamedTuple):
+
+    def __new__(cls, padding, bool, int8, int16, int32, int64, uint8,
+                uint16, uint32, uint64, float32, float64, text, group):
+        group = NamedTuple_Group(group)
+        return BaseNamedTuple.__new__(cls, padding, bool, int8, int16, int32, int64,
+                                      uint8, uint16, uint32, uint64, float32, float64,
+                                      text, group)
+
+
+
+# ============================================================
+# pycapnp storage
+# ============================================================
+
+try:
+    import capnp as pycapnp
+except ImportError:
+    pycapnp = None
+else:
+    thisdir = py.path.local(__file__).dirpath()
+    pycapnp_schema = pycapnp.load(str(thisdir.join('benchmarks.capnp')))
 
 def pycapnp_struct(padding, bool, int8, int16, int32, int64, uint8, uint16, uint32,
                    uint64, float32, float64, text, group):
