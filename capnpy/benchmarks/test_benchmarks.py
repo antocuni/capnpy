@@ -33,7 +33,7 @@ class TestGetAttr(object):
     N = 2000
 
     @pytest.mark.benchmark(group="getattr")
-    def test_getattr(self, Storage, numeric_type, benchmark):
+    def test_numeric(self, Storage, numeric_type, benchmark):
         code = Code()
         code.global_scope.N = self.N
         code.global_scope.numeric_type = numeric_type
@@ -53,3 +53,19 @@ class TestGetAttr(object):
                       float64=100, text='some text', group=(100,))
         res = benchmark(sum_attr, obj)
         assert res == 100*self.N
+
+    @pytest.mark.benchmark(group="getattr")
+    def test_text(self, Storage, benchmark):
+        def count_text(obj):
+            myobjs = (obj, obj)
+            res = 0
+            for i in range(self.N):
+                obj = myobjs[i%2]
+                res += (obj.text == 'hello world')
+            return res
+        #
+        obj = Storage(padding=0, bool=100, int8=100, int16=100, int32=100, int64=100,
+                      uint8=100, uint16=100, uint32=100, uint64=100, float32=100,
+                      float64=100, text='hello world', group=(100,))
+        res = benchmark(count_text, obj)
+        assert res == self.N
