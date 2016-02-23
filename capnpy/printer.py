@@ -2,7 +2,7 @@ from __future__ import print_function
 import sys
 import struct
 from pypytools.jitview import Color
-from capnpy.ptr import Ptr, StructPtr, ListPtr, FarPtr
+from capnpy import ptr
 
 COLORS = [Color.darkred, Color.darkgreen, Color.brown,
           Color.darkblue, Color.purple, Color.teal]
@@ -64,10 +64,8 @@ class BufferPrinter(object):
             return '{:<9}'.format(s)
 
     def ptr(self, offset, s):
-        p = Ptr.from_bytes(s)
-        try:
-            p = p.specialize()
-        except ValueError:
+        p = struct.unpack('q', s)[0]
+        if ptr.kind(p) not in (ptr.STRUCT, ptr.LIST, ptr.FAR):
             return ' ' * 25
         #
         # try to display only "reasonable" ptrs; if the fields are too big, it
@@ -80,22 +78,26 @@ class BufferPrinter(object):
         #
         if p == 0:
             return  'NULL'.ljust(25)
-        if p.kind == StructPtr.KIND:
-            descr = 'struct {:>4} {:>3}'.format(if_in_range(p.data_size, 0, 100),
-                                                if_in_range(p.ptrs_size, 0, 100))
+        if ptr.kind(p) == ptr.STRUCT:
+            descr = 'struct {:>4} {:>3}'.format(
+                if_in_range(ptr.struct_data_size(p), 0, 100),
+                if_in_range(ptr.struct_ptrs_size(p), 0, 100))
 
-        elif p.kind == ListPtr.KIND:
-            tag = '<%s>' % self._list_tag(p.size_tag)
-            descr = 'list{:<5} {:>5}'.format(tag, if_in_range(p.item_count, 0, 65536))
+        elif ptr.kind(p) == ptr.LIST:
+            tag = '<%s>' % self._list_tag(ptr.list_size_tag(p))
+            descr = 'list{:<5} {:>5}'.format(
+                tag,
+                if_in_range(ptr.list_item_count(p), 0, 65536))
 
-        elif p.kind == FarPtr.KIND:
-            descr = 'far {:>7} {:>3}'.format(p.landing_pad,
-                                             if_in_range(p.target, 0, 100))
+        elif ptr.kind(p) == ptr.FAR:
+            descr = 'far {:>7} {:>3}'.format(
+                ptr.far_landing_pad(p),
+                if_in_range(ptr.far_target(p), 0, 100))
         else:
             descr = 'unknown ptr '
         #
-        if -1000 < p.offset < 1000:
-            dest = p.deref(offset)
+        if -1000 < ptr.offset(p) < 1000:
+            dest = ptr.deref(p, offset)
             dest = self.addr(dest)
             dest = dest.ljust(16)
         else:
