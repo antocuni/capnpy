@@ -7,6 +7,61 @@ import sys
 import struct
 from pypytools import cast
 
+STRUCT = 0
+LIST = 1
+FAR = 2
+
+def kind(ptr):
+    return ptr & 0x3
+
+def offset(ptr):
+    return cast.as_signed(ptr>>2 & 0x3fffffff, 30)
+
+def extra(ptr):
+    return ptr>>32
+
+def deref(ptr, ofs):
+    """
+    Compute the offset of the object pointed to, assuming that the pointer
+    is at ``offset``
+    """
+    # the +1 is needed because the offset is measured from the end of the
+    # pointer itptr
+    return ofs + (offset(ptr)+1)*8
+
+
+# STRUCT PTR
+# ==========
+
+def struct_data_size(ptr):
+    return ptr>>32 & 0xffff
+
+def struct_ptrs_size(ptr):
+    return ptr>>48 & 0xffff
+
+
+# LIST PTR
+# ========
+
+def list_size_tag(ptr):
+    return ptr>>32 & 0x7
+
+def list_item_count(ptr):
+    return ptr>>35
+
+# FAR PTR
+# =======
+
+def far_landing_pad(ptr):
+    return ptr>>2 & 1
+
+def far_offset(ptr):
+    return ptr>>3 & 0x1fffffff
+
+def far_target(ptr):
+    return ptr>>32
+
+
 if sys.maxint == 2147483647:
     # capnpy ptrs are 64 bit, which means that they don't fit into a plain int
     # if we are on a 32bit system.

@@ -1,6 +1,7 @@
 import py
 import struct
 from capnpy.blob import CapnpBuffer, Blob, Types, unpack_primitive
+from capnpy import ptr
 from capnpy.struct_ import Struct
 
 class BlobForTests(Blob):
@@ -46,8 +47,8 @@ def test_float64():
 def test_read_ptr():
     buf = '\x90\x01\x00\x00\x02\x00\x04\x00'
     b = CapnpBuffer(buf, None)
-    offset, ptr = b.read_ptr(0)
-    offset = ptr.deref(offset)
+    offset, p = b.read_ptr(0)
+    offset = ptr.deref(p, offset)
     assert offset == 808
 
 def test_read_struct():

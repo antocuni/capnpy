@@ -1,5 +1,6 @@
 import struct
 from capnpy.ptr import Ptr, StructPtr, ListPtr, FarPtr
+from capnpy import ptr
 from capnpy.blob import Blob, Types
 
 undefined = object()
@@ -91,10 +92,10 @@ class Struct(Blob):
         if self._ptrs_size == 0:
             return self._get_body_end()
         for i in range(self._ptrs_size):
-            ptr = self._read_raw_ptr(i*8)
-            assert ptr.kind != FarPtr.KIND
-            if ptr != 0:
-                return self._ptrs_offset + ptr.deref(i*8)
+            p = self._read_raw_ptr(i*8)
+            assert ptr.kind(p) != ptr.FAR
+            if p != 0:
+                return self._ptrs_offset + ptr.deref(p, i*8)
         #
         # if we are here, it means that all ptrs are null
         return self._get_body_end()
@@ -225,11 +226,11 @@ class Struct(Blob):
         parts = [data_buf]
         for j in range(self._ptrs_size):
             # read pointer, update its offset, and pack it
-            ptr = self._read_raw_ptr(j*8)
-            if ptr != 0:
-                assert ptr.kind != FarPtr.KIND
-                ptr = Ptr.new(ptr.kind, ptr.offset+additional_offset, ptr.extra)
-            s = struct.pack('q', ptr)
+            p = self._read_raw_ptr(j*8)
+            if p != 0:
+                assert ptr.kind(p) != ptr.FAR
+                p = Ptr.new(ptr.kind(p), ptr.offset(p)+additional_offset, ptr.extra(p))
+            s = struct.pack('q', p)
             parts.append(s)
         #
         body_buf = ''.join(parts)

@@ -8,6 +8,7 @@ import struct
 import capnpy
 from capnpy.util import extend
 from capnpy.ptr import Ptr, StructPtr, ListPtr, FarPtr
+from capnpy import ptr
 from capnpy.type import Types
 from capnpy.printer import BufferPrinter
 from capnpy.unpack import unpack_primitive
@@ -31,15 +32,14 @@ class CapnpBuffer(object):
     def read_raw_ptr(self, offset):
         # bah, Cython cannot constand-old Types.int64.ifmt at compile time it
         # seems, hard-code it
-        ptr = self.read_primitive(offset, ord('q')) #Types.int64.ifmt)
-        return Ptr(ptr)
+        return self.read_primitive(offset, ord('q')) #Types.int64.ifmt)
 
     def read_ptr(self, offset):
-        ptr = self.read_raw_ptr(offset)
-        if ptr.kind == FarPtr.KIND:
-            ptr = ptr.specialize()
-            return self._follow_far_ptr(ptr)
-        return offset, ptr
+        p = self.read_raw_ptr(offset)
+        if ptr.kind(p) == FarPtr.KIND:
+            p = FarPtr(p)
+            return self._follow_far_ptr(p)
+        return offset, p
 
     def _follow_far_ptr(self, ptr):
         """
@@ -92,63 +92,59 @@ class Blob(object):
         Read and dereference a struct pointer at the given offset.  It returns an
         instance of ``structcls`` pointing to the dereferenced struct.
         """
-        offset, ptr = self._read_ptr(offset)
-        if ptr == 0:
+        offset, p = self._read_ptr(offset)
+        if p == 0:
             return default_
-        assert ptr.kind == StructPtr.KIND
-        ptr = ptr.specialize()
-        struct_offset = ptr.deref(offset)
+        assert ptr.kind(p) == ptr.STRUCT
+        struct_offset = ptr.deref(p, offset)
         return structcls.from_buffer(self._buf,
                                      struct_offset,
-                                     ptr.data_size,
-                                     ptr.ptrs_size)
+                                     ptr.struct_data_size(p),
+                                     ptr.struct_ptrs_size(p))
 
 
     def _read_list(self, offset, listcls, item_type, default_=None):
-        offset, ptr = self._read_ptr(offset)
-        if ptr == 0:
+        offset, p = self._read_ptr(offset)
+        if p == 0:
             return default_
-        assert ptr.kind == ListPtr.KIND
-        ptr = ptr.specialize()
-        list_offset = ptr.deref(offset)
+        assert ptr.kind(p) == ptr.LIST
+        list_offset = ptr.deref(p, offset)
         return listcls.from_buffer(self._buf,
                                    list_offset,
-                                   ptr.size_tag,
-                                   ptr.item_count,
+                                   ptr.list_size_tag(p),
+                                   ptr.list_item_count(p),
                                    item_type)
 
     def _read_str_text(self, offset, default_=None):
         return self._read_str_data(offset, default_, additional_size=-1)
 
     def _read_str_data(self, offset, default_=None, additional_size=0):
-        offset, ptr = self._read_ptr(offset)
-        if ptr == 0:
+        offset, p = self._read_ptr(offset)
+        if p == 0:
             return default_
-        ptr = ptr.specialize()
-        assert ptr.kind == ListPtr.KIND
-        assert ptr.size_tag == ListPtr.SIZE_8
-        start = ptr.deref(offset)
-        end = start + ptr.item_count + additional_size
+        assert ptr.kind(p) == ptr.LIST
+        assert ptr.list_size_tag(p) == ListPtr.SIZE_8
+        start = ptr.deref(p, offset)
+        end = start + ptr.list_item_count(p) + additional_size
         return self._buf.s[start:end]
 
     def _read_list_or_struct(self, ptr_offset, default_=None):
-        ptr_offset, ptr = self._read_ptr(ptr_offset)
-        if ptr == 0:
+        ptr_offset, p = self._read_ptr(ptr_offset)
+        if p == 0:
             return default_
-        ptr = ptr.specialize()
-        blob_offet = ptr.deref(ptr_offset)
-        if ptr.kind == StructPtr.KIND:
+        blob_offet = ptr.deref(p, ptr_offset)
+        if ptr.kind(p) == ptr.STRUCT:
             Struct = capnpy.struct_.Struct
             return Struct.from_buffer(self._buf,
                                       blob_offet,
-                                      ptr.data_size, ptr.ptrs_size)
-        elif ptr.kind == ListPtr.KIND:
+                                      ptr.struct_data_size(p), ptr.struct_ptrs_size(p))
+        elif ptr.kind(p) == ptr.LIST:
             List = capnpy.list.List
             return List.from_buffer(self._buf,
                                     blob_offet,
-                                    ptr.size_tag,ptr.item_count, Blob)
+                                    ptr.list_size_tag(p), ptr.list_item_count(p), Blob)
         else:
-            assert False, 'Unkwown pointer kind: %s' % ptr.kind
+            assert False, 'Unkwown pointer kind: %s' % ptr.kind(p)
 
     def _print_buf(self, start=None, end='auto', **kwds):
         if start is None:
