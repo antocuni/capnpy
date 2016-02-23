@@ -36,22 +36,21 @@ class CapnpBuffer(object):
 
     def read_ptr(self, offset):
         p = self.read_raw_ptr(offset)
-        if ptr.kind(p) == FarPtr.KIND:
-            p = FarPtr(p)
+        if ptr.kind(p) == ptr.FAR:
             return self._follow_far_ptr(p)
         return offset, p
 
-    def _follow_far_ptr(self, ptr):
+    def _follow_far_ptr(self, p):
         """
         Read and return the ptr referenced by this far pointer
         """
         if self.segment_offsets is None:
             raise ValueError("Cannot follow a far pointer if there is no segment data")
-        assert ptr.landing_pad == 0
-        segment_start = self.segment_offsets[ptr.target] # in bytes
-        offset  = segment_start + ptr.offset*8
-        ptr = self.read_raw_ptr(offset)
-        return offset, ptr
+        assert ptr.far_landing_pad(p) == 0
+        segment_start = self.segment_offsets[ptr.far_target(p)] # in bytes
+        offset  = segment_start + ptr.far_offset(p)*8
+        p = self.read_raw_ptr(offset)
+        return offset, p
 
 
 class Blob(object):

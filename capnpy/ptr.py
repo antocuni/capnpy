@@ -96,14 +96,6 @@ class Ptr(baseint):
         ptr |= kind
         return cls(ptr)
 
-    @classmethod
-    def from_bytes(cls, s):
-        ptr = struct.unpack('q', s)[0]
-        return cls(ptr)
-
-    def to_bytes(self):
-        return struct.pack('q', self)
-
 
 class StructPtr(Ptr):
     ## lsb                      struct pointer                       msb
@@ -198,15 +190,3 @@ class FarPtr(Ptr):
         ptr |= landing_pad << 2
         ptr |= cls.KIND
         return cls(ptr)
-
-    @property
-    def landing_pad(self):
-        return self>>2 & 1
-
-    @property
-    def offset(self):
-        return self>>3 & 0x1fffffff
-
-    @property
-    def target(self):
-        return self>>32
