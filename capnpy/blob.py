@@ -7,7 +7,6 @@
 import struct
 import capnpy
 from capnpy.util import extend
-from capnpy.ptr import Ptr, StructPtr, ListPtr, FarPtr
 from capnpy import ptr
 from capnpy.type import Types
 from capnpy.printer import BufferPrinter
@@ -122,7 +121,7 @@ class Blob(object):
         if p == 0:
             return default_
         assert ptr.kind(p) == ptr.LIST
-        assert ptr.list_size_tag(p) == ListPtr.SIZE_8
+        assert ptr.list_size_tag(p) == ptr.LIST_SIZE_8
         start = ptr.deref(p, offset)
         end = start + ptr.list_item_count(p) + additional_size
         return self._buf.s[start:end]

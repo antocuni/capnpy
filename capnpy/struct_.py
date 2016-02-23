@@ -1,5 +1,4 @@
 import struct
-from capnpy.ptr import Ptr, StructPtr, ListPtr, FarPtr
 from capnpy import ptr
 from capnpy.blob import Blob, Types
 
@@ -63,7 +62,7 @@ class Struct(Blob):
 
     def _read_ptr(self, offset):
         if offset >= self._ptrs_size*8:
-            return offset, Ptr(0)
+            return offset, 0
         return self._buf.read_ptr(self._ptrs_offset+offset)
 
     def _read_raw_ptr(self, offset):
@@ -229,7 +228,9 @@ class Struct(Blob):
             p = self._read_raw_ptr(j*8)
             if p != 0:
                 assert ptr.kind(p) != ptr.FAR
-                p = Ptr.new(ptr.kind(p), ptr.offset(p)+additional_offset, ptr.extra(p))
+                p = ptr.new_generic(ptr.kind(p),
+                                    ptr.offset(p)+additional_offset,
+                                    ptr.extra(p))
             s = struct.pack('q', p)
             parts.append(s)
         #

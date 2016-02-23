@@ -11,6 +11,36 @@ STRUCT = 0
 LIST = 1
 FAR = 2
 
+LIST_SIZE_BIT = 1
+LIST_SIZE_8 = 2
+LIST_SIZE_16 = 3
+LIST_SIZE_32 = 4
+LIST_SIZE_64 = 5
+LIST_SIZE_PTR = 6
+LIST_SIZE_COMPOSITE = 7
+LIST_SIZE_LENGTH = (None, None, 1, 2, 4, 8, 8)
+
+## =================================================================
+##
+## lsb                      generic pointer                      msb
+## +-+-----------------------------+-------------------------------+
+## |A|             B               |               C               |
+## +-+-----------------------------+-------------------------------+
+##
+## A (2 bits) = 0, pointer kind (0 for struct, 1 for list)
+## B (30 bits) = Offset, in words, from the end of the pointer to the
+##     start of the struct's data section.  Signed.
+## C (32 bits) = extra info, depends on the kind
+##
+## =================================================================
+
+def new_generic(kind, offset, extra):
+    p = 0
+    p |= extra << 32
+    p |= offset << 2
+    p |= kind
+    return p
+
 def kind(ptr):
     return ptr & 0x3
 
@@ -30,8 +60,28 @@ def deref(ptr, ofs):
     return ofs + (offset(ptr)+1)*8
 
 
-# STRUCT PTR
-# ==========
+## =================================================================
+##
+## lsb                      struct pointer                       msb
+## +-+-----------------------------+---------------+---------------+
+## |A|             B               |       C       |       D       |
+## +-+-----------------------------+---------------+---------------+
+##
+## A (2 bits) = 0, to indicate that this is a struct pointer.
+## B (30 bits) = Offset, in words, from the end of the pointer to the
+##     start of the struct's data section.  Signed.
+## C (16 bits) = Size of the struct's data section, in words.
+## D (16 bits) = Size of the struct's pointer section, in words.
+##
+## =================================================================
+
+def new_struct(offset, data_size, ptrs_size):
+    p = 0
+    p |= ptrs_size << 48
+    p |= data_size << 32
+    p |= offset << 2
+    p |= STRUCT
+    return p
 
 def struct_data_size(ptr):
     return ptr>>32 & 0xffff
@@ -40,8 +90,36 @@ def struct_ptrs_size(ptr):
     return ptr>>48 & 0xffff
 
 
-# LIST PTR
-# ========
+## =================================================================
+##
+## lsb                       list pointer                        msb
+## +-+-----------------------------+--+----------------------------+
+## |A|             B               |C |             D              |
+## +-+-----------------------------+--+----------------------------+
+##
+## A (2 bits) = 1, to indicate that this is a list pointer.
+## B (30 bits) = Offset, in words, from the end of the pointer to the
+##     start of the first element of the list.  Signed.
+## C (3 bits) = Size of each element:
+##     0 = 0 (e.g. List(Void))
+##     1 = 1 bit
+##     2 = 1 byte
+##     3 = 2 bytes
+##     4 = 4 bytes
+##     5 = 8 bytes (non-pointer)
+##     6 = 8 bytes (pointer)
+##     7 = composite (see below)
+## D (29 bits) = Number of elements in the list, except when C is 7
+##
+## =================================================================
+
+def new_list(ptr_offset, size_tag, item_count):
+    p = 0
+    p |= item_count << 35
+    p |= size_tag << 32
+    p |= ptr_offset << 2
+    p |= LIST
+    return p
 
 def list_size_tag(ptr):
     return ptr>>32 & 0x7
@@ -49,8 +127,31 @@ def list_size_tag(ptr):
 def list_item_count(ptr):
     return ptr>>35
 
-# FAR PTR
-# =======
+
+## =================================================================
+##
+## lsb                        far pointer                        msb
+## +-+-+---------------------------+-------------------------------+
+## |A|B|            C              |               D               |
+## +-+-+---------------------------+-------------------------------+
+
+## A (2 bits) = 2, to indicate that this is a far pointer.
+## B (1 bit) = 0 if the landing pad is one word, 1 if it is two words.
+## C (29 bits) = Offset, in words, from the start of the target segment
+##     to the location of the far-pointer landing-pad within that
+##     segment.  Unsigned.
+## D (32 bits) = ID of the target segment.  (Segments are numbered
+##     sequentially starting from zero.)
+##
+## =================================================================
+
+def new_far(landing_pad, offset, target):
+    p = 0
+    p |= target << 32
+    p |= offset << 3
+    p |= landing_pad << 2
+    p |= FAR
+    return p
 
 def far_landing_pad(ptr):
     return ptr>>2 & 1
@@ -60,133 +161,3 @@ def far_offset(ptr):
 
 def far_target(ptr):
     return ptr>>32
-
-
-if sys.maxint == 2147483647:
-    # capnpy ptrs are 64 bit, which means that they don't fit into a plain int
-    # if we are on a 32bit system.
-    #
-    # It's unclear if it's faster to just subclass long (as we are doing) or
-    # to maintain by hand a pair of two 32bit ints to represent a pointer: in
-    # theory, a pair should be faster, but I suspect that the
-    # heavily-optimized C-coded long is faster, at least on CPython. On PyPy,
-    # it's unclear and we should write proper benchmarks to known. If you are
-    # interested in maximizing performance on 32 bit, please try :)
-    baseint = long
-else:
-    baseint = int
-
-
-class Ptr(baseint):
-    ## lsb                      generic pointer                      msb
-    ## +-+-----------------------------+-------------------------------+
-    ## |A|             B               |               C               |
-    ## +-+-----------------------------+-------------------------------+
-    ##
-    ## A (2 bits) = 0, pointer kind (0 for struct, 1 for list)
-    ## B (30 bits) = Offset, in words, from the end of the pointer to the
-    ##     start of the struct's data section.  Signed.
-    ## C (32 bits) = extra info, depends on the kind
-
-    @classmethod
-    def new(cls, kind, offset, extra):
-        ptr = 0
-        ptr |= extra << 32
-        ptr |= offset << 2
-        ptr |= kind
-        return cls(ptr)
-
-
-class StructPtr(Ptr):
-    ## lsb                      struct pointer                       msb
-    ## +-+-----------------------------+---------------+---------------+
-    ## |A|             B               |       C       |       D       |
-    ## +-+-----------------------------+---------------+---------------+
-    ##
-    ## A (2 bits) = 0, to indicate that this is a struct pointer.
-    ## B (30 bits) = Offset, in words, from the end of the pointer to the
-    ##     start of the struct's data section.  Signed.
-    ## C (16 bits) = Size of the struct's data section, in words.
-    ## D (16 bits) = Size of the struct's pointer section, in words.
-
-    KIND = 0
-
-    @classmethod
-    def new(cls, offset, data_size, ptrs_size):
-        ptr = 0
-        ptr |= ptrs_size << 48
-        ptr |= data_size << 32
-        ptr |= offset << 2
-        ptr |= cls.KIND
-        return cls(ptr)
-
-
-class ListPtr(Ptr):
-    ## lsb                       list pointer                        msb
-    ## +-+-----------------------------+--+----------------------------+
-    ## |A|             B               |C |             D              |
-    ## +-+-----------------------------+--+----------------------------+
-    ##
-    ## A (2 bits) = 1, to indicate that this is a list pointer.
-    ## B (30 bits) = Offset, in words, from the end of the pointer to the
-    ##     start of the first element of the list.  Signed.
-    ## C (3 bits) = Size of each element:
-    ##     0 = 0 (e.g. List(Void))
-    ##     1 = 1 bit
-    ##     2 = 1 byte
-    ##     3 = 2 bytes
-    ##     4 = 4 bytes
-    ##     5 = 8 bytes (non-pointer)
-    ##     6 = 8 bytes (pointer)
-    ##     7 = composite (see below)
-    ## D (29 bits) = Number of elements in the list, except when C is 7
-
-    KIND = 1
-
-    # size tag
-    SIZE_BIT = 1
-    SIZE_8 = 2
-    SIZE_16 = 3
-    SIZE_32 = 4
-    SIZE_64 = 5
-    SIZE_PTR = 6
-    SIZE_COMPOSITE = 7
-
-    # map each size tag to the corresponding length in bytes. SIZE_BIT is
-    # None, as it is handled specially
-    SIZE_LENGTH = (None, None, 1, 2, 4, 8, 8)
-
-    @classmethod
-    def new(cls, ptr_offset, size_tag, item_count):
-        ptr = 0
-        ptr |= item_count << 35
-        ptr |= size_tag << 32
-        ptr |= ptr_offset << 2
-        ptr |= cls.KIND
-        return cls(ptr)
-
-
-class FarPtr(Ptr):
-    ## lsb                        far pointer                        msb
-    ## +-+-+---------------------------+-------------------------------+
-    ## |A|B|            C              |               D               |
-    ## +-+-+---------------------------+-------------------------------+
-
-    ## A (2 bits) = 2, to indicate that this is a far pointer.
-    ## B (1 bit) = 0 if the landing pad is one word, 1 if it is two words.
-    ## C (29 bits) = Offset, in words, from the start of the target segment
-    ##     to the location of the far-pointer landing-pad within that
-    ##     segment.  Unsigned.
-    ## D (32 bits) = ID of the target segment.  (Segments are numbered
-    ##     sequentially starting from zero.)
-
-    KIND = 2
-
-    @classmethod
-    def new(cls, landing_pad, offset, target):
-        ptr = 0
-        ptr |= target << 32
-        ptr |= offset << 3
-        ptr |= landing_pad << 2
-        ptr |= cls.KIND
-        return cls(ptr)

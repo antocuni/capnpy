@@ -1,7 +1,6 @@
 import struct
 import capnpy
 from capnpy.blob import Blob, Types
-from capnpy.ptr import Ptr, StructPtr, ListPtr
 from capnpy import ptr
 from capnpy import listbuilder
 from capnpy.util import text_repr, float32_repr, float64_repr
@@ -37,18 +36,18 @@ class List(Blob):
 
     def _set_list_tag(self, size_tag, item_count):
         self._size_tag = size_tag
-        if size_tag == ListPtr.SIZE_COMPOSITE:
+        if size_tag == ptr.LIST_SIZE_COMPOSITE:
             tag = self._read_data(0, Types.int64.ifmt)
             self._tag = tag
             self._item_count = ptr.offset(tag)
             self._item_length = (ptr.struct_data_size(tag)+ptr.struct_ptrs_size(tag))*8
             self._item_offset = 8
-        elif size_tag == ListPtr.SIZE_BIT:
+        elif size_tag == ptr.LIST_SIZE_BIT:
             raise ValueError('Lists of bits are not supported')
         else:
             self._tag = None
             self._item_count = item_count
-            self._item_length = ListPtr.SIZE_LENGTH[size_tag]
+            self._item_length = ptr.LIST_SIZE_LENGTH[size_tag]
             self._item_offset = 0
 
     def __repr__(self):
@@ -88,9 +87,9 @@ class List(Blob):
         return self._offset
 
     def _get_body_end(self):
-        if self._size_tag == ListPtr.SIZE_COMPOSITE:
+        if self._size_tag == ptr.LIST_SIZE_COMPOSITE:
             return self._get_body_end_composite()
-        elif self._size_tag == ListPtr.SIZE_PTR:
+        elif self._size_tag == ptr.LIST_SIZE_PTR:
             return self._get_body_end_ptr()
         else:
             return self._get_body_end_scalar()

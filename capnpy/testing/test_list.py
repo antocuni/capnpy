@@ -1,6 +1,6 @@
 import py
 from capnpy.blob import CapnpBuffer, Blob, Types
-from capnpy.ptr import ListPtr
+from capnpy import ptr
 from capnpy.list import PrimitiveList, StructList, StringList
 from capnpy.struct_ import Struct
 from capnpy.testing.test_blob import BlobForTests
@@ -310,9 +310,9 @@ def test_list_comparisons():
             '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     buf2 = 'garbage0' + buf1
     #
-    lst1 = PrimitiveList.from_buffer(buf1, 0, ListPtr.SIZE_64, 4, Types.int64)
-    lst2 = PrimitiveList.from_buffer(buf2, 8, ListPtr.SIZE_64, 4, Types.int64)
-    lst3 = PrimitiveList.from_buffer(buf1, 0, ListPtr.SIZE_64, 3, Types.int64)
+    lst1 = PrimitiveList.from_buffer(buf1, 0, ptr.LIST_SIZE_64, 4, Types.int64)
+    lst2 = PrimitiveList.from_buffer(buf2, 8, ptr.LIST_SIZE_64, 4, Types.int64)
+    lst3 = PrimitiveList.from_buffer(buf1, 0, ptr.LIST_SIZE_64, 3, Types.int64)
     #
     assert lst1 == lst2
     assert not lst1 != lst2

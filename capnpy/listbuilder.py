@@ -1,8 +1,8 @@
 import struct
-from capnpy.ptr import Ptr, ListPtr, FarPtr
 from capnpy.blob import Types
 from capnpy.builder import AbstractBuilder
 from capnpy.printer import BufferPrinter
+from capnpy import ptr
 
 class ListBuilder(AbstractBuilder):
 
@@ -36,13 +36,13 @@ class PrimitiveItemBuilder(object):
     def get_item_length(cls, item_type):
         length = item_type.calcsize()
         if length == 1:
-            return length, ListPtr.SIZE_8
+            return length, ptr.LIST_SIZE_8
         elif length == 2:
-            return length, ListPtr.SIZE_16
+            return length, ptr.LIST_SIZE_16
         elif length == 4:
-            return length, ListPtr.SIZE_32
+            return length, ptr.LIST_SIZE_32
         elif length == 8:
-            return length, ListPtr.SIZE_64
+            return length, ptr.LIST_SIZE_64
         else:
             raise ValueError('Unsupported size: %d' % length)
 
@@ -60,7 +60,7 @@ class StructItemBuilder(object):
                       item_type.__static_ptrs_size__)   # in words
         total_length = total_size*8                     # in bytes
         if total_length > 8:
-            return total_length, ListPtr.SIZE_COMPOSITE
+            return total_length, ptr.LIST_SIZE_COMPOSITE
         assert False, 'XXX'
 
     @classmethod
@@ -101,7 +101,7 @@ class StringItemBuilder(object):
 
     @classmethod
     def get_item_length(cls, item_type):
-        return 8, ListPtr.SIZE_PTR
+        return 8, ptr.LIST_SIZE_PTR
 
     @classmethod
     def pack_item(cls, listbuilder, i, item):

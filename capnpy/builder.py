@@ -1,5 +1,5 @@
 import struct
-from capnpy.ptr import StructPtr, ListPtr
+from capnpy import ptr
 
 class AbstractBuilder(object):
 
@@ -38,8 +38,8 @@ class AbstractBuilder(object):
         # garbage and wrong offsets. See
         # test_alloc_list_of_structs_with_pointers
         self._alloc(value.compact()._buf.s)
-        ptr = StructPtr.new(ptr_offset, data_size, ptrs_size)
-        return ptr
+        p = ptr.new_struct(ptr_offset, data_size, ptrs_size)
+        return p
 
     def alloc_data(self, offset, value, suffix=None):
         if value is None:
@@ -47,17 +47,17 @@ class AbstractBuilder(object):
         if suffix:
             value += suffix
         ptr_offset = self._calc_relative_offset(offset)
-        ptr = ListPtr.new(ptr_offset, ListPtr.SIZE_8, len(value))
+        p = ptr.new_list(ptr_offset, ptr.LIST_SIZE_8, len(value))
         self._alloc(value)
-        return ptr
+        return p
 
     def alloc_text(self, offset, value):
         return self.alloc_data(offset, value, suffix='\0')
 
     def _new_ptrlist(self, size_tag, ptr_offset, item_type, item_count):
-        if size_tag != ListPtr.SIZE_COMPOSITE:
+        if size_tag != ptr.LIST_SIZE_COMPOSITE:
             # a plain ptr
-            return ListPtr.new(ptr_offset, size_tag, item_count)
+            return ptr.new_list(ptr_offset, size_tag, item_count)
         #
         # if size is composite, ptr contains the total size in words, and
         # we also need to emit a "list tag"
@@ -66,9 +66,9 @@ class AbstractBuilder(object):
         total_words = (data_size+ptrs_size) * item_count
         #
         # emit the tag
-        tag = StructPtr.new(item_count, data_size, ptrs_size)
+        tag = ptr.new_struct(item_count, data_size, ptrs_size)
         self._alloc(struct.pack('<q', tag))
-        return ListPtr.new(ptr_offset, ListPtr.SIZE_COMPOSITE, total_words)
+        return ptr.new_list(ptr_offset, ptr.LIST_SIZE_COMPOSITE, total_words)
 
     def alloc_list(self, offset, listcls, item_type, lst):
         from capnpy.listbuilder import ListBuilder

@@ -2,7 +2,7 @@ import struct
 from cStringIO import StringIO
 from capnpy.blob import CapnpBuffer
 from capnpy.struct_ import Struct
-from capnpy.ptr import StructPtr
+from capnpy import ptr
 
 def load(f, payload_type):
     """
@@ -86,13 +86,13 @@ def dumps(obj):
     a = obj._get_body_start()
     b = obj._get_extra_end()
     buf = obj._buf.s[a:b]
-    ptr = StructPtr.new(0, obj._data_size, obj._ptrs_size)
+    p = ptr.new_struct(0, obj._data_size, obj._ptrs_size)
     #
     segment_count = 1
     if len(buf) % 8 != 0:
         padding = 8 - (len(buf) % 8)
         buf += '\x00' * padding
     segment_size = len(buf)/8 + 1 # +1 is for the ptr
-    header = struct.pack('iiQ', segment_count-1, segment_size, ptr)
+    header = struct.pack('iiQ', segment_count-1, segment_size, p)
     return header + buf
 
