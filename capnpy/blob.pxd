@@ -1,12 +1,12 @@
 from capnpy.type cimport BuiltinType
 from capnpy.unpack cimport unpack_primitive
-from capnpy.ptr cimport Ptr, StructPtr, ListPtr, FarPtr
+from capnpy cimport ptr
 
 cdef class CapnpBuffer:
     cdef readonly bytes s
     cdef readonly object segment_offsets
     cpdef read_primitive(self, long offset, char ifmt)
-    cpdef Ptr read_raw_ptr(self, long offset)
+    cpdef long read_raw_ptr(self, long offset)
     cpdef read_ptr(self, long offset)
     
 cdef class Blob:

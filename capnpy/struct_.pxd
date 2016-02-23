@@ -1,5 +1,4 @@
 from capnpy.blob cimport Blob
-from capnpy.ptr cimport Ptr
 
 cpdef assert_undefined(object val, str name, str other_name)
 

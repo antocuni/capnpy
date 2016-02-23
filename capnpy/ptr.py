@@ -5,7 +5,16 @@
 
 import sys
 import struct
-from pypytools import cast
+import pypytools
+
+def as_signed(x, bits):
+    if x >= 1<<(bits-1):
+        x -= 1<<bits
+    return x
+
+if pypytools.IS_PYPY:
+    from pypytools.cast import as_signed
+
 
 STRUCT = 0
 LIST = 1
@@ -45,7 +54,7 @@ def kind(ptr):
     return ptr & 0x3
 
 def offset(ptr):
-    return cast.as_signed(ptr>>2 & 0x3fffffff, 30)
+    return as_signed(ptr>>2 & 0x3fffffff, 30)
 
 def extra(ptr):
     return ptr>>32

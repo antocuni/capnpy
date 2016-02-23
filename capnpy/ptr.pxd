@@ -1,13 +1,16 @@
-cdef class Ptr(int):
-    cpdef deref(self, long offset)
-    cpdef specialize(self)
-    
-cdef class StructPtr(Ptr):
-    pass
-
-cdef class ListPtr(Ptr):
-    pass
-
-cdef class FarPtr(Ptr):
-    pass
-
+cpdef long as_signed(long x, char bits)
+cpdef long new_generic(long kind, long offset, long extra)
+cpdef long kind(long ptr)
+cpdef long offset(long ptr)
+cpdef long extra(long ptr)
+cpdef long deref(long ptr, long ofs)
+cpdef long new_struct(long offset, long data_size, long ptrs_size)
+cpdef long struct_data_size(long ptr)
+cpdef long struct_ptrs_size(long ptr)
+cpdef long new_list(long ptr_offset, long size_tag, long item_count)
+cpdef long list_size_tag(long ptr)
+cpdef long list_item_count(long ptr)
+cpdef long new_far(long landing_pad, long offset, long target)
+cpdef long far_landing_pad(long ptr)
+cpdef long far_offset(long ptr)
+cpdef long far_target(long ptr)
