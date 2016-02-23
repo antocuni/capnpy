@@ -104,41 +104,6 @@ class Ptr(baseint):
     def to_bytes(self):
         return struct.pack('q', self)
 
-    @property
-    def kind(self):
-        return self & 0x3
-
-    @property
-    def offset(self):
-        return cast.as_signed(self>>2 & 0x3fffffff, 30)
-
-    @property
-    def extra(self):
-        return self>>32
-
-    def deref(self, offset):
-        """
-        Compute the offset of the object pointed to, assuming that the Ptr itself
-        is at ``offset``
-        """
-        # the +1 is needed because the offset is measured from the end of the
-        # pointer itself
-        return offset + (self.offset+1)*8
-
-    def specialize(self):
-        """
-        Return a StructPtr or ListPtr, depending on self.kind
-        """
-        kind = self.kind
-        if kind == StructPtr.KIND:
-            return StructPtr(self)
-        elif kind == ListPtr.KIND:
-            return ListPtr(self)
-        elif kind == FarPtr.KIND:
-            return FarPtr(self)
-        else:
-            raise ValueError("Unknown ptr kind: %d" % kind)
-
 
 class StructPtr(Ptr):
     ## lsb                      struct pointer                       msb
@@ -162,14 +127,6 @@ class StructPtr(Ptr):
         ptr |= offset << 2
         ptr |= cls.KIND
         return cls(ptr)
-
-    @property
-    def data_size(self):
-        return self>>32 & 0xffff
-
-    @property
-    def ptrs_size(self):
-        return self>>48 & 0xffff
 
 
 class ListPtr(Ptr):
@@ -215,14 +172,6 @@ class ListPtr(Ptr):
         ptr |= ptr_offset << 2
         ptr |= cls.KIND
         return cls(ptr)
-
-    @property
-    def size_tag(self):
-        return self>>32 & 0x7
-
-    @property
-    def item_count(self):
-        return self>>35
 
 
 class FarPtr(Ptr):

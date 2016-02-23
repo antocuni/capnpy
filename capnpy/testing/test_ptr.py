@@ -1,43 +1,40 @@
 import struct
 from capnpy.ptr import Ptr, StructPtr, ListPtr, FarPtr
+from capnpy import ptr
 
-def test_Ptr_generic():
-    ptr = Ptr(0x0004000200000190)
-    assert ptr.kind == StructPtr.KIND
-    assert ptr.offset == 100
-    ptr2 = ptr.specialize()
-    assert isinstance(ptr2, StructPtr)
+def test_kind_offset():
+    p = 0x0004000200000190
+    assert ptr.kind(p) == ptr.STRUCT
+    assert ptr.offset(p) == 100
     #
-    ptr = Ptr(0x0000064700000101)
-    ptr2 = ptr.specialize()
-    assert isinstance(ptr2, ListPtr)
+    p2 = 0x0000064700000101
+    assert ptr.kind(p2) == ptr.LIST
 
 
-def test_Ptr_deref():
-    ptr = Ptr(0x0004000200000190)
-    assert ptr.offset == 100
-    offset = ptr.deref(8)
+def test_deref():
+    p = 0x0004000200000190
+    assert ptr.offset(p) == 100
+    offset = ptr.deref(p, 8)
     assert offset == 816
 
-def test_StructPtr():
+def test_struct_ptr():
     #       0004             ptrs size
     #           0002         data size
     #               00000190 offset<<2
     #                      0 kind
-    ptr = 0x0004000200000190
-    ptr = StructPtr(ptr)
-    assert ptr.kind == StructPtr.KIND
-    assert ptr.offset == 100
-    assert ptr.data_size == 2
-    assert ptr.ptrs_size == 4
+    p = 0x0004000200000190
+    assert ptr.kind(p) == ptr.STRUCT
+    assert ptr.offset(p) == 100
+    assert ptr.struct_data_size(p) == 2
+    assert ptr.struct_ptrs_size(p) == 4
 
 def test_StructPtr_new():
-    ptr = StructPtr.new(100, 2, 4)
-    assert ptr.kind == StructPtr.KIND
-    assert ptr.offset == 100
-    assert ptr.data_size == 2
-    assert ptr.ptrs_size == 4
-    assert ptr == 0x0004000200000190
+    p = StructPtr.new(100, 2, 4)
+    assert ptr.kind(p) == ptr.STRUCT
+    assert ptr.offset(p) == 100
+    assert ptr.struct_data_size(p) == 2
+    assert ptr.struct_ptrs_size(p) == 4
+    assert p == 0x0004000200000190
 
 
 def test_ListPtr():
@@ -45,46 +42,43 @@ def test_ListPtr():
     #              7         item_size
     #               00000100 offset<<2
     #                      1 kind
-    ptr = 0x0000064700000101
-    ptr = ListPtr(ptr)
-    assert ptr.kind == ListPtr.KIND
-    assert ptr.offset == 64
-    assert ptr.size_tag == 7
-    assert ptr.item_count == 200
+    p = 0x0000064700000101
+    assert ptr.kind(p) == ptr.LIST
+    assert ptr.offset(p) == 64
+    assert ptr.list_size_tag(p) == 7
+    assert ptr.list_item_count(p) == 200
 
 def test_ListPtr_new():
-    ptr = ListPtr.new(64, 7, 200)
-    assert ptr.kind == ListPtr.KIND
-    assert ptr.offset == 64
-    assert ptr.size_tag == 7
-    assert ptr.item_count == 200
-    assert ptr == 0x0000064700000101
+    p = ListPtr.new(64, 7, 200)
+    assert ptr.kind(p) == ptr.LIST
+    assert ptr.offset(p) == 64
+    assert ptr.list_size_tag(p) == 7
+    assert ptr.list_item_count(p) == 200
+    assert p == 0x0000064700000101
     
 def test_signedness():
     #       0000001          item_count<<1
     #              7         item_size
     #               ffffffe0 offset<<2
     #                      1 kind
-    ptr = 0x00000017ffffffe1
-    ptr = ListPtr(ptr)
-    assert ptr.offset == -8
+    p = 0x00000017ffffffe1
+    assert ptr.offset(p) == -8
 
 def test_FarPtr():
     #       00000001         target
     #               000016aa offset
     #                      a landing
     #                      a kind
-    ptr = 0x00000001000016aa
-    ptr = FarPtr(ptr)
-    assert ptr.kind == FarPtr.KIND
-    assert ptr.landing_pad == 0
-    assert ptr.offset == 725
-    assert ptr.target == 1
+    p = 0x00000001000016aa
+    assert ptr.kind(p) == ptr.FAR
+    assert ptr.far_landing_pad(p) == 0
+    assert ptr.far_offset(p) == 725
+    assert ptr.far_target(p) == 1
 
 def test_FarPtr_new():
-    ptr = FarPtr.new(0, 725, 1)
-    assert ptr.kind == FarPtr.KIND
-    assert ptr.landing_pad == 0
-    assert ptr.offset == 725
-    assert ptr.target == 1
-    assert ptr == 0x00000001000016aa
+    p = FarPtr.new(0, 725, 1)
+    assert ptr.kind(p) == ptr.FAR
+    assert ptr.far_landing_pad(p) == 0
+    assert ptr.far_offset(p) == 725
+    assert ptr.far_target(p) == 1
+    assert p == 0x00000001000016aa

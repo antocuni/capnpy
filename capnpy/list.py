@@ -2,6 +2,7 @@ import struct
 import capnpy
 from capnpy.blob import Blob, Types
 from capnpy.ptr import Ptr, StructPtr, ListPtr
+from capnpy import ptr
 from capnpy import listbuilder
 from capnpy.util import text_repr, float32_repr, float64_repr
 
@@ -38,10 +39,9 @@ class List(Blob):
         self._size_tag = size_tag
         if size_tag == ListPtr.SIZE_COMPOSITE:
             tag = self._read_data(0, Types.int64.ifmt)
-            tag = StructPtr(tag)
             self._tag = tag
-            self._item_count = tag.offset
-            self._item_length = (tag.data_size+tag.ptrs_size)*8
+            self._item_count = ptr.offset(tag)
+            self._item_length = (ptr.struct_data_size(tag)+ptr.struct_ptrs_size(tag))*8
             self._item_offset = 8
         elif size_tag == ListPtr.SIZE_BIT:
             raise ValueError('Lists of bits are not supported')
@@ -109,7 +109,7 @@ class List(Blob):
         # 3) if they have pointers, the end of the list is at the end of
         #    the extra of the latest item having a pointer field set
 
-        if self._tag.ptrs_size == 0:
+        if ptr.struct_ptrs_size(self._tag) == 0:
             # case 1
             return self._get_body_end_scalar()+8 # +8 is for the tag
 
@@ -119,8 +119,8 @@ class List(Blob):
             struct_offset += self._offset
             mystruct = Struct.from_buffer(self._buf,
                                           struct_offset,
-                                          self._tag.data_size,
-                                          self._tag.ptrs_size)
+                                          ptr.struct_data_size(self._tag),
+                                          ptr.struct_ptrs_size(self._tag))
             end = mystruct._get_extra_end_maybe()
             if end is not None:
                 # case 3
@@ -187,8 +187,8 @@ class StructList(List):
     def _read_list_item(self, offset):
         return self._item_type.from_buffer(self._buf,
                                            self._offset+offset,
-                                           self._tag.data_size,
-                                           self._tag.ptrs_size)
+                                           ptr.struct_data_size(self._tag),
+                                           ptr.struct_ptrs_size(self._tag))
 
     def _item_repr(self, item):
         return item.shortrepr()
