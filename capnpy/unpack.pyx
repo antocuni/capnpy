@@ -54,3 +54,13 @@ cpdef unpack_primitive(char ifmt, bytes buf, int offset):
     raise ValueError('unknown fmt %s' % chr(ifmt))
 
 
+cpdef long unpack_int64(bytes buf, int offset):
+    cdef char* cbuf
+    cdef void* valueaddr
+    #
+    if offset < 0:
+        raise IndexError('Offset out of bounds: %d' % offset)
+    cbuf = buf
+    valueaddr = cbuf + offset
+    checkbound(8, buf, offset)
+    return (<int64_t*>valueaddr)[0]

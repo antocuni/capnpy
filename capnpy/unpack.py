@@ -25,3 +25,6 @@ def unpack_primitive(ifmt, buf, offset):
     if offset < 0 or offset + struct.calcsize(fmt) > len(buf):
         raise IndexError('Offset out of bounds: %d' % offset)
     return struct.unpack_from(fmt, buf, offset)[0]
+
+def unpack_int64(buf, offset):
+    return unpack_primitive(ord('q'), buf, offset)

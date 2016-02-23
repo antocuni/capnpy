@@ -10,7 +10,7 @@ from capnpy.util import extend
 from capnpy import ptr
 from capnpy.type import Types
 from capnpy.printer import BufferPrinter
-from capnpy.unpack import unpack_primitive
+from capnpy.unpack import unpack_primitive, unpack_int64
 
 try:
     import cython
@@ -29,9 +29,7 @@ class CapnpBuffer(object):
         return unpack_primitive(ifmt, self.s, offset)
 
     def read_raw_ptr(self, offset):
-        # bah, Cython cannot constand-old Types.int64.ifmt at compile time it
-        # seems, hard-code it
-        return self.read_primitive(offset, ord('q')) #Types.int64.ifmt)
+        return unpack_int64(self.s, offset)
 
     def read_ptr(self, offset):
         p = self.read_raw_ptr(offset)

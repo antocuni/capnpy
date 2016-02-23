@@ -71,14 +71,13 @@ class TestGetAttr(object):
         assert res == self.N
 
     @pytest.mark.benchmark(group="getattr")
-    def xtest_text_foo(self, benchmark):
+    def test_text_foo(self, benchmark):
         def count_text(obj):
             myobjs = (obj._buf, obj._buf)
             res = 0
             for i in range(self.N):
                 obj = myobjs[i%2]
-                #obj.read_raw_ptr(0)
-                obj.read_ptr_xxx(0)
+                obj.read_raw_ptr(0)
                 #obj.read_ptr(0)
                 res += 1
                 #res += (obj.text == 'hello world')

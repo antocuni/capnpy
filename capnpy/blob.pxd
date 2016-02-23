@@ -1,5 +1,5 @@
 from capnpy.type cimport BuiltinType
-from capnpy.unpack cimport unpack_primitive
+from capnpy.unpack cimport unpack_primitive, unpack_int64
 from capnpy cimport ptr
 
 cdef class CapnpBuffer:
