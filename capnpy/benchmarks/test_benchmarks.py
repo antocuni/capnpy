@@ -2,25 +2,12 @@ import py
 import pytest
 import pypytools
 from pypytools.codegen import Code
-import capnpy
-from capnpy.benchmarks.support import Instance, NamedTuple, PyCapnp
+from capnpy.benchmarks import support
 
-schema = capnpy.load_schema('capnpy.benchmarks.benchmarks')
-
-
-@pytest.fixture(params=('instance', 'namedtuple', 'capnpy_', 'pycapnp'))
-def storage(request):
+@pytest.fixture(params=('Instance', 'NamedTuple', 'Capnpy', 'PyCapnp'))
+def schema(request):
     p = request.param
-    if p == 'instance':
-        return Instance
-    elif p == 'namedtuple':
-        return NamedTuple
-    elif p == 'capnpy_':
-        return schema
-    elif p == 'pycapnp':
-        return PyCapnp
-    else:
-        raise NotImplementedError
+    return getattr(support, p)
 
 # XXX: we should include bool as soon as it's supported by structor
 @pytest.fixture(params=('int64', 'int8', 'int16', 'int32', 'uint8', 'uint16',
@@ -33,7 +20,7 @@ class TestGetAttr(object):
     N = 2000
 
     @pytest.mark.benchmark(group="getattr")
-    def test_numeric(self, storage, numeric_type, benchmark):
+    def test_numeric(self, schema, numeric_type, benchmark):
         code = Code()
         code.global_scope.N = self.N
         code.global_scope.numeric_type = numeric_type
@@ -48,14 +35,14 @@ class TestGetAttr(object):
         """)
         code.compile()
         sum_attr = code['sum_attr']
-        obj = storage.MyStruct(padding=0, bool=100, int8=100, int16=100, int32=100,
-                               int64=100, uint8=100, uint16=100, uint32=100, uint64=100,
-                               float32=100, float64=100, text='some text', group=(100,))
+        obj = schema.MyStruct(padding=0, bool=100, int8=100, int16=100, int32=100,
+                              int64=100, uint8=100, uint16=100, uint32=100, uint64=100,
+                              float32=100, float64=100, text='some text', group=(100,))
         res = benchmark(sum_attr, obj)
         assert res == 100*self.N
 
     @pytest.mark.benchmark(group="getattr")
-    def test_text(self, storage, benchmark):
+    def test_text(self, schema, benchmark):
         def count_text(obj):
             myobjs = (obj, obj)
             res = 0
@@ -64,9 +51,9 @@ class TestGetAttr(object):
                 res += (obj.text == 'hello world')
             return res
         #
-        obj = storage.MyStruct(padding=0, bool=100, int8=100, int16=100, int32=100,
-                               int64=100, uint8=100, uint16=100, uint32=100, uint64=100,
-                               float32=100, float64=100, text='hello world',
-                               group=(100,))
+        obj = schema.MyStruct(padding=0, bool=100, int8=100, int16=100, int32=100,
+                              int64=100, uint8=100, uint16=100, uint32=100, uint64=100,
+                              float32=100, float64=100, text='hello world',
+                              group=(100,))
         res = benchmark(count_text, obj)
         assert res == self.N
