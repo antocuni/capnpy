@@ -1,13 +1,14 @@
-cdef int STRUCT
-cdef int LIST
-cdef int FAR
-cdef int LIST_SIZE_BIT
-cdef int LIST_SIZE_8
-cdef int LIST_SIZE_16
-cdef int LIST_SIZE_32
-cdef int LIST_SIZE_64
-cdef int LIST_SIZE_PTR
-cdef int LIST_SIZE_COMPOSITE
+cdef extern from "ptr.h":
+    cdef int STRUCT "_STRUCT"
+    cdef int LIST "_LIST"
+    cdef int FAR "_FAR"
+    cdef int LIST_SIZE_BIT "_LIST_SIZE_BIT"
+    cdef int LIST_SIZE_8 "_LIST_SIZE_8"
+    cdef int LIST_SIZE_16 "_LIST_SIZE_16"
+    cdef int LIST_SIZE_32 "_LIST_SIZE_32"
+    cdef int LIST_SIZE_64 "_LIST_SIZE_64"
+    cdef int LIST_SIZE_PTR "_LIST_SIZE_PTR"
+    cdef int LIST_SIZE_COMPOSITE "_LIST_SIZE_COMPOSITE"
 
 cpdef long as_signed(long x, char bits)
 cpdef long new_generic(long kind, long offset, long extra)

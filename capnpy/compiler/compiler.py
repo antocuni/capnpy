@@ -2,11 +2,13 @@ import py
 import sys
 import types
 import subprocess
+import capnpy
 from capnpy import schema
 from capnpy.message import loads
 from capnpy.blob import PYX
 from capnpy.compiler.module import ModuleGenerator
 
+PKGDIR = py.path.local(capnpy.__file__).dirpath()
 
 class BaseCompiler(object):
 
@@ -38,7 +40,11 @@ class BaseCompiler(object):
         pyxname = filename.new(ext='pyx')
         pyxfile = self.tmpdir.join(pyxname).ensure(file=True)
         pyxfile.write(src)
-        dll = pyx_to_dll(str(pyxfile), pyxbuild_dir=str(self.tmpdir))
+        dll = pyx_to_dll(str(pyxfile),
+                         pyxbuild_dir=str(self.tmpdir),
+                         setup_args=dict(
+                             include_dirs=[str(PKGDIR)] # to include "ptr.h"
+                         ))
         return dll
 
     def _capnp_compile(self, filename):
