@@ -119,7 +119,10 @@ class Field__Slot:
         ns.structcls = self.slot.type.runtime_name(m)
         m.def_property(ns, name, """
             {ensure_union}
-            offset, p = self._read_ptr({offset})
+            # XXX: this is wrong because it does not take into account far pointers
+            p = self._read_raw_ptr({offset})
+            offset = {offset} + self._ptrs_offset
+            #offset, p = self._read_ptr({offset})
             if p == 0:
                 return None
             obj = {structcls}.__new__({structcls})
