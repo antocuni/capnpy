@@ -38,6 +38,13 @@ class Struct(Blob):
         assert self._data_offset + data_size*8 <= len(self._buf.s)
         assert self._ptrs_offset + ptrs_size*8 <= len(self._buf.s)
 
+    def _init_from_pointer(self, buf, offset, p):
+        assert ptr.kind(p) == ptr.STRUCT
+        struct_offset = ptr.deref(p, offset)
+        data_size = ptr.struct_data_size(p)
+        ptrs_size = ptr.struct_ptrs_size(p)
+        self._init_from_buffer(buf, struct_offset, data_size, ptrs_size)
+
     @classmethod
     def from_buffer(cls, buf, offset, data_size, ptrs_size):
         self = cls.__new__(cls)

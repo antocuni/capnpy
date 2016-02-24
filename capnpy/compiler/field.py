@@ -116,16 +116,21 @@ class Field__Slot:
         # XXX: in case of nested structs, using the runtime name (such as
         # Outer.Inner.Point) might be slower in pyx mode, because it has to do
         # the lookup at runtime.
-        ns.structname = self.slot.type.runtime_name(m)
+        ns.structcls = self.slot.type.runtime_name(m)
         m.def_property(ns, name, """
             {ensure_union}
-            return self._read_struct({offset}, {structname})
+            offset, p = self._read_ptr({offset})
+            if p == 0:
+                return None
+            obj = {structcls}.__new__({structcls})
+            _Struct._init_from_pointer(obj, self._buf, offset, p)
+            return obj
         """)
         ns.ww("""
             {cpdef} get_{name}(self):
                 res = self.{name}
                 if res is None:
-                    return {structname}.from_buffer('', 0, data_size=0, ptrs_size=0)
+                    return {structcls}.from_buffer('', 0, data_size=0, ptrs_size=0)
                 return res
         """)
         ns.w()
