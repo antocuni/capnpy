@@ -18,7 +18,8 @@ if USE_CYTHON:
              "capnpy/type.py",
              "capnpy/ptr.py",
              "capnpy/unpack.pyx",
-             "capnpy/_util.pyx"]
+             "capnpy/_util.pyx",
+    ]
 
     def getext(fname):
         extname = fname.replace('/', '.').replace('.pyx', '').replace('.py', '')

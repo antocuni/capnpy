@@ -1,3 +1,14 @@
+cdef int STRUCT
+cdef int LIST
+cdef int FAR
+cdef int LIST_SIZE_BIT
+cdef int LIST_SIZE_8
+cdef int LIST_SIZE_16
+cdef int LIST_SIZE_32
+cdef int LIST_SIZE_64
+cdef int LIST_SIZE_PTR
+cdef int LIST_SIZE_COMPOSITE
+
 cpdef long as_signed(long x, char bits)
 cpdef long new_generic(long kind, long offset, long extra)
 cpdef long kind(long ptr)
