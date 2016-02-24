@@ -1,6 +1,6 @@
 @0xe62e66ea90a396da;
 
-struct CapnpStruct {
+struct MyStruct {
     # the padding field is needed to ensure that we benchmark fields with offset >0
     padding @0 :Int64;
     bool @1 :Int64; # XXX: should be Bool but it's not supported by structor
