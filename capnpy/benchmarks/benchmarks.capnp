@@ -18,4 +18,9 @@ struct MyStruct {
     group :group {
         field @13 :Int64;
     }
+    inner @14 :MyInner;
+}
+
+struct MyInner {
+     field @0 :Int64;
 }

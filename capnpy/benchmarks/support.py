@@ -10,7 +10,7 @@ class Instance(object):
 
     class MyStruct(object):
         def __init__(self, padding, bool, int8, int16, int32, int64, uint8,
-                     uint16, uint32, uint64, float32, float64, text, group):
+                     uint16, uint32, uint64, float32, float64, text, group, inner):
             self.padding = padding
             self.bool = bool
             self.int8 = int8
@@ -25,8 +25,13 @@ class Instance(object):
             self.float64 = float64
             self.text = text
             self.group = Instance.MyGroup(*group)
+            self.inner = inner
 
     class MyGroup(object):
+        def __init__(self, field):
+            self.field = field
+
+    class MyInner(object):
         def __init__(self, field):
             self.field = field
 
@@ -40,19 +45,20 @@ class NamedTuple(object):
     _Base = namedtuple('_Base', ['padding', 'bool', 'int8', 'int16',
                                  'int32', 'int64', 'uint8', 'uint16',
                                  'uint32', 'uint64', 'float32',
-                                 'float64', 'text', 'group'])
+                                 'float64', 'text', 'group', 'inner'])
 
     MyGroup = namedtuple('MyGroup', ['field'])
+    MyInner = namedtuple('MyInner', ['field'])
 
     class MyStruct(_Base):
 
         def __new__(cls, padding, bool, int8, int16, int32, int64, uint8,
-                    uint16, uint32, uint64, float32, float64, text, group):
+                    uint16, uint32, uint64, float32, float64, text, group, inner):
             group = NamedTuple.MyGroup(*group)
             return NamedTuple._Base.__new__(
                 cls, padding, bool, int8, int16, int32, int64,
                 uint8, uint16, uint32, uint64, float32, float64,
-                text, group)
+                text, group, inner)
 
 
 # ============================================================
@@ -78,7 +84,7 @@ class PyCapnp(object):
 
     @staticmethod
     def MyStruct(padding, bool, int8, int16, int32, int64, uint8, uint16, uint32,
-                 uint64, float32, float64, text, group):
+                 uint64, float32, float64, text, group, inner):
         if pycapnp is None:
             py.test.skip('cannot import pycapnp')
         s = pycapnp_schema.MyStruct.new_message()
@@ -96,4 +102,13 @@ class PyCapnp(object):
         s.float64 = float64
         s.text = text
         s.group.field = group[0]
+        s.inner = inner
         return pycapnp_schema.MyStruct.from_bytes(s.to_bytes())
+
+    @staticmethod
+    def MyInner(field):
+        if pycapnp is None:
+            py.test.skip('cannot import pycapnp')
+        s = pycapnp_schema.MyInner.new_message()
+        s.field = field
+        return pycapnp_schema.MyInner.from_bytes(s.to_bytes())

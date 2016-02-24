@@ -19,6 +19,14 @@ class TestGetAttr(object):
 
     N = 2000
 
+    def get_obj(self, schema):
+        inner = schema.MyInner(field=200)
+        obj = schema.MyStruct(padding=0, bool=100, int8=100, int16=100, int32=100,
+                              int64=100, uint8=100, uint16=100, uint32=100, uint64=100,
+                              float32=100, float64=100, text='some text', group=(100,),
+                              inner=inner)
+        return obj
+
     @pytest.mark.benchmark(group="getattr")
     def test_numeric(self, schema, numeric_type, benchmark):
         code = Code()
@@ -35,9 +43,7 @@ class TestGetAttr(object):
         """)
         code.compile()
         sum_attr = code['sum_attr']
-        obj = schema.MyStruct(padding=0, bool=100, int8=100, int16=100, int32=100,
-                              int64=100, uint8=100, uint16=100, uint32=100, uint64=100,
-                              float32=100, float64=100, text='some text', group=(100,))
+        obj = self.get_obj(schema)
         res = benchmark(sum_attr, obj)
         assert res == 100*self.N
 
@@ -51,9 +57,21 @@ class TestGetAttr(object):
                 res += (obj.text == 'hello world')
             return res
         #
-        obj = schema.MyStruct(padding=0, bool=100, int8=100, int16=100, int32=100,
-                              int64=100, uint8=100, uint16=100, uint32=100, uint64=100,
-                              float32=100, float64=100, text='hello world',
-                              group=(100,))
+        obj = self.get_obj(schema)
         res = benchmark(count_text, obj)
         assert res == self.N
+
+    @pytest.mark.benchmark(group="getattr")
+    def test_struct(self, schema, benchmark):
+        def sum_attr(obj):
+            myobjs = (obj, obj)
+            res = 0
+            for i in range(self.N):
+                obj = myobjs[i%2]
+                res += obj.inner.field
+            return res
+        #
+        obj = self.get_obj(schema)
+        res = benchmark(sum_attr, obj)
+        assert res == 200*self.N
+
