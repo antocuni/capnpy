@@ -16,7 +16,7 @@ if USE_CYTHON:
     files = ["capnpy/blob.py",
              "capnpy/struct_.py",
              "capnpy/type.py",
-             "capnpy/ptr.py",
+             "capnpy/ptr.pyx",
              "capnpy/unpack.pyx",
              "capnpy/_util.pyx",
     ]

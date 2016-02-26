@@ -5,31 +5,22 @@
 
 import sys
 import struct
-import pypytools
-
-def as_signed(x, bits):
-    if x >= 1<<(bits-1):
-        x -= 1<<bits
-    return x
-
-if pypytools.IS_PYPY:
-    from pypytools.cast import as_signed
-
+from pypytools.cast import as_signed
 
 # The following constants above are declared as enums in ptr.pxd/ptr.h, so we
 # cannot assign directly to them, else Cython produces a bogus C
 # file. However, we want them to be defined here in case we are in pure-python
 # mode.
-globals()['STRUCT'] = 0
-globals()['LIST'] = 1
-globals()['FAR'] = 2
-globals()['LIST_SIZE_BIT'] = 1
-globals()['LIST_SIZE_8'] = 2
-globals()['LIST_SIZE_16'] = 3
-globals()['LIST_SIZE_32'] = 4
-globals()['LIST_SIZE_64'] = 5
-globals()['LIST_SIZE_PTR'] = 6
-globals()['LIST_SIZE_COMPOSITE'] = 7
+STRUCT = 0
+LIST = 1
+FAR = 2
+LIST_SIZE_BIT = 1
+LIST_SIZE_8 = 2
+LIST_SIZE_16 = 3
+LIST_SIZE_32 = 4
+LIST_SIZE_64 = 5
+LIST_SIZE_PTR = 6
+LIST_SIZE_COMPOSITE = 7
 LIST_SIZE_LENGTH = (None, None, 1, 2, 4, 8, 8)
 
 
