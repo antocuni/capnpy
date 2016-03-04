@@ -145,6 +145,19 @@ For example::
     >>> print p2.x, p2.y
     100 200
 
+Alternatively, you can call ``load``/``loads`` directly on the class, and
+``dump`` directly on the objects::
+
+    >>> import capnpy
+    >>> example = capnpy.load_schema('example')
+    >>> p = example.Point(x=100, y=200)
+    >>> mybuf = p.dumps()
+    >>> mybuf
+    '\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00d\x00\x00\x00\x00\x00\x00\x00\xc8\x00\x00\x00\x00\x00\x00\x00'
+    >>> p2 = example.Point.loads(mybuf)
+    >>> print p2.x, p2.y
+    100 200
+
 
 Struct
 -------
