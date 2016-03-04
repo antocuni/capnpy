@@ -115,3 +115,31 @@ def test_dumps_alignment():
            '\x01\x00\x00\x00\x2a\x00\x00\x00'   # name=ptr
            'J' 'o' 'h' 'n' '\x00\x00\x00\x00')  # John
     assert msg == exp
+
+def test_Struct_loads():
+    class Point(Struct):
+        pass
+
+    buf = ('\x00\x00\x00\x00\x03\x00\x00\x00'   # message header: 1 segment, size 3 words
+           '\x00\x00\x00\x00\x02\x00\x00\x00'   # ptr to payload (Point {x, y})
+           '\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
+
+    p = Point.loads(buf)
+    assert isinstance(p, Point)
+    assert p._read_data(0, Types.int64.ifmt) == 1
+    assert p._read_data(8, Types.int64.ifmt) == 2
+
+def test_Struct_dumps():
+    class Point(Struct):
+        pass
+
+    buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
+    p = Point.from_buffer(buf, 0, data_size=2, ptrs_size=0)
+    msg = p.dumps()
+    exp = ('\x00\x00\x00\x00\x03\x00\x00\x00'   # message header: 1 segment, size 3 words
+           '\x00\x00\x00\x00\x02\x00\x00\x00'   # ptr to payload (Point {x, y})
+           '\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
+    assert msg == exp

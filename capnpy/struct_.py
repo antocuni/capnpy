@@ -1,4 +1,5 @@
 import struct
+import capnpy
 from capnpy import ptr
 from capnpy.blob import Blob, Types
 
@@ -50,6 +51,17 @@ class Struct(Blob):
         self = cls.__new__(cls)
         self._init_from_buffer(buf, offset, data_size, ptrs_size)
         return self
+
+    @classmethod
+    def load(cls, f):
+        return capnpy.message.load(f, cls)
+
+    @classmethod
+    def loads(cls, s):
+        return capnpy.message.loads(s, cls)
+
+    def dumps(self):
+        return capnpy.message.dumps(self)
 
     def which(self):
         """
@@ -315,3 +327,4 @@ try:
     Struct.__ge__ = Struct.__dict__['_cmp_error']
 except TypeError:
     pass
+
