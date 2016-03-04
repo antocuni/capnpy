@@ -85,29 +85,37 @@ else:
 
 class PyCapnp(object):
 
-    @staticmethod
-    def MyStruct(padding, bool, int8, int16, int32, int64, uint8, uint16, uint32,
-                 uint64, float32, float64, text, group, inner, intlist):
-        if pycapnp is None:
-            py.test.skip('cannot import pycapnp')
-        s = pycapnp_schema.MyStruct.new_message()
-        s.padding = padding
-        s.bool = bool
-        s.int8 = int8
-        s.int16 = int16
-        s.int32 = int32
-        s.int64 = int64
-        s.uint8 = uint8
-        s.uint16 = uint16
-        s.uint32 = uint32
-        s.uint64 = uint64
-        s.float32 = float32
-        s.float64 = float64
-        s.text = text
-        s.group.field = group[0]
-        s.inner = inner
-        s.intlist = intlist
-        return pycapnp_schema.MyStruct.from_bytes(s.to_bytes())
+    # this is a fake class, as __new__ returns objects of a different
+    # class. We simply use it as a namespace
+    class MyStruct(object):
+
+        def __new__(cls, padding, bool, int8, int16, int32, int64, uint8, uint16, uint32,
+                    uint64, float32, float64, text, group, inner, intlist):
+            if pycapnp is None:
+                py.test.skip('cannot import pycapnp')
+            s = pycapnp_schema.MyStruct.new_message()
+            s.padding = padding
+            s.bool = bool
+            s.int8 = int8
+            s.int16 = int16
+            s.int32 = int32
+            s.int64 = int64
+            s.uint8 = uint8
+            s.uint16 = uint16
+            s.uint32 = uint32
+            s.uint64 = uint64
+            s.float32 = float32
+            s.float64 = float64
+            s.text = text
+            s.group.field = group[0]
+            s.inner = inner
+            s.intlist = intlist
+            return pycapnp_schema.MyStruct.from_bytes(s.to_bytes())
+
+        @classmethod
+        def load(cls, f):
+            return pycapnp_schema.MyStruct.read(f)
+
 
     @staticmethod
     def MyInner(field):

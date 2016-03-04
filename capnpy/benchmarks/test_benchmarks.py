@@ -19,7 +19,8 @@ class TestGetAttr(object):
 
     N = 2000
 
-    def get_obj(self, schema):
+    @staticmethod
+    def get_obj(schema):
         inner = schema.MyInner(field=200)
         obj = schema.MyStruct(padding=0, bool=100, int8=100, int16=100, int32=100,
                               int64=100, uint8=100, uint16=100, uint32=100, uint64=100,
@@ -88,3 +89,30 @@ class TestGetAttr(object):
         obj = self.get_obj(schema)
         res = benchmark(sum_attr, obj)
         assert res == 3*self.N
+
+
+
+class TestMessage(object):
+
+    N = 2000
+
+    @pytest.mark.benchmark(group="getattr")
+    def test_load(self, tmpdir, schema, benchmark):
+        if not hasattr(schema.MyStruct, 'load'):
+            py.test.skip('N/A')
+        #
+        def load_from_file(f):
+            for i in range(self.N):
+                f.seek(0)
+                obj = schema.MyStruct.load(f)
+            return obj
+        #
+        # we always create the object with capnpy, so that we can dumps() it.
+        obj = TestGetAttr.get_obj(support.Capnpy)
+        # we need to use a real file instead of cStringIO, because apparently
+        # pycapnp cannot read from it
+        tmpfile = tmpdir.join('mymessage')
+        tmpfile.write(obj.dumps(), 'wb')
+        with tmpfile.open() as f:
+            res = benchmark(load_from_file, f)
+        assert res.int64 == 100
