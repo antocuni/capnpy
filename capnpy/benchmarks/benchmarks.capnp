@@ -19,6 +19,7 @@ struct MyStruct {
         field @13 :Int64;
     }
     inner @14 :MyInner;
+    intlist @15 :List(Int64);
 }
 
 struct MyInner {

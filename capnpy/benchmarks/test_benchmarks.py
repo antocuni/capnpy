@@ -23,8 +23,8 @@ class TestGetAttr(object):
         inner = schema.MyInner(field=200)
         obj = schema.MyStruct(padding=0, bool=100, int8=100, int16=100, int32=100,
                               int64=100, uint8=100, uint16=100, uint32=100, uint64=100,
-                              float32=100, float64=100, text='some text', group=(100,),
-                              inner=inner)
+                              float32=100, float64=100, text='hello world', group=(100,),
+                              inner=inner, intlist=[1, 2, 3, 4])
         return obj
 
     @pytest.mark.benchmark(group="getattr")
@@ -75,3 +75,16 @@ class TestGetAttr(object):
         res = benchmark(sum_attr, obj)
         assert res == 200*self.N
 
+    @pytest.mark.benchmark(group="getattr")
+    def test_list(self, schema, benchmark):
+        def sum_attr(obj):
+            myobjs = (obj, obj)
+            res = 0
+            for i in range(self.N):
+                obj = myobjs[i%2]
+                res += obj.intlist[2]
+            return res
+        #
+        obj = self.get_obj(schema)
+        res = benchmark(sum_attr, obj)
+        assert res == 3*self.N
