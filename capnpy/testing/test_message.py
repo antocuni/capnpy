@@ -69,6 +69,10 @@ def test_wrong_size():
     assert exc.value.message == ("Unexpected EOF: expected 32 bytes, got only 24. "
                                  "Segments size: (4,)")
 
+def test_eof():
+    buf = ''
+    exc = py.test.raises(EOFError, "loads(buf, Struct)")
+
 def test_segments():
     header = ('\x03\x00\x00\x00'  # 3+1 segments
               '\x10\x00\x00\x00'  # size0: 16

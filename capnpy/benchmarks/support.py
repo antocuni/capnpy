@@ -114,6 +114,8 @@ class PyCapnp(object):
 
         @classmethod
         def load(cls, f):
+            if pycapnp is None:
+                py.test.skip('cannot import pycapnp')
             return pycapnp_schema.MyStruct.read(f)
 
 

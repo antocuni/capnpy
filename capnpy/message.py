@@ -1,5 +1,6 @@
 import struct
 from cStringIO import StringIO
+from capnpy.unpack import unpack_uint32
 from capnpy.blob import CapnpBuffer
 from capnpy.struct_ import Struct
 from capnpy import ptr
@@ -41,10 +42,30 @@ def _unpack_from_file(fmt, f):
         raise ValueError("Unexpected EOF when reading the header")
     return struct.unpack(fmt, buf)
 
+def _unpack_segments(f, n):
+    if n == 1:
+        # fast path
+        buf = f.read(4)
+        if len(buf) < 4:
+            raise ValueError("Unexpected EOF when reading the header")
+        segment_size = unpack_uint32(buf, 0)
+        return (segment_size,)
+    else:
+        # slowish path
+        fmt = '<'+'I'*n
+        size = struct.calcsize(fmt)
+        buf = f.read(size)
+        if len(buf) < size:
+            raise ValueError("Unexpected EOF when reading the header")
+        return struct.unpack(fmt, buf)
+
 def _load_message(f):
-    # total number of segments
-    n = _unpack_from_file('<I', f)[0] + 1
-    segments = _unpack_from_file('<'+'I'*n, f)
+    # read the total number of segments
+    buf = f.read(4)
+    if len(buf) < 4:
+        raise EOFError("No message to load")
+    n = unpack_uint32(buf, 0) + 1
+    segments = _unpack_segments(f, n)
     #
     # add enough padding so that the message starts at word boundary
     bytes_read = 4 + n*4 # 4 bytes for the n, plus 4 bytes for each segment
