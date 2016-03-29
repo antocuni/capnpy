@@ -50,6 +50,33 @@ class TestConstructors(CompilerTest):
         assert p.y == 2
         assert p._buf.s == buf
 
+    def test_enum(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        enum Color {
+            red @0;
+            green @1;
+            blue @2;
+            yellow @3;
+        }
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+            color @2 :Color;
+        }
+        """
+        mod = self.compile(schema)
+        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00'  # 2
+               '\x03\x00\x00\x00\x00\x00\x00\x00') # yellow
+        #
+        p = mod.Point(1, 2, mod.Color.yellow)
+        assert p.x == 1
+        assert p.y == 2
+        assert p.color == mod.Color.yellow
+        assert p._buf.s == buf
+
+
     def test_order_of_arguments(self):
         schema = """
         @0xbf5147cbbecf40c1;

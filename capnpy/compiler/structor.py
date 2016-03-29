@@ -173,7 +173,7 @@ class Structor(object):
                     self._field_list(code, f)
                 elif hasattr(f, 'nullable_group'):
                     self._field_nullable(code, f)
-                elif f.is_primitive():
+                elif f.is_primitive() or f.is_enum():
                     pass # nothing to do
                 else:
                     code.w("raise NotImplementedError('Unsupported field type: {f}')",
