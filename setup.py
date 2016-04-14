@@ -17,6 +17,7 @@ if USE_CYTHON:
              "capnpy/struct_.py",
              "capnpy/type.py",
              "capnpy/message.py",
+             "capnpy/buffered.py",
              "capnpy/ptr.pyx",
              "capnpy/unpack.pyx",
              "capnpy/_util.pyx",
