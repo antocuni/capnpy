@@ -117,3 +117,9 @@ def dumps(obj):
     header = struct.pack('iiQ', segment_count-1, segment_size, p)
     return header + buf
 
+def dump(obj, f):
+    """
+    Same as dumps, but write to the specified file instead of returning a
+    string
+    """
+    f.write(dumps(obj))

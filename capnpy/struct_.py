@@ -63,6 +63,9 @@ class Struct(Blob):
     def dumps(self):
         return capnpy.message.dumps(self)
 
+    def dump(self, f):
+        capnpy.message.dump(self, f)
+
     def which(self):
         """
         Return the value of the union tag, if the struct has an anonimous union or
