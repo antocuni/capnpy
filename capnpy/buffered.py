@@ -7,13 +7,17 @@ class BufferedSocket(object):
         self.i = 0
 
     def _fillbuf(self, size):
-        self.buf = self.buf[self.i:]
+        parts = [self.buf[self.i:]]
+        total = len(parts[0])
+        while total < size:
+            part = self.sock.recv(self.bufsize)
+            if part == '':
+                break # connection closed, no more data
+            total += len(part)
+            parts.append(part)
+        #
+        self.buf = ''.join(parts)
         self.i = 0
-        while len(self.buf) < size:
-            newbuf = self.sock.recv(self.bufsize)
-            if newbuf == '':
-                return # connection closed, no more data
-            self.buf += newbuf
 
     def read(self, size):
         i = self.i
