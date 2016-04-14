@@ -46,3 +46,32 @@ def test_recv_returns_less_than_requested():
     assert sock.read(4) == 'ccdd'
     assert sock.read(4) == 'dd'
     assert sock.read(4) == ''
+
+def test_readline():
+    sock = FakeSocket('aaaa\nbbbb\ncccc\ndddd')
+    sock = BufferedSocket(sock)
+    assert sock.readline() == 'aaaa\n'
+    assert sock.readline() == 'bbbb\n'
+    assert sock.readline() == 'cccc\n'
+    assert sock.readline() == 'dddd'
+    assert sock.readline() == ''
+
+def test_readline_corner_cases():
+    sock = FakeSocket('aaaa\n', 'bb', 'bb', '\ncc', 'cc\ndd', 'dd')
+    sock = BufferedSocket(sock)
+    assert sock.readline() == 'aaaa\n'
+    assert sock.readline() == 'bbbb\n'
+    assert sock.readline() == 'cccc\n'
+    assert sock.readline() == 'dddd'
+    assert sock.readline() == ''
+
+def test_read_and_readline():
+    sock = FakeSocket('aaaa\nbbbb\ncccc\ndddd')
+    sock = BufferedSocket(sock)
+    assert sock.read(2) == 'aa'
+    assert sock.readline() == 'aa\n'
+    assert sock.readline() == 'bbbb\n'
+    assert sock.read(5) == 'cccc\n'
+    assert sock.readline() == 'dddd'
+    assert sock.readline() == ''
+    assert sock.read(2) == ''

@@ -5,4 +5,5 @@ cdef class BufferedSocket:
     cdef readonly int i
 
     cdef _fillbuf(self, int size)
-    cpdef read(self, int size)
+    cpdef str read(self, int size)
+    cpdef str readline(self)
