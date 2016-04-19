@@ -60,6 +60,10 @@ class Struct(Blob):
     def loads(cls, s):
         return capnpy.message.loads(s, cls)
 
+    @classmethod
+    def load_all(cls, f):
+        return capnpy.message.load_all(f, cls)
+
     def dumps(self):
         return capnpy.message.dumps(self)
 

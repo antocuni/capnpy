@@ -35,6 +35,16 @@ def loads(buf, payload_type):
         raise ValueError("Not all bytes were consumed: %d bytes left" % remaining)
     return obj
 
+def load_all(f, payload_type):
+    """
+    Load and yield all the messages in the given file-like object
+    """
+    try:
+        while True:
+            yield load(f, payload_type)
+    except EOFError:
+        pass
+
 def _unpack_from_file(fmt, f):
     size = struct.calcsize(fmt)
     buf = f.read(size)

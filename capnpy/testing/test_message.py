@@ -1,6 +1,6 @@
 import py
 from cStringIO import StringIO
-from capnpy.message import load, loads, _load_message, dumps
+from capnpy.message import load, loads, load_all, _load_message, dumps
 from capnpy.blob import Types
 from capnpy.struct_ import Struct
 
@@ -16,7 +16,7 @@ def test_load():
     assert p._read_data(0, Types.int64.ifmt) == 1
     assert p._read_data(8, Types.int64.ifmt) == 2
 
-def test_load_multiple_messages():
+def _get_many_messages():
     one = ('\x00\x00\x00\x00\x03\x00\x00\x00'   # message header: 1 segment, size 3 words
            '\x00\x00\x00\x00\x02\x00\x00\x00'   # ptr to payload (Point {x, y})
            '\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
@@ -25,13 +25,28 @@ def test_load_multiple_messages():
            '\x00\x00\x00\x00\x02\x00\x00\x00'   # ptr to payload (Point {x, y})
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # x == 1
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # y == 2
-    f = StringIO(one+two)
+    return StringIO(one+two)
+
+def test_load_multiple_messages():
+    f = _get_many_messages()
     p1 = load(f, Struct)
     assert p1._read_data(0, Types.int64.ifmt) == 1
     assert p1._read_data(8, Types.int64.ifmt) == 2
     p2 = load(f, Struct)
     assert p2._read_data(0, Types.int64.ifmt) == 3
     assert p2._read_data(8, Types.int64.ifmt) == 4
+
+def test_load_all():
+    f = _get_many_messages()
+    messages = list(load_all(f, Struct))
+    assert len(messages) == 2
+    p1, p2 = messages
+    #
+    assert p1._read_data(0, Types.int64.ifmt) == 1
+    assert p1._read_data(8, Types.int64.ifmt) == 2
+    assert p2._read_data(0, Types.int64.ifmt) == 3
+    assert p2._read_data(8, Types.int64.ifmt) == 4
+
 
 def test_loads():
     buf = ('\x00\x00\x00\x00\x03\x00\x00\x00'   # message header: 1 segment, size 3 words
