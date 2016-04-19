@@ -1,5 +1,5 @@
 import py
-from capnpy.blob import CapnpBuffer, Blob, Types
+from capnpy.blob import CapnpBufferWithSegments, Blob, Types
 from capnpy import ptr
 from capnpy.list import PrimitiveList, StructList, StringList
 from capnpy.struct_ import Struct
@@ -345,7 +345,7 @@ def test_far_pointer():
             '\x02\x00\x00\x00\x00\x00\x00\x00'    # 2
             '\x03\x00\x00\x00\x00\x00\x00\x00'    # 3
             '\x04\x00\x00\x00\x00\x00\x00\x00')   # 4
-    buf = CapnpBuffer(seg0+seg1, segment_offsets=(0, 16))
+    buf = CapnpBufferWithSegments(seg0+seg1, segment_offsets=(0, 16))
     blob = BlobForTests(buf, 8)
     lst = blob._read_list(0, PrimitiveList, Types.int64)
     assert lst == [1, 2, 3, 4]

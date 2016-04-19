@@ -4,11 +4,13 @@ from capnpy cimport ptr
 
 cdef class CapnpBuffer:
     cdef readonly bytes s
-    cdef readonly object segment_offsets
     cpdef read_primitive(self, long offset, char ifmt)
     cpdef long read_raw_ptr(self, long offset)
     cpdef read_ptr(self, long offset)
-    
+
+cdef class CapnpBufferWithSegments(CapnpBuffer):
+    cdef readonly object segment_offsets
+
 cdef class Blob:
     cdef readonly CapnpBuffer _buf
 

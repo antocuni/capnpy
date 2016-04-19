@@ -20,10 +20,13 @@ else:
     PYX = cython.compiled
 
 class CapnpBuffer(object):
+    """
+    Represent a capnproto buffer for a single-segment message. Far pointers are
+    not allowed here
+    """
 
-    def __init__(self, s, segment_offsets):
+    def __init__(self, s):
         self.s = s
-        self.segment_offsets = segment_offsets
 
     def read_primitive(self, offset, ifmt):
         return unpack_primitive(ifmt, self.s, offset)
@@ -36,6 +39,22 @@ class CapnpBuffer(object):
         if ptr.kind(p) == ptr.FAR:
             return self._follow_far_ptr(p)
         return offset, p
+
+    def _follow_far_ptr(self, p):
+        raise ValueError("Cannot follow a far pointer inside a single-segment message")
+
+
+class CapnpBufferWithSegments(CapnpBuffer):
+    """
+    Represent a capnproto buffer for a multiple segments message. The segments
+    are stored in a single consecutive area of memory, and segment_offsets
+    stores the offset at which each segment starts.
+    """
+
+    def __init__(self, s, segment_offsets):
+        assert segment_offsets is not None
+        self.s = s
+        self.segment_offsets = segment_offsets
 
     def _follow_far_ptr(self, p):
         """
@@ -64,7 +83,7 @@ class Blob(object):
 
     def _init_blob(self, buf):
         if isinstance(buf, str):
-            buf = CapnpBuffer(buf, None)
+            buf = CapnpBuffer(buf)
         self._buf = buf
 
     def _read_data(self, offset, t):

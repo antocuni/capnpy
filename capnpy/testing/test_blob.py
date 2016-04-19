@@ -1,6 +1,7 @@
 import py
 import struct
-from capnpy.blob import CapnpBuffer, Blob, Types, unpack_primitive
+from capnpy.blob import (CapnpBuffer, CapnpBufferWithSegments, Blob, Types,
+                         unpack_primitive)
 from capnpy import ptr
 from capnpy.struct_ import Struct
 
@@ -34,19 +35,19 @@ def test_CapnpBuffer():
     # buf is an array of int64 == [1, 2]
     buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
-    b1 = CapnpBuffer(buf, None)
+    b1 = CapnpBuffer(buf)
     assert b1.read_primitive(0, Types.int64.ifmt) == 1
     assert b1.read_primitive(8, Types.int64.ifmt) == 2
 
 
 def test_float64():
     buf = '\x58\x39\xb4\xc8\x76\xbe\xf3\x3f'   # 1.234
-    b = CapnpBuffer(buf, None)
+    b = CapnpBuffer(buf)
     assert b.read_primitive(0, Types.float64.ifmt) == 1.234
 
 def test_read_ptr():
     buf = '\x90\x01\x00\x00\x02\x00\x04\x00'
-    b = CapnpBuffer(buf, None)
+    b = CapnpBuffer(buf)
     offset, p = b.read_ptr(0)
     offset = ptr.deref(p, offset)
     assert offset == 808
@@ -111,7 +112,7 @@ def test_far_pointer():
             '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
             '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
     #
-    buf = CapnpBuffer(seg0+seg1, segment_offsets=(0, 16))
+    buf = CapnpBufferWithSegments(seg0+seg1, segment_offsets=(0, 16))
     blob = BlobForTests(buf, 8)
     p = blob._read_struct(0, Struct)
     assert p._read_data(0, Types.int64.ifmt) == 1

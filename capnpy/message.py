@@ -1,7 +1,7 @@
 import struct
 from cStringIO import StringIO
 from capnpy.unpack import unpack_uint32
-from capnpy.blob import CapnpBuffer
+from capnpy.blob import CapnpBuffer, CapnpBufferWithSegments
 from capnpy.struct_ import Struct
 from capnpy import ptr
 
@@ -104,7 +104,7 @@ def _load_message(f):
     #
     # Thus, the root of the message is equivalent to a struct with
     # data_size==0 and ptrs_size==1
-    capnp_buf = CapnpBuffer(buf, tuple(segment_offsets))
+    capnp_buf = CapnpBufferWithSegments(buf, tuple(segment_offsets))
     return Struct.from_buffer(capnp_buf, 0, data_size=0, ptrs_size=1)
 
 def dumps(obj):
