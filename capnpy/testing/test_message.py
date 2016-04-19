@@ -82,7 +82,17 @@ def test_wrong_size():
            '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
     exc = py.test.raises(ValueError, "loads(buf, Struct)")
     assert exc.value.message == ("Unexpected EOF: expected 32 bytes, got only 24. "
-                                 "Segments size: (4,)")
+                                 "Segment size: 4")
+
+def test_wrong_size_multiple_segments():
+    buf = ('\x01\x00\x00\x00\x04\x00\x00\x00'   # message header: 2 segments: (4, 5)
+           '\x05\x00\x00\x00\x00\x00\x00\x00'
+           '\x00\x00\x00\x00\x02\x00\x01\x00'   # ptr to payload (Point {x, y})
+           '\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
+    exc = py.test.raises(ValueError, "loads(buf, Struct)")
+    assert exc.value.message == ("Unexpected EOF: expected 72 bytes, got only 24. "
+                                 "Segments size: (4, 5)")
 
 def test_eof():
     buf = ''

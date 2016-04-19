@@ -45,58 +45,17 @@ def load_all(f, payload_type):
     except EOFError:
         pass
 
-def _unpack_from_file(fmt, f):
-    size = struct.calcsize(fmt)
-    buf = f.read(size)
-    if len(buf) < size:
-        raise ValueError("Unexpected EOF when reading the header")
-    return struct.unpack(fmt, buf)
-
-def _unpack_segments(f, n):
-    if n == 1:
-        # fast path
-        buf = f.read(4)
-        if len(buf) < 4:
-            raise ValueError("Unexpected EOF when reading the header")
-        segment_size = unpack_uint32(buf, 0)
-        return (segment_size,)
-    else:
-        # slowish path
-        fmt = '<'+'I'*n
-        size = struct.calcsize(fmt)
-        buf = f.read(size)
-        if len(buf) < size:
-            raise ValueError("Unexpected EOF when reading the header")
-        return struct.unpack(fmt, buf)
-
 def _load_message(f):
     # read the total number of segments
     buf = f.read(4)
     if len(buf) < 4:
         raise EOFError("No message to load")
     n = unpack_uint32(buf, 0) + 1
-    segments = _unpack_segments(f, n)
+    if n == 1:
+        capnp_buf = _load_buffer_single_segment(f) # fast path
+    else:
+        capnp_buf = _load_buffer_multiple_segments(f, n) # slow path
     #
-    # add enough padding so that the message starts at word boundary
-    bytes_read = 4 + n*4 # 4 bytes for the n, plus 4 bytes for each segment
-    if bytes_read % 8 != 0:
-        padding = 8-(bytes_read % 8)
-        f.read(padding)
-    #
-    message_lenght = sum(segments)*8
-    buf = f.read(message_lenght)
-    if len(buf) < message_lenght:
-        raise ValueError("Unexpected EOF: expected %d bytes, got only %s. "
-                         "Segments size: %s" % (message_lenght, len(buf), segments))
-
-    # precompute the offset of each segment starting from the beginning of buf
-    segment_offsets = []
-    segment_offsets.append(0)
-    offset = 0
-    for size in segments[:-1]:
-        offset += size*8
-        segment_offsets.append(offset)
-
     # from the capnproto docs:
     #
     #     The first word of the first segment of the message is always a
@@ -104,8 +63,59 @@ def _load_message(f):
     #
     # Thus, the root of the message is equivalent to a struct with
     # data_size==0 and ptrs_size==1
-    capnp_buf = CapnpBufferWithSegments(buf, tuple(segment_offsets))
     return Struct.from_buffer(capnp_buf, 0, data_size=0, ptrs_size=1)
+
+
+def _load_buffer_single_segment(f):
+    # fast path for the single-segment case. In this scenario, we don't
+    # even need to compute the padding as we know that we read exactly 4+4
+    # bytes
+    buf = f.read(4)
+    if len(buf) < 4:
+        raise ValueError("Unexpected EOF when reading the header")
+    message_size = unpack_uint32(buf, 0)
+    message_lenght = message_size * 8
+    buf = f.read(message_lenght)
+    if len(buf) < message_lenght:
+        raise ValueError("Unexpected EOF: expected %d bytes, got only %s. " 
+                         "Segment size: %s" % (message_lenght, len(buf), message_size))
+    return CapnpBuffer(buf)
+
+def _load_buffer_multiple_segments(f, n):
+    # slow path for the multiple-segments case
+    #
+    # 1. read the size of each segment
+    fmt = '<'+'I'*n
+    size = struct.calcsize(fmt)
+    buf = f.read(size)
+    if len(buf) < size:
+        raise ValueError("Unexpected EOF when reading the header")
+    segments = struct.unpack(fmt, buf)
+    #
+    # 2. add enough padding so that the message starts at word boundary
+    bytes_read = 4 + n*4 # 4 bytes for the n, plus 4 bytes for each segment
+    if bytes_read % 8 != 0:
+        padding = 8-(bytes_read % 8)
+        f.read(padding)
+    #
+    # 3. read the body of the message
+    message_lenght = sum(segments)*8
+    buf = f.read(message_lenght)
+    if len(buf) < message_lenght:
+        raise ValueError("Unexpected EOF: expected %d bytes, got only %s. "
+                         "Segments size: %s" % (message_lenght, len(buf), segments))
+    #
+    # 4. precompute the offset of each segment starting from the beginning of buf
+    segment_offsets = []
+    segment_offsets.append(0)
+    offset = 0
+    for size in segments[:-1]:
+        offset += size*8
+        segment_offsets.append(offset)
+    #
+    # 5. we are finally done :)
+    return CapnpBufferWithSegments(buf, tuple(segment_offsets))
+
 
 def dumps(obj):
     """
