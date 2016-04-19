@@ -11,6 +11,14 @@ def assert_undefined(val, name, other_name):
                         (name, other_name))
 
 
+def struct_from_buffer(cls, buf, offset, data_size, ptrs_size):
+    """
+    Same as cls.from_buffer, but since Cython does not support classmethod,
+    at least this can be called from C
+    """
+    self = cls.__new__(cls)
+    self._init_from_buffer(buf, offset, data_size, ptrs_size)
+    return self
 
 class Struct(Blob):
     """
@@ -48,9 +56,7 @@ class Struct(Blob):
 
     @classmethod
     def from_buffer(cls, buf, offset, data_size, ptrs_size):
-        self = cls.__new__(cls)
-        self._init_from_buffer(buf, offset, data_size, ptrs_size)
-        return self
+        return struct_from_buffer(cls, buf, offset, data_size, ptrs_size)
 
     @classmethod
     def load(cls, f):

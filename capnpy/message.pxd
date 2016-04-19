@@ -1,7 +1,7 @@
 import cython
 from capnpy.unpack cimport unpack_uint32
 from capnpy.blob cimport CapnpBuffer
-from capnpy.struct_ cimport Struct
+from capnpy.struct_ cimport Struct, struct_from_buffer
 from capnpy cimport ptr
 
 # XXX: investigate whether we get any speedup by typing f as BufferedSocket

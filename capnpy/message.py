@@ -2,7 +2,7 @@ import struct
 from cStringIO import StringIO
 from capnpy.unpack import unpack_uint32
 from capnpy.blob import CapnpBuffer, CapnpBufferWithSegments
-from capnpy.struct_ import Struct
+from capnpy.struct_ import Struct, struct_from_buffer
 from capnpy import ptr
 
 def load(f, payload_type):
@@ -63,7 +63,7 @@ def _load_message(f):
     #
     # Thus, the root of the message is equivalent to a struct with
     # data_size==0 and ptrs_size==1
-    return Struct.from_buffer(capnp_buf, 0, data_size=0, ptrs_size=1)
+    return struct_from_buffer(Struct, capnp_buf, 0, data_size=0, ptrs_size=1)
 
 
 def _load_buffer_single_segment(f):

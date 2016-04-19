@@ -1,7 +1,14 @@
+import cython
 from capnpy.blob cimport Blob
 from capnpy cimport ptr
 
 cpdef assert_undefined(object val, str name, str other_name)
+
+
+@cython.locals(self=Struct)
+cpdef struct_from_buffer(type cls, object buf, long offset,
+                         long data_size, long ptrs_size)
+
 
 cdef class Struct(Blob):
     cdef public long _data_offset
