@@ -94,8 +94,8 @@ def _load_message(f):
     #
     # Thus, the root of the message is equivalent to a struct with
     # data_size==0 and ptrs_size==1
-    buf = CapnpBuffer(buf, tuple(segment_offsets))
-    return Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
+    capnp_buf = CapnpBuffer(buf, tuple(segment_offsets))
+    return Struct.from_buffer(capnp_buf, 0, data_size=0, ptrs_size=1)
 
 def dumps(obj):
     """
@@ -123,3 +123,4 @@ def dump(obj, f):
     string
     """
     f.write(dumps(obj))
+
