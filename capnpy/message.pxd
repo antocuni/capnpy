@@ -5,7 +5,10 @@ from capnpy.struct_ cimport Struct
 from capnpy cimport ptr
 
 # XXX: investigate whether we get any speedup by typing f as BufferedSocket
+
+@cython.locals(msg=Struct)
 cpdef load(object f, object payload_type)
+
 cpdef loads(bytes buf, object payload_type)
 #cpdef load_all(object f, object payload_type)
 

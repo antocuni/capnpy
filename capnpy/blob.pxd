@@ -19,3 +19,4 @@ cdef class Blob:
     cpdef _read_ptr(self, long offset)
     cpdef _read_str_text(self, long offset, str default_=*)
     cpdef _read_str_data(self, long offset, str default_=*, long additional_size=*)
+    cpdef _read_struct(self, long offset, object structcls, object default_=*)
