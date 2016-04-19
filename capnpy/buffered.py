@@ -3,7 +3,7 @@ class BufferedSocket(object):
     def __init__(self, sock, bufsize=8192):
         self.sock = sock
         self.bufsize = bufsize
-        self.buf = ''
+        self.buf = b''
         self.i = 0
 
     def _fillbuf(self, size):
@@ -11,12 +11,12 @@ class BufferedSocket(object):
         total = len(parts[0])
         while total < size:
             part = self.sock.recv(self.bufsize)
-            if part == '':
+            if part == b'':
                 break # connection closed, no more data
             total += len(part)
             parts.append(part)
         #
-        self.buf = ''.join(parts)
+        self.buf = b''.join(parts)
         self.i = 0
 
     def read(self, size):
@@ -34,7 +34,7 @@ class BufferedSocket(object):
 
     def readline(self):
         i = self.i
-        j = self.buf.find('\n', i)
+        j = self.buf.find(b'\n', i)
         if j != -1:
             # fast path: already in the buffer, just return it
             self.i = j+1
@@ -42,14 +42,14 @@ class BufferedSocket(object):
         #
         # slow path, read until we find a newline
         parts = [self.buf[i:]]
-        self.buf = ''
+        self.buf = b''
         self.i = 0
         while True:
             part = self.sock.recv(self.bufsize)
-            if part == '':
+            if part == b'':
                 break # connection closed, no more data
             #
-            j = part.find('\n')
+            j = part.find(b'\n')
             if j != -1: # finally found a newline
                 parts.append(part[:j+1]) # read until the newline
                 self.buf = part[j+1:]    # and keep the rest in the buffer
@@ -58,4 +58,4 @@ class BufferedSocket(object):
             else:
                 parts.append(part)
         #
-        return ''.join(parts)
+        return b''.join(parts)
