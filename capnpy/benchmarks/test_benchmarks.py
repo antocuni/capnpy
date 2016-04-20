@@ -109,6 +109,23 @@ class TestGetAttr(object):
         res = benchmark(sum_which, obj)
         assert res == self.N*2
 
+    @pytest.mark.benchmark(group="getattr")
+    def test_is_union(self, schema, benchmark):
+        if schema.__name__ != 'Capnpy':
+            py.test.skip('N/A')
+        #
+        def sum_is(obj):
+            myobjs = (obj, obj)
+            res = 0
+            for i in range(self.N):
+                obj = myobjs[i%2]
+                res += obj.is_two()
+            return res
+        #
+        obj = schema.WithUnion.new_two(42)
+        res = benchmark(sum_is, obj)
+        assert res == self.N
+
 
 class TestMessage(object):
 

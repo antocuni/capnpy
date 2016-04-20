@@ -70,17 +70,15 @@ class Node__Struct:
     def _emit_union_tag(self, m):
         # union tags are 16 bits, so *2
         ns = m.code.new_scope()
+        ns.int16_ifmt = Types.int16.ifmt
         ns.tag_offset = self.struct.discriminantOffset * 2
         enum_items = [None] * self.struct.discriminantCount
         for field in self.struct.fields:
             if field.is_part_of_union():
                 enum_items[field.discriminantValue] = m._field_name(field)
-        ns.enum_name = '%s.__tag__' % self.shortname(m)
+        enum_name = '%s.__tag__' % self.shortname(m)
         ns.w("__tag_offset__ = {tag_offset}")
-        m.declare_enum('__tag__', ns.enum_name, enum_items)
-        ns.w()
-        for i, item in enumerate(enum_items):
-            ns.w("def is_{item}(self): return self.which() == {i}", item=item, i=i)
+        m.declare_enum('__tag__', enum_name, enum_items)
         ns.w()
         if m.pyx:
             # generate a specialized version of which, which does not need to
@@ -89,12 +87,21 @@ class Node__Struct:
             #
             # XXX: we need to find a way to remove the self.__tag__, it makes
             # which() 4x slower than it should be
-            ns.int16_ifmt = Types.int16.ifmt
             ns.ww("""
                 def which(self):
                     val = self._read_data({tag_offset}, {int16_ifmt})
                     return self.__tag__(val)
             """)
+            ns.w()
+        #
+        for i, item in enumerate(enum_items):
+            ns.item = item
+            ns.i = i
+            ns.ww("""
+                def is_{item}(self):
+                    return self._read_data({tag_offset}, {int16_ifmt}) == {i}
+            """)
+        ns.w()
 
     def _emit_ctors(self, m):
         if self.struct.discriminantCount:
