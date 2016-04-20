@@ -4,6 +4,7 @@ from capnpy.unpack import unpack_uint32
 from capnpy.blob import CapnpBuffer, CapnpBufferWithSegments
 from capnpy.struct_ import Struct, struct_from_buffer
 from capnpy import ptr
+from capnpy.filelike import as_filelike
 
 def load(f, payload_type):
     """
@@ -21,6 +22,7 @@ def load(f, payload_type):
 
       - The content of each segment, in order.
     """
+    f = as_filelike(f)
     msg = _load_message(f)
     return msg._read_struct(0, payload_type)
 

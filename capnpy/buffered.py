@@ -1,4 +1,6 @@
-class BufferedSocket(object):
+from capnpy.filelike import FileLike
+
+class BufferedSocket(FileLike):
 
     def __init__(self, sock, bufsize=8192):
         self.sock = sock
