@@ -7,7 +7,9 @@ from capnpy.benchmarks import support
 @pytest.fixture(params=('Instance', 'NamedTuple', 'Capnpy', 'PyCapnp'))
 def schema(request):
     p = request.param
-    return getattr(support, p)
+    res = getattr(support, p)
+    res.__name__ = p
+    return res
 
 # XXX: we should include bool as soon as it's supported by structor
 @pytest.fixture(params=('int64', 'int8', 'int16', 'int32', 'uint8', 'uint16',
@@ -29,7 +31,7 @@ class TestGetAttr(object):
         return obj
 
     @pytest.mark.benchmark(group="getattr")
-    def test_numeric(self, schema, numeric_type, benchmark):
+    def test_numeric(self, schema, numeric_type, benchmark, obj=None):
         code = Code()
         code.global_scope.N = self.N
         code.global_scope.numeric_type = numeric_type
@@ -90,6 +92,22 @@ class TestGetAttr(object):
         res = benchmark(sum_attr, obj)
         assert res == 3*self.N
 
+    @pytest.mark.benchmark(group="getattr")
+    def test_which(self, schema, benchmark):
+        if schema.__name__ != 'Capnpy':
+            py.test.skip('N/A')
+        #
+        def sum_which(obj):
+            myobjs = (obj, obj)
+            res = 0
+            for i in range(self.N):
+                obj = myobjs[i%2]
+                res += obj.which()
+            return res
+        #
+        obj = schema.WithUnion.new_two(42)
+        res = benchmark(sum_which, obj)
+        assert res == self.N*2
 
 
 class TestMessage(object):

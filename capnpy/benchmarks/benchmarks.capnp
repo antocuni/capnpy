@@ -25,3 +25,13 @@ struct MyStruct {
 struct MyInner {
      field @0 :Int64;
 }
+
+struct WithUnion {
+    padding @0 :Int64;
+    union {
+        zero @1  :Void;
+        one @2   :Void;
+        two @3   :Void;
+        three @4 :Void;
+    }
+}
