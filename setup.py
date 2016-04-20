@@ -25,7 +25,11 @@ if USE_CYTHON:
 
     def getext(fname):
         extname = fname.replace('/', '.').replace('.pyx', '').replace('.py', '')
-        return Extension(extname, [fname])
+        return Extension(
+            extname,
+            [fname],
+            extra_compile_args = ['-O3'],
+        )
 
     ext_modules = cythonize(map(getext, files), gdb_debug=False)
 
