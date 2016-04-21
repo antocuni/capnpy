@@ -22,8 +22,8 @@ def load(f, payload_type):
 
       - The content of each segment, in order.
     """
-    f = as_filelike(f)
-    msg = _load_message(f)
+    f2 = as_filelike(f)
+    msg = _load_message(f2)
     return msg._read_struct(0, payload_type)
 
 def loads(buf, payload_type):
