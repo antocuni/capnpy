@@ -1,3 +1,4 @@
+import cython
 from capnpy.filelike cimport FileLike
 
 cdef class BufferedSocket(FileLike):
@@ -8,3 +9,14 @@ cdef class BufferedSocket(FileLike):
 
     cdef _fillbuf(self, int size)
     cdef _readall(self)
+
+
+cdef class StringBuffer(FileLike):
+    cdef readonly bytes s
+    cdef readonly int i
+
+    @cython.locals(i=int, j=int)
+    cpdef bytes read(self, int size=*)
+
+    @cython.locals(i=int, j=int)
+    cpdef bytes readline(self)

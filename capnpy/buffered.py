@@ -1,6 +1,9 @@
 from capnpy.filelike import FileLike
 
 class BufferedSocket(FileLike):
+    """
+    file-like interface to read data from a socket in a buffered way.
+    """
 
     def __init__(self, sock, bufsize=8192):
         self.sock = sock
@@ -74,3 +77,35 @@ class BufferedSocket(FileLike):
                 parts.append(part)
         #
         return b''.join(parts)
+
+
+class StringBuffer(FileLike):
+    """
+    file-like interface to read data out of a string. Like StringIO, but since
+    it inherits from FileLike, it can be used by message.load() more
+    efficiently.
+    """
+
+    def __init__(self, s):
+        self.s = s
+        self.i = 0
+
+    def read(self, size=-1):
+        i = self.i
+        if size == -1:
+            self.i = len(self.s)
+            return self.s[i:]
+        else:
+            j = i + size
+            self.i = j
+            return self.s[i:j]
+
+    def readline(self):
+        i = self.i
+        j = self.s.find('\n', self.i)+1
+        if j == 0:
+            self.i = len(self.s)
+            return self.s[i:]
+        else:
+            self.i = j
+            return self.s[i:j]
