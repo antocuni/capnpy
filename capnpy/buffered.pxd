@@ -8,7 +8,13 @@ cdef class BufferedSocket(FileLike):
     cdef readonly int i
 
     cdef _fillbuf(self, int size)
-    cdef _readall(self)
+    cdef bytes _readall(self)
+
+    @cython.locals(i=int, j=int)
+    cpdef bytes read(self, int size=*)
+
+    @cython.locals(i=int, j=int)
+    cpdef bytes readline(self)
 
 
 cdef class StringBuffer(FileLike):
