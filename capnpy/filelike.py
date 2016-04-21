@@ -32,7 +32,7 @@ class FileLike(object):
     dictionary lookup, argument parsing, etc.
     """
 
-    def read(self, size):
+    def read(self, size=-1):
         raise NotImplementedError
 
     def readline(self):
@@ -49,7 +49,7 @@ class FileLikeAdapter(FileLike):
         self._read = f.read
         self._readline = f.readline
 
-    def read(self, size):
+    def read(self, size=-1):
         return self._read(size)
 
     def readline(self):

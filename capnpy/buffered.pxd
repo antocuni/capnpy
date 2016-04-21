@@ -7,3 +7,4 @@ cdef class BufferedSocket(FileLike):
     cdef readonly int i
 
     cdef _fillbuf(self, int size)
+    cdef _readall(self)

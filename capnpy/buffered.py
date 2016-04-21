@@ -21,7 +21,20 @@ class BufferedSocket(FileLike):
         self.buf = b''.join(parts)
         self.i = 0
 
-    def read(self, size):
+    def _readall(self):
+        parts = [self.buf[self.i:]]
+        self.buf = b''
+        self.i = 0
+        while True:
+            part = self.sock.recv(self.bufsize)
+            if part == b'':
+                break
+            parts.append(part)
+        return b''.join(parts)
+
+    def read(self, size=-1):
+        if size == -1:
+            return self._readall()
         i = self.i
         j = i + size
         if len(self.buf) < j:

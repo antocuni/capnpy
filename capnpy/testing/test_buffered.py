@@ -75,3 +75,18 @@ def test_read_and_readline():
     assert sock.readline() == 'dddd'
     assert sock.readline() == ''
     assert sock.read(2) == ''
+
+def test_read_all():
+    sock = FakeSocket('aaaa', 'bbbb', 'cccc', 'dddd')
+    sock = BufferedSocket(sock)
+    assert sock.read() == 'aaaabbbbccccdddd'
+    assert sock.read(1) == ''
+    assert sock.read() == ''
+
+def test_read_all_after_read():
+    sock = FakeSocket('aaaa', 'bbbb', 'cccc', 'dddd')
+    sock = BufferedSocket(sock)
+    assert sock.read(2) == 'aa' # leave 'aa' in the buffer
+    assert sock.read() == 'aabbbbccccdddd'
+    assert sock.read(1) == ''
+    assert sock.read() == ''
