@@ -1,3 +1,4 @@
+import cython
 from capnpy.type cimport BuiltinType
 from capnpy.unpack cimport unpack_primitive, unpack_int64
 from capnpy cimport ptr
@@ -18,5 +19,7 @@ cdef class Blob:
 
     cpdef _read_ptr(self, long offset)
     cpdef _read_str_text(self, long offset, str default_=*)
+
+    @cython.locals(p=long, start=long)
     cpdef _read_str_data(self, long offset, str default_=*, long additional_size=*)
     cpdef _read_struct(self, long offset, object structcls, object default_=*)
