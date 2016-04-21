@@ -73,6 +73,9 @@ def _load_buffer_single_segment(f):
     # even need to compute the padding as we know that we read exactly 4+4
     # bytes
     buf = f.read(4)
+    #
+    # The cost of the len(buf) checks is ~7-8% on CPython, but I don't know
+    # how to avoid it. However, it's negligible on PyPy
     if len(buf) < 4:
         raise ValueError("Unexpected EOF when reading the header")
     message_size = unpack_uint32(buf, 0)
