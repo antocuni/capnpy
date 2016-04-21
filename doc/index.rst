@@ -249,10 +249,17 @@ the ``is_*()`` methods which are automatically generated::
     >>> s = capnpy.load(f, Shape)
     >>> s.which()
     <Shape.__tag__.circle: 0>
+    >>> s.which(raw=True)
+    0
     >>> s.is_circle()
     True
     >>> s.is_square()
     False
+
+By default, ``which()`` return an ``Enum`` value: this has no performance
+impact on PyPy, but it is slower on CPython. If you are in a
+performance-critical part of the code, you can pass ``raw=True``, to force
+``which()`` to return a plain integer: this is ~2x faster on CPython.
 
 Since ``capnpy`` objects are immutable, union fields must be set when
 instantiating the object. The first way is to call the default constructor and

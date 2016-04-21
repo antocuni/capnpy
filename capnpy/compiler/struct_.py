@@ -88,8 +88,10 @@ class Node__Struct:
             # XXX: we need to find a way to remove the self.__tag__, it makes
             # which() 4x slower than it should be
             ns.ww("""
-                def which(self):
-                    val = self._read_data({tag_offset}, {int16_ifmt})
+                cpdef which(self, bint raw=False):
+                    cdef int val = self._read_data({tag_offset}, {int16_ifmt})
+                    if raw:
+                        return val
                     return self.__tag__(val)
             """)
             ns.w()

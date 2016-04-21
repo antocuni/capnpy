@@ -200,7 +200,12 @@ def test_union():
            '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
            '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
     shape = Shape.from_buffer(buf, 0, data_size=3, ptrs_size=0)
-    assert shape.which() == Shape.__tag__.square
+    w = shape.which()
+    assert type(w) is Shape.__tag__
+    assert w == Shape.__tag__.square
+    w = shape.which(raw=True)
+    assert type(w) is int
+    assert w == Shape.__tag__.square
     #
     shape._ensure_union(Shape.__tag__.square)
     py.test.raises(ValueError, "shape._ensure_union(Shape.__tag__.circle)")

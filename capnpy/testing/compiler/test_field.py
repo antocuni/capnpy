@@ -218,7 +218,14 @@ class TestField(CompilerTest):
                '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
         shape = mod.Shape.from_buffer(buf, 0, 3, 0)
         assert shape.area == 64
-        assert shape.which() == mod.Shape.__tag__.square
+        #
+        w = shape.which()
+        assert w == mod.Shape.__tag__.square
+        assert type(w) is mod.Shape.__tag__
+        w = shape.which(raw=True)
+        assert w == mod.Shape.__tag__.square
+        assert type(w) is int
+        #
         assert shape.square == 8
         py.test.raises(ValueError, "shape.circle")
         py.test.raises(ValueError, "shape.empty")

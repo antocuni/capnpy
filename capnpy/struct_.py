@@ -76,14 +76,20 @@ class Struct(Blob):
     def dump(self, f):
         capnpy.message.dump(self, f)
 
-    def which(self):
+    def which(self, raw=False):
         """
         Return the value of the union tag, if the struct has an anonimous union or
-        is an union
+        is an union.
+
+        By default, return a vlue of type self.__tag__, which carries also the
+        information of the enum. If raw==True, return a raw numeric value
+        (which is ~2x faster on CPython).
         """
         if self.__tag_offset__ is None:
             raise TypeError("Cannot call which() on a non-union type")
         val = self._read_data(self.__tag_offset__, Types.int16.ifmt)
+        if raw:
+            return val
         return self.__tag__(val)
  
     def _read_data(self, offset, ifmt):
