@@ -1,10 +1,10 @@
 import struct
-from cStringIO import StringIO
 from capnpy.unpack import unpack_uint32
 from capnpy.blob import CapnpBuffer, CapnpBufferWithSegments
 from capnpy.struct_ import Struct, struct_from_buffer
 from capnpy import ptr
 from capnpy.filelike import as_filelike
+from capnpy.buffered import StringBuffer
 
 def load(f, payload_type):
     """
@@ -30,7 +30,7 @@ def loads(buf, payload_type):
     """
     Same as load(), but load from a string instead of a file
     """
-    f = StringIO(buf)
+    f = StringBuffer(buf)
     obj = load(f, payload_type)
     if f.tell() != len(buf):
         remaining = len(buf)-f.tell()

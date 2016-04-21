@@ -20,3 +20,5 @@ cdef class StringBuffer(FileLike):
 
     @cython.locals(i=int, j=int)
     cpdef bytes readline(self)
+
+    cpdef int tell(self)

@@ -109,3 +109,6 @@ class StringBuffer(FileLike):
         else:
             self.i = j
             return self.s[i:j]
+
+    def tell(self):
+        return self.i
