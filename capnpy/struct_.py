@@ -107,8 +107,9 @@ class Struct(Blob):
         return self._buf.read_raw_ptr(self._ptrs_offset+offset)
 
     def _ensure_union(self, expected_tag):
-        tag = self.which()
+        tag = self.which(raw=True)
         if tag != expected_tag:
+            tag = self.which() # use the non-raw tag to get a better error message
             raise ValueError("Tried to read an union field which is not currently "
                              "initialized. Expected %s, got %s" % (expected_tag, tag))
 
