@@ -1,6 +1,13 @@
 from capnpy.type import Types as _Types
 from capnpy import annotate
 
+def has_annotation(obj, anncls):
+    for ann in obj.annotations or []:
+        if ann.id == anncls.__id__:
+            return ann
+    return None
+
+
 @Type.__extend__
 class Type:
 
@@ -29,6 +36,7 @@ class Type:
 
 @Node.__extend__
 class Node:
+
     def __hash__(self):
         return hash(self.id)
 
@@ -97,11 +105,7 @@ class Field:
                 self.slot.type.which() == Type.__tag__.list)
 
     def is_nullable(self, m):
-        for ann in self.annotations or []:
-            if ann.id == annotate.nullable.__id__:
-                assert ann.value.void is None
-                return True
-        return False
+        return has_annotation(self, annotate.nullable)
 
     def is_part_of_union(self):
         return self.discriminantValue != Field.noDiscriminant

@@ -1,4 +1,3 @@
-import py
 from capnpy.testing.compiler.support import CompilerTest
 
 class TestAnnotation(CompilerTest):
