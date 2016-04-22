@@ -172,13 +172,8 @@ inspired by ``namedtuples``:
     value of a field, you can instantiate a new object, as you would do with
     namedtuples
 
-  - objects compares "by value": two objects are considered to be equal if
-    their canonical form is the same. As a first approximation, this means
-    that two objects are equal if all their fields are equal, as one would
-    expect. See `this paragraph`_ for a more detailed explanation
-
-  - objects are hashable, thus they can be used as keys of dictionaries, and
-    they behave the way you would expect
+  - objects can be made comparable and hashable by specifying the ``$Py.key``
+    annotation
 
 Additionally, ``capnpy`` provides ways to access capnproto-specific features:
 
@@ -359,10 +354,83 @@ access the field, and the capitalized ``Point.Position`` which is used to
 construct new objects.
 
 
-More on equality
+Equality and hashing
 ---------------------
 
-XXX write me
+By default, structs are not hashable and cannot be compared. To enable, you
+need to specify which fields to consider using the ``$Py.key`` annotation::
+
+    using Py = import "/capnpy/annotate.capnp";
+
+    # ignore the name when comparing
+    struct Point $Py.key("x, y") {
+        x @0 :Int64;
+        y @1 :Int64;
+        name @2 :Text;
+    }
+
+::
+
+    >>> p1 = Point(1, 2, "p1")
+    >>> p2 = Point(1, 2, "p2")
+    >>> p3 = Point(3, 4, "p3")
+    >>>
+    >>> p1 == p2
+    True
+    >>> p1 == p3
+    False
+
+Moreover, the structs are guaranteed to compare equal to the corresponding
+tuples:
+
+    >>> p1 == (1, 2)
+    True
+    >>> p3 == (3, 4)
+    True
+
+Finally, it is possible to use them as dicionary keys::
+
+    >>> d = {}
+    >>> d[p1] = 'foo'
+    >>> d[p2]
+    'foo'
+    >>> d[(1, 2)]
+    'foo'
+
+
+**Rationale**: you have to manually specify the fields to consider because it
+is not obvious what is the right thing to do in presence of schema
+evolution. For example, suppose you start with a ``struct Point`` which
+contains only ``x`` and ``y``::
+
+    >>> p1 = Point(1, 2) # there is no "name" yet
+
+Then, you receive some other object created with a newer schema, which
+contains also the ``name`` field::
+
+    >>> p2 = Point.load(mysocket)
+    >>> p2.x, p2.y
+    (1, 2)
+    >>> hasattr(p2, 'name')
+    False
+    >>> p2._buf.s
+    '\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x82\x00\x00\x00this is my name\x00'
+
+Note that the underyling data contains the name, although we don't have the
+``name`` field (because we used an older schema). So, what should ``p1 == p2``
+return? We might choose to simply ignore the name and return ``True``. Or
+choose to consider ``p1.name`` equal to the empty string, or to ``None``, and
+thus return ``False``. Or we could declare that two objects are equal when
+their canonical representation is the same, which introduces even more subtle
+consequences.
+
+According to the Zen of Python:
+
+    Explicit is better than implicit.
+    In the face of ambiguity, refuse the temptation to guess.
+
+Hence, we require you to explicity specify which fields to consider.
+
 
 
 Adding methods to capnproto structs
