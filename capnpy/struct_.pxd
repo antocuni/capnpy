@@ -22,3 +22,6 @@ cdef class Struct(Blob):
     cpdef _read_data(self, long offset, char ifmt)
     cpdef _read_ptr(self, long offset)
     cpdef long _read_raw_ptr(self, long offset)
+
+    cpdef object _ensure_union(self, long expected_tag)
+    cpdef long __which__(self) except -1

@@ -70,7 +70,6 @@ class Node__Struct:
     def _emit_union_tag(self, m):
         # union tags are 16 bits, so *2
         ns = m.code.new_scope()
-        ns.int16_ifmt = Types.int16.ifmt
         ns.tag_offset = self.struct.discriminantOffset * 2
         enum_items = [None] * self.struct.discriminantCount
         for field in self.struct.fields:
@@ -81,18 +80,12 @@ class Node__Struct:
         m.declare_enum('__tag__', enum_name, enum_items)
         ns.w()
         if m.pyx:
-            # generate a specialized version of which, which does not need to
+            # generate a specialized version of __which__, which does not need to
             # do a lookup for __tag_offset__. Not needed on PyPy because the
-            # default which() implemented in struct_.py is already fast
-            #
-            # XXX: we need to find a way to remove the self.__tag__, it makes
-            # which() 4x slower than it should be
+            # default __which__() implemented in struct_.py is already fast
             ns.ww("""
-                cpdef which(self, bint raw=False):
-                    cdef int val = self._read_data({tag_offset}, {int16_ifmt})
-                    if raw:
-                        return val
-                    return self.__tag__(val)
+                cpdef long __which__(self) except -1:
+                    return self._read_data_int16({tag_offset})
             """)
             ns.w()
         #
@@ -101,7 +94,7 @@ class Node__Struct:
             ns.i = i
             ns.ww("""
                 def is_{item}(self):
-                    return self._read_data({tag_offset}, {int16_ifmt}) == {i}
+                    return self._read_data_int16({tag_offset}) == {i}
             """)
         ns.w()
 

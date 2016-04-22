@@ -218,14 +218,7 @@ class TestField(CompilerTest):
                '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
         shape = mod.Shape.from_buffer(buf, 0, 3, 0)
         assert shape.area == 64
-        #
-        w = shape.which()
-        assert w == mod.Shape.__tag__.square
-        assert type(w) is mod.Shape.__tag__
-        w = shape.which(raw=True)
-        assert w == mod.Shape.__tag__.square
-        assert type(w) is int
-        #
+        assert shape.which() == mod.Shape.__tag__.square
         assert shape.square == 8
         py.test.raises(ValueError, "shape.circle")
         py.test.raises(ValueError, "shape.empty")
@@ -240,6 +233,31 @@ class TestField(CompilerTest):
         py.test.raises(ValueError, "shape.square")
         py.test.raises(ValueError, "shape.circle")
 
+    def test_which(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Shape {
+          area @0 :Int64;
+          union {
+            circle @1 :Int64;      # radius
+            square @2 :Int64;      # width
+            empty  @3 :Void;
+          }
+        }
+        struct Foo {
+            foo @0 :Int64;
+        }
+        """
+        mod = self.compile(schema)
+        shape = mod.Shape.from_buffer('', 0, data_size=0, ptrs_size=0)
+        assert shape.which() == mod.Shape.__tag__.circle
+        assert type(shape.which()) is mod.Shape.__tag__
+        assert shape.__which__() == mod.Shape.__tag__.circle
+        assert type(shape.__which__()) is int
+        #
+        foo = mod.Foo.from_buffer('', 0, data_size=0, ptrs_size=0)
+        exc = py.test.raises(TypeError, "foo.which()")
+        assert exc.value.message == 'Cannot call which() on a non-union type'
 
     def test_is_union(self):
         schema = """

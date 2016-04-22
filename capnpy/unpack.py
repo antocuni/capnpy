@@ -29,5 +29,8 @@ def unpack_primitive(ifmt, buf, offset):
 def unpack_int64(buf, offset):
     return unpack_primitive(ord('q'), buf, offset)
 
+def unpack_int16(buf, offset):
+    return unpack_primitive(ord('h'), buf, offset)
+
 def unpack_uint32(buf, offset):
     return unpack_primitive(ord('I'), buf, offset)

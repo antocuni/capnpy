@@ -65,6 +65,17 @@ cpdef long unpack_int64(bytes buf, int offset):
     checkbound(8, buf, offset)
     return (<int64_t*>valueaddr)[0]
 
+cpdef long unpack_int16(bytes buf, int offset):
+    cdef char* cbuf
+    cdef void* valueaddr
+    #
+    if offset < 0:
+        raise IndexError('Offset out of bounds: %d' % offset)
+    cbuf = buf
+    valueaddr = cbuf + offset
+    checkbound(2, buf, offset)
+    return (<int16_t*>valueaddr)[0]
+
 cpdef long unpack_uint32(bytes buf, int offset):
     cdef char* cbuf
     cdef void* valueaddr

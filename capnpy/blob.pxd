@@ -1,11 +1,12 @@
 import cython
 from capnpy.type cimport BuiltinType
-from capnpy.unpack cimport unpack_primitive, unpack_int64
+from capnpy.unpack cimport unpack_primitive, unpack_int64, unpack_int16
 from capnpy cimport ptr
 
 cdef class CapnpBuffer:
     cdef readonly bytes s
     cpdef read_primitive(self, long offset, char ifmt)
+    cpdef long read_int16(self, long offset)
     cpdef long read_raw_ptr(self, long offset)
     cpdef read_ptr(self, long offset)
 
@@ -17,6 +18,8 @@ cdef class Blob:
 
     cpdef _init_blob(self, object buf)
 
+    cpdef _read_data(self, long offset, char ifmt)
+    cpdef long _read_data_int16(self, long offset)
     cpdef _read_ptr(self, long offset)
     cpdef _read_str_text(self, long offset, str default_=*)
 

@@ -110,7 +110,7 @@ class TestGetAttr(object):
         assert res == self.N*2
 
     @pytest.mark.benchmark(group="getattr")
-    def test_which_raw(self, schema, benchmark):
+    def test___which__(self, schema, benchmark):
         if schema.__name__ != 'Capnpy':
             py.test.skip('N/A')
         #
@@ -119,7 +119,7 @@ class TestGetAttr(object):
             res = 0
             for i in range(self.N):
                 obj = myobjs[i%2]
-                res += obj.which(raw=True)
+                res += obj.__which__()
             return res
         #
         obj = schema.WithUnion.new_two(42)

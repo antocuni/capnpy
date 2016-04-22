@@ -203,13 +203,12 @@ def test_union():
     w = shape.which()
     assert type(w) is Shape.__tag__
     assert w == Shape.__tag__.square
-    w = shape.which(raw=True)
+    w = shape.__which__()
     assert type(w) is int
     assert w == Shape.__tag__.square
     #
     shape._ensure_union(Shape.__tag__.square)
     py.test.raises(ValueError, "shape._ensure_union(Shape.__tag__.circle)")
-
 
 def test_split_no_ptrs():
     buf = ('garbage0'

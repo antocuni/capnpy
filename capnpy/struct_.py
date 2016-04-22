@@ -76,27 +76,29 @@ class Struct(Blob):
     def dump(self, f):
         capnpy.message.dump(self, f)
 
-    def which(self, raw=False):
+    def which(self):
         """
         Return the value of the union tag, if the struct has an anonimous union or
         is an union.
-
-        By default, return a vlue of type self.__tag__, which carries also the
-        information of the enum. If raw==True, return a raw numeric value
-        (which is ~2x faster on CPython).
         """
+        return self.__tag__(self.__which__())
+
+    def __which__(self):
         if self.__tag_offset__ is None:
             raise TypeError("Cannot call which() on a non-union type")
-        val = self._read_data(self.__tag_offset__, Types.int16.ifmt)
-        if raw:
-            return val
-        return self.__tag__(val)
+        return self._read_data_int16(self.__tag_offset__)
  
     def _read_data(self, offset, ifmt):
         if offset >= self._data_size*8:
             # reading bytes beyond _data_size is equivalent to read 0
             return 0
         return self._buf.read_primitive(self._data_offset+offset, ifmt)
+
+    def _read_data_int16(self, offset):
+        if offset >= self._data_size*8:
+            # reading bytes beyond _data_size is equivalent to read 0
+            return 0
+        return self._buf.read_int16(self._data_offset+offset)
 
     def _read_ptr(self, offset):
         if offset >= self._ptrs_size*8:
@@ -107,8 +109,7 @@ class Struct(Blob):
         return self._buf.read_raw_ptr(self._ptrs_offset+offset)
 
     def _ensure_union(self, expected_tag):
-        tag = self.which(raw=True)
-        if tag != expected_tag:
+        if self.__which__() != expected_tag:
             tag = self.which() # use the non-raw tag to get a better error message
             raise ValueError("Tried to read an union field which is not currently "
                              "initialized. Expected %s, got %s" % (expected_tag, tag))

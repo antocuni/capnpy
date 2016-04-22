@@ -10,7 +10,7 @@ from capnpy.util import extend
 from capnpy import ptr
 from capnpy.type import Types
 from capnpy.printer import BufferPrinter
-from capnpy.unpack import unpack_primitive, unpack_int64
+from capnpy.unpack import unpack_primitive, unpack_int64, unpack_int16
 
 try:
     import cython
@@ -30,6 +30,9 @@ class CapnpBuffer(object):
 
     def read_primitive(self, offset, ifmt):
         return unpack_primitive(ifmt, self.s, offset)
+
+    def read_int16(self, offset):
+        return unpack_int16(self.s, offset)
 
     def read_raw_ptr(self, offset):
         return unpack_int64(self.s, offset)
@@ -89,6 +92,15 @@ class Blob(object):
     def _read_data(self, offset, t):
         # overridden by Struct and List
         raise NotImplementedError
+
+    def _read_data_int16(self, offset):
+        """
+        Like _read_data, but specialized for int16. The only reason to have this
+        is that we can statically type the return-type, to avoid allocating an
+        int when we call __which_() inside Cython (e.g. in _ensure_union()) :(
+        """
+        # overridden by Struct
+        return self._read_data(offset, Types.int16.ifmt)
 
     def _read_ptr(self, offset):
         # overridden by Struct and List
