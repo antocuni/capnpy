@@ -139,6 +139,7 @@ class Field_slot:
 class Node__Struct(Node): pass
 class Node__Enum(Node): pass
 class Node__Const(Node): pass
+class Node__Annotation(Node): pass
 
 @Node.__extend__
 class Node:
@@ -152,6 +153,8 @@ class Node:
             self.__class__ = Node__Enum
         elif self.which() == Node.__tag__.const:
             self.__class__ = Node__Const
+        elif self.which() == Node.__tag__.annotation:
+            self.__class__ = Node__Annotation
         return self
 
 

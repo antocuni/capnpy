@@ -1,4 +1,4 @@
-from capnpy.schema import Node, Node__Enum, Node__Const
+from capnpy.schema import Node, Node__Enum, Node__Const, Node__Annotation
 
 # The implementation of each node is divided in three parts:
 #     1. forward declaration
@@ -81,11 +81,7 @@ class Node:
         return self._fullname(m, '.')
 
     def emit_declaration(self, m):
-        if self.is_annotation():
-            # annotations are simply ignored for now
-            pass
-        else:
-            assert False, 'Unkown node type: %s' % self.which()
+        assert False, 'Unkown node type: %s' % self.which()
 
     def emit_definition(self, m):
         pass # do nothing by default
@@ -95,6 +91,43 @@ class Node:
 
     def emit_delete_nested_from_globals(self, m):
         pass
+
+
+@Node__Annotation.__extend__
+class Node__Annotation:
+
+    def emit_declaration(self, m):
+        ns = m.code.new_scope()
+        ns.name = self.shortname(m)
+        ns.id = self.id
+        ns.targets_file = self.annotation.targetsFile
+        ns.targets_const = self.annotation.targetsConst
+        ns.targets_enum = self.annotation.targetsEnum
+        ns.targets_enumerant = self.annotation.targetsEnumerant
+        ns.targets_struct = self.annotation.targetsStruct
+        ns.targets_field = self.annotation.targetsField
+        ns.targets_union = self.annotation.targetsUnion
+        ns.targets_group = self.annotation.targetsGroup
+        ns.targets_interface = self.annotation.targetsInterface
+        ns.targets_method = self.annotation.targetsMethod
+        ns.targets_param = self.annotation.targetsParam
+        ns.targets_annotation = self.annotation.targetsAnnotation
+        ns.ww("""
+            class {name}(object):
+                __id__ = {id}
+                targets_file = {targets_file}
+                targets_const = {targets_const}
+                targets_enum = {targets_enum}
+                targets_enumerant = {targets_enumerant}
+                targets_struct = {targets_struct}
+                targets_field = {targets_field}
+                targets_union = {targets_union}
+                targets_group = {targets_group}
+                targets_interface = {targets_interface}
+                targets_method = {targets_method}
+                targets_param = {targets_param}
+                targets_annotation = {targets_annotation}
+        """)
 
 @Node__Enum.__extend__
 class Node__Enum:
