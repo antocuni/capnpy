@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2016-04-22 17:05
+# generated on 2016-04-22 17:54
 
 from capnpy.struct_ import Struct as _Struct
 from capnpy.struct_ import assert_undefined as _assert_undefined
@@ -28,6 +28,20 @@ class nullable(object):
     targets_field = False
     targets_union = False
     targets_group = True
+    targets_interface = False
+    targets_method = False
+    targets_param = False
+    targets_annotation = False
+class key(object):
+    __id__ = 14658097673689429382
+    targets_file = False
+    targets_const = False
+    targets_enum = False
+    targets_enumerant = False
+    targets_struct = True
+    targets_field = False
+    targets_union = False
+    targets_group = False
     targets_interface = False
     targets_method = False
     targets_param = False

@@ -1,5 +1,11 @@
 @0xbc24c21845631520;
 
+# make it possible to compare/hash the structure by using the fields declared
+# in the key
+annotation key(struct) :Text;
+
+
+
 # old way to delcare nullability, will be eventually removed
 annotation nullable(group) :Void;
 

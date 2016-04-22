@@ -1,3 +1,4 @@
+from capnpy import annotate
 from capnpy import schema
 from capnpy.type import Types
 from capnpy.compiler.structor import Structor
@@ -53,6 +54,7 @@ class Node__Struct:
                     field.emit(m, self)
                 self._emit_ctors(m)
             self._emit_repr(m)
+            self._emit_key_maybe(m)
         ns.w()
         ns.w()
 
@@ -260,3 +262,25 @@ class Node__Struct:
             return ns.format('self.{fname}.shortrepr()')
         else:
             return '"???"'
+
+    def _emit_key_maybe(self, m):
+        ann = schema.has_annotation(self, annotate.key)
+        if ann is None:
+            return
+        assert ann.value.is_text()
+        # we expect keyfields to be something like "x, y, z"
+        fields = ann.value.text.split(',')
+        fields = map(str.strip, fields)
+        allfields = set([f.name for f in self.struct.fields])
+        #
+        # sanity check
+        for f in fields:
+            if f not in allfields:
+                raise ValueError("Error in $Py.key: the field '%s' does not exist" % f)
+        #
+        ns = m.code.new_scope()
+        ns.key = ', '.join(['self.%s' % f for f in fields])
+        ns.ww("""
+            def _key(self):
+                return ({key},)
+        """) # the trailing comma is to ensure a tuple even if there is a single field

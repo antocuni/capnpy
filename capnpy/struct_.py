@@ -237,9 +237,28 @@ class Struct(Blob):
         buf = body+extra
         return self.__class__.from_buffer(buf, 0, self._data_size, self._ptrs_size)
 
+
+    # ----------------------
+    # hashing and equality
+    # ----------------------
+
+    # in theory, this is the only method you nedd to override to enable
+    # hashing and comparability. But in PYX mode, we override __hash__ and
+    # _equals as well.
+    def _key(self):
+        raise TypeError("Cannot hash or compare capnpy structs. "
+                        "Use the $Py.key annotation to enable it")
+
     def __hash__(self):
-        raise TypeError("unhashble type. "
-                        "Use the $Py.key annotation to make it hashable")
+        return hash(self._key())
+
+    def _equals(self, other):
+        mykey = self._key()
+        if isinstance(other, tuple):
+            otherkey = other
+        else:
+            otherkey = other._key()
+        return mykey == otherkey
 
     # ------------------------------------------------------
     # Comparisons methods
@@ -265,11 +284,6 @@ class Struct(Blob):
     #      you cannot modify the class dict of an extension type: this means
     #      that we will have the special methods only when in Pure Python
     #      mode, as wished
-
-    def _equals(self, other):
-        # This is the only method which is supposed to be overridden by subclasses
-        raise TypeError("Cannot compare capnpy structs by default. "
-                        "Use th $Py.key annotation to make it comparable")
 
     def _cmp_eq(self, other):
         return self._equals(other)
