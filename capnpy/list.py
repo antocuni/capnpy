@@ -150,7 +150,7 @@ class List(Blob):
             return list(self) == other
         if self.__class__ is not other.__class__:
             return False
-        XXX_fix_me
+        return self._get_key() == other._get_key()
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -182,6 +182,9 @@ class PrimitiveList(List):
 
 class StructList(List):
     ItemBuilder = listbuilder.StructItemBuilder
+
+    def __eq__(self, other):
+        raise TypeError("Cannot compare lists of structs.")
 
     def _read_list_item(self, offset):
         return self._item_type.from_buffer(self._buf,

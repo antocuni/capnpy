@@ -73,6 +73,8 @@ def test_list_of_structs():
     assert read_point(1) == (20, 200)
     assert read_point(2) == (30, 300)
     assert read_point(3) == (40, 400)
+    #
+    py.test.raises(TypeError, "lst == lst")
 
 
 def test_string():
