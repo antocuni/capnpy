@@ -168,3 +168,38 @@ class TestMessage(object):
         with tmpfile.open() as f:
             res = benchmark(load_from_file, f)
         assert res.int64 == 100
+
+
+class TestHash(object):
+
+    N = 2000
+
+    @pytest.mark.benchmark(group="hash")
+    def test_hash_ints(self, schema, benchmark):
+        if schema.__name__ == 'PyCapnp':
+            py.test.skip('pycapnp does not implement hash properly')
+        def hash_many(obj):
+            myobjs = (obj, obj)
+            res = 0
+            for i in range(self.N):
+                obj = myobjs[i%2]
+                res ^= hash(obj)
+            return res
+        #
+        obj = schema.Point(1, 2, 3)
+        res = benchmark(hash_many, obj)
+        assert res == 0
+
+    @pytest.mark.benchmark(group="hash")
+    def test_hash_ints_tuple(self, benchmark):
+        def hash_many(obj):
+            myobjs = (obj, obj)
+            res = 0
+            for i in range(self.N):
+                obj = myobjs[i%2]
+                res ^= hash(obj)
+            return res
+        #
+        obj = (1, 2, 3)
+        res = benchmark(hash_many, obj)
+        assert res == 0

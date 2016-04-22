@@ -37,6 +37,14 @@ class Instance(object):
         def __init__(self, field):
             self.field = field
 
+    class Point(object):
+        def __init__(self, x, y, z):
+            self.x = x
+            self.y = y
+            self.z = z
+
+        def __hash__(self):
+            return hash((self.x, self.y, self.z))
 
 # ============================================================
 # Namedtuple storage
@@ -63,6 +71,8 @@ class NamedTuple(object):
                 uint8, uint16, uint32, uint64, float32, float64,
                 text, group, inner, intlist)
 
+    Point = namedtuple('Point', ['x', 'y', 'z'])
+
 
 # ============================================================
 # capnpy storage
@@ -81,7 +91,9 @@ except ImportError:
     pycapnp = None
 else:
     thisdir = py.path.local(__file__).dirpath()
-    pycapnp_schema = pycapnp.load(str(thisdir.join('benchmarks.capnp')))
+    rootdir = thisdir.dirpath('..')
+    pycapnp_schema = pycapnp.load(str(thisdir.join('benchmarks.capnp')),
+                                  imports=[str(rootdir)])
 
 class PyCapnp(object):
 
@@ -126,3 +138,13 @@ class PyCapnp(object):
         s = pycapnp_schema.MyInner.new_message()
         s.field = field
         return pycapnp_schema.MyInner.from_bytes(s.to_bytes())
+
+    @staticmethod
+    def Point(x, y, z):
+        if pycapnp is None:
+            py.test.skip('cannot import pycapnp')
+        s = pycapnp_schema.Point.new_message()
+        s.x = x
+        s.y = y
+        s.z = z
+        return pycapnp_schema.Point.from_bytes(s.to_bytes())

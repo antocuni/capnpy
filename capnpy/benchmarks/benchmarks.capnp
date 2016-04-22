@@ -1,5 +1,7 @@
 @0xe62e66ea90a396da;
 
+using Py = import "/capnpy/annotate.capnp";
+
 struct MyStruct {
     # the padding field is needed to ensure that we benchmark fields with offset >0
     padding @0 :Int64;
@@ -34,4 +36,10 @@ struct WithUnion {
         two @3   :Void;
         three @4 :Void;
     }
+}
+
+struct Point $Py.key("x, y, z") {
+    x @0 :Int64;
+    y @1 :Int64;
+    z @2 :Int64;
 }
