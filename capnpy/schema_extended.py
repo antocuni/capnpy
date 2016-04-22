@@ -28,19 +28,28 @@ class Type:
 
 @Node.__extend__
 class Node:
-    def _get_key(self):
-        return self.id
+    def __hash__(self):
+        return hash(self.id)
+
+    def _equals(self, other):
+        return self.id == other.id
 
 
 @Field.__extend__
 class Field:
 
-    def _get_key(self):
+    def __key(self):
         # XXX: this is not strictly correct, because two fields might differ
         # for other attributes. However, the pair (name, codeOrder) should be
         # enough to uniquiely identify a field inside the parent struct, which
         # is enough for what we need (in particular, in structor.py)
         return self.name, self.codeOrder
+
+    def __hash__(self):
+        return hash(self.__key())
+
+    def _equals(self, other):
+        return self.__key() == other.__key()
 
     def is_primitive(self):
         return (self.which() == Field.__tag__.slot and
