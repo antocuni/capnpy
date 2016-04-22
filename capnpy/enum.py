@@ -1,4 +1,6 @@
 class BaseEnum(int):
+
+    __slots__ = ()
     
     def __new__(cls, value):
         if not 0 <= value < len(cls.__members__):
@@ -18,6 +20,7 @@ class BaseEnum(int):
 
 def enum(name, members):
     class Enum(BaseEnum):
+        __slots__ = ()
         __members__ = tuple(members)
 
     Enum.__name__ = name

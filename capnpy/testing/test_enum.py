@@ -14,7 +14,7 @@ def test_enum():
     assert Color(0) == Color.red
     py.test.raises(ValueError, "Color(3)")
     py.test.raises(ValueError, "Color(-1)")
-
+    py.test.raises(AttributeError, "Color.red.x = 42")
 
 def test_read_enum():
     Color = enum('Color', ('red', 'green', 'blue', 'yellow'))
@@ -28,3 +28,4 @@ def test_read_enum():
     assert color == Color.blue
     assert gender == Gender.female
     
+
