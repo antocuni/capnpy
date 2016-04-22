@@ -78,7 +78,7 @@ class TestNullable(CompilerTest):
     def mod(self):
         schema = """
         @0xbf5147cbbecf40c1;
-        using Py = import "/capnpy/py.capnp";
+        using Py = import "/capnpy/annotate.capnp";
         struct Foo {
             x :group $Py.nullable {
                 isNull @0 :Int8;

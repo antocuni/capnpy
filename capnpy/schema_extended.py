@@ -1,4 +1,5 @@
 from capnpy.type import Types as _Types
+from capnpy import annotate
 
 @Type.__extend__
 class Type:
@@ -97,8 +98,7 @@ class Field:
 
     def is_nullable(self, m):
         for ann in self.annotations or []:
-            ann_node = m.allnodes[ann.id]
-            if ann_node.displayName == "capnpy/py.capnp:nullable":
+            if ann.id == annotate.nullable.__id__:
                 assert ann.value.void is None
                 return True
         return False
