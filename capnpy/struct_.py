@@ -168,58 +168,6 @@ class Struct(Blob):
     def _get_end(self):
         return self._get_extra_end()
 
-    def _get_key(self):
-        """
-        The _key is used to implement __eq__, __ne__ and __hash__.
-        It's a 3-tuple:
-
-          - the data section (copied verbatim)
-
-          - the non-offset part of the ptrs section
-
-          - the extra section (copied verbatim)
-        """
-        return self._get_data_key(), self._get_ptrs_key(), self._get_extra_key()
-
-    def _get_data_key(self):
-        start = self._get_body_start()
-        data_end = start + self._data_size*8
-        return self._buf.s[start:data_end]
-
-    def _get_ptrs_key(self):
-        """
-        Return a tuple containing the 16 most significant bits of each ptr.
-
-        In other words, we explicitly ignore the "offset" part of each ptr,
-        becuase it might differ even if the structs are equal: in particular,
-        if the struct has a "garbage" section, the offsets in the ptrs change.
-        See doc/normalize.rst for a more detailed explanation.
-
-        The most significant 16 bits of each ptr are read using
-        struct.unpack_from: in microbenchmarks, this has been measured to be
-        ~5x faster than taking string slices, on PyPy.
-
-        NOTE: this is a general implementation which works for every struct,
-        but it's not the fastest possible. Subclasses are expected to override
-        this this method, like this::
-
-            return (struct.unpack_from('i', self._buf,  4),
-                    struct.unpack_from('i', self._buf, 12),
-                    ...)
-        """
-        start = self._get_body_start()
-        ptrs_start = start + self._data_size*8
-        ptrs_key = [''] * self._ptrs_size # pre-allocate list
-        offset = ptrs_start + 4
-        for i in range(self._ptrs_size):
-            ptrs_key[i] = struct.unpack_from('i', self._buf.s, offset)
-            offset += 8
-        return tuple(ptrs_key)
-
-    def _get_extra_key(self):
-        extra_start, extra_end = self._get_extra_range()
-        return self._buf.s[extra_start:extra_end]
-
     def _split(self, extra_offset):
         """
         Split the body and the extra part.  The extra part must be placed at the
@@ -290,7 +238,8 @@ class Struct(Blob):
         return self.__class__.from_buffer(buf, 0, self._data_size, self._ptrs_size)
 
     def __hash__(self):
-        return hash(self._get_key())
+        raise TypeError("unhashble type. "
+                        "Use the $Py.key annotation to make it hashable")
 
     # ------------------------------------------------------
     # Comparisons methods
@@ -306,7 +255,7 @@ class Struct(Blob):
     # CPython's tp_richcmp slot).  On the other hand, when in Pure Python
     # mode, we *need* __eq__, __lt__ etc:
     #
-    #   1. we write the actual logic inside the _cmp_* methods
+    #   1. we write the actual logic inside _cmp_*
     #
     #   2. we implement a __richcmp__ which will be used by Cython but ignored
     #      by Pure Python
@@ -317,13 +266,16 @@ class Struct(Blob):
     #      that we will have the special methods only when in Pure Python
     #      mode, as wished
 
+    def _equals(self, other):
+        # This is the only method which is supposed to be overridden by subclasses
+        raise TypeError("Cannot compare capnpy structs by default. "
+                        "Use th $Py.key annotation to make it comparable")
+
     def _cmp_eq(self, other):
-        if self.__class__ is not other.__class__:
-            return False
-        return self._get_key() == other._get_key()
+        return self._equals(other)
 
     def _cmp_ne(self, other):
-        return not self._cmp_eq(other)
+        return not self._equals(other)
 
     def _cmp_error(self, other):
         raise TypeError, "capnpy structs can be compared only for equality"

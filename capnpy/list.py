@@ -150,7 +150,7 @@ class List(Blob):
             return list(self) == other
         if self.__class__ is not other.__class__:
             return False
-        return self._get_key() == other._get_key()
+        XXX_fix_me
 
     def __ne__(self, other):
         return not self.__eq__(other)
