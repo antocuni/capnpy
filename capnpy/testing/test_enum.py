@@ -12,8 +12,6 @@ def test_enum():
     assert repr(Color.red) == '<Color.red: 0>'
     assert str(Color.red) == 'red'
     assert Color(0) == Color.red
-    py.test.raises(ValueError, "Color(3)")
-    py.test.raises(ValueError, "Color(-1)")
     py.test.raises(AttributeError, "Color.red.x = 42")
 
 def test_read_enum():
