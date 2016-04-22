@@ -3,13 +3,14 @@ class BaseEnum(int):
     __slots__ = ()
     
     def __new__(cls, value):
-        if not 0 <= value < len(cls.__members__):
-            raise ValueError, 'Unkown %s value: %d' % (cls.__name__, value)
         return int.__new__(cls, value)
 
     @property
     def name(self):
-        return self.__members__[self]
+        try:
+            return self.__members__[self]
+        except IndexError:
+            return 'unknown<%d>' % self
 
     def __repr__(self):
         return '<%s.%s: %d>' % (self.__class__.__name__, self.name, self)

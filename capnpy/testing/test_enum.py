@@ -27,5 +27,12 @@ def test_read_enum():
     gender = blob._read_enum(2, Gender)
     assert color == Color.blue
     assert gender == Gender.female
-    
+
+
+def test_unknown():
+    Color = enum('Color', ('red', 'green', 'blue'))
+    assert type(Color) is type
+    pink = Color(3)
+    assert pink == 3
+    assert pink.name == 'unknown<3>'
 
