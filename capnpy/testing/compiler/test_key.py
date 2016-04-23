@@ -1,4 +1,5 @@
 import py
+import sys
 from capnpy.testing.compiler.support import CompilerTest
 
 class TestKey(CompilerTest):
@@ -51,17 +52,17 @@ class TestFashHash(CompilerTest):
         exc = py.test.raises(ValueError, "hash(p1)")
         assert exc.value.message == "slow hash not allowed"
 
-    def test_fasthash_int(self):
+    def test_fasthash_int_long(self):
         schema = """
         @0xbf5147cbbecf40c1;
         using Py = import "/capnpy/annotate.capnp";
         struct Point $Py.key("x, y") {
             x @0 :Int64;
-            y @1 :Int64;
+            y @1 :UInt64;
             name @2 :Text;
         }
         """
         mod = self.compile(schema)
         self.only_fasthash(mod.Point)
-        p1 = mod.Point(1, 2, "p1")
-        assert hash(p1) == hash((1, 2))
+        p1 = mod.Point(1, sys.maxint+1, "p1")
+        assert hash(p1) == hash((1, sys.maxint+1))

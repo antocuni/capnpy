@@ -27,6 +27,17 @@ class Type:
         else:
             raise NotImplementedError
 
+    def fasthash_function(self):
+        w = self.which()
+        if Type.__tag__.int8 <= w <= Type.__tag__.uint32:
+            # this can be assimilated to a Python <int>
+            return '_hash.inthash'
+        elif self.is_uint64():
+            # this can be assimilated to a Python <long>
+            return '_hash.longhash'
+        else:
+            # no fast hash, use the "slow" one
+            return 'hash'
 
 @Value.__extend__
 class Value:

@@ -300,11 +300,19 @@ class Node__Struct:
         hvars = []
         with m.code.block('def __hash__(self):') as ns:
             ns.n = len(fieldnames)
+            # compute the hash of each field
             for i, fname in enumerate(fieldnames):
+                f = fields[fname]
                 ns.hvar = 'h%d' % i
                 ns.fname = fname
+                if f.is_slot():
+                    ns.hash = f.slot.type.fasthash_function()
+                else:
+                    ns.hash = 'hash'
                 hvars.append(ns.hvar)
-                ns.w('cdef long {hvar} = hash(self.{fname})')
+                ns.w('cdef long {hvar} = {hash}(self.{fname})')
+            #
+            # compute the hash of the whole tuple
             ns.args = ', '.join(hvars)
             ns.w('return _hash.tuplehash_{n}({args})')
         #
