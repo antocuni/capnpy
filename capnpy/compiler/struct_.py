@@ -294,7 +294,6 @@ class Node__Struct:
 
     def _emit_fash_hash_maybe(self, m, fieldnames):
         # emit a specialized, fast __hash__.
-        return
         if len(fieldnames) > _hash.TUPLE_MAX_LEN:
             return
         fields = dict([(f.name, f) for f in self.struct.fields])

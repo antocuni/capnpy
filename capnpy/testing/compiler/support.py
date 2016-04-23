@@ -19,8 +19,13 @@ class CompilerTest:
     simply call it without any further setup required.
     """
 
+    SKIP = ()
+
     @pytest.fixture(params=['py', 'pyx'])
     def initargs(self, request, tmpdir):
+        if request.param in self.SKIP:
+            py.test.skip('%s tests disabled for this class' % request.param)
+        #
         self.tmpdir = tmpdir
         self.pyx = request.param == 'pyx'
         if self.pyx and not request.config.option.pyx:
