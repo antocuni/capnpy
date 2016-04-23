@@ -21,6 +21,7 @@ if USE_CYTHON:
              "capnpy/filelike.py",
              "capnpy/ptr.pyx",
              "capnpy/unpack.pyx",
+             "capnpy/_hash.pyx",
              "capnpy/_util.pyx",
     ]
 
