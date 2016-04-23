@@ -243,7 +243,7 @@ class Struct(Blob):
     # ----------------------
 
     # in theory, this is the only method you nedd to override to enable
-    # hashing and comparability. But in PYX mode, we override __hash__ and
+    # hashing and comparability. But in PYX mode, we override _hash and
     # _equals as well.
     def _key(self):
         raise TypeError("Cannot hash or compare capnpy structs. "
@@ -294,7 +294,7 @@ class Struct(Blob):
     def _cmp_error(self, other):
         raise TypeError, "capnpy structs can be compared only for equality"
 
-    def __richcmp__(self, other, op):
+    def _richcmp(self, other, op):
         if op == 2:
             return self._cmp_eq(other)
         elif op == 3:
@@ -302,6 +302,8 @@ class Struct(Blob):
         else:
             return self._cmp_error(other)
 
+    def __richcmp__(self, other, op):
+        return self._richcmp(other, op)
 
 # add the special methods only when Struct has NOT been compiled by
 # Cython. See the comment above for more explanation

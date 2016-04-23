@@ -1,5 +1,6 @@
 import py
 import sys
+import os
 import types
 import subprocess
 import capnpy
@@ -13,6 +14,7 @@ PKGDIR = py.path.local(capnpy.__file__).dirpath()
 class BaseCompiler(object):
 
     standalone = None
+    annotate = False
 
     def __init__(self, path, pyx):
         self.path = [py.path.local(dirname) for dirname in path]
@@ -40,11 +42,17 @@ class BaseCompiler(object):
         pyxname = filename.new(ext='pyx')
         pyxfile = self.tmpdir.join(pyxname).ensure(file=True)
         pyxfile.write(src)
+        if self.annotate:
+            import Cython.Compiler.Options
+            Cython.Compiler.Options.annotate = True
         dll = pyx_to_dll(str(pyxfile),
                          pyxbuild_dir=str(self.tmpdir),
                          setup_args=dict(
                              include_dirs=[str(PKGDIR)] # to include "ptr.h"
                          ))
+        if self.annotate:
+            htmlfile = pyxfile.new(ext='html')
+            os.system('xdg-open %s' % htmlfile)
         return dll
 
     def _capnp_compile(self, filename):
@@ -70,7 +78,8 @@ class DynamicCompiler(BaseCompiler):
 
     standalone = False
 
-    def load_schema(self, modname=None, importname=None, filename=None, convert_case=True):
+    def load_schema(self, modname=None, importname=None, filename=None,
+                    convert_case=True):
         """
         Compile and load a capnp schema, which can be specified by setting one
         (and only one) of the following params:

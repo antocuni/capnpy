@@ -32,7 +32,9 @@ class CompilerTest:
         # root is needed to be able to import capnpy/py.capnp
         root = py.path.local(capnpy.__file__).dirpath('..')
         comp = DynamicCompiler([root, self.tmpdir], pyx=self.pyx)
+        comp.annotate = kwds.pop('annotate', False)
         tmp_capnp = self.tmpdir.join('tmp.capnp')
         tmp_capnp.write(s)
-        return comp.load_schema(importname='/tmp.capnp', **kwds)
+        schema = comp.load_schema(importname='/tmp.capnp', **kwds)
+        return schema
 

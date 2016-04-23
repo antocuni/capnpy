@@ -3,6 +3,10 @@ from capnpy import schema
 from capnpy.type import Types
 from capnpy.compiler.structor import Structor
 
+try:
+    from capnpy import _hash
+except ImportError:
+    _hash = None # this is needed only in PYX mode
 
 @schema.Node__Struct.__extend__
 class Node__Struct:
@@ -269,18 +273,45 @@ class Node__Struct:
             return
         assert ann.value.is_text()
         # we expect keyfields to be something like "x, y, z"
-        fields = ann.value.text.split(',')
-        fields = map(str.strip, fields)
+        fieldnames = ann.value.text.split(',')
+        fieldnames = map(str.strip, fieldnames)
         allfields = set([f.name for f in self.struct.fields])
         #
         # sanity check
-        for f in fields:
+        for f in fieldnames:
             if f not in allfields:
                 raise ValueError("Error in $Py.key: the field '%s' does not exist" % f)
         #
         ns = m.code.new_scope()
-        ns.key = ', '.join(['self.%s' % f for f in fields])
+        ns.key = ', '.join(['self.%s' % f for f in fieldnames])
         ns.ww("""
             def _key(self):
                 return ({key},)
         """) # the trailing comma is to ensure a tuple even if there is a single field
+        #
+        if m.pyx:
+            self._emit_fash_hash_maybe(m, fieldnames)
+
+    def _emit_fash_hash_maybe(self, m, fieldnames):
+        # emit a specialized, fast __hash__.
+        return
+        if len(fieldnames) > _hash.TUPLE_MAX_LEN:
+            return
+        fields = dict([(f.name, f) for f in self.struct.fields])
+        hvars = []
+        with m.code.block('def __hash__(self):') as ns:
+            ns.n = len(fieldnames)
+            for i, fname in enumerate(fieldnames):
+                ns.hvar = 'h%d' % i
+                ns.fname = fname
+                hvars.append(ns.hvar)
+                ns.w('cdef long {hvar} = hash(self.{fname})')
+            ns.args = ', '.join(hvars)
+            ns.w('return _hash.tuplehash_{n}({args})')
+        #
+        # apparently, we need to redefine __richcmp__ together with
+        # __hash__, else the base one is not going to be called
+        ns.ww("""
+            def __richcmp__(self, other, op):
+                return self._richcmp(other, op)
+        """)

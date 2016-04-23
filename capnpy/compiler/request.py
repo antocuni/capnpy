@@ -56,6 +56,8 @@ class RequestedFile:
         m.w("from capnpy.util import float64_repr as _float64_repr")
         m.w("from capnpy.util import extend_module_maybe as _extend_module_maybe")
         #
+        if m.pyx:
+            m.w("from capnpy cimport _hash")
         if m.pyx and not m.standalone:
             # load the compiler from the outside. See the comment in
             # _compile_pyx for a detailed explanation

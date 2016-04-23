@@ -25,3 +25,5 @@ cdef class Struct(Blob):
 
     cpdef object _ensure_union(self, long expected_tag)
     cpdef long __which__(self) except -1
+
+    cpdef _richcmp(self, other, int op)
