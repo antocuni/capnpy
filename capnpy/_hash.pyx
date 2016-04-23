@@ -1,5 +1,20 @@
-# reimplementation of CPython's tuple hashing algorithm. The magic numbers and
-# the algorithm itself are taken from python/Objects/tupleobject.c:tuplehash
+"""
+Reimplementation of CPython's hashing algorithm for many builtin
+types. The idea is that if you have C variables, you can compute fast hashes
+*without* having to allocate real Python object
+"""
+
+cpdef long inthash(long v):
+    if v == -1:
+        return -2
+    return v
+
+cpdef long longhash(unsigned long v):
+    return inthash(<long>v)
+
+
+# tuple hashing algorithm. The magic numbers and the algorithm itself are
+# taken from python/Objects/tupleobject.c:tuplehash
 
 TUPLE_MAX_LEN = 3
 
