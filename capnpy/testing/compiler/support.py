@@ -32,12 +32,13 @@ class CompilerTest:
             py.test.skip('no pyx')
         if self.pyx and not PYX:
             py.test.skip('cannot test pyx if PYX==False')
+        self.annotate = request.config.option.annotate
 
     def compile(self, s, **kwds):
         # root is needed to be able to import capnpy/py.capnp
         root = py.path.local(capnpy.__file__).dirpath('..')
         comp = DynamicCompiler([root, self.tmpdir], pyx=self.pyx)
-        comp.annotate = kwds.pop('annotate', False)
+        comp.annotate = self.annotate
         tmp_capnp = self.tmpdir.join('tmp.capnp')
         tmp_capnp.write(s)
         schema = comp.load_schema(importname='/tmp.capnp', **kwds)

@@ -284,6 +284,7 @@ class Node__Struct:
         #
         ns = m.code.new_scope()
         ns.key = ', '.join(['self.%s' % f for f in fieldnames])
+        ns.w()
         ns.ww("""
             def _key(self):
                 return ({key},)
@@ -298,6 +299,7 @@ class Node__Struct:
             return
         fields = dict([(f.name, f) for f in self.struct.fields])
         hvars = []
+        m.w()
         with m.code.block('def __hash__(self):') as ns:
             ns.n = len(fieldnames)
             # compute the hash of each field
@@ -318,6 +320,7 @@ class Node__Struct:
         #
         # apparently, we need to redefine __richcmp__ together with
         # __hash__, else the base one is not going to be called
+        ns.w()
         ns.ww("""
             def __richcmp__(self, other, op):
                 return self._richcmp(other, op)

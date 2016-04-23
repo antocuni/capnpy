@@ -50,7 +50,7 @@ class BaseCompiler(object):
                          setup_args=dict(
                              include_dirs=[str(PKGDIR)] # to include "ptr.h"
                          ))
-        if self.annotate:
+        if self.annotate and pyxfile.basename != 'annotate.pyx':
             htmlfile = pyxfile.new(ext='html')
             os.system('xdg-open %s' % htmlfile)
         return dll
