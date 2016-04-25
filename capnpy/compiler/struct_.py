@@ -308,12 +308,15 @@ class Node__Struct:
             # compute the hash of the whole tuple
             ns.w('return _hash.tuplehash(h, {n})')
         #
-        # apparently, we need to redefine __richcmp__ together with
-        # __hash__, else the base one is not going to be called
+        # XXX this is a hack/workaround for what it looks like a Cython bug:
+        # apparently, we need to redefine __richcmp__ together with __hash__,
+        # else the base one is not going to be called.  Moreover, for no good
+        # reason "self" is typed as PyObject* instead of being given the
+        # precise type, so we cast to Struct_ to force early binding
         ns.w()
         ns.ww("""
             def __richcmp__(self, other, op):
-                return self._richcmp(other, op)
+                return (<_Struct>self)._richcmp(other, op)
         """)
 
     def _fasthash_for_field(self, f):
