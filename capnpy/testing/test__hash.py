@@ -26,6 +26,7 @@ def test_longhash():
 
 
 def test_tuplehash():
-    assert _hash.tuplehash_1(42) == hash((42,))
-    assert _hash.tuplehash_2(42, 43) == hash((42, 43))
-    assert _hash.tuplehash_3(42, 43, 44) == hash((42, 43, 44))
+    h = _hash.__tuplehash_for_tests
+    assert h((42,)) == hash((42,))
+    assert h((42, 43)) == hash((42, 43))
+    assert h((42, 43, 44)) == hash((42, 43, 44))

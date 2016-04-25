@@ -295,28 +295,22 @@ class Node__Struct:
 
     def _emit_fash_hash_maybe(self, m, fieldnames):
         # emit a specialized, fast __hash__.
-        if len(fieldnames) > _hash.TUPLE_MAX_LEN:
-            return
         fields = dict([(f.name, f) for f in self.struct.fields])
-        hvars = []
         m.w()
         with m.code.block('def __hash__(self):') as ns:
             ns.n = len(fieldnames)
+            ns.w('cdef long h[{n}]')
             # compute the hash of each field
-            for i, fname in enumerate(fieldnames):
-                f = fields[fname]
-                ns.hvar = 'h%d' % i
-                ns.fname = fname
+            for ns.i, ns.fname in enumerate(fieldnames):
+                f = fields[ns.fname]
                 if f.is_slot():
                     ns.hash = f.slot.type.fasthash_function()
                 else:
                     ns.hash = 'hash'
-                hvars.append(ns.hvar)
-                ns.w('cdef long {hvar} = {hash}(self.{fname})')
+                ns.w('h[{i}] = {hash}(self.{fname})')
             #
             # compute the hash of the whole tuple
-            ns.args = ', '.join(hvars)
-            ns.w('return _hash.tuplehash_{n}({args})')
+            ns.w('return _hash.tuplehash(h, {n})')
         #
         # apparently, we need to redefine __richcmp__ together with
         # __hash__, else the base one is not going to be called
