@@ -186,7 +186,7 @@ class TestHash(object):
                 res ^= hash(obj)
             return res
         #
-        obj = schema.Point(1, 2, 3)
+        obj = schema.Point(1000, 2000, 3000)
         res = benchmark(hash_many, obj)
         assert res == 0
 
@@ -200,6 +200,6 @@ class TestHash(object):
                 res ^= hash(obj)
             return res
         #
-        obj = (1, 2, 3)
+        obj = (1000, 2000, 3000)
         res = benchmark(hash_many, obj)
         assert res == 0
