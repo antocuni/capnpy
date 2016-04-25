@@ -291,9 +291,9 @@ class Node__Struct:
         """) # the trailing comma is to ensure a tuple even if there is a single field
         #
         if m.pyx:
-            self._emit_fash_hash_maybe(m, fieldnames)
+            self._emit_fash_hash(m, fieldnames)
 
-    def _emit_fash_hash_maybe(self, m, fieldnames):
+    def _emit_fash_hash(self, m, fieldnames):
         # emit a specialized, fast __hash__.
         fields = dict([(f.name, f) for f in self.struct.fields])
         m.w()
@@ -302,11 +302,7 @@ class Node__Struct:
             ns.w('cdef long h[{n}]')
             # compute the hash of each field
             for ns.i, ns.fname in enumerate(fieldnames):
-                f = fields[ns.fname]
-                if f.is_slot():
-                    ns.hash = f.slot.type.fasthash_function()
-                else:
-                    ns.hash = 'hash'
+                ns.hash = self._fasthash_for_field(fields[ns.fname])
                 ns.w('h[{i}] = {hash}(self.{fname})')
             #
             # compute the hash of the whole tuple
@@ -319,3 +315,19 @@ class Node__Struct:
             def __richcmp__(self, other, op):
                 return self._richcmp(other, op)
         """)
+
+    def _fasthash_for_field(self, f):
+        if not f.is_slot():
+            return 'hash'
+        t = f.slot.type
+        w = t.which()
+        if schema.Type.__tag__.int8 <= w <= schema.Type.__tag__.uint32:
+            # this can be assimilated to a Python <int>
+            return '_hash.inthash'
+        elif t.is_uint64():
+            # this can be assimilated to a Python <long>
+            return '_hash.longhash'
+        else:
+            # no fast hash, use the "slow" one
+            return 'hash'
+
