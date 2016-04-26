@@ -131,6 +131,18 @@ class Struct(Blob):
                                      ptr.struct_data_size(p),
                                      ptr.struct_ptrs_size(p))
 
+    def _read_list(self, offset, listcls, item_type, default_=None):
+        offset, p = self._read_ptr(offset)
+        if p == 0:
+            return default_
+        assert ptr.kind(p) == ptr.LIST
+        list_offset = ptr.deref(p, offset)
+        return listcls.from_buffer(self._buf,
+                                   list_offset,
+                                   ptr.list_size_tag(p),
+                                   ptr.list_item_count(p),
+                                   item_type)
+
     def _ensure_union(self, expected_tag):
         if self.__which__() != expected_tag:
             tag = self.which() # use the non-raw tag to get a better error message

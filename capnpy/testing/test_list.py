@@ -3,7 +3,6 @@ from capnpy.blob import CapnpBufferWithSegments, Blob, Types
 from capnpy import ptr
 from capnpy.list import PrimitiveList, StructList, StringList
 from capnpy.struct_ import Struct
-from capnpy.testing.test_blob import BlobForTests
 
 def test_read_list():
     buf = ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
@@ -11,7 +10,7 @@ def test_read_list():
            '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
-    blob = BlobForTests(buf, 0)
+    blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     lst = blob._read_list(0, PrimitiveList, Types.int64)
     assert lst._buf is blob._buf
     assert lst._offset == 8
@@ -30,7 +29,7 @@ def test_read_list_offset():
            '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
-    blob = BlobForTests(buf, 4)
+    blob = Struct.from_buffer(buf, 4, data_size=0, ptrs_size=1)
     lst = blob._read_list(0, PrimitiveList, Types.int64)
     assert lst._buf is blob._buf
     assert lst._offset == 12
@@ -53,7 +52,7 @@ def test_list_of_structs():
            '\x2c\x01\x00\x00\x00\x00\x00\x00'    # 300
            '\x28\x00\x00\x00\x00\x00\x00\x00'    # 40
            '\x90\x01\x00\x00\x00\x00\x00\x00')   # 400
-    blob = BlobForTests(buf, 0)
+    blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     lst = blob._read_list(0, StructList, Struct)
     assert lst._buf is blob._buf
     assert lst._offset == 8
@@ -80,7 +79,7 @@ def test_list_of_structs():
 def test_string():
     buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
            'hello capnproto\0')                 # string
-    blob = BlobForTests(buf, 0)
+    blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     s = blob._read_str_text(0)
     assert s == 'hello capnproto'
 
@@ -88,14 +87,14 @@ def test_string_with_offset():
     buf = ('abcd'                               # some random garbage
            '\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
            'hello capnproto\0')                 # string
-    blob = BlobForTests(buf, 4)
+    blob = Struct.from_buffer(buf, 4, data_size=0, ptrs_size=1)
     s = blob._read_str_text(0)
     assert s == 'hello capnproto'
 
 def test_data_string():
     buf = ('\x01\x00\x00\x00\x42\x00\x00\x00'   # ptrlist
            'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H')     # data
-    blob = BlobForTests(buf, 0)
+    blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     s = blob._read_str_data(0)
     assert s == 'ABCDEFGH'
     
@@ -106,7 +105,7 @@ def test_Float64List():
            '\xc3\xf5\x28\x5c\x8f\xc2\x02\x40'   # 2.345
            '\xd9\xce\xf7\x53\xe3\xa5\x0b\x40'   # 3.456
            '\xf8\x53\xe3\xa5\x9b\x44\x12\x40')  # 4.567
-    blob = BlobForTests(buf, 0)
+    blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     lst = blob._read_list(0, PrimitiveList, Types.float64)
     assert list(lst) == [1.234, 2.345, 3.456, 4.567]
 
@@ -114,7 +113,7 @@ def test_Float64List():
 def test_Int8List():
     buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
            'hello capnproto\0')                 # string
-    blob = BlobForTests(buf, 0)
+    blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     lst = blob._read_list(0, PrimitiveList, Types.int8)
     assert len(lst) == 16
     assert list(lst) == map(ord, 'hello capnproto\0')
@@ -130,7 +129,7 @@ def test_list_of_strings():
            'B' 'C' '\x00\x00\x00\x00\x00\x00'   # BC
            'D' 'E' 'F' '\x00\x00\x00\x00\x00'   # DEF
            'G' 'H' 'I' 'J' '\x00\x00\x00\x00')  # GHIJ
-    blob = BlobForTests(buf, 0)
+    blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     lst = blob._read_list(0, StringList, None)
     assert list(lst) == ['A', 'BC', 'DEF', 'GHIJ']
 
@@ -139,7 +138,7 @@ def test_list_primitive_body_range():
     buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
            'hello capnproto\0'                  # string
            'garbage1')
-    blob = BlobForTests(buf, 0)
+    blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     lst = blob._read_list(0, PrimitiveList, Types.int8)
     body_start, body_end = lst._get_body_range()
     assert body_start == 8
@@ -201,7 +200,7 @@ def test_list_composite_body_range():
            'P' 'o' 'i' 'n' 't' ' ' 'C' '\x00'
            'garbage1')
 
-    blob = BlobForTests(buf, 8)
+    blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
     points = blob._read_list(0, StructList, Blob)
     start, end = points._get_body_range()
     assert start == 16
@@ -230,7 +229,7 @@ def test_list_composite_nullptr_body_range():
            'P' 'o' 'i' 'n' 't' ' ' 'B' '\x00'
            'garbage1')
 
-    blob = BlobForTests(buf, 8)
+    blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
     points = blob._read_list(0, StructList, Blob)
     start, end = points._get_body_range()
     assert start == 16
@@ -258,7 +257,7 @@ def test_list_composite_all_nullptr_body_range():
            '\x00\x00\x00\x00\x00\x00\x00\x00'   # points[2].name == NULL
            'garbage1')
 
-    blob = BlobForTests(buf, 8)
+    blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
     points = blob._read_list(0, StructList, Blob)
     start, end = points._get_body_range()
     assert start == 16
@@ -275,7 +274,7 @@ def test_list_composite_noptr_body_range():
            '\x04\x00\x00\x00\x00\x00\x00\x00'   # p[1].y == 4
            'garbage1'
            'garbage2')
-    blob = BlobForTests(buf, 8)
+    blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
     points = blob._read_list(0, StructList, Blob)
     start, end = points._get_body_range()
     assert start == 16
@@ -295,7 +294,7 @@ def test_list_of_pointers():
            'a' ' ' 'l' 'o' 'n' 'g' ' ' 's' 
            't' 'r' 'i' 'n' 'g' '\x00\x00\x00')
     
-    blob = BlobForTests(buf, 8)
+    blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
     points = blob._read_list(0, StringList, None)
     start, end = points._get_body_range()
     assert start == 16
@@ -333,7 +332,7 @@ def test_compare_with_py_list():
            '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
-    blob = BlobForTests(buf, 0)
+    blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     lst = blob._read_list(0, PrimitiveList, Types.int64)
     assert lst == [1, 2, 3, 4]
 
@@ -348,7 +347,7 @@ def test_far_pointer():
             '\x03\x00\x00\x00\x00\x00\x00\x00'    # 3
             '\x04\x00\x00\x00\x00\x00\x00\x00')   # 4
     buf = CapnpBufferWithSegments(seg0+seg1, segment_offsets=(0, 16))
-    blob = BlobForTests(buf, 8)
+    blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
     lst = blob._read_list(0, PrimitiveList, Types.int64)
     assert lst == [1, 2, 3, 4]
 
@@ -363,7 +362,7 @@ class TestPythonicInterface(object):
                '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
                '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
                '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
-        blob = BlobForTests(buf, 0)
+        blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
         lst = blob._read_list(0, PrimitiveList, Types.int64)
         return lst
 

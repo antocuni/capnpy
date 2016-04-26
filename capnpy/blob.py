@@ -113,18 +113,6 @@ class Blob(object):
         # overridden by Struct and List
         raise NotImplementedError
 
-    def _read_list(self, offset, listcls, item_type, default_=None):
-        offset, p = self._read_ptr(offset)
-        if p == 0:
-            return default_
-        assert ptr.kind(p) == ptr.LIST
-        list_offset = ptr.deref(p, offset)
-        return listcls.from_buffer(self._buf,
-                                   list_offset,
-                                   ptr.list_size_tag(p),
-                                   ptr.list_item_count(p),
-                                   item_type)
-
     def _read_str_text(self, offset, default_=None):
         offset, p = self._read_ptr(offset)
         return self._buf.read_str(p, offset, default_, -1)
