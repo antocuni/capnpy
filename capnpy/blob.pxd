@@ -10,6 +10,10 @@ cdef class CapnpBuffer:
     cpdef long read_raw_ptr(self, long offset)
     cpdef read_ptr(self, long offset)
 
+    @cython.locals(p=long, start=long, end=long)
+    cpdef read_str(self, long p, long offset, default_, int additional_size)
+
+    
 cdef class CapnpBufferWithSegments(CapnpBuffer):
     cdef readonly object segment_offsets
 
@@ -17,12 +21,4 @@ cdef class Blob:
     cdef readonly CapnpBuffer _buf
 
     cpdef _init_blob(self, object buf)
-
-    cpdef _read_data(self, long offset, char ifmt)
-    cpdef long _read_data_int16(self, long offset)
-    cpdef _read_ptr(self, long offset)
-    cpdef _read_str_text(self, long offset, str default_=*)
-
-    @cython.locals(p=long, start=long)
-    cpdef _read_str_data(self, long offset, str default_=*, long additional_size=*)
-    cpdef _read_struct(self, long offset, object structcls, object default_=*)
+    cpdef _read_ptr_generic(self, long offset)
