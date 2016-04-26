@@ -113,14 +113,6 @@ class Blob(object):
         # overridden by Struct and List
         raise NotImplementedError
 
-    def _read_str_text(self, offset, default_=None):
-        offset, p = self._read_ptr(offset)
-        return self._buf.read_str(p, offset, default_, -1)
-
-    def _read_str_data(self, offset, default_=None):
-        offset, p = self._read_ptr(offset)
-        return self._buf.read_str(p, offset, default_, 0)
-
     def _read_list_or_struct(self, ptr_offset, default_=None):
         ptr_offset, p = self._read_ptr(ptr_offset)
         if p == 0:

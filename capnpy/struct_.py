@@ -143,6 +143,14 @@ class Struct(Blob):
                                    ptr.list_item_count(p),
                                    item_type)
 
+    def _read_str_text(self, offset, default_=None):
+        offset, p = self._read_ptr(offset)
+        return self._buf.read_str(p, offset, default_, -1)
+
+    def _read_str_data(self, offset, default_=None):
+        offset, p = self._read_ptr(offset)
+        return self._buf.read_str(p, offset, default_, 0)
+
     def _ensure_union(self, expected_tag):
         if self.__which__() != expected_tag:
             tag = self.which() # use the non-raw tag to get a better error message
