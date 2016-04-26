@@ -105,10 +105,6 @@ class Blob(object):
             buf = CapnpBuffer(buf)
         self._buf = buf
 
-    def _read_data(self, offset, t):
-        # overridden by Struct and List
-        raise NotImplementedError
-
     def _read_ptr(self, offset):
         # overridden by Struct and List
         raise NotImplementedError
