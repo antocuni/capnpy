@@ -108,6 +108,14 @@ class Struct(Blob):
     def _read_raw_ptr(self, offset):
         return self._buf.read_raw_ptr(self._ptrs_offset+offset)
 
+    def _read_bit(self, offset, bitmask):
+        val = self._read_data(offset, Types.uint8.ifmt)
+        return bool(val & bitmask)
+
+    def _read_enum(self, offset, enumtype):
+        val = self._read_data(offset, Types.int16.ifmt)
+        return enumtype(val)
+
     def _ensure_union(self, expected_tag):
         if self.__which__() != expected_tag:
             tag = self.which() # use the non-raw tag to get a better error message

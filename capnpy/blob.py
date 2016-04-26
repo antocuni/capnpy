@@ -122,14 +122,6 @@ class Blob(object):
         # overridden by Struct and List
         raise NotImplementedError
 
-    def _read_bit(self, offset, bitmask):
-        val = self._read_data(offset, Types.uint8.ifmt)
-        return bool(val & bitmask)
-
-    def _read_enum(self, offset, enumtype):
-        val = self._read_data(offset, Types.int16.ifmt)
-        return enumtype(val)
-
     def _read_struct(self, offset, structcls, default_=None):
         """
         Read and dereference a struct pointer at the given offset.  It returns an
