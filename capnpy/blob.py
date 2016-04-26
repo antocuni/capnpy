@@ -113,22 +113,6 @@ class Blob(object):
         # overridden by Struct and List
         raise NotImplementedError
 
-    def _read_struct(self, offset, structcls, default_=None):
-        """
-        Read and dereference a struct pointer at the given offset.  It returns an
-        instance of ``structcls`` pointing to the dereferenced struct.
-        """
-        offset, p = self._read_ptr(offset)
-        if p == 0:
-            return default_
-        assert ptr.kind(p) == ptr.STRUCT
-        struct_offset = ptr.deref(p, offset)
-        return structcls.from_buffer(self._buf,
-                                     struct_offset,
-                                     ptr.struct_data_size(p),
-                                     ptr.struct_ptrs_size(p))
-
-
     def _read_list(self, offset, listcls, item_type, default_=None):
         offset, p = self._read_ptr(offset)
         if p == 0:

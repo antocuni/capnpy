@@ -116,6 +116,21 @@ class Struct(Blob):
         val = self._read_data(offset, Types.int16.ifmt)
         return enumtype(val)
 
+    def _read_struct(self, offset, structcls, default_=None):
+        """
+        Read and dereference a struct pointer at the given offset.  It returns an
+        instance of ``structcls`` pointing to the dereferenced struct.
+        """
+        offset, p = self._read_ptr(offset)
+        if p == 0:
+            return default_
+        assert ptr.kind(p) == ptr.STRUCT
+        struct_offset = ptr.deref(p, offset)
+        return structcls.from_buffer(self._buf,
+                                     struct_offset,
+                                     ptr.struct_data_size(p),
+                                     ptr.struct_ptrs_size(p))
+
     def _ensure_union(self, expected_tag):
         if self.__which__() != expected_tag:
             tag = self.which() # use the non-raw tag to get a better error message

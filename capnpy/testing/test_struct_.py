@@ -1,5 +1,5 @@
 import py
-from capnpy.blob import Types
+from capnpy.blob import Types, CapnpBufferWithSegments
 from capnpy.struct_ import Struct
 from capnpy.enum import enum
 from capnpy.printer import print_buffer
@@ -32,6 +32,72 @@ def test__read_data():
     assert b1._read_data(0, Types.int64.ifmt) == 1
     assert b1._read_data(8, Types.int64.ifmt) == 2
     assert b1._read_data(16, Types.int64.ifmt) == 0 # outside the buffer
+
+def test__read_struct():
+    ## struct Point {
+    ##   x @0 :Int64;
+    ##   y @1 :Int64;
+    ## }
+    buf = ('\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
+           '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
+    s = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
+    p = s._read_struct(0, Struct)
+    assert p._buf is s._buf
+    assert p._data_offset == 8
+    assert p._data_size == 2
+    assert p._ptrs_size == 0
+    assert p._read_data(0, Types.int64.ifmt) == 1
+    assert p._read_data(8, Types.int64.ifmt) == 2
+
+def test_nested_struct():
+    ## struct Rectangle {
+    ##   a @0 :Point;
+    ##   b @1 :Point;
+    ## }
+    buf = ('\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+           '\x08\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
+           '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
+           '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
+           '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
+    rect = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=2)
+    p1 = rect._read_struct(0, Struct)
+    p2 = rect._read_struct(8, Struct)
+    assert p1._read_data(0, Types.int64.ifmt) == 1
+    assert p1._read_data(8, Types.int64.ifmt) == 2
+    assert p2._read_data(0, Types.int64.ifmt) == 3
+    assert p2._read_data(8, Types.int64.ifmt) == 4
+
+def test_null_pointers():
+    buf = '\x00\x00\x00\x00\x00\x00\x00\x00'    # NULL pointer
+    blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
+    assert blob._read_list(0, None, None) is None
+    assert blob._read_str_text(0) is None
+    assert blob._read_struct(0, Struct) is None
+    assert blob._read_list_or_struct(0) is None
+    #
+    val = 'dummy default value'
+    assert blob._read_list(0, None, None, default_=val) is val
+    assert blob._read_str_text(0, default_=val) is val
+    assert blob._read_struct(0, Struct, default_=val) is val
+    assert blob._read_list_or_struct(0, default_=val) is val
+
+
+def test_far_pointer():
+    # see also test_list.test_far_pointer
+    seg0 = ('\x00\x00\x00\x00\x00\x00\x00\x00'    # some garbage
+            '\x0a\x00\x00\x00\x01\x00\x00\x00')   # far pointer: segment=1, offset=1
+    seg1 = ('\x00\x00\x00\x00\x00\x00\x00\x00'    # random data
+            '\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
+            '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
+    #
+    buf = CapnpBufferWithSegments(seg0+seg1, segment_offsets=(0, 16))
+    blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
+    p = blob._read_struct(0, Struct)
+    assert p._read_data(0, Types.int64.ifmt) == 1
+    assert p._read_data(8, Types.int64.ifmt) == 2
 
 
 def test_point_range():
