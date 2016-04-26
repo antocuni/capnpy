@@ -43,6 +43,22 @@ class CapnpBuffer(object):
             return self._follow_far_ptr(p)
         return offset, p
 
+    def read_str(self, p, offset, default_, additional_size):
+        """
+        Read Text or Data from the pointer ``p``, which was read from the given
+        offset.
+
+        If you want to read a Text, pass additional_size=-1 to remove the
+        trailing '\0'. If you want to read a Data, pass additional_size=0.
+        """
+        if p == 0:
+            return default_
+        assert ptr.kind(p) == ptr.LIST
+        assert ptr.list_size_tag(p) == ptr.LIST_SIZE_8
+        start = ptr.deref(p, offset)
+        end = start + ptr.list_item_count(p) + additional_size
+        return self.s[start:end]
+
     def _follow_far_ptr(self, p):
         raise ValueError("Cannot follow a far pointer inside a single-segment message")
 
@@ -143,17 +159,12 @@ class Blob(object):
                                    item_type)
 
     def _read_str_text(self, offset, default_=None):
-        return self._read_str_data(offset, default_, additional_size=-1)
-
-    def _read_str_data(self, offset, default_=None, additional_size=0):
         offset, p = self._read_ptr(offset)
-        if p == 0:
-            return default_
-        assert ptr.kind(p) == ptr.LIST
-        assert ptr.list_size_tag(p) == ptr.LIST_SIZE_8
-        start = ptr.deref(p, offset)
-        end = start + ptr.list_item_count(p) + additional_size
-        return self._buf.s[start:end]
+        return self._buf.read_str(p, offset, default_, -1)
+
+    def _read_str_data(self, offset, default_=None):
+        offset, p = self._read_ptr(offset)
+        return self._buf.read_str(p, offset, default_, 0)
 
     def _read_list_or_struct(self, ptr_offset, default_=None):
         ptr_offset, p = self._read_ptr(ptr_offset)

@@ -28,7 +28,7 @@ class List(Blob):
         self._item_type = item_type
         self._set_list_tag(size_tag, item_count)
 
-    def _read_data(self, offset, t):
+    def _read_data_list(self, offset, t):
         return self._buf.read_primitive(self._offset+offset, t)
 
     def _read_ptr(self, offset):
@@ -37,7 +37,7 @@ class List(Blob):
     def _set_list_tag(self, size_tag, item_count):
         self._size_tag = size_tag
         if size_tag == ptr.LIST_SIZE_COMPOSITE:
-            tag = self._read_data(0, Types.int64.ifmt)
+            tag = self._read_data_list(0, Types.int64.ifmt)
             self._tag = tag
             self._item_count = ptr.offset(tag)
             self._item_length = (ptr.struct_data_size(tag)+ptr.struct_ptrs_size(tag))*8
@@ -78,7 +78,6 @@ class List(Blob):
         """
         offset = self._get_offset_for_item(i)
         return self._read_list_item(offset)
-
 
     def _get_body_range(self):
         return self._get_body_start(), self._get_body_end()
@@ -170,7 +169,7 @@ class PrimitiveList(List):
     ItemBuilder = listbuilder.PrimitiveItemBuilder
     
     def _read_list_item(self, offset):
-        return self._read_data(offset, self._item_type.ifmt)
+        return self._read_data_list(offset, self._item_type.ifmt)
 
     def _item_repr(self, item):
         if self._item_type is Types.float32:
@@ -199,7 +198,8 @@ class StringList(List):
     ItemBuilder = listbuilder.StringItemBuilder
 
     def _read_list_item(self, offset):
-        return self._read_str_text(offset)
+        offset, p = self._buf.read_ptr(self._offset+offset)
+        return self._buf.read_str(p, offset, None, -1)
 
     def _item_repr(self, item):
         return text_repr(item)
