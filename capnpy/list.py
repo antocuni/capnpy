@@ -28,16 +28,13 @@ class List(Blob):
         self._item_type = item_type
         self._set_list_tag(size_tag, item_count)
 
-    def _read_data_list(self, offset, t):
-        return self._buf.read_primitive(self._offset+offset, t)
-
     def _read_ptr(self, offset):
         return self._buf.read_ptr(self._offset+offset)
 
     def _set_list_tag(self, size_tag, item_count):
         self._size_tag = size_tag
         if size_tag == ptr.LIST_SIZE_COMPOSITE:
-            tag = self._read_data_list(0, Types.int64.ifmt)
+            tag = self._buf.read_raw_ptr(self._offset)
             self._tag = tag
             self._item_count = ptr.offset(tag)
             self._item_length = (ptr.struct_data_size(tag)+ptr.struct_ptrs_size(tag))*8
@@ -169,7 +166,7 @@ class PrimitiveList(List):
     ItemBuilder = listbuilder.PrimitiveItemBuilder
     
     def _read_list_item(self, offset):
-        return self._read_data_list(offset, self._item_type.ifmt)
+        return self._buf.read_primitive(self._offset+offset, self._item_type.ifmt)
 
     def _item_repr(self, item):
         if self._item_type is Types.float32:
