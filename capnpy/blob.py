@@ -91,6 +91,9 @@ class CapnpBufferWithSegments(CapnpBuffer):
 class Blob(object):
     """
     Abstract base class to read a generic capnp object.
+
+    It contains very little logic: mostly, the methods on Blob are used only
+    to do a generic traversal of a message, when you don't know the schema.
     """
 
     @classmethod
@@ -105,12 +108,17 @@ class Blob(object):
             buf = CapnpBuffer(buf)
         self._buf = buf
 
-    def _read_ptr(self, offset):
-        # overridden by Struct and List
+    def _read_ptr_generic(self, offset):
+        """
+        Abstract method to read a pointer at the specified offset. Implemented
+        differently by Struct and List, it is used only to do a generic
+        traversal of a message. Not to be confused with Struct._read_ptr,
+        which is the "real" logic to read a statically-typed field
+        """
         raise NotImplementedError
 
     def _read_list_or_struct(self, ptr_offset, default_=None):
-        ptr_offset, p = self._read_ptr(ptr_offset)
+        ptr_offset, p = self._read_ptr_generic(ptr_offset)
         if p == 0:
             return default_
         blob_offet = ptr.deref(p, ptr_offset)

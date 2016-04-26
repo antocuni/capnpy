@@ -87,7 +87,20 @@ class Struct(Blob):
         if self.__tag_offset__ is None:
             raise TypeError("Cannot call which() on a non-union type")
         return self._read_data_int16(self.__tag_offset__)
- 
+
+    def _read_ptr_generic(self, offset):
+        # generic method, defined in Blob and implemented also by List
+        return self._buf.read_ptr(self._ptrs_offset+offset)
+
+    def _read_ptr(self, offset):
+        # Struct-specific logic
+        if offset >= self._ptrs_size*8:
+            return offset, 0
+        return self._buf.read_ptr(self._ptrs_offset+offset)
+
+    def _read_raw_ptr(self, offset):
+        return self._buf.read_raw_ptr(self._ptrs_offset+offset)
+
     def _read_data(self, offset, ifmt):
         if offset >= self._data_size*8:
             # reading bytes beyond _data_size is equivalent to read 0
@@ -99,14 +112,6 @@ class Struct(Blob):
             # reading bytes beyond _data_size is equivalent to read 0
             return 0
         return self._buf.read_int16(self._data_offset+offset)
-
-    def _read_ptr(self, offset):
-        if offset >= self._ptrs_size*8:
-            return offset, 0
-        return self._buf.read_ptr(self._ptrs_offset+offset)
-
-    def _read_raw_ptr(self, offset):
-        return self._buf.read_raw_ptr(self._ptrs_offset+offset)
 
     def _read_bit(self, offset, bitmask):
         val = self._read_data(offset, Types.uint8.ifmt)

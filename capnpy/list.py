@@ -28,7 +28,7 @@ class List(Blob):
         self._item_type = item_type
         self._set_list_tag(size_tag, item_count)
 
-    def _read_ptr(self, offset):
+    def _read_ptr_generic(self, offset):
         return self._buf.read_ptr(self._offset+offset)
 
     def _set_list_tag(self, size_tag, item_count):
