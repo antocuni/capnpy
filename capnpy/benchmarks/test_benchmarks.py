@@ -174,32 +174,43 @@ class TestHash(object):
 
     N = 2000
 
-    @pytest.mark.benchmark(group="hash")
+    @classmethod
+    def hash_many(cls, obj):
+        myobjs = (obj, obj)
+        res = 0
+        for i in range(cls.N):
+            obj = myobjs[i%2]
+            res ^= hash(obj)
+        return res
+
+    @pytest.mark.benchmark(group="hash_int")
     def test_hash_ints(self, schema, benchmark):
         if schema.__name__ == 'PyCapnp':
             py.test.skip('pycapnp does not implement hash properly')
-        def hash_many(obj):
-            myobjs = (obj, obj)
-            res = 0
-            for i in range(self.N):
-                obj = myobjs[i%2]
-                res ^= hash(obj)
-            return res
-        #
         obj = schema.Point(1000, 2000, 3000)
-        res = benchmark(hash_many, obj)
+        res = benchmark(self.hash_many, obj)
         assert res == 0
 
-    @pytest.mark.benchmark(group="hash")
+    @pytest.mark.benchmark(group="hash_int")
     def test_hash_ints_tuple(self, benchmark):
-        def hash_many(obj):
-            myobjs = (obj, obj)
-            res = 0
-            for i in range(self.N):
-                obj = myobjs[i%2]
-                res ^= hash(obj)
-            return res
-        #
         obj = (1000, 2000, 3000)
-        res = benchmark(hash_many, obj)
+        res = benchmark(self.hash_many, obj)
+        assert res == 0
+
+    @pytest.mark.benchmark(group="hash_str")
+    def test_hash_str(self, schema, benchmark):
+        # This benchmark is particularly bad/hard for capnpy because we don't
+        # cache the computed hash, as plain <str> objects do, hence we have to
+        # compute it every time.
+        if schema.__name__ == 'PyCapnp':
+            py.test.skip('pycapnp does not implement hash properly')
+        obj = schema.StrPoint('hello world'[:], 'this is a string',
+                              'this is another string')
+        res = benchmark(self.hash_many, obj)
+        assert res == 0
+
+    @pytest.mark.benchmark(group="hash_str")
+    def test_hash_str_tuple(self, benchmark):
+        obj = ('hello world', 'this is a string', 'this is another string')
+        res = benchmark(self.hash_many, obj)
         assert res == 0

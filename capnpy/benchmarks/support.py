@@ -46,6 +46,15 @@ class Instance(object):
         def __hash__(self):
             return hash((self.x, self.y, self.z))
 
+    class StrPoint(object):
+        def __init__(self, x, y, z):
+            self.x = x
+            self.y = y
+            self.z = z
+
+        def __hash__(self):
+            return hash((self.x, self.y, self.z))
+
 # ============================================================
 # Namedtuple storage
 # ============================================================
@@ -72,7 +81,7 @@ class NamedTuple(object):
                 text, group, inner, intlist)
 
     Point = namedtuple('Point', ['x', 'y', 'z'])
-
+    StrPoint = namedtuple('StrPoint', ['x', 'y', 'z'])
 
 # ============================================================
 # capnpy storage
@@ -148,3 +157,4 @@ class PyCapnp(object):
         s.y = y
         s.z = z
         return pycapnp_schema.Point.from_bytes(s.to_bytes())
+

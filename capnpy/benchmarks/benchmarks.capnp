@@ -43,3 +43,9 @@ struct Point $Py.key("x, y, z") {
     y @1 :Int64;
     z @2 :Int64;
 }
+
+struct StrPoint $Py.key("x, y, z") {
+    x @0 :Text;
+    y @1 :Text;
+    z @2 :Text;
+}
