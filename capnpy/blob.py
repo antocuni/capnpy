@@ -109,15 +109,6 @@ class Blob(object):
         # overridden by Struct and List
         raise NotImplementedError
 
-    def _read_data_int16(self, offset):
-        """
-        Like _read_data, but specialized for int16. The only reason to have this
-        is that we can statically type the return-type, to avoid allocating an
-        int when we call __which_() inside Cython (e.g. in _ensure_union()) :(
-        """
-        # overridden by Struct
-        return self._read_data(offset, Types.int16.ifmt)
-
     def _read_ptr(self, offset):
         # overridden by Struct and List
         raise NotImplementedError
