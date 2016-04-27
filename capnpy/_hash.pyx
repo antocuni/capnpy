@@ -13,6 +13,33 @@ cpdef long longhash(unsigned long v):
     return inthash(<long>v)
 
 
+# string hashing algorithm. Copied from CPython's 2.7 stringobject.c. Note
+# that in Python 3 the hash function is different.
+# The invariant is: strhash(s, i, n) == hash(s[i:i+n]) (assuming size>=0)
+cpdef long strhash(bytes a, long start, long size):
+    cdef long maxlen = len(a)
+    if start > maxlen or size == 0:
+        return 0
+    if size > maxlen:
+        size = maxlen-start
+    #
+    cdef const unsigned char* p = a
+    cdef long n = size
+    cdef long x
+    #
+    p += start
+    x = p[0]<<7
+    while True:
+        n -= 1
+        if n < 0:
+            break
+        x = (1000003*x) ^ p[0]
+        p += 1
+    x ^= size
+    if x == -1:
+        x = -2
+    return x
+
 # tuple hashing algorithm. The magic numbers and the algorithm itself are
 # taken from python/Objects/tupleobject.c:tuplehash
 

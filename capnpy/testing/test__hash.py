@@ -24,6 +24,15 @@ def test_longhash():
     maxulong = sys.maxint*2 + 1
     assert h(maxulong) == hash(maxulong) == hash(-1)
 
+def test_strhash():
+    h = _hash.strhash
+    assert h('', 0, 0) == hash('') == 0
+    assert h('hello', 0, 5) == hash('hello')
+    assert h('hello', 1, 4) == hash('ello')
+    assert h('hello', 1, 3) == hash('ell')
+    assert h('hello', 1, 100) == hash('ello')
+    assert h('hello', 1, 0) == hash('')
+    assert h('hello', 100, 5) == hash('')
 
 def test_tuplehash():
     h = _hash.__tuplehash_for_tests
