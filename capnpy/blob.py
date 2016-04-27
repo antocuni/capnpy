@@ -131,8 +131,9 @@ class Blob(object):
         differently by Struct and List, it is used only to do a generic
         traversal of a message. It returns a tuple (offset, p).
 
-        Not to be confused with Struct._read_ptr, which is the "real" logic to
-        read a statically-typed field, and returns only a p (for performance).
+        Not to be confused with Struct._read_fast_ptr, which is the "real"
+        logic to read a statically-typed field, and returns only a p (for
+        performance).
         """
         raise NotImplementedError
 
