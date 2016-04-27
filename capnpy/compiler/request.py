@@ -96,7 +96,12 @@ class RequestedFile:
     def _declare_imports(self, m):
         for imp in self.imports:
             ns = m.code.new_scope()
-            filenode = m.allnodes[imp.id]
+            try:
+                filenode = m.allnodes[imp.id]
+            except KeyError:
+                # this means that the file was imported but not used
+                # anywhere. Simply ignore it
+                continue
             fname = filenode.displayName
             ns.importname = m.register_import(fname)
             ns.fullpath = imp.name

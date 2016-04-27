@@ -97,3 +97,13 @@ class TestImport(CompilerTest):
         p = mod.Point(5, 6)
         assert p.x == 5
         assert p.x2() == 10
+
+    def test_unused_import(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        struct Empty {
+        }
+        """
+        mod = self.compile(schema)
+        assert not hasattr(mod, '_annotate_capnp')
