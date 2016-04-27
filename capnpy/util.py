@@ -59,7 +59,7 @@ def extend_module_maybe(globals, filename=None, modname=None):
         raise ValueError('You must pass either filename or modname')
     #
     src = extmod.read()
-    code = compile(src, extname, 'exec')
+    code = compile(src, str(extmod), 'exec')
     exec code in globals
 
 def text_repr(s):

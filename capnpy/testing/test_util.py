@@ -1,5 +1,6 @@
 import py
 import textwrap
+import inspect
 from capnpy.util import extend, extend_module_maybe
 
 def test_extend():
@@ -80,3 +81,15 @@ class TestExtendModuleMaybe(object):
         myglobals = {}
         extend_module_maybe(myglobals, modname='mypackage.foo')
         assert myglobals['answer'] == 42
+
+    def test_getsource(self):
+        self.w("foo_extended.py", """
+            def foo(): return 42
+        """)
+        #
+        myglobals = {}
+        extend_module_maybe(myglobals, filename=self.tmpdir.join('foo.py'))
+        foo = myglobals['foo']
+        assert foo() == 42
+        src = inspect.getsource(foo)
+        assert src.strip() == 'def foo(): return 42'
