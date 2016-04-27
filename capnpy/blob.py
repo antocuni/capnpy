@@ -11,6 +11,7 @@ from capnpy import ptr
 from capnpy.type import Types
 from capnpy.printer import BufferPrinter
 from capnpy.unpack import unpack_primitive, unpack_int64, unpack_int16
+from capnpy import _hash
 
 try:
     import cython
@@ -19,8 +20,6 @@ except ImportError:
 else:
     PYX = cython.compiled
 
-if PYX:
-    from capnpy import _hash
 
 class CapnpBuffer(object):
     """
@@ -84,8 +83,6 @@ class CapnpBuffer(object):
         assert ptr.list_size_tag(p) == ptr.LIST_SIZE_8
         start = ptr.deref(p, offset)
         size = ptr.list_item_count(p) + additional_size
-        # This method is supposed to be called only in PYX mode. The following
-        # line will crash in PY mode.
         return _hash.strhash(self.s, start, size)
 
 

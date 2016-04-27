@@ -1,9 +1,6 @@
 import py
 import sys
-try:
-    from capnpy import _hash
-except ImportError:
-    py.test.skip('_hash not compiled')
+from capnpy import _hash
 
 def test_inthash():
     h = _hash.inthash
