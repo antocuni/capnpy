@@ -123,7 +123,7 @@ class Field__Slot:
             ns.cdef_obj = 'cdef _Struct obj'
         else:
             ns.cdef_offset = 'offset'
-            ns.cdef_vars = 'p'
+            ns.cdef_p = 'p'
             ns.cdef_obj = 'obj'
         m.def_property(ns, name, """
             {ensure_union}

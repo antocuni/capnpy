@@ -12,6 +12,7 @@ cdef class CapnpBuffer:
     cpdef long read_int16(self, long offset)
     cpdef long read_raw_ptr(self, long offset)
     cpdef long read_ptr(self, long offset)
+    cpdef read_far_ptr(self, long offset)
 
     @cython.locals(p=long, start=long, end=long)
     cpdef read_str(self, long p, long offset, default_, int additional_size)
