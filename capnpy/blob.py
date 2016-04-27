@@ -19,6 +19,9 @@ except ImportError:
 else:
     PYX = cython.compiled
 
+if PYX:
+    from capnpy import _hash
+
 class CapnpBuffer(object):
     """
     Represent a capnproto buffer for a single-segment message. Far pointers are
@@ -73,6 +76,19 @@ class CapnpBuffer(object):
         start = ptr.deref(p, offset)
         end = start + ptr.list_item_count(p) + additional_size
         return self.s[start:end]
+
+    def hash_str(self, p, offset, default_, additional_size):
+        if p == 0:
+            return default_
+        assert ptr.kind(p) == ptr.LIST
+        assert ptr.list_size_tag(p) == ptr.LIST_SIZE_8
+        start = ptr.deref(p, offset)
+        size = ptr.list_item_count(p) + additional_size
+        if PYX:
+            # fast path, without slicing
+            return _hash.strhash(self.s, start, size)
+        else:
+            return hash(self.s[start:start+size])
 
 
 class CapnpBufferWithSegments(CapnpBuffer):

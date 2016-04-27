@@ -55,3 +55,23 @@ def test_read_ptr():
     offset = ptr.deref(p, 0)
     assert offset == 808
     
+def test_read_str():
+    buf = ('garbage0'
+           'hello capnproto\0') # string
+    p = ptr.new_list(0, ptr.LIST_SIZE_8, 16)
+    b = CapnpBuffer(buf)
+    s = b.read_str(p, 0, "", additional_size=-1)
+    assert s == "hello capnproto"
+    s = b.read_str(p, 0, "", additional_size=0)
+    assert s == "hello capnproto\0"
+
+def test_hash_str():
+    buf = ('garbage0'
+           'hello capnproto\0') # string
+    p = ptr.new_list(0, ptr.LIST_SIZE_8, 16)
+    b = CapnpBuffer(buf)
+    h = b.hash_str(p, 0, "", additional_size=-1)
+    assert h == hash("hello capnproto")
+    h = b.hash_str(p, 0, "", additional_size=0)
+    assert h == hash("hello capnproto\0")
+
