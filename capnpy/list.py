@@ -1,6 +1,6 @@
 import struct
 import capnpy
-from capnpy.blob import Blob, Types
+from capnpy.blob import Blob, Types, E_IS_FAR_POINTER
 from capnpy import ptr
 from capnpy import listbuilder
 from capnpy.util import text_repr, float32_repr, float64_repr
@@ -29,7 +29,8 @@ class List(Blob):
         self._set_list_tag(size_tag, item_count)
 
     def _read_ptr_generic(self, offset):
-        return self._buf.read_ptr(self._offset+offset)
+        offset += self._offset
+        return offset, self._buf.read_ptr(offset)
 
     def _set_list_tag(self, size_tag, item_count):
         self._size_tag = size_tag
@@ -195,7 +196,10 @@ class StringList(List):
     ItemBuilder = listbuilder.StringItemBuilder
 
     def _read_list_item(self, offset):
-        offset, p = self._buf.read_ptr(self._offset+offset)
+        offset += self._offset
+        p = self._buf.read_ptr(offset)
+        if p == E_IS_FAR_POINTER:
+            raise NotImplementedError('FAR pointers not supported here')
         return self._buf.read_str(p, offset, None, -1)
 
     def _item_repr(self, item):
