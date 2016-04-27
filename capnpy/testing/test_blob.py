@@ -70,8 +70,8 @@ def test_hash_str():
            'hello capnproto\0') # string
     p = ptr.new_list(0, ptr.LIST_SIZE_8, 16)
     b = CapnpBuffer(buf)
-    h = b.hash_str(p, 0, "", additional_size=-1)
+    h = b.hash_str(p, 0, 0, additional_size=-1)
     assert h == hash("hello capnproto")
-    h = b.hash_str(p, 0, "", additional_size=0)
+    h = b.hash_str(p, 0, 0, additional_size=0)
     assert h == hash("hello capnproto\0")
 

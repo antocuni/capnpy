@@ -66,3 +66,17 @@ class TestFashHash(CompilerTest):
         self.only_fasthash(mod.Point)
         p1 = mod.Point(1, sys.maxint+1, "p1")
         assert hash(p1) == hash((1, sys.maxint+1))
+
+    def test_fasthash_string(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        struct Person $Py.key("name, surname") {
+            name @0 :Text;
+            surname @1 :Text;
+        }
+        """
+        mod = self.compile(schema)
+        self.only_fasthash(mod.Person)
+        p = mod.Person("mickey", "mouse")
+        assert hash(p) == hash(("mickey", "mouse"))

@@ -34,6 +34,12 @@ cdef class Struct(Blob):
     @cython.locals(p=long, offset=long)
     cpdef _read_str_data(self, long offset, str default_=*, int additional_size=*)
 
+    @cython.locals(p=long, offset=long)
+    cpdef long _hash_str_text(self, long offset, long default_=*)
+
+    @cython.locals(p=long, offset=long)
+    cpdef long _hash_str_data(self, long offset, long default_=*, int additional_size=*)
+
     cpdef object _ensure_union(self, long expected_tag)
     cpdef long __which__(self) except -1
 

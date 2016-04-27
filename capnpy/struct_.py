@@ -163,6 +163,9 @@ class Struct(Blob):
     def _read_str_text(self, offset, default_=None):
         return self._read_str_data(offset, default_, additional_size=-1)
 
+    def _hash_str_text(self, offset, default_=hash(None)):
+        return self._hash_str_data(offset, default_, additional_size=-1)
+
     def _read_str_data(self, offset, default_=None, additional_size=0):
         p = self._read_fast_ptr(offset)
         if p == ptr.E_IS_FAR_POINTER:
@@ -170,6 +173,14 @@ class Struct(Blob):
         else:
             offset += self._ptrs_offset
         return self._buf.read_str(p, offset, default_, additional_size)
+
+    def _hash_str_data(self, offset, default_=hash(None), additional_size=0):
+        p = self._read_fast_ptr(offset)
+        if p == ptr.E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset += self._ptrs_offset
+        return self._buf.hash_str(p, offset, default_, additional_size)
 
     def _ensure_union(self, expected_tag):
         if self.__which__() != expected_tag:

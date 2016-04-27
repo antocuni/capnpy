@@ -84,11 +84,9 @@ class CapnpBuffer(object):
         assert ptr.list_size_tag(p) == ptr.LIST_SIZE_8
         start = ptr.deref(p, offset)
         size = ptr.list_item_count(p) + additional_size
-        if PYX:
-            # fast path, without slicing
-            return _hash.strhash(self.s, start, size)
-        else:
-            return hash(self.s[start:start+size])
+        # This method is supposed to be called only in PYX mode. The following
+        # line will crash in PY mode.
+        return _hash.strhash(self.s, start, size)
 
 
 class CapnpBufferWithSegments(CapnpBuffer):

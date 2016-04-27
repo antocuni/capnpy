@@ -302,8 +302,13 @@ class Node__Struct:
             ns.w('cdef long h[{n}]')
             # compute the hash of each field
             for ns.i, ns.fname in enumerate(fieldnames):
-                ns.hash = self._fasthash_for_field(fields[ns.fname])
-                ns.w('h[{i}] = {hash}(self.{fname})')
+                f = fields[ns.fname]
+                if f.is_text():
+                    ns.offset = f.slot.offset * f.slot.get_size()
+                    ns.w('h[{i}] = self._hash_str_text({offset})')
+                else:
+                    ns.hash = self._fasthash_for_field(f)
+                    ns.w('h[{i}] = {hash}(self.{fname})')
             #
             # compute the hash of the whole tuple
             ns.w('return _hash.tuplehash(h, {n})')
