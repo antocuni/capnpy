@@ -116,9 +116,14 @@ class Field__Slot:
         # XXX: in case of nested structs, using the runtime name (such as
         # Outer.Inner.Point) might be slower in pyx mode, because it has to do
         # the lookup at runtime.
+        if m.pyx:
+            ns.cdef = 'cdef long p, offset'
+        else:
+            ns.cdef = ''
         ns.structcls = self.slot.type.runtime_name(m)
         m.def_property(ns, name, """
             {ensure_union}
+            {cdef}
             p = self._read_fast_ptr({offset})
             if p == _E_IS_FAR_POINTER:
                 offset, p = self._read_far_ptr({offset})
