@@ -2,7 +2,7 @@
 
 # make it possible to compare/hash the structure by using the fields declared
 # in the key
-annotation key(struct) :Text;
+annotation key(struct, group) :Text;
 
 
 

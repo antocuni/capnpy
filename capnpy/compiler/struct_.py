@@ -16,6 +16,16 @@ class Node__Struct:
         for child in children:
             child.emit_declaration(m)
         #
+        # find and register all groups having a $key annotation. We need to do
+        # it here because we need this info when we emit the definition for
+        # the group class
+        for field in self.struct.fields or []:
+            ann = m.has_annotation(field, annotate.key)
+            if ann:
+                assert field.is_group()
+                groupnode = m.allnodes[field.group.typeId]
+                m.register_extra_annotation(groupnode, ann)
+        #
         ns = m.code.new_scope()
         ns.name = self.compile_name(m)
         ns.dotname = self.runtime_name(m)
@@ -268,7 +278,7 @@ class Node__Struct:
             return '"???"'
 
     def _emit_key_maybe(self, m):
-        ann = schema.has_annotation(self, annotate.key)
+        ann = m.has_annotation(self, annotate.key)
         if ann is None:
             return
         assert ann.value.is_text()

@@ -23,7 +23,20 @@ class ModuleGenerator(object):
         self.allnodes = {} # id -> node
         self.children = defaultdict(list) # nodeId -> nested nodes
         self.importnames = {} # filename -> import name
- 
+        self.extra_annotations = defaultdict(list) # obj -> [ann]
+
+    def register_extra_annotation(self, obj, ann):
+        self.extra_annotations[obj].append(ann)
+
+    def has_annotation(self, obj, anncls):
+        annotations = self.extra_annotations.get(obj, [])
+        if obj.annotations is not None:
+            annotations += obj.annotations
+        for ann in annotations:
+            if ann.id == anncls.__id__:
+                return ann
+        return None
+
     def w(self, *args, **kwargs):
         self.code.w(*args, **kwargs)
 

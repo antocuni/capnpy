@@ -1,7 +1,8 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2016-04-22 17:54
+# generated on 2016-04-27 21:46
 
+from capnpy.ptr import E_IS_FAR_POINTER as _E_IS_FAR_POINTER
 from capnpy.struct_ import Struct as _Struct
 from capnpy.struct_ import assert_undefined as _assert_undefined
 from capnpy.struct_ import undefined as _undefined
@@ -41,7 +42,7 @@ class key(object):
     targets_struct = True
     targets_field = False
     targets_union = False
-    targets_group = False
+    targets_group = True
     targets_interface = False
     targets_method = False
     targets_param = False
