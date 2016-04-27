@@ -24,8 +24,8 @@ cdef class Struct(Blob):
     cpdef long _read_fast_ptr(self, long offset)
     cpdef long _read_raw_ptr(self, long offset)
 
-    @cython.locals(p=long, struct_offset=long)
-    cpdef _read_struct(self, long offset, object structcls, object default_=*)
+    @cython.locals(p=long, obj=Struct)
+    cpdef _read_struct(self, long offset, type structcls)
 
     @cython.locals(p=long, offset=long)
     cpdef _read_str_text(self, long offset, str default_=*)

@@ -99,7 +99,6 @@ def test_null_pointers():
     val = 'dummy default value'
     assert blob._read_list(0, None, None, default_=val) is val
     assert blob._read_str_text(0, default_=val) is val
-    assert blob._read_struct(0, Struct, default_=val) is val
     assert blob._read_list_or_struct(0, default_=val) is val
 
 

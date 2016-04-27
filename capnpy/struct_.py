@@ -127,7 +127,7 @@ class Struct(Blob):
         val = self._read_data(offset, Types.int16.ifmt)
         return enumtype(val)
 
-    def _read_struct(self, offset, structcls, default_=None):
+    def _read_struct(self, offset, structcls):
         """
         Read and dereference a struct pointer at the given offset.  It returns an
         instance of ``structcls`` pointing to the dereferenced struct.
@@ -138,13 +138,11 @@ class Struct(Blob):
         else:
             offset += self._ptrs_offset
         if p == 0:
-            return default_
+            return None
         assert ptr.kind(p) == ptr.STRUCT
-        struct_offset = ptr.deref(p, offset)
-        return structcls.from_buffer(self._buf,
-                                     struct_offset,
-                                     ptr.struct_data_size(p),
-                                     ptr.struct_ptrs_size(p))
+        obj = structcls.__new__(structcls)
+        obj._init_from_pointer(self._buf, offset, p)
+        return obj
 
     def _read_list(self, offset, listcls, item_type, default_=None):
         p = self._read_fast_ptr(offset)
