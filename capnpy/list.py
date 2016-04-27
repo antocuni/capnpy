@@ -1,6 +1,6 @@
 import struct
 import capnpy
-from capnpy.blob import Blob, Types, E_IS_FAR_POINTER
+from capnpy.blob import Blob, Types
 from capnpy import ptr
 from capnpy import listbuilder
 from capnpy.util import text_repr, float32_repr, float64_repr
@@ -198,7 +198,7 @@ class StringList(List):
     def _read_list_item(self, offset):
         offset += self._offset
         p = self._buf.read_ptr(offset)
-        if p == E_IS_FAR_POINTER:
+        if p == ptr.E_IS_FAR_POINTER:
             raise NotImplementedError('FAR pointers not supported here')
         return self._buf.read_str(p, offset, None, -1)
 

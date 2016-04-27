@@ -1,7 +1,7 @@
 import struct
 import capnpy
 from capnpy import ptr
-from capnpy.blob import Blob, Types, E_IS_FAR_POINTER
+from capnpy.blob import Blob, Types
 
 undefined = object()
 
@@ -133,7 +133,7 @@ class Struct(Blob):
         instance of ``structcls`` pointing to the dereferenced struct.
         """
         p = self._read_fast_ptr(offset)
-        if p == E_IS_FAR_POINTER:
+        if p == ptr.E_IS_FAR_POINTER:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -148,7 +148,7 @@ class Struct(Blob):
 
     def _read_list(self, offset, listcls, item_type, default_=None):
         p = self._read_fast_ptr(offset)
-        if p == E_IS_FAR_POINTER:
+        if p == ptr.E_IS_FAR_POINTER:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -167,7 +167,7 @@ class Struct(Blob):
 
     def _read_str_data(self, offset, default_=None, additional_size=0):
         p = self._read_fast_ptr(offset)
-        if p == E_IS_FAR_POINTER:
+        if p == ptr.E_IS_FAR_POINTER:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset

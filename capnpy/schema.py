@@ -2,7 +2,6 @@
 # do not edit by hand
 # generated on 2016-04-27 03:05
 
-from capnpy.blob import E_IS_FAR_POINTER as _E_IS_FAR_POINTER
 from capnpy.struct_ import Struct as _Struct
 from capnpy.struct_ import assert_undefined as _assert_undefined
 from capnpy.struct_ import undefined as _undefined
@@ -16,6 +15,8 @@ from capnpy.util import text_repr as _text_repr
 from capnpy.util import float32_repr as _float32_repr
 from capnpy.util import float64_repr as _float64_repr
 from capnpy.util import extend_module_maybe as _extend_module_maybe
+
+_E_IS_FAR_POINTER = -1 # XXX
 
 #### FORWARD DECLARATIONS ####
 

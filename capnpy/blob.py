@@ -19,11 +19,6 @@ except ImportError:
 else:
     PYX = cython.compiled
 
-# bah, I didn't find any other way to make FAR_SENTINEL a compile-time
-# constant in PYX mode but still have it as a normal global in pure-python
-# mode
-globals()['E_IS_FAR_POINTER'] = -1
-
 class CapnpBuffer(object):
     """
     Represent a capnproto buffer for a single-segment message. Far pointers are
@@ -57,7 +52,7 @@ class CapnpBuffer(object):
         """
         p = self.read_raw_ptr(offset)
         if ptr.kind(p) == ptr.FAR:
-            return E_IS_FAR_POINTER
+            return ptr.E_IS_FAR_POINTER
         return p
 
     def read_far_ptr(self, offset):

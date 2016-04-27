@@ -17,6 +17,7 @@ globals()['LIST_SIZE_32'] = LIST_SIZE_32
 globals()['LIST_SIZE_64'] = LIST_SIZE_64
 globals()['LIST_SIZE_PTR'] = LIST_SIZE_PTR
 globals()['LIST_SIZE_COMPOSITE'] = LIST_SIZE_COMPOSITE
+globals()['E_IS_FAR_POINTER'] = E_IS_FAR_POINTER
 LIST_SIZE_LENGTH = (None, None, 1, 2, 4, 8, 8)
 
 def remove_underscore(func):

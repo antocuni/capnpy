@@ -23,6 +23,24 @@ LIST_SIZE_PTR = 6
 LIST_SIZE_COMPOSITE = 7
 LIST_SIZE_LENGTH = (None, None, 1, 2, 4, 8, 8)
 
+# error code to indicate that the fast path to get a pointer failed because
+# it's a FAR pointer, and you should use the slower API to access it.  From
+# the capnproto docs, this is guaranteed (for now) to be an invalid pointer:
+#
+## lsb                    capability pointer                     msb
+## +-+-----------------------------+-------------------------------+
+## |A|              B              |               C               |
+## +-+-----------------------------+-------------------------------+
+##
+## A (2 bits) = 3, to indicate that this is an "other" pointer.
+## B (30 bits) = 0, to indicate that this is a capability pointer.
+##     (All other values are reserved for future use.)
+## C (32 bits) = Index of the capability in the message's capability
+##     table.
+##
+## Thus, -1 has kind==3, but B=-1 as well instead of 0. Technically it's a
+## reserved value, but for now we can use it as a sentinel.
+E_IS_FAR_POINTER = -1
 
 ## =================================================================
 ##
