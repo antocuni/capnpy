@@ -46,7 +46,6 @@ class TestKey(CompilerTest):
         #
         assert p1.point == (1, 2)
         assert p3.point == (3, 4)
-        import pdb;pdb.set_trace()
         assert hash(p1.point) == hash(p2.point) == hash((1, 2))
 
 

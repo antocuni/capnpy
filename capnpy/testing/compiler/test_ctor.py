@@ -11,6 +11,9 @@ class TestComputeFormat(object):
         class FakeModuleGenerator:
             def _field_name(self, f):
                 return f.name
+
+            def has_annotation(self, obj, id):
+                return None
         return FakeModuleGenerator()
 
     def test_compute_format_simple(self, m):
