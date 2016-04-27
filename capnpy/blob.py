@@ -19,6 +19,12 @@ except ImportError:
 else:
     PYX = cython.compiled
 
+if not cython.compiled:
+    # bah, I didn't find any other way to make FAR_SENTINEL a compile-time
+    # constant in PYX mode but still have it as a normal global in pure-python
+    # mode
+    globals()['E_IS_FAR_POINTER'] = -1
+
 class CapnpBuffer(object):
     """
     Represent a capnproto buffer for a single-segment message. Far pointers are
@@ -38,10 +44,25 @@ class CapnpBuffer(object):
         return unpack_int64(self.s, offset)
 
     def read_ptr(self, offset):
+        """
+        Return the pointer at the specifield offet.
+
+        WARNING: you MUST check if the return value is E_IS_FAR_POINTER, and
+        in that case call read_far_ptr. We need this messy interface for
+        speed; the proper alternative would be to simply return a tuple
+        (offset, p) and handle the far ptr here: this is fine on PyPy but slow
+        on CPython, because this way we cannot give a static return type.
+
+        We could raise an exception instead of returning an error value:
+        however, this is ~20% slower.
+        """
         p = self.read_raw_ptr(offset)
         if ptr.kind(p) == ptr.FAR:
-            return self._follow_far_ptr(p)
-        return offset, p
+            return E_IS_FAR_POINTER
+        return p
+
+    def read_far_ptr(self, offset):
+        raise ValueError("Cannot read a far pointer inside a single-segment message")
 
     def read_str(self, p, offset, default_, additional_size):
         """
@@ -59,9 +80,6 @@ class CapnpBuffer(object):
         end = start + ptr.list_item_count(p) + additional_size
         return self.s[start:end]
 
-    def _follow_far_ptr(self, p):
-        raise ValueError("Cannot follow a far pointer inside a single-segment message")
-
 
 class CapnpBufferWithSegments(CapnpBuffer):
     """
@@ -75,12 +93,11 @@ class CapnpBufferWithSegments(CapnpBuffer):
         self.s = s
         self.segment_offsets = segment_offsets
 
-    def _follow_far_ptr(self, p):
+    def read_far_ptr(self, offset):
         """
         Read and return the ptr referenced by this far pointer
         """
-        if self.segment_offsets is None:
-            raise ValueError("Cannot follow a far pointer if there is no segment data")
+        p = self.read_raw_ptr(offset)
         assert ptr.far_landing_pad(p) == 0
         segment_start = self.segment_offsets[ptr.far_target(p)] # in bytes
         offset  = segment_start + ptr.far_offset(p)*8
@@ -112,8 +129,10 @@ class Blob(object):
         """
         Abstract method to read a pointer at the specified offset. Implemented
         differently by Struct and List, it is used only to do a generic
-        traversal of a message. Not to be confused with Struct._read_ptr,
-        which is the "real" logic to read a statically-typed field
+        traversal of a message. It returns a tuple (offset, p).
+
+        Not to be confused with Struct._read_ptr, which is the "real" logic to
+        read a statically-typed field, and returns only a p (for performance).
         """
         raise NotImplementedError
 

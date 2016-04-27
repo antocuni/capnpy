@@ -50,6 +50,25 @@ def test__read_struct():
     assert p._read_data(0, Types.int64.ifmt) == 1
     assert p._read_data(8, Types.int64.ifmt) == 2
 
+def test__read_struct_with_offset():
+    ## struct Point {
+    ##   x @0 :Int64;
+    ##   y @1 :Int64;
+    ## }
+    buf = ('abcd'                                # garbage
+           '\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
+           '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
+           '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
+    s = Struct.from_buffer(buf, 4, data_size=0, ptrs_size=1)
+    p = s._read_struct(0, Struct)
+    assert p._buf is s._buf
+    assert p._data_offset == 12
+    assert p._data_size == 2
+    assert p._ptrs_size == 0
+    assert p._read_data(0, Types.int64.ifmt) == 1
+    assert p._read_data(8, Types.int64.ifmt) == 2
+
+
 def test_nested_struct():
     ## struct Rectangle {
     ##   a @0 :Point;

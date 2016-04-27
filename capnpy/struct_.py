@@ -1,7 +1,7 @@
 import struct
 import capnpy
 from capnpy import ptr
-from capnpy.blob import Blob, Types
+from capnpy.blob import Blob, Types, E_IS_FAR_POINTER
 
 undefined = object()
 
@@ -90,13 +90,19 @@ class Struct(Blob):
 
     def _read_ptr_generic(self, offset):
         # generic method, defined in Blob and implemented also by List
-        return self._buf.read_ptr(self._ptrs_offset+offset)
+        offset += self._ptrs_offset
+        return offset, self._buf.read_ptr(offset)
 
     def _read_ptr(self, offset):
         # Struct-specific logic
         if offset >= self._ptrs_size*8:
-            return offset, 0
+            return 0
         return self._buf.read_ptr(self._ptrs_offset+offset)
+
+    def _read_far_ptr(self, offset):
+        if offset >= self._ptrs_size*8:
+            return offset, 0
+        return self._buf.read_far_ptr(self._ptrs_offset+offset)
 
     def _read_raw_ptr(self, offset):
         return self._buf.read_raw_ptr(self._ptrs_offset+offset)
@@ -126,7 +132,11 @@ class Struct(Blob):
         Read and dereference a struct pointer at the given offset.  It returns an
         instance of ``structcls`` pointing to the dereferenced struct.
         """
-        offset, p = self._read_ptr(offset)
+        p = self._read_ptr(offset)
+        if p == E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset += self._ptrs_offset
         if p == 0:
             return default_
         assert ptr.kind(p) == ptr.STRUCT
@@ -137,7 +147,11 @@ class Struct(Blob):
                                      ptr.struct_ptrs_size(p))
 
     def _read_list(self, offset, listcls, item_type, default_=None):
-        offset, p = self._read_ptr(offset)
+        p = self._read_ptr(offset)
+        if p == E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset += self._ptrs_offset
         if p == 0:
             return default_
         assert ptr.kind(p) == ptr.LIST
@@ -149,12 +163,15 @@ class Struct(Blob):
                                    item_type)
 
     def _read_str_text(self, offset, default_=None):
-        offset, p = self._read_ptr(offset)
-        return self._buf.read_str(p, offset, default_, -1)
+        return self._read_str_data(offset, default_, additional_size=-1)
 
-    def _read_str_data(self, offset, default_=None):
-        offset, p = self._read_ptr(offset)
-        return self._buf.read_str(p, offset, default_, 0)
+    def _read_str_data(self, offset, default_=None, additional_size=0):
+        p = self._read_ptr(offset)
+        if p == E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset += self._ptrs_offset
+        return self._buf.read_str(p, offset, default_, additional_size)
 
     def _ensure_union(self, expected_tag):
         if self.__which__() != expected_tag:

@@ -17,6 +17,9 @@ class BlobForTests(Blob):
     def _read_ptr(self, offset):
         return self._buf.read_ptr(self._offset+offset)
 
+    def _read_far_ptr(self, offset):
+        return self._buf.read_far_ptr(self._offset+offset)
+
 
 def test_unpack_primitive():
     s = struct.pack('q', 1234)
@@ -48,7 +51,7 @@ def test_float64():
 def test_read_ptr():
     buf = '\x90\x01\x00\x00\x02\x00\x04\x00'
     b = CapnpBuffer(buf)
-    offset, p = b.read_ptr(0)
-    offset = ptr.deref(p, offset)
+    p = b.read_ptr(0)
+    offset = ptr.deref(p, 0)
     assert offset == 808
     
