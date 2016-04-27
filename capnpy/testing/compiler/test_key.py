@@ -25,6 +25,20 @@ class TestKey(CompilerTest):
         assert p3 == (3, 4)
         assert hash(p1) == hash(p2) == hash((1, 2))
 
+    def test_key_convert_case(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        struct Foo $Py.key("fieldOne, fieldTwo") {
+            fieldOne @0 :Int64;
+            fieldTwo @1 :Int64;
+        }
+        """
+        mod = self.compile(schema)
+        p1 = mod.Foo(1, 2)
+        assert p1 == (1, 2)
+        assert hash(p1) == hash((1, 2))
+
     def test_key_on_group(self):
         schema = """
         @0xbf5147cbbecf40c1;

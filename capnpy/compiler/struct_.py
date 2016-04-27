@@ -293,7 +293,7 @@ class Node__Struct:
                 raise ValueError("Error in $Py.key: the field '%s' does not exist" % f)
         #
         ns = m.code.new_scope()
-        ns.key = ', '.join(['self.%s' % f for f in fieldnames])
+        ns.key = ', '.join(['self.%s' % m._convert_name(f) for f in fieldnames])
         ns.w()
         ns.ww("""
             def _key(self):
@@ -311,8 +311,9 @@ class Node__Struct:
             ns.n = len(fieldnames)
             ns.w('cdef long h[{n}]')
             # compute the hash of each field
-            for ns.i, ns.fname in enumerate(fieldnames):
-                f = fields[ns.fname]
+            for ns.i, fname in enumerate(fieldnames):
+                f = fields[fname]
+                ns.fname = m._convert_name(fname)
                 if f.is_text():
                     ns.offset = f.slot.offset * f.slot.get_size()
                     ns.w('h[{i}] = self._hash_str_text({offset})')
