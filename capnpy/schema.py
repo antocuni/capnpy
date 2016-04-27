@@ -1,7 +1,8 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2016-02-18 14:28
+# generated on 2016-04-27 02:56
 
+from capnpy.blob import E_IS_FAR_POINTER as _E_IS_FAR_POINTER
 from capnpy.struct_ import Struct as _Struct
 from capnpy.struct_ import assert_undefined as _assert_undefined
 from capnpy.struct_ import undefined as _undefined
@@ -139,7 +140,7 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
         return self._read_str_text(0, default_="")
     
     def has_name(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @staticmethod
@@ -184,7 +185,7 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
         return self._read_str_text(0, default_="")
     
     def has_filename(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @property
@@ -199,7 +200,7 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
         return res
     
     def has_imports(self):
-        offset, ptr = self._read_ptr(8)
+        ptr = self._read_fast_ptr(8)
         return ptr != 0
     
     @staticmethod
@@ -241,7 +242,7 @@ class CodeGeneratorRequest(_Struct):
         return res
     
     def has_nodes(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @property
@@ -256,7 +257,7 @@ class CodeGeneratorRequest(_Struct):
         return res
     
     def has_requestedFiles(self):
-        offset, ptr = self._read_ptr(8)
+        ptr = self._read_fast_ptr(8)
         return ptr != 0
     
     @staticmethod
@@ -293,7 +294,7 @@ class Method(_Struct):
         return self._read_str_text(0, default_="")
     
     def has_name(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @property
@@ -332,13 +333,22 @@ class Method(_Struct):
         return res
     
     def has_annotations(self):
-        offset, ptr = self._read_ptr(8)
+        ptr = self._read_fast_ptr(8)
         return ptr != 0
     
     @property
     def paramBrand(self):
         # no union check
-        return self._read_struct(16, Brand)
+        p = self._read_fast_ptr(16)
+        if p == _E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset = 16 + self._ptrs_offset
+        if p == 0:
+            return None
+        obj = Brand.__new__(Brand)
+        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        return obj
     
     def get_paramBrand(self):
         res = self.paramBrand
@@ -347,13 +357,22 @@ class Method(_Struct):
         return res
     
     def has_paramBrand(self):
-        offset, ptr = self._read_ptr(16)
+        ptr = self._read_fast_ptr(16)
         return ptr != 0
     
     @property
     def resultBrand(self):
         # no union check
-        return self._read_struct(24, Brand)
+        p = self._read_fast_ptr(24)
+        if p == _E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset = 24 + self._ptrs_offset
+        if p == 0:
+            return None
+        obj = Brand.__new__(Brand)
+        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        return obj
     
     def get_resultBrand(self):
         res = self.resultBrand
@@ -362,7 +381,7 @@ class Method(_Struct):
         return res
     
     def has_resultBrand(self):
-        offset, ptr = self._read_ptr(24)
+        ptr = self._read_fast_ptr(24)
         return ptr != 0
     
     @property
@@ -377,7 +396,7 @@ class Method(_Struct):
         return res
     
     def has_implicitParameters(self):
-        offset, ptr = self._read_ptr(32)
+        ptr = self._read_fast_ptr(32)
         return ptr != 0
     
     @staticmethod
@@ -423,7 +442,7 @@ class Enumerant(_Struct):
         return self._read_str_text(0, default_="")
     
     def has_name(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @property
@@ -446,7 +465,7 @@ class Enumerant(_Struct):
         return res
     
     def has_annotations(self):
-        offset, ptr = self._read_ptr(8)
+        ptr = self._read_fast_ptr(8)
         return ptr != 0
     
     @staticmethod
@@ -547,9 +566,12 @@ class Type_anyPointer(_Struct):
     __tag_offset__ = 8
     __tag__ = _enum('anyPointer.__tag__', ['unconstrained', 'parameter', 'implicitMethodParameter'])
     
-    def is_unconstrained(self): return self.which() == 0
-    def is_parameter(self): return self.which() == 1
-    def is_implicitMethodParameter(self): return self.which() == 2
+    def is_unconstrained(self):
+        return self._read_data_int16(8) == 0
+    def is_parameter(self):
+        return self._read_data_int16(8) == 1
+    def is_implicitMethodParameter(self):
+        return self._read_data_int16(8) == 2
     
     @property
     def unconstrained(self):
@@ -661,7 +683,16 @@ class Type_struct(_Struct):
     @property
     def brand(self):
         # no union check
-        return self._read_struct(0, Brand)
+        p = self._read_fast_ptr(0)
+        if p == _E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset = 0 + self._ptrs_offset
+        if p == 0:
+            return None
+        obj = Brand.__new__(Brand)
+        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        return obj
     
     def get_brand(self):
         res = self.brand
@@ -670,7 +701,7 @@ class Type_struct(_Struct):
         return res
     
     def has_brand(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @staticmethod
@@ -708,7 +739,16 @@ class Type_enum(_Struct):
     @property
     def brand(self):
         # no union check
-        return self._read_struct(0, Brand)
+        p = self._read_fast_ptr(0)
+        if p == _E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset = 0 + self._ptrs_offset
+        if p == 0:
+            return None
+        obj = Brand.__new__(Brand)
+        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        return obj
     
     def get_brand(self):
         res = self.brand
@@ -717,7 +757,7 @@ class Type_enum(_Struct):
         return res
     
     def has_brand(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @staticmethod
@@ -755,7 +795,16 @@ class Type_interface(_Struct):
     @property
     def brand(self):
         # no union check
-        return self._read_struct(0, Brand)
+        p = self._read_fast_ptr(0)
+        if p == _E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset = 0 + self._ptrs_offset
+        if p == 0:
+            return None
+        obj = Brand.__new__(Brand)
+        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        return obj
     
     def get_brand(self):
         res = self.brand
@@ -764,7 +813,7 @@ class Type_interface(_Struct):
         return res
     
     def has_brand(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @staticmethod
@@ -794,7 +843,16 @@ class Type_list(_Struct):
     @property
     def elementType(self):
         # no union check
-        return self._read_struct(0, Type)
+        p = self._read_fast_ptr(0)
+        if p == _E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset = 0 + self._ptrs_offset
+        if p == 0:
+            return None
+        obj = Type.__new__(Type)
+        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        return obj
     
     def get_elementType(self):
         res = self.elementType
@@ -803,7 +861,7 @@ class Type_list(_Struct):
         return res
     
     def has_elementType(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @staticmethod
@@ -832,25 +890,44 @@ class Type(_Struct):
     __tag_offset__ = 0
     __tag__ = _enum('Type.__tag__', ['void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer'])
     
-    def is_void(self): return self.which() == 0
-    def is_bool(self): return self.which() == 1
-    def is_int8(self): return self.which() == 2
-    def is_int16(self): return self.which() == 3
-    def is_int32(self): return self.which() == 4
-    def is_int64(self): return self.which() == 5
-    def is_uint8(self): return self.which() == 6
-    def is_uint16(self): return self.which() == 7
-    def is_uint32(self): return self.which() == 8
-    def is_uint64(self): return self.which() == 9
-    def is_float32(self): return self.which() == 10
-    def is_float64(self): return self.which() == 11
-    def is_text(self): return self.which() == 12
-    def is_data(self): return self.which() == 13
-    def is_list(self): return self.which() == 14
-    def is_enum(self): return self.which() == 15
-    def is_struct(self): return self.which() == 16
-    def is_interface(self): return self.which() == 17
-    def is_anyPointer(self): return self.which() == 18
+    def is_void(self):
+        return self._read_data_int16(0) == 0
+    def is_bool(self):
+        return self._read_data_int16(0) == 1
+    def is_int8(self):
+        return self._read_data_int16(0) == 2
+    def is_int16(self):
+        return self._read_data_int16(0) == 3
+    def is_int32(self):
+        return self._read_data_int16(0) == 4
+    def is_int64(self):
+        return self._read_data_int16(0) == 5
+    def is_uint8(self):
+        return self._read_data_int16(0) == 6
+    def is_uint16(self):
+        return self._read_data_int16(0) == 7
+    def is_uint32(self):
+        return self._read_data_int16(0) == 8
+    def is_uint64(self):
+        return self._read_data_int16(0) == 9
+    def is_float32(self):
+        return self._read_data_int16(0) == 10
+    def is_float64(self):
+        return self._read_data_int16(0) == 11
+    def is_text(self):
+        return self._read_data_int16(0) == 12
+    def is_data(self):
+        return self._read_data_int16(0) == 13
+    def is_list(self):
+        return self._read_data_int16(0) == 14
+    def is_enum(self):
+        return self._read_data_int16(0) == 15
+    def is_struct(self):
+        return self._read_data_int16(0) == 16
+    def is_interface(self):
+        return self._read_data_int16(0) == 17
+    def is_anyPointer(self):
+        return self._read_data_int16(0) == 18
     
     @property
     def void(self):
@@ -1680,8 +1757,10 @@ class Field_ordinal(_Struct):
     __tag_offset__ = 10
     __tag__ = _enum('ordinal.__tag__', ['implicit', 'explicit'])
     
-    def is_implicit(self): return self.which() == 0
-    def is_explicit(self): return self.which() == 1
+    def is_implicit(self):
+        return self._read_data_int16(10) == 0
+    def is_explicit(self):
+        return self._read_data_int16(10) == 1
     
     @property
     def implicit(self):
@@ -1755,7 +1834,16 @@ class Field_slot(_Struct):
     @property
     def type(self):
         # no union check
-        return self._read_struct(16, Type)
+        p = self._read_fast_ptr(16)
+        if p == _E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset = 16 + self._ptrs_offset
+        if p == 0:
+            return None
+        obj = Type.__new__(Type)
+        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        return obj
     
     def get_type(self):
         res = self.type
@@ -1764,13 +1852,22 @@ class Field_slot(_Struct):
         return res
     
     def has_type(self):
-        offset, ptr = self._read_ptr(16)
+        ptr = self._read_fast_ptr(16)
         return ptr != 0
     
     @property
     def defaultValue(self):
         # no union check
-        return self._read_struct(24, Value)
+        p = self._read_fast_ptr(24)
+        if p == _E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset = 24 + self._ptrs_offset
+        if p == 0:
+            return None
+        obj = Value.__new__(Value)
+        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        return obj
     
     def get_defaultValue(self):
         res = self.defaultValue
@@ -1779,7 +1876,7 @@ class Field_slot(_Struct):
         return res
     
     def has_defaultValue(self):
-        offset, ptr = self._read_ptr(24)
+        ptr = self._read_fast_ptr(24)
         return ptr != 0
     
     @property
@@ -1817,8 +1914,10 @@ class Field(_Struct):
     __tag_offset__ = 8
     __tag__ = _enum('Field.__tag__', ['slot', 'group'])
     
-    def is_slot(self): return self.which() == 0
-    def is_group(self): return self.which() == 1
+    def is_slot(self):
+        return self._read_data_int16(8) == 0
+    def is_group(self):
+        return self._read_data_int16(8) == 1
     
     @property
     def name(self):
@@ -1829,7 +1928,7 @@ class Field(_Struct):
         return self._read_str_text(0, default_="")
     
     def has_name(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @property
@@ -1852,7 +1951,7 @@ class Field(_Struct):
         return res
     
     def has_annotations(self):
-        offset, ptr = self._read_ptr(8)
+        ptr = self._read_fast_ptr(8)
         return ptr != 0
     
     @property
@@ -1964,7 +2063,16 @@ class Superclass(_Struct):
     @property
     def brand(self):
         # no union check
-        return self._read_struct(0, Brand)
+        p = self._read_fast_ptr(0)
+        if p == _E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset = 0 + self._ptrs_offset
+        if p == 0:
+            return None
+        obj = Brand.__new__(Brand)
+        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        return obj
     
     def get_brand(self):
         res = self.brand
@@ -1973,7 +2081,7 @@ class Superclass(_Struct):
         return res
     
     def has_brand(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @staticmethod
@@ -2003,25 +2111,44 @@ class Value(_Struct):
     __tag_offset__ = 0
     __tag__ = _enum('Value.__tag__', ['void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer'])
     
-    def is_void(self): return self.which() == 0
-    def is_bool(self): return self.which() == 1
-    def is_int8(self): return self.which() == 2
-    def is_int16(self): return self.which() == 3
-    def is_int32(self): return self.which() == 4
-    def is_int64(self): return self.which() == 5
-    def is_uint8(self): return self.which() == 6
-    def is_uint16(self): return self.which() == 7
-    def is_uint32(self): return self.which() == 8
-    def is_uint64(self): return self.which() == 9
-    def is_float32(self): return self.which() == 10
-    def is_float64(self): return self.which() == 11
-    def is_text(self): return self.which() == 12
-    def is_data(self): return self.which() == 13
-    def is_list(self): return self.which() == 14
-    def is_enum(self): return self.which() == 15
-    def is_struct(self): return self.which() == 16
-    def is_interface(self): return self.which() == 17
-    def is_anyPointer(self): return self.which() == 18
+    def is_void(self):
+        return self._read_data_int16(0) == 0
+    def is_bool(self):
+        return self._read_data_int16(0) == 1
+    def is_int8(self):
+        return self._read_data_int16(0) == 2
+    def is_int16(self):
+        return self._read_data_int16(0) == 3
+    def is_int32(self):
+        return self._read_data_int16(0) == 4
+    def is_int64(self):
+        return self._read_data_int16(0) == 5
+    def is_uint8(self):
+        return self._read_data_int16(0) == 6
+    def is_uint16(self):
+        return self._read_data_int16(0) == 7
+    def is_uint32(self):
+        return self._read_data_int16(0) == 8
+    def is_uint64(self):
+        return self._read_data_int16(0) == 9
+    def is_float32(self):
+        return self._read_data_int16(0) == 10
+    def is_float64(self):
+        return self._read_data_int16(0) == 11
+    def is_text(self):
+        return self._read_data_int16(0) == 12
+    def is_data(self):
+        return self._read_data_int16(0) == 13
+    def is_list(self):
+        return self._read_data_int16(0) == 14
+    def is_enum(self):
+        return self._read_data_int16(0) == 15
+    def is_struct(self):
+        return self._read_data_int16(0) == 16
+    def is_interface(self):
+        return self._read_data_int16(0) == 17
+    def is_anyPointer(self):
+        return self._read_data_int16(0) == 18
     
     @property
     def void(self):
@@ -2125,7 +2252,7 @@ class Value(_Struct):
         return self._read_str_text(0, default_="")
     
     def has_text(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @property
@@ -2137,7 +2264,7 @@ class Value(_Struct):
         return self._read_str_data(0, default_="")
     
     def has_data(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @property
@@ -2146,7 +2273,7 @@ class Value(_Struct):
         raise ValueError("Cannot get fields of type AnyPointer")
     
     def has_list(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @property
@@ -2163,7 +2290,7 @@ class Value(_Struct):
         raise ValueError("Cannot get fields of type AnyPointer")
     
     def has_struct(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @property
@@ -2177,7 +2304,7 @@ class Value(_Struct):
         raise ValueError("Cannot get fields of type AnyPointer")
     
     def has_anyPointer(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @staticmethod
@@ -2855,8 +2982,10 @@ class Brand_Binding(_Struct):
     __tag_offset__ = 0
     __tag__ = _enum('Binding.__tag__', ['unbound', 'type'])
     
-    def is_unbound(self): return self.which() == 0
-    def is_type(self): return self.which() == 1
+    def is_unbound(self):
+        return self._read_data_int16(0) == 0
+    def is_type(self):
+        return self._read_data_int16(0) == 1
     
     @property
     def unbound(self):
@@ -2866,7 +2995,16 @@ class Brand_Binding(_Struct):
     @property
     def type(self):
         self._ensure_union(1)
-        return self._read_struct(0, Type)
+        p = self._read_fast_ptr(0)
+        if p == _E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset = 0 + self._ptrs_offset
+        if p == 0:
+            return None
+        obj = Type.__new__(Type)
+        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        return obj
     
     def get_type(self):
         res = self.type
@@ -2875,7 +3013,7 @@ class Brand_Binding(_Struct):
         return res
     
     def has_type(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @staticmethod
@@ -2932,8 +3070,10 @@ class Brand_Scope(_Struct):
     __tag_offset__ = 8
     __tag__ = _enum('Scope.__tag__', ['bind', 'inherit'])
     
-    def is_bind(self): return self.which() == 0
-    def is_inherit(self): return self.which() == 1
+    def is_bind(self):
+        return self._read_data_int16(8) == 0
+    def is_inherit(self):
+        return self._read_data_int16(8) == 1
     
     @property
     def scopeId(self):
@@ -2955,7 +3095,7 @@ class Brand_Scope(_Struct):
         return res
     
     def has_bind(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @property
@@ -3029,7 +3169,7 @@ class Brand(_Struct):
         return res
     
     def has_scopes(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @staticmethod
@@ -3066,7 +3206,16 @@ class Annotation(_Struct):
     @property
     def value(self):
         # no union check
-        return self._read_struct(0, Value)
+        p = self._read_fast_ptr(0)
+        if p == _E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset = 0 + self._ptrs_offset
+        if p == 0:
+            return None
+        obj = Value.__new__(Value)
+        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        return obj
     
     def get_value(self):
         res = self.value
@@ -3075,13 +3224,22 @@ class Annotation(_Struct):
         return res
     
     def has_value(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @property
     def brand(self):
         # no union check
-        return self._read_struct(8, Brand)
+        p = self._read_fast_ptr(8)
+        if p == _E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset = 8 + self._ptrs_offset
+        if p == 0:
+            return None
+        obj = Brand.__new__(Brand)
+        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        return obj
     
     def get_brand(self):
         res = self.brand
@@ -3090,7 +3248,7 @@ class Annotation(_Struct):
         return res
     
     def has_brand(self):
-        offset, ptr = self._read_ptr(8)
+        ptr = self._read_fast_ptr(8)
         return ptr != 0
     
     @staticmethod
@@ -3131,7 +3289,7 @@ class Node_interface(_Struct):
         return res
     
     def has_methods(self):
-        offset, ptr = self._read_ptr(24)
+        ptr = self._read_fast_ptr(24)
         return ptr != 0
     
     @property
@@ -3146,7 +3304,7 @@ class Node_interface(_Struct):
         return res
     
     def has_superclasses(self):
-        offset, ptr = self._read_ptr(32)
+        ptr = self._read_fast_ptr(32)
         return ptr != 0
     
     @staticmethod
@@ -3177,7 +3335,16 @@ class Node_const(_Struct):
     @property
     def type(self):
         # no union check
-        return self._read_struct(24, Type)
+        p = self._read_fast_ptr(24)
+        if p == _E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset = 24 + self._ptrs_offset
+        if p == 0:
+            return None
+        obj = Type.__new__(Type)
+        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        return obj
     
     def get_type(self):
         res = self.type
@@ -3186,13 +3353,22 @@ class Node_const(_Struct):
         return res
     
     def has_type(self):
-        offset, ptr = self._read_ptr(24)
+        ptr = self._read_fast_ptr(24)
         return ptr != 0
     
     @property
     def value(self):
         # no union check
-        return self._read_struct(32, Value)
+        p = self._read_fast_ptr(32)
+        if p == _E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset = 32 + self._ptrs_offset
+        if p == 0:
+            return None
+        obj = Value.__new__(Value)
+        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        return obj
     
     def get_value(self):
         res = self.value
@@ -3201,7 +3377,7 @@ class Node_const(_Struct):
         return res
     
     def has_value(self):
-        offset, ptr = self._read_ptr(32)
+        ptr = self._read_fast_ptr(32)
         return ptr != 0
     
     @staticmethod
@@ -3286,7 +3462,7 @@ class Node_struct(_Struct):
         return res
     
     def has_fields(self):
-        offset, ptr = self._read_ptr(24)
+        ptr = self._read_fast_ptr(24)
         return ptr != 0
     
     @staticmethod
@@ -3318,7 +3494,16 @@ class Node_annotation(_Struct):
     @property
     def type(self):
         # no union check
-        return self._read_struct(24, Type)
+        p = self._read_fast_ptr(24)
+        if p == _E_IS_FAR_POINTER:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset = 24 + self._ptrs_offset
+        if p == 0:
+            return None
+        obj = Type.__new__(Type)
+        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        return obj
     
     def get_type(self):
         res = self.type
@@ -3327,7 +3512,7 @@ class Node_annotation(_Struct):
         return res
     
     def has_type(self):
-        offset, ptr = self._read_ptr(24)
+        ptr = self._read_fast_ptr(24)
         return ptr != 0
     
     @property
@@ -3470,7 +3655,7 @@ class Node_enum(_Struct):
         return res
     
     def has_enumerants(self):
-        offset, ptr = self._read_ptr(24)
+        ptr = self._read_fast_ptr(24)
         return ptr != 0
     
     @staticmethod
@@ -3505,7 +3690,7 @@ class Node_NestedNode(_Struct):
         return self._read_str_text(0, default_="")
     
     def has_name(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @property
@@ -3549,7 +3734,7 @@ class Node_Parameter(_Struct):
         return self._read_str_text(0, default_="")
     
     def has_name(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @staticmethod
@@ -3580,12 +3765,18 @@ class Node(_Struct):
     __tag_offset__ = 12
     __tag__ = _enum('Node.__tag__', ['file', 'struct', 'enum', 'interface', 'const', 'annotation'])
     
-    def is_file(self): return self.which() == 0
-    def is_struct(self): return self.which() == 1
-    def is_enum(self): return self.which() == 2
-    def is_interface(self): return self.which() == 3
-    def is_const(self): return self.which() == 4
-    def is_annotation(self): return self.which() == 5
+    def is_file(self):
+        return self._read_data_int16(12) == 0
+    def is_struct(self):
+        return self._read_data_int16(12) == 1
+    def is_enum(self):
+        return self._read_data_int16(12) == 2
+    def is_interface(self):
+        return self._read_data_int16(12) == 3
+    def is_const(self):
+        return self._read_data_int16(12) == 4
+    def is_annotation(self):
+        return self._read_data_int16(12) == 5
     
     @property
     def id(self):
@@ -3604,7 +3795,7 @@ class Node(_Struct):
         return self._read_str_text(0, default_="")
     
     def has_displayName(self):
-        offset, ptr = self._read_ptr(0)
+        ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @property
@@ -3635,7 +3826,7 @@ class Node(_Struct):
         return res
     
     def has_nestedNodes(self):
-        offset, ptr = self._read_ptr(8)
+        ptr = self._read_fast_ptr(8)
         return ptr != 0
     
     @property
@@ -3650,7 +3841,7 @@ class Node(_Struct):
         return res
     
     def has_annotations(self):
-        offset, ptr = self._read_ptr(16)
+        ptr = self._read_fast_ptr(16)
         return ptr != 0
     
     @property
@@ -3730,7 +3921,7 @@ class Node(_Struct):
         return res
     
     def has_parameters(self):
-        offset, ptr = self._read_ptr(40)
+        ptr = self._read_fast_ptr(40)
         return ptr != 0
     
     @property
