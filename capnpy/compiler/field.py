@@ -121,7 +121,7 @@ class Field__Slot:
             {ensure_union}
             p = self._read_fast_ptr({offset})
             if p == _E_IS_FAR_POINTER:
-                offset, p = self._read_far_ptr(offset)
+                offset, p = self._read_far_ptr({offset})
             else:
                 offset = {offset} + self._ptrs_offset
             if p == 0:

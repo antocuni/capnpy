@@ -19,11 +19,10 @@ except ImportError:
 else:
     PYX = cython.compiled
 
-if not cython.compiled:
-    # bah, I didn't find any other way to make FAR_SENTINEL a compile-time
-    # constant in PYX mode but still have it as a normal global in pure-python
-    # mode
-    globals()['E_IS_FAR_POINTER'] = -1
+# bah, I didn't find any other way to make FAR_SENTINEL a compile-time
+# constant in PYX mode but still have it as a normal global in pure-python
+# mode
+globals()['E_IS_FAR_POINTER'] = -1
 
 class CapnpBuffer(object):
     """

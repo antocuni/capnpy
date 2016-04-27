@@ -21,7 +21,7 @@ cdef class Struct(Blob):
     cpdef _init_from_pointer(self, object buf, long offset, long p)
     cpdef _read_data(self, long offset, char ifmt)
     cpdef long _read_data_int16(self, long offset)
-    cpdef _read_ptr(self, long offset)
+    cpdef long _read_fast_ptr(self, long offset)
     cpdef long _read_raw_ptr(self, long offset)
     cpdef _read_struct(self, long offset, object structcls, object default_=*)
 
@@ -29,7 +29,7 @@ cdef class Struct(Blob):
     cpdef _read_str_text(self, long offset, str default_=*)
 
     @cython.locals(p=long, offset=long)
-    cpdef _read_str_data(self, long offset, str default_=*)
+    cpdef _read_str_data(self, long offset, str default_=*, additional_size=*)
 
     cpdef object _ensure_union(self, long expected_tag)
     cpdef long __which__(self) except -1
