@@ -119,11 +119,11 @@ class Field__Slot:
         ns.structcls = self.slot.type.runtime_name(m)
         m.def_property(ns, name, """
             {ensure_union}
-            ## XXX: this is wrong because it does not take into account far pointers
-            ## and schema evolution
-            ## p = self._read_raw_ptr({offset})
-            ## offset = {offset} + self._ptrs_offset
-            offset, p = self._read_ptr({offset})
+            p = self._read_fast_ptr({offset})
+            if p == _E_IS_FAR_POINTER:
+                offset, p = self._read_far_ptr(offset)
+            else:
+                offset = {offset} + self._ptrs_offset
             if p == 0:
                 return None
             obj = {structcls}.__new__({structcls})
@@ -178,7 +178,7 @@ class Field__Slot:
     def _emit_has_method(self, ns):
         ns.ww("""
             {cpdef} has_{name}(self):
-                offset, ptr = self._read_ptr({offset})
+                ptr = self._read_fast_ptr({offset})
                 return ptr != 0
         """)
         ns.w()

@@ -93,6 +93,13 @@ class Struct(Blob):
         offset += self._ptrs_offset
         return offset, self._buf.read_ptr(offset)
 
+    def _read_ptr(self, offset):
+        # XXXXXXXXXX REMOVE ME after we regenerate schema.py
+        if offset >= self._ptrs_size*8:
+            return 0
+        offset += self._ptrs_offset
+        return offset, self._buf.read_ptr(offset)
+
     def _read_fast_ptr(self, offset):
         # Struct-specific logic
         if offset >= self._ptrs_size*8:
