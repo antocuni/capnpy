@@ -181,6 +181,10 @@ class DynamicCompiler(BaseCompiler):
 
 
 class StandaloneCompiler(BaseCompiler):
+    """
+    Standalone compiler: instead of loading schemas on the fly, it generates
+    .py/.so/.dll files to be imported by the standard ``import`` statement
+    """
 
     standalone = True
 
@@ -201,3 +205,27 @@ class StandaloneCompiler(BaseCompiler):
         dll = py.path.local(dll)
         outdir = infile.dirpath()
         dll.copy(outdir, mode=True)
+
+
+class DistutilsCompiler(BaseCompiler):
+    """
+    Compiler for integration with distutils: it generates .py/.pyx files,
+    which (in case of pyx files) are then handled by cythonize
+    """
+    standalone = True
+
+    def compile(self, filename, convert_case=True):
+        infile = py.path.local(filename)
+        if self.pyx:
+            outfile = infile.new(ext='pyx')
+        else:
+            outfile = infile.new(ext='py')
+        #
+        if outfile.exists() and outfile.mtime() > infile.mtime():
+            # already compiled
+            return outfile
+        cwd = py.path.local('.')
+        print '[capnpy] Compiling', infile.relto(cwd)
+        m, src = self.generate_py_source(infile, convert_case=convert_case)
+        outfile.write(src)
+        return outfile

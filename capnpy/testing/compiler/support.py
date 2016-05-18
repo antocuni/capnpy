@@ -1,5 +1,6 @@
 import py
 import pytest
+import textwrap
 import capnpy
 from capnpy.blob import PYX
 from capnpy.compiler.compiler import DynamicCompiler
@@ -44,3 +45,8 @@ class CompilerTest:
         schema = comp.load_schema(importname='/tmp.capnp', **kwds)
         return schema
 
+    def write(self, filename, src):
+        src = textwrap.dedent(src)
+        filename = self.tmpdir.join(filename)
+        filename.write(src)
+        return filename

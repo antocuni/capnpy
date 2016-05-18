@@ -1,6 +1,5 @@
 import py
 import sys
-import textwrap
 from capnpy.testing.compiler.support import CompilerTest
 from capnpy.compiler.compiler import StandaloneCompiler
 
@@ -27,12 +26,6 @@ class TestStandalone(CompilerTest):
         # sys.modules
         for modname in self.imports:
             del sys.modules[modname]
-
-    def write(self, filename, src):
-        src = textwrap.dedent(src)
-        filename = self.tmpdir.join(filename)
-        filename.write(src)
-        return filename
 
     def test_compile_and_import(self):
         self.compile("example.capnp", """
