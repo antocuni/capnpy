@@ -15,6 +15,7 @@ class BaseCompiler(object):
 
     standalone = None
     annotate = False
+    include_dirs = [str(PKGDIR)] # include "ptr.h"
 
     def __init__(self, path, pyx):
         self.path = [py.path.local(dirname) for dirname in path]
@@ -48,7 +49,7 @@ class BaseCompiler(object):
         dll = pyx_to_dll(str(pyxfile),
                          pyxbuild_dir=str(self.tmpdir),
                          setup_args=dict(
-                             include_dirs=[str(PKGDIR)] # to include "ptr.h"
+                             include_dirs=self.include_dirs,
                          ))
         if self.annotate and pyxfile.basename != 'annotate.pyx':
             htmlfile = pyxfile.new(ext='html')
