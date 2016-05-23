@@ -1,8 +1,8 @@
 import py
 import sys
-import textwrap
+import os
 from capnpy.testing.compiler.support import CompilerTest
-from capnpy.compiler.compiler import DistutilsCompiler
+from capnpy.compiler.compiler import DistutilsCompiler, PKGDIR
 
 class TestDistutilsCompiler(CompilerTest):
 
@@ -46,3 +46,38 @@ class TestDistutilsCompiler(CompilerTest):
         outfile3 = self.compile("example.capnp")
         assert outfile == outfile3
         assert outfile3.mtime() > mtime
+
+
+class TestSetup(CompilerTest):
+
+    def test_setup_build(self, monkeypatch):
+        ROOT = PKGDIR.dirpath()
+        self.write("example.capnp", """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0: Int64;
+            y @1: Int64;
+        }
+        """)
+        self.write("setup.py", """
+        import sys
+        sys.path.insert(0, '{root}')
+        from distutils.core import setup
+        from capnpy.compiler.distutils import capnpify
+
+        exts = capnpify("*.capnp", pyx={pyx})
+        setup(name='foo',
+              version='1.0',
+              ext_modules = exts,
+              )
+        """, root=ROOT, pyx=self.pyx)
+        #
+        monkeypatch.chdir(self.tmpdir)
+        ret = os.system('%s setup.py build_ext --inplace' % sys.executable)
+        assert ret == 0
+        if self.pyx:
+            outfile = self.tmpdir.join('example.so')
+        else:
+            outfile = self.tmpdir.join('example.py')
+        #
+        assert outfile.check(file=True)

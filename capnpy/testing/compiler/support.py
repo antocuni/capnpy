@@ -45,8 +45,10 @@ class CompilerTest:
         schema = comp.load_schema(importname='/tmp.capnp', **kwds)
         return schema
 
-    def write(self, filename, src):
+    def write(self, filename, src, **kwds):
         src = textwrap.dedent(src)
         filename = self.tmpdir.join(filename)
+        if kwds:
+            src = src.format(**kwds)
         filename.write(src)
         return filename
