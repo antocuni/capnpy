@@ -23,10 +23,10 @@ Moreover, it supports two different ways of compilation:
      ``schema.capnp``)
 
   2. **pyx mode**: generate pyx modules, which are then compiled into native
-     extension modules by Cython and GCC. It is optimized for speed on CPython.
+     extension modules by Cython and GCC. It is optimized for speed on
+     CPython.
 
 
-XXX explain how to enable cython support with setup.py
 
 Quick example
 -------------
@@ -64,8 +64,8 @@ in particular:
 
   1. for **dynamic loading**, you always need ``capnp`` to load a schema
 
-  2. in **precompiled mode**, you need ``capnp`` to compile the schema, but not to
-     load it later; this means that you can distribute the precompiled
+  2. in **precompiled mode**, you need ``capnp`` to compile the schema, but
+     not to load it later; this means that you can distribute the precompiled
      schemas, and the client machines will be able to load it without having
      to install the official capnproto distribution.
 
@@ -119,6 +119,39 @@ Additionally, you can also specify the ``convert_case`` parameter. By default,
 ``personName``, the compiled Python module will contain a field named
 ``person_name``. You can disable this automatic translation by passing
 ``convert_case=False``.
+
+
+Manual compilation
+-------------------
+
+You can manually compile a capnproto schema by using ``python -m capnpy
+compile``::
+
+    $ python -m capnpy compile example.capnp
+
+This will produce ``example.py`` (if you are using py mode) or ``example.so``
+(if you are using pyx mode).
+
+
+Compiling a schema using setup.py
+----------------------------------------
+
+To integrate ``capnpy`` with ``distutils``, you need to write a ``setup.py``
+like this::
+
+    from distutils.core import setup
+    from capnpy import capnpify
+
+    exts = capnpify(["example.capnp"])
+    setup(name='foo',
+          version='0.1',
+          ext_modules = exts,
+          )
+
+
+Note that in py mode there are no extensions to be compiled, so the ``exts``
+list will be empty. However, ``capnpify`` will still take care of generating
+the correct ``py`` module.
 
 
 Reading and writing messages
@@ -218,7 +251,8 @@ Union
 
 capnproto uses a special enum value, called *tag*, to identify the field which
 is currently set inside an union; ``capnpy`` follows this semantics by
-automatically creating an enum whose members correspond to fields of the union::
+automatically creating an enum whose members correspond to fields of the
+union::
 
     struct Shape {
       area @0 :Float64;
