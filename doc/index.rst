@@ -136,22 +136,31 @@ This will produce ``example.py`` (if you are using py mode) or ``example.so``
 Compiling a schema using setup.py
 ----------------------------------------
 
-To integrate ``capnpy`` with ``distutils``, you need to write a ``setup.py``
-like this::
+If you use ``setuptools``, you can use the ``capnpy_schema`` keyword to
+automatically compile your schemas from ``setup.py``::
 
-    from distutils.core import setup
-    from capnpy import capnpify
-
-    exts = capnpify(["example.capnp"])
+    from setuptools import setup
     setup(name='foo',
           version='0.1',
-          ext_modules = exts,
+          packages=['mypkg'],
+          capnpy_schemas=['mypkg/example.capnp'],
           )
 
 
-Note that in py mode there are no extensions to be compiled, so the ``exts``
-list will be empty. However, ``capnpify`` will still take care of generating
-the correct ``py`` module.
+You can specify additional options by using ``capnpy_options``::
+
+    from setuptools import setup
+    setup(name='foo',
+          version='0.1',
+          packages=['mypkg'],
+          capnpy_options={
+              'pyx': False,          # do NOT use Cython (default is 'auto')
+              'convert_case': False, # do NOT convert camelCase to camel_case
+                                     # (default is True)
+          }
+          capnpy_schemas=['mypkg/example.capnp'],
+          )
+
 
 
 Reading and writing messages

@@ -45,4 +45,11 @@ setup(name="capnpy",
           'capnpy': ['*.capnp', '*.pyx']
           },
       ext_modules = ext_modules,
-      install_requires=['pypytools'])
+      install_requires=['pypytools'],
+      entry_points = {
+          "distutils.setup_keywords": [
+              "capnpy_options = capnpy.compiler.distutils:capnpy_options",
+              "capnpy_schemas = capnpy.compiler.distutils:capnpy_schemas",
+          ],
+      }
+)

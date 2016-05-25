@@ -81,3 +81,35 @@ class TestSetup(CompilerTest):
             outfile = self.tmpdir.join('example.py')
         #
         assert outfile.check(file=True)
+
+
+    def test_setuptools_build(self, monkeypatch):
+        ROOT = PKGDIR.dirpath()
+        self.write("example.capnp", """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0: Int64;
+            y @1: Int64;
+        }
+        """)
+        self.write("setup.py", """
+        import sys
+        sys.path.insert(0, '{root}')
+        from setuptools import setup
+
+        setup(name='foo',
+              version='1.0',
+              capnpy_options=dict(pyx={pyx}),
+              capnpy_schemas=['example.capnp'],
+              )
+        """, root=ROOT, pyx=self.pyx)
+        #
+        monkeypatch.chdir(self.tmpdir)
+        ret = os.system('%s setup.py build_ext --inplace' % sys.executable)
+        assert ret == 0
+        if self.pyx:
+            outfile = self.tmpdir.join('example.so')
+        else:
+            outfile = self.tmpdir.join('example.py')
+        #
+        assert outfile.check(file=True)
