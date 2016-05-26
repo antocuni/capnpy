@@ -2,6 +2,13 @@ import sys
 import os
 from setuptools import setup, find_packages, Extension
 
+try:
+    import Cython
+except ImportError:
+    HAS_CYTHON = False
+else:
+    HAS_CYTHON = True
+
 USE_CYTHON = os.environ.get('USE_CYTHON', 'auto')
 if USE_CYTHON == 'auto':
     is_pypy = hasattr(sys, 'pypy_version_info')
@@ -9,10 +16,8 @@ if USE_CYTHON == 'auto':
 else:
     USE_CYTHON = int(USE_CYTHON)
 
-
-if USE_CYTHON:
+def get_cython_extensions():
     from Cython.Build import cythonize
-
     files = ["capnpy/blob.py",
              "capnpy/struct_.py",
              "capnpy/type.py",
@@ -32,11 +37,12 @@ if USE_CYTHON:
             [fname],
             extra_compile_args = ['-O3'],
         )
+    return cythonize(map(getext, files), gdb_debug=False)
 
-    ext_modules = cythonize(map(getext, files), gdb_debug=False)
 
-else:
-    ext_modules = []
+ext_modules = []
+if USE_CYTHON and HAS_CYTHON:
+    ext_modules = get_cython_extensions()
 
 setup(name="capnpy",
       author='Antonio Cuni',
