@@ -39,13 +39,17 @@ else:
     ext_modules = []
 
 setup(name="capnpy",
-      version="0.1",
+      author='Antonio Cuni',
+      author_email='anto.cuni@gmail.com',
+      url='https://bitbucket.org/antocuni/capnpy',
+      use_scm_version=True,
       packages = find_packages(),
       package_data = {
           'capnpy': ['*.capnp', '*.pyx']
           },
       ext_modules = ext_modules,
       install_requires=['pypytools'],
+      setup_requires=['setuptools_scm'],
       entry_points = {
           "distutils.setup_keywords": [
               "capnpy_options = capnpy.compiler.distutils:capnpy_options",
