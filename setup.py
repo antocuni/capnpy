@@ -54,7 +54,7 @@ setup(name="capnpy",
           'capnpy': ['*.capnp', '*.pyx']
           },
       ext_modules = ext_modules,
-      install_requires=['pypytools'],
+      install_requires=['pypytools', 'docopt'],
       setup_requires=['setuptools_scm'],
       entry_points = {
           "distutils.setup_keywords": [

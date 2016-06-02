@@ -11,7 +11,7 @@ def test_compile(tmpdir):
     """)
     example_capnp = tmpdir.join('example.capnp')
     example_capnp.write(schema)
-    argv = ['capnpy', 'compile', str(example_capnp), '--pyx=no']
+    argv = ['compile', str(example_capnp), '--no-pyx']
     main(argv)
     assert tmpdir.join('example.py').exists()
 
