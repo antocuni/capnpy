@@ -38,11 +38,12 @@ class CompilerTest:
     def compile(self, s, **kwds):
         # root is needed to be able to import capnpy/py.capnp
         root = py.path.local(capnpy.__file__).dirpath('..')
-        comp = DynamicCompiler([root, self.tmpdir], pyx=self.pyx)
+        comp = DynamicCompiler([root, self.tmpdir])
         comp.annotate = self.annotate
         tmp_capnp = self.tmpdir.join('tmp.capnp')
         tmp_capnp.write(s)
-        schema = comp.load_schema(importname='/tmp.capnp', **kwds)
+        schema = comp.load_schema(importname='/tmp.capnp', pyx=self.pyx,
+                                  **kwds)
         return schema
 
     def write(self, filename, src, **kwds):
@@ -52,3 +53,11 @@ class CompilerTest:
             src = src.format(**kwds)
         filename.write(src)
         return filename
+
+    def check_pyx(self, mod):
+        if self.pyx:
+            assert mod.__file__.endswith('.so')
+            assert 'capnpy.ext' in mod.__name__
+        else:
+            assert mod.__file__.endswith('.capnp')
+            assert 'capnpy.ext' not in mod.__name__

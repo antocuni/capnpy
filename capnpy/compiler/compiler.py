@@ -17,24 +17,31 @@ class BaseCompiler(object):
     annotate = False
     include_dirs = [str(PKGDIR)] # include "ptr.h"
 
-    def __init__(self, path, pyx):
+    def __init__(self, path):
         self.path = [py.path.local(dirname) for dirname in path]
         self.modules = {}
-        #
+        self._tmpdir = None
+
+    @property
+    def tmpdir(self):
+        if self._tmpdir is None:
+            self._tmpdir = py.path.local.make_numbered_dir('capnpy-pyx-')
+        return self._tmpdir
+
+    def getpyx(self, pyx):
         assert pyx in (True, False, 'auto')
         if pyx == 'auto':
             pyx = PYX
-        self.pyx = pyx
-        if self.pyx:
-            assert PYX, 'Cython extensions are missing; please run setup.py install'
-            self.tmpdir = py.path.local.make_numbered_dir('capnpy-pyx-')
-        else:
-            self.tmpdir = None
+        if pyx and not PYX:
+            raise ValueError('Cython extensions are missing; '
+                             'please run setup.py install')
+        return pyx
 
-    def generate_py_source(self, filename, convert_case):
+    def generate_py_source(self, filename, convert_case, pyx):
+        pyx = self.getpyx(pyx)
         data = self._capnp_compile(filename)
         request = loads(data, schema.CodeGeneratorRequest)
-        m = ModuleGenerator(request, convert_case, self.pyx, self.standalone)
+        m = ModuleGenerator(request, convert_case, pyx, self.standalone)
         src = m.generate()
         return m, py.code.Source(src)
 
@@ -80,7 +87,7 @@ class DynamicCompiler(BaseCompiler):
     standalone = False
 
     def load_schema(self, modname=None, importname=None, filename=None,
-                    convert_case=True):
+                    convert_case=True, pyx='auto'):
         """
         Compile and load a capnp schema, which can be specified by setting one
         (and only one) of the following params:
@@ -98,18 +105,28 @@ class DynamicCompiler(BaseCompiler):
 
           - *filename*: the (relative or absolute) file containing the schema;
              no search if performed
+
+        You can specify the following options:
+
+          - *convert_case*: whether to convert camelCase to
+            camel_case. Default is True.
+
+          - *pyx*: specify whether to use **pyx mode** or **py mode**.
+            Default is 'auto'
         """
+        pyx = self.getpyx(pyx)
         filename = self._get_filename(modname, importname, filename)
         try:
             return self.modules[filename]
         except KeyError:
-            mod = self._compile_file(filename, convert_case)
+            mod = self._compile_file(filename, convert_case, pyx)
             self.modules[filename] = mod
             return mod
 
-    def _compile_file(self, filename, convert_case):
-        m, src = self.generate_py_source(filename, convert_case)
-        if self.pyx:
+    def _compile_file(self, filename, convert_case, pyx):
+        m, src = self.generate_py_source(filename, convert_case=convert_case,
+                                         pyx=pyx)
+        if pyx:
             return self._compile_pyx(filename, m, src)
         else:
             return self._compile_py(filename, m, src)
@@ -189,10 +206,11 @@ class StandaloneCompiler(BaseCompiler):
 
     standalone = True
 
-    def compile(self, filename, convert_case=True):
+    def compile(self, filename, convert_case=True, pyx='auto'):
+        pyx = self.getpyx(pyx)
         infile = py.path.local(filename)
-        m, src = self.generate_py_source(infile, convert_case=convert_case)
-        if self.pyx:
+        m, src = self.generate_py_source(infile, convert_case, pyx)
+        if pyx:
             self._compile_pyx(infile, m, src)
         else:
             self._compile_py(infile, m, src)
@@ -215,9 +233,10 @@ class DistutilsCompiler(BaseCompiler):
     """
     standalone = True
 
-    def compile(self, filename, convert_case=True):
+    def compile(self, filename, convert_case=True, pyx='auto'):
+        pyx = self.getpyx(pyx)
         infile = py.path.local(filename)
-        if self.pyx:
+        if pyx:
             outfile = infile.new(ext='pyx')
         else:
             outfile = infile.new(ext='py')
@@ -227,6 +246,7 @@ class DistutilsCompiler(BaseCompiler):
             return outfile
         cwd = py.path.local('.')
         print '[capnpy] Compiling', infile.relto(cwd)
-        m, src = self.generate_py_source(infile, convert_case=convert_case)
+        m, src = self.generate_py_source(infile, convert_case=convert_case,
+                                         pyx=pyx)
         outfile.write(src)
         return outfile

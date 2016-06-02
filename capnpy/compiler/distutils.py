@@ -30,10 +30,10 @@ def capnpify(files, pyx='auto', convert_case=True):
         files = glob.glob(files)
         if files == []:
             raise ValueError("'%s' did not match any files" % files)
-    compiler = DistutilsCompiler(sys.path, pyx=pyx)
-    outfiles = [compiler.compile(f, convert_case) for f in files]
+    compiler = DistutilsCompiler(sys.path)
+    outfiles = [compiler.compile(f, convert_case, pyx) for f in files]
     #
-    if compiler.pyx:
+    if compiler.getpyx(pyx):
         exts = []
         for f in outfiles:
             ext = Extension('*', [str(f)],

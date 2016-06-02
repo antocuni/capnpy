@@ -8,8 +8,8 @@ class TestDistutilsCompiler(CompilerTest):
 
     def compile(self, filename):
         filename = self.tmpdir.join(filename)
-        compiler = DistutilsCompiler([], pyx=self.pyx)
-        return compiler.compile(filename)
+        compiler = DistutilsCompiler([])
+        return compiler.compile(filename, pyx=self.pyx)
 
     def test_simple(self):
         self.write("example.capnp", """

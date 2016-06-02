@@ -12,8 +12,8 @@ class TestField(CompilerTest):
         }
         """
         mod = self.compile(schema)
+        self.check_pyx(mod)
         if self.pyx:
-            assert mod.__file__.endswith('/tmp.so')
             # the repr starts with 'class' for Python classes but 'type' for
             # classes defined in C. Let's check that mod.Point is actually a
             # cdef class

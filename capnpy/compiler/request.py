@@ -114,4 +114,5 @@ class RequestedFile:
                 ns.modname = ns.fullpath[1:-6].replace('/', '.')
                 ns.w('import {modname} as {importname}')
             else:
-                ns.w('{importname} = __compiler.load_schema(importname="{fullpath}")')
+                ns.pyx = m.pyx
+                ns.w('{importname} = __compiler.load_schema(importname="{fullpath}", pyx={pyx})')

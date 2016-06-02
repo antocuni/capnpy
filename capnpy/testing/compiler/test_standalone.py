@@ -13,8 +13,8 @@ class TestStandalone(CompilerTest):
 
     def compile(self, filename, src):
         infile = self.write(filename, src.strip())
-        comp = StandaloneCompiler(sys.path, pyx=self.pyx)
-        comp.compile(infile)
+        comp = StandaloneCompiler(sys.path)
+        comp.compile(infile, pyx=self.pyx)
 
     def import_(self, modname):
         mod = __import__(modname)

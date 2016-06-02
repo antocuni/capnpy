@@ -17,19 +17,20 @@ class TestImport(CompilerTest):
         mypkg = self.tmpdir.join("mypkg").ensure(dir=True)
         myschema = mypkg.join("myschema.capnp")
         myschema.write(schema)
-        comp = DynamicCompiler([self.tmpdir], pyx=self.pyx)
-        mod1 = comp.load_schema(modname="mypkg.myschema")
-        mod2 = comp.load_schema(modname="mypkg.myschema")
+        comp = DynamicCompiler([self.tmpdir])
+        mod1 = comp.load_schema(modname="mypkg.myschema", pyx=self.pyx)
+        mod2 = comp.load_schema(modname="mypkg.myschema", pyx=self.pyx)
         assert mod1 is mod2
         #
-        mod3 = comp.load_schema(importname="/mypkg/myschema.capnp")
+        mod3 = comp.load_schema(importname="/mypkg/myschema.capnp",
+                                pyx=self.pyx)
         assert mod3 is mod1
         #
-        mod4 = comp.load_schema(filename=myschema)
+        mod4 = comp.load_schema(filename=myschema, pyx=self.pyx)
         assert mod4 is mod1
 
     def test_import(self):
-        comp = DynamicCompiler([self.tmpdir], pyx=self.pyx)
+        comp = DynamicCompiler([self.tmpdir])
         self.tmpdir.join("p.capnp").write("""
         @0xbf5147cbbecf40c1;
         struct Point {
@@ -45,13 +46,15 @@ class TestImport(CompilerTest):
             b @1 :P.Point;
         }
         """)
-        mod = comp.load_schema(importname="/tmp.capnp")
+        mod = comp.load_schema(importname="/tmp.capnp", pyx=self.pyx)
+        self.check_pyx(mod)
+        self.check_pyx(mod._p_capnp)
 
     def test_import_absolute(self):
         one = self.tmpdir.join('one').ensure(dir=True)
         two = self.tmpdir.join('two').ensure(dir=True)
 
-        comp = DynamicCompiler([self.tmpdir], pyx=self.pyx)
+        comp = DynamicCompiler([self.tmpdir])
         one.join("p.capnp").write("""
         @0xbf5147cbbecf40c1;
         struct Point {
@@ -67,13 +70,13 @@ class TestImport(CompilerTest):
             b @1 :P.Point;
         }
         """)
-        mod = comp.load_schema(importname="/two/tmp.capnp")
+        mod = comp.load_schema(importname="/two/tmp.capnp", pyx=self.pyx)
 
     def test_extended(self, monkeypatch):
         myschema = self.tmpdir.join('myschema.capnp')
         myschema_extended = self.tmpdir.join('myschema_extended.py')
 
-        comp = DynamicCompiler([self.tmpdir], pyx=self.pyx)
+        comp = DynamicCompiler([self.tmpdir])
         myschema.write("""
         @0xbf5147cbbecf40c1;
         struct Point {
@@ -91,7 +94,7 @@ class TestImport(CompilerTest):
         #
         monkeypatch.setattr(capnpy, 'mycompiler', comp, raising=False)
         monkeypatch.syspath_prepend(self.tmpdir)
-        mod = comp.load_schema('myschema')
+        mod = comp.load_schema('myschema', pyx=self.pyx)
         assert mod.Point.foo == 'foo'
         #
         p = mod.Point(5, 6)
