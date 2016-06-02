@@ -6,10 +6,10 @@ from capnpy.message import load
 from capnpy.compiler.compiler import StandaloneCompiler
 
 
-def decode():
-    filename = sys.argv[2]
-    schemaname = sys.argv[3]
-    clsname = sys.argv[4]
+def decode(argv):
+    filename = argv[2]
+    schemaname = argv[3]
+    clsname = argv[4]
     print >> sys.stderr, 'Loading schema...'
     a = time.time()
     mod = load_schema(schemaname, convert_case=False)
@@ -31,28 +31,28 @@ def decode():
     c = time.time()
     print >> sys.stderr, 'stream decoded in %.2f secs' % (c-b)
 
-def compile():
-    srcfile = sys.argv[2]
-    if '--pyx' in sys.argv:
+def compile(argv):
+    srcfile = argv[2]
+    if '--pyx' in argv:
         pyx = True
-    elif '--pyx=no' in sys.argv:
+    elif '--pyx=no' in argv:
         pyx = False
     else:
         pyx = 'auto'
     #
     convert_case = True
-    if '--convert-case=no' in sys.argv:
+    if '--convert-case=no' in argv:
         convert_case = False
     #
-    comp = StandaloneCompiler(sys.path, pyx=pyx)
-    comp.compile(srcfile, convert_case=convert_case)
+    comp = StandaloneCompiler(sys.path)
+    comp.compile(srcfile, convert_case=convert_case, pyx=pyx)
 
-def main():
-    cmd = sys.argv[1]
+def main(argv=sys.argv):
+    cmd = argv[1]
     if cmd == 'decode':
-        decode()
+        decode(argv)
     elif cmd == 'compile':
-        compile()
+        compile(argv)
     else:
         print 'usage: python -m capnpy decode|compile [ARGS]'
 
