@@ -62,6 +62,28 @@ class TestKey(CompilerTest):
         assert p3.point == (3, 4)
         assert hash(p1.point) == hash(p2.point) == hash((1, 2))
 
+    def test_wildcard(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        struct Point $Py.key("*") {
+            x @0 :Int64;
+            y @1 :Int64;
+            name @2 :Text;
+        }
+        """
+        mod = self.compile(schema)
+        p1 = mod.Point(1, 2, "p1")
+        p2 = mod.Point(1, 2, "p1")
+        p3 = mod.Point(1, 2, "p3")
+        assert p1 == p2
+        assert p1 != p3
+        #
+        assert p1 == (1, 2, "p1")
+        assert p3 == (1, 2, "p3")
+        assert hash(p1) == hash(p2) == hash((1, 2, "p1"))
+
+
 
 class TestFashHash(CompilerTest):
 

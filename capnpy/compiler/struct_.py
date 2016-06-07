@@ -282,10 +282,13 @@ class Node__Struct:
         if ann is None:
             return
         assert ann.value.is_text()
-        # we expect keyfields to be something like "x, y, z"
-        fieldnames = ann.value.text.split(',')
-        fieldnames = map(str.strip, fieldnames)
-        allfields = set([f.name for f in self.struct.fields])
+        allfields = [f.name for f in self.struct.fields]
+        # we expect keyfields to be something like "x, y, z" or "*"
+        txt = ann.value.text.strip()
+        if txt == '*':
+            fieldnames = allfields
+        else:
+            fieldnames = map(str.strip, txt.split(','))
         #
         # sanity check
         for f in fieldnames:

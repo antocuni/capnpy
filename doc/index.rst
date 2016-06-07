@@ -423,6 +423,12 @@ need to specify which fields to consider using the ``$Py.key`` annotation::
     >>> p1 == p3
     False
 
+If you have many fields, you can use ``$Py.key("*")`` to include all of them
+in the comparison key: this is equivalent of explicitly listing all the fields
+which are present in the schema. In particular, be aware that if later get
+objects which come from a **newer** schema, the additional fields will **not**
+be considered in the comparisons.
+
 Moreover, the structs are guaranteed to compare equal to the corresponding
 tuples:
 
@@ -473,7 +479,6 @@ According to the Zen of Python:
     In the face of ambiguity, refuse the temptation to guess.
 
 Hence, we require you to explicity specify which fields to consider.
-
 
 
 Adding methods to capnproto structs
