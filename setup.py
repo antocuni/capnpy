@@ -7,7 +7,12 @@ try:
 except ImportError:
     HAS_CYTHON = False
 else:
-    HAS_CYTHON = True
+    if Cython.__version__ >= '0.23':
+        HAS_CYTHON = True
+    else:
+        HAS_CYTHON = False
+        print 'WARNING: disabling Cython support, needed Cython >= 0.23'
+
 
 USE_CYTHON = os.environ.get('USE_CYTHON', 'auto')
 if USE_CYTHON == 'auto':
