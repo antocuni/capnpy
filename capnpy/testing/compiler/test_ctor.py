@@ -305,8 +305,7 @@ class TestUnionConstructors(CompilerTest):
         assert s.square == 2
         assert s.perimeter == 3
 
-    @py.test.mark.xfail
-    def test_generic_ctor_void_arg(Self, mod):
+    def test_generic_ctor_void_arg(self, mod):
         s = mod.Shape(area=1, empty=None, perimeter=3)
         assert s.which() == mod.Shape.__tag__.empty
         assert s.area == 1

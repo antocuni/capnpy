@@ -45,8 +45,10 @@ class Structor(object):
             elif f.is_group():
                 fname = self._append_group(f)
                 self.argnames.append(fname)
-            elif f.is_void():
-                continue # ignore void fields
+            elif f.is_void() and not f.is_part_of_union():
+                # ignore void fields, but only is they are not the
+                # discriminant for an union
+                continue
             else:
                 fname = self._append_field(f)
                 self.argnames.append(fname)
@@ -113,6 +115,8 @@ class Structor(object):
         for f in self.fields:
             if not f.is_slot() or f.slot.type.is_bool():
                 raise Unsupported('Unsupported field type: %s' % f.shortrepr())
+            elif f.is_void():
+                continue
             set(self._slot_offset(f), f.slot.get_fmt())
         #
         # remove all the Nones
@@ -146,7 +150,7 @@ class Structor(object):
 
         # for for building, we sort them by offset
         self.fields.sort(key=lambda f: self._slot_offset(f))
-        buildnames = [self.field_name[f] for f in self.fields]
+        buildnames = [self.field_name[f] for f in self.fields if not f.is_void()]
 
         if len(argnames) != len(set(argnames)):
             raise ValueError("Duplicate field name(s): %s" % argnames)
@@ -173,7 +177,7 @@ class Structor(object):
                     self._field_list(code, f)
                 elif hasattr(f, 'nullable_group'):
                     self._field_nullable(code, f)
-                elif f.is_primitive() or f.is_enum():
+                elif f.is_primitive() or f.is_enum() or f.is_void():
                     pass # nothing to do
                 else:
                     code.w("raise NotImplementedError('Unsupported field type: {f}')",
