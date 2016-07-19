@@ -82,9 +82,10 @@ class TestSetup(CompilerTest):
         #
         assert outfile.check(file=True)
 
-
     def test_setuptools_build(self, monkeypatch):
         ROOT = PKGDIR.dirpath()
+        if ROOT.join('capnpy.egg-info').check(dir=False):
+            raise ValueError('You must run setup.py egg_info before running this test')
         self.write("example.capnp", """
         @0xbf5147cbbecf40c1;
         struct Point {
