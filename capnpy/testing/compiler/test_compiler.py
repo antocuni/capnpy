@@ -2,6 +2,7 @@ import py
 import pytest
 import capnpy
 from capnpy.testing.compiler.support import CompilerTest
+from capnpy.compiler.compiler import CompilerError
 
 
 class TestCompilerOptions(CompilerTest):
@@ -153,3 +154,34 @@ class TestCompilerOptions(CompilerTest):
         """
         mod = self.compile(schema)
         assert mod.bar == 42
+
+
+class TestCapnpExcecutable(CompilerTest):
+
+    def test_capnp_not_found(self, monkeypatch):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        """
+        monkeypatch.setenv('PATH', str(self.tmpdir))
+        exc = py.test.raises(CompilerError, "self.compile(schema)")
+        assert str(exc.value).startswith('Cannot find the capnp executable')
+
+    def test_capnp_too_old(self, monkeypatch):
+        self.write('capnp', """\
+        #!/bin/bash
+
+        if [ "X$1" = "X--version" ]
+        then
+            echo "Cap'n Proto version 0.4.0"
+        else
+            echo "Error: the only allowed option is --version, got $*"
+            #exit 1
+        fi
+        """).chmod(0755)
+        #
+        schema = """
+        @0xbf5147cbbecf40c1;
+        """
+        monkeypatch.setenv('PATH', str(self.tmpdir))
+        exc = py.test.raises(CompilerError, "self.compile(schema)")
+        assert str(exc.value).startswith('The capnp executable is too old')

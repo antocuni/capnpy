@@ -1,8 +1,10 @@
+from __future__ import absolute_import
 import py
 import sys
 import os
 import types
 import subprocess
+from distutils.version import StrictVersion
 import capnpy
 from capnpy import schema
 from capnpy.message import loads
@@ -10,6 +12,9 @@ from capnpy.blob import PYX
 from capnpy.compiler.module import ModuleGenerator
 
 PKGDIR = py.path.local(capnpy.__file__).dirpath()
+
+class CompilerError(Exception):
+    pass
 
 class BaseCompiler(object):
 
@@ -66,16 +71,35 @@ class BaseCompiler(object):
     def _capnp_compile(self, filename):
         # this is a hack: we use cat as a plugin of capnp compile to get the
         # CodeGeneratorRequest bytes. There MUST be a more proper way to do that
+        capnp = py.path.local.sysfind('capnp')
+        if capnp is None:
+            raise CompilerError("Cannot find the capnp executable. Make sure it is "
+                                "installed and in $PATH")
+        #
+        self._capnp_check_version()
         cmd = ['capnp', 'compile', '-o', '/bin/cat']
         for dirname in self.path:
             cmd.append('-I%s' % dirname)
         cmd.append(str(filename))
+        return self._exec(*cmd)
+
+    def _capnp_check_version(self):
+        version = self._exec('capnp', '--version')
+        version = version.strip()
+        if not version.startswith("Cap'n Proto version"):
+            raise CompilerError("capnp version string not recognized: %s" % version)
+        _, version = version.rsplit(' ', 1)
+        if version < StrictVersion('0.5.3'):
+            raise CompilerError("The capnp executable is too old: the minimum required "
+                                "version is 0.5.3")
+
+    def _exec(self, *cmd):
         #print ' '.join(cmd)
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = proc.communicate()
         ret = proc.wait()
         if ret != 0:
-            raise ValueError(stderr)
+            raise CompilerError(stderr)
         return stdout
 
 
