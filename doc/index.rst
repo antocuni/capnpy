@@ -69,6 +69,14 @@ in particular:
      schemas, and the client machines will be able to load it without having
      to install the official capnproto distribution.
 
+Requirements:
+
+  1. ``cython >= 0.23``: Cython is needed only if you want to enable pyx mode
+     on CPython
+
+  2. ``capnp >= 0.5.3``: as explained above, you need the ``capnp`` executable
+     only for dynamic loading, or to compile the schema
+
 
 Dynamic loading
 -----------------
