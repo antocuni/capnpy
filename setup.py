@@ -56,7 +56,7 @@ setup(name="capnpy",
       use_scm_version=True,
       packages = find_packages(),
       package_data = {
-          'capnpy': ['*.capnp', '*.pyx']
+          'capnpy': ['*.capnp', '*.pyx', '*.pxd', '*.h']
           },
       ext_modules = ext_modules,
       install_requires=['pypytools', 'docopt'],
