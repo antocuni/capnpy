@@ -97,6 +97,22 @@ class TestConstructors(CompilerTest):
         assert p.y == 2
         assert p.z == 3
 
+    @pytest.mark.xfail
+    def test_default_value(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64 = 42;
+            y @1 :Int64;
+        }
+        """
+        mod = self.compile(schema)
+        # note that the order of fields is different than the order of offsets
+        # (because z has offset==1 and y offset==8)
+        p = mod.Point(0, 0)
+        assert p.x == 0
+        assert p.y == 0
+
 
     def test_void(self):
         schema = """
