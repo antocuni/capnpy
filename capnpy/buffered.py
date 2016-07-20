@@ -3,6 +3,12 @@ from capnpy.filelike import FileLike
 class BufferedSocket(FileLike):
     """
     file-like interface to read data from a socket in a buffered way.
+    Similar to socket.makefile(), but read() is much faster. See:
+    https://bitbucket.org/pypy/pypy/issues/2272/socket_fileobjectread-horribly-slow
+
+    write() and flush() are supported, although they are not particularly
+    optimized: write() always appends the data to its iternal buffer, which is
+    sent only when calling flush().
     """
 
     def __init__(self, sock, bufsize=8192):
@@ -10,6 +16,7 @@ class BufferedSocket(FileLike):
         self.bufsize = bufsize
         self.buf = b''
         self.i = 0
+        self.wbuf = []
 
     def _fillbuf(self, size):
         parts = [self.buf[self.i:]]
@@ -78,6 +85,13 @@ class BufferedSocket(FileLike):
         #
         return b''.join(parts)
 
+    def write(self, data):
+        self.wbuf.append(data)
+
+    def flush(self):
+        data = ''.join(self.wbuf)
+        self.sock.sendall(data)
+        self.wbuf = []
 
 class StringBuffer(FileLike):
     """

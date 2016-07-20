@@ -4,12 +4,16 @@ class FakeSocket(object):
 
     def __init__(self, *packets):
         self.packets = iter(packets)
+        self.received = ''
 
     def recv(self, size):
         try:
             return next(self.packets)
         except StopIteration:
             return ''
+
+    def sendall(self, data):
+        self.received += data
 
 
 class TestBufferedSocket(object):
@@ -92,6 +96,19 @@ class TestBufferedSocket(object):
         assert sock.read() == 'aabbbbccccdddd'
         assert sock.read(1) == ''
         assert sock.read() == ''
+
+    def test_write(self):
+        sock = FakeSocket()
+        bufsock = BufferedSocket(sock)
+        bufsock.write('hello ')
+        bufsock.write('world')
+        assert sock.received == ''
+        bufsock.flush()
+        assert sock.received == 'hello world'
+        bufsock.write(' foobar')
+        assert sock.received == 'hello world'
+        bufsock.flush()
+        assert sock.received == 'hello world foobar'
 
 
 class TestStringBuffer(object):
