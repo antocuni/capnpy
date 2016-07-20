@@ -3,8 +3,9 @@
 #   - size: they are always expressed in WORDS
 #   - length: they are always expressed in BYTES
 
-
+import sys
 import struct
+from pypytools import IS_PYPY
 import capnpy
 from capnpy.util import extend
 from capnpy import ptr
@@ -20,6 +21,8 @@ except ImportError:
 else:
     PYX = cython.compiled
 
+if not IS_PYPY and not PYX:
+    print >> sys.stderr, 'WARNING: capnpy was not compiled correctly, PYX mode disabled'
 
 class CapnpBuffer(object):
     """
