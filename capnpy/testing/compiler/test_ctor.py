@@ -110,7 +110,6 @@ class TestConstructors(CompilerTest):
         assert p.x == 0
         assert p.y == 0
 
-    @pytest.mark.xfail
     def test_default_value_enum(self):
         schema = """
         @0xbf5147cbbecf40c1;

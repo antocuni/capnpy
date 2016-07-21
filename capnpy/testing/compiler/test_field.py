@@ -200,6 +200,33 @@ class TestField(CompilerTest):
         mod = self.compile(schema)
         assert mod.Color.red == 0
 
+    def test_enum_default(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        enum Color {
+            red @0;
+            green @1;
+            blue @2;
+            yellow @3;
+        }
+        enum Gender {
+            male @0;
+            female @1;
+            unknown @2;
+        }
+        struct Foo {
+            color @0 :Color = green;
+            gender @1 :Gender = female;
+        }
+        """
+        mod = self.compile(schema)
+        buf = ''
+        f = mod.Foo.from_buffer(buf, 0, 0, 0)
+        assert f.color == mod.Color.green
+        assert f.gender == mod.Gender.female
+        assert str(f.color) == 'green' # that check it's an actual enum and
+                                       # not a plain int
+
     def test_union(self):
         schema = """
         @0xbf5147cbbecf40c1;

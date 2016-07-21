@@ -20,6 +20,7 @@ class Field__Slot:
     def _emit(self, m, ns, name):
         if self.slot.hadExplicitDefault:
             if not (self.slot.type.is_primitive() or
+                    self.slot.type.is_enum() or
                     self.slot.type.is_bool()):
                 raise ValueError("explicit defaults not supported for field %s" % self)
 
@@ -80,9 +81,13 @@ class Field__Slot:
 
     def _emit_enum(self, m, ns, name):
         ns.enumcls = self.slot.type.runtime_name(m)
+        ns.default_ = self.slot.defaultValue.as_pyobj()
         m.def_property(ns, name, """
             {ensure_union}
-            return self._read_enum({offset}, {enumcls})
+            value = self._read_enum({offset}, {enumcls})
+            if {default_} != 0:
+                value = {enumcls}(value ^ {default_})
+            return value
         """)
 
     def _emit_text(self, m, ns, name):

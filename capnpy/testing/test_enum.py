@@ -33,4 +33,3 @@ def test_unknown():
     pink = Color(3)
     assert pink == 3
     assert pink.name == 'unknown<3>'
-
