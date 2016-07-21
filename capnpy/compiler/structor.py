@@ -177,7 +177,9 @@ class Structor(object):
                     self._field_list(code, f)
                 elif hasattr(f, 'nullable_group'):
                     self._field_nullable(code, f)
-                elif f.is_primitive() or f.is_enum() or f.is_void():
+                elif f.is_primitive() or f.is_enum():
+                    self._field_primitive(code, f)
+                elif f.is_void():
                     pass # nothing to do
                 else:
                     code.w("raise NotImplementedError('Unsupported field type: {f}')",
@@ -241,3 +243,11 @@ class Structor(object):
             raise ValueError('Unknown item type: %s' % item_type)
         #
         ns.w('{fname} = builder.alloc_list({offset}, {listcls}, {itemtype}, {fname})')
+
+    def _field_primitive(self, code, f):
+        if f.slot.hadExplicitDefault:
+            fname = self.field_name[f]
+            ns = code.new_scope()
+            ns.arg = fname
+            ns.default_ = f.slot.defaultValue.as_pyobj()
+            ns.w('{arg} ^= {default_}')

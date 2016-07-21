@@ -97,8 +97,7 @@ class TestConstructors(CompilerTest):
         assert p.y == 2
         assert p.z == 3
 
-    @pytest.mark.xfail
-    def test_default_value(self):
+    def test_default_value_primitive(self):
         schema = """
         @0xbf5147cbbecf40c1;
         struct Point {
@@ -107,12 +106,31 @@ class TestConstructors(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        # note that the order of fields is different than the order of offsets
-        # (because z has offset==1 and y offset==8)
         p = mod.Point(0, 0)
         assert p.x == 0
         assert p.y == 0
 
+    @pytest.mark.xfail
+    def test_default_value_enum(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        enum Color {
+            red @0;
+            green @1;
+            blue @2;
+            yellow @3;
+        }
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+            color @2 :Color = blue;
+        }
+        """
+        mod = self.compile(schema)
+        p = mod.Point(x=1, y=2, color=mod.Color.red)
+        assert p.x == 1
+        assert p.y == 2
+        assert p.color == mod.Color.red == 0
 
     def test_void(self):
         schema = """
