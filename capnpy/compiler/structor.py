@@ -30,7 +30,6 @@ class Structor(object):
             self.init_fields(fields)
             self.fmt = self._compute_format()
         except Unsupported as e:
-            # this will fail with a TypeError if you try to invoke it
             self.argnames = []
             self._unsupported = e.message
 
@@ -134,13 +133,13 @@ class Structor(object):
 
     def _decl_unsupported(self, code):
         code.w('@staticmethod')
-        with code.def_(self.name, self.argnames):
+        with code.def_(self.name, self.argnames, '*args', '**kwargs'):
             code.w('raise NotImplementedError({msg})', msg=repr(self._unsupported))
 
     def _decl_ctor(self, code):
         ## generate a constructor which looks like this
         ## @staticmethod
-        ## def ctor(x, y, z):
+        ## def ctor(x=0, y=0, z=None):
         ##     builder = _StructBuilder('qqq')
         ##     z = builder.alloc_text(16, z)
         ##     buf = builder.build(x, y)

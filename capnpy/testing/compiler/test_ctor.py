@@ -97,7 +97,21 @@ class TestConstructors(CompilerTest):
         assert p.y == 2
         assert p.z == 3
 
+    @pytest.mark.xfail
     def test_default_value_primitive(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        """
+        mod = self.compile(schema)
+        p = mod.Point() # note that we are not passing any argument
+        assert p.x == 0
+        assert p.y == 0
+
+    def test_explicit_default_primitive(self):
         schema = """
         @0xbf5147cbbecf40c1;
         struct Point {
@@ -110,7 +124,7 @@ class TestConstructors(CompilerTest):
         assert p.x == 0
         assert p.y == 0
 
-    def test_default_value_enum(self):
+    def test_explicit_default_enum(self):
         schema = """
         @0xbf5147cbbecf40c1;
         enum Color {
