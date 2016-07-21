@@ -128,7 +128,7 @@ class Node__Struct:
         ctor.declare(m.code)
         ns.w()
         #
-        with ns.def_('__init__', ['self'] + ctor.argnames):
+        with ns.def_('__init__', ['self'] + ctor.params):
             call = m.code.call('self.__new', ctor.argnames)
             ns.w('buf = {call}', call=call)
             ns.w('_Struct.__init__(self, buf, 0, {data_size}, {ptrs_size})')
@@ -169,6 +169,7 @@ class Node__Struct:
             ctor = Structor(m, ctor_name, ns.data_size, ns.ptrs_size, fields,
                             tag_offset, tag_field.discriminantValue)
             ctor.declare(m.code)
+            std_params = ctor.params[1:]
             #
             ns.w('@classmethod')
             with ns.def_('new_' + tag_name, ['cls'] + ctor.argnames):
@@ -190,10 +191,10 @@ class Node__Struct:
         #         _Struct.__init__(self, buf, 0, None)
         #         return
         #     raise TypeError("one of the following args is required: square, circle")
-        args = [m._field_name(f) for f in std_fields]
+        params = std_params[:]
         for f in tag_fields:
-            args.append((m._field_name(f), '_undefined'))
-        ns.params = m.code.params(args)
+            params.append((m._field_name(f), '_undefined'))
+        ns.params = m.code.params(params)
         with ns.block('def __init__(self, {params}):'):
             for tag_field in tag_fields:
                 tag_field_name = m._field_name(tag_field)

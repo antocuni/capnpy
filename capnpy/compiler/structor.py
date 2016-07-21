@@ -22,6 +22,7 @@ class Structor(object):
         self.tag_value = tag_value
         #
         self.argnames = []    # the arguments accepted by the ctor, in order
+        self.params = []
         self.fields = []      # the fields as passed to StructBuilder
         self.field_name = {}  # for plain fields is simply f.name, but in case
                               # of groups it's groupname_fieldname
@@ -34,6 +35,7 @@ class Structor(object):
             self._unsupported = e.message
 
     def init_fields(self, fields):
+        defaults = []
         for f in fields:
             if f.is_nullable(self.m):
                 # use "foo_is_null" and "foo_value" as fields, but "foo" in the arguments
@@ -42,16 +44,23 @@ class Structor(object):
                 self._append_field(f_value, fname)
                 self.argnames.append(fname)
                 f_value.nullable_group = fname
+                xxx
             elif f.is_group():
                 fname = self._append_group(f)
                 self.argnames.append(fname)
-            elif f.is_void() and not f.is_part_of_union():
-                # ignore void fields, but only is they are not the
-                # discriminant for an union
-                continue
-            else:
+                xxx
+            elif f.is_void():
                 fname = self._append_field(f)
                 self.argnames.append(fname)
+                defaults.append('None')
+            else:
+                fname = self._append_field(f)
+                default = f.slot.defaultValue.as_pyobj()
+                self.argnames.append(fname)
+                defaults.append(str(default))
+
+        assert len(self.argnames) == len(defaults)
+        self.params = zip(self.argnames, defaults)
 
         if self.tag_offset is not None:
             # add a field to represent the tag, but don't add it to argnames,
@@ -155,7 +164,7 @@ class Structor(object):
         if len(argnames) != len(set(argnames)):
             raise ValueError("Duplicate field name(s): %s" % argnames)
         code.w('@staticmethod')
-        with code.def_(self.name, argnames):
+        with code.def_(self.name, self.params):
             code.w('builder = _StructBuilder({fmt})', fmt=repr(self.fmt))
             if self.tag_value is not None:
                 code.w('__which__ = {tag_value}', tag_value=int(self.tag_value))

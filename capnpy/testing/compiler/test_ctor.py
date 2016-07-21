@@ -97,54 +97,6 @@ class TestConstructors(CompilerTest):
         assert p.y == 2
         assert p.z == 3
 
-    @pytest.mark.xfail
-    def test_default_value_primitive(self):
-        schema = """
-        @0xbf5147cbbecf40c1;
-        struct Point {
-            x @0 :Int64;
-            y @1 :Int64;
-        }
-        """
-        mod = self.compile(schema)
-        p = mod.Point() # note that we are not passing any argument
-        assert p.x == 0
-        assert p.y == 0
-
-    def test_explicit_default_primitive(self):
-        schema = """
-        @0xbf5147cbbecf40c1;
-        struct Point {
-            x @0 :Int64 = 42;
-            y @1 :Int64;
-        }
-        """
-        mod = self.compile(schema)
-        p = mod.Point(0, 0)
-        assert p.x == 0
-        assert p.y == 0
-
-    def test_explicit_default_enum(self):
-        schema = """
-        @0xbf5147cbbecf40c1;
-        enum Color {
-            red @0;
-            green @1;
-            blue @2;
-            yellow @3;
-        }
-        struct Point {
-            x @0 :Int64;
-            y @1 :Int64;
-            color @2 :Color = blue;
-        }
-        """
-        mod = self.compile(schema)
-        p = mod.Point(x=1, y=2, color=mod.Color.red)
-        assert p.x == 1
-        assert p.y == 2
-        assert p.color == mod.Color.red == 0
-
     def test_void(self):
         schema = """
         @0xbf5147cbbecf40c1;
@@ -369,3 +321,116 @@ class TestUnionConstructors(CompilerTest):
         einfo = py.test.raises(TypeError, "mod.Shape(area=0, perimeter=0)")
         assert str(einfo.value) == ("one of the following args is required: "
                                     "circle, square, empty")
+
+
+class TestDefaults(CompilerTest):
+    
+    def test_no_args(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        """
+        mod = self.compile(schema)
+        p = mod.Point() # note that we are not passing any argument
+        assert p.x == 0
+        assert p.y == 0
+
+    def test_explicit_default_primitive(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64 = 42;
+            y @1 :Int64;
+        }
+        """
+        mod = self.compile(schema)
+        p = mod.Point(0, 0)
+        assert p.x == 0
+        assert p.y == 0
+        #
+        p = mod.Point()
+        assert p.x == 42
+        assert p.y == 0
+
+    def test_explicit_default_enum(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        enum Color {
+            red @0;
+            green @1;
+            blue @2;
+            yellow @3;
+        }
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+            color @2 :Color = blue;
+        }
+        """
+        mod = self.compile(schema)
+        p = mod.Point(x=1, y=2, color=mod.Color.red)
+        assert p.x == 1
+        assert p.y == 2
+        assert p.color == mod.Color.red == 0
+        #
+        p = mod.Point()
+        assert p.x == 0
+        assert p.y == 0
+        assert p.color == mod.Color.blue == 2
+
+    def test_union_generic(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Shape {
+          area @0 :Int64;
+          perimeter @1 :Int64;
+          union {
+            circle @2 :Int64;      # radius
+            square @3 :Int64;      # width
+            empty  @4 :Void;
+          }
+        }
+        """
+        mod = self.compile(schema)
+        p = mod.Shape(circle=42)
+        assert p.area == 0
+        assert p.perimeter == 0
+        assert p.is_circle()
+        assert p.circle == 42
+        #
+        p = mod.Shape(empty=None)
+        assert p.area == 0
+        assert p.perimeter == 0
+        assert p.is_empty()
+
+    def test_union_specific(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Shape {
+          area @0 :Int64;
+          perimeter @1 :Int64;
+          union {
+            circle @2 :Int64;      # radius
+            square @3 :Int64;      # width
+            empty  @4 :Void;
+          }
+        }
+        """
+        mod = self.compile(schema)
+        p = mod.Shape.new_circle()
+        assert p.area == 0
+        assert p.perimeter == 0
+        assert p.is_circle()
+        #
+        p = mod.Shape.new_square()
+        assert p.area == 0
+        assert p.perimeter == 0
+        assert p.is_square()
+        #
+        p = mod.Shape.new_empty()
+        assert p.area == 0
+        assert p.perimeter == 0
+        assert p.is_empty()
