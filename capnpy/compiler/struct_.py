@@ -192,7 +192,7 @@ class Node__Struct:
         #     raise TypeError("one of the following args is required: square, circle")
         args = [m._field_name(f) for f in std_fields]
         for f in tag_fields:
-            args.append('%s=_undefined' % m._field_name(f))
+            args.append((m._field_name(f), '_undefined'))
         ns.params = m.code.params(args)
         with ns.block('def __init__(self, {params}):'):
             for tag_field in tag_fields:
