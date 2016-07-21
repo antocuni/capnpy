@@ -128,7 +128,7 @@ class Node__Struct:
         ctor.declare(m.code)
         ns.w()
         #
-        with ns.def_('__init__', ['self'] + m.robust_arglist(ctor.argnames)):
+        with ns.def_('__init__', ['self'] + ctor.argnames):
             call = m.code.call('self.__new', ctor.argnames)
             ns.w('buf = {call}', call=call)
             ns.w('_Struct.__init__(self, buf, 0, {data_size}, {ptrs_size})')
@@ -171,7 +171,7 @@ class Node__Struct:
             ctor.declare(m.code)
             #
             ns.w('@classmethod')
-            with ns.def_('new_' + tag_name, ['cls'] + m.robust_arglist(ctor.argnames)):
+            with ns.def_('new_' + tag_name, ['cls'] + ctor.argnames):
                 call = m.code.call('cls.' + ctor_name, ctor.argnames)
                 ns.w('buf = {call}', call=call)
                 ns.w('return cls.from_buffer(buf, 0, {data_size}, {ptrs_size})')
@@ -193,8 +193,8 @@ class Node__Struct:
         args = [m._field_name(f) for f in std_fields]
         for f in tag_fields:
             args.append('%s=_undefined' % m._field_name(f))
-        ns.arglist = m.code.args(m.robust_arglist(args))
-        with ns.block('def __init__(self, {arglist}):'):
+        ns.params = m.code.params(args)
+        with ns.block('def __init__(self, {params}):'):
             for tag_field in tag_fields:
                 tag_field_name = m._field_name(tag_field)
                 with ns.block('if {name} is not _undefined:', name=tag_field_name):
