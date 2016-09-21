@@ -33,6 +33,10 @@ class CapnpBuffer(object):
     def __init__(self, s):
         self.s = s
 
+    def __reduce__(self):
+        # pickle support
+        return CapnpBuffer, (self.s,)
+
     def read_primitive(self, offset, ifmt):
         return unpack_primitive(ifmt, self.s, offset)
 
@@ -100,6 +104,10 @@ class CapnpBufferWithSegments(CapnpBuffer):
         assert segment_offsets is not None
         self.s = s
         self.segment_offsets = segment_offsets
+
+    def __reduce__(self):
+        # pickle support
+        return CapnpBufferWithSegments, (self.s, self.segment_offsets)
 
     def read_far_ptr(self, offset):
         """
