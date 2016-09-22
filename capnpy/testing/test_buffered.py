@@ -1,4 +1,5 @@
-from capnpy.buffered import BufferedSocket, StringBuffer
+import pytest
+from capnpy.buffered import BufferedStream, BufferedSocket, StringBuffer
 
 class FakeSocket(object):
 
@@ -16,88 +17,107 @@ class FakeSocket(object):
         self.received += data
 
 
-class TestBufferedSocket(object):
-    
+class MyBufferedStream(BufferedStream):
+
+    def __init__(self, *packets):
+        super(MyBufferedStream, self).__init__()
+        self.packets = iter(packets)
+
+    def _readchunk(self):
+        try:
+            return next(self.packets)
+        except StopIteration:
+            return ''
+
+
+@pytest.mark.usefixtures('initargs')
+class TestBufferedStream(object):
+
+    @pytest.fixture(params=['BufferedStream', 'BufferedSocket'])
+    def initargs(self, request):
+        self.param = request.param
+
+    def get_stream(self, *packets):
+        if self.param == 'BufferedStream':
+            return MyBufferedStream(*packets)
+        elif self.param == 'BufferedSocket':
+            sock = FakeSocket(*packets)
+            return BufferedSocket(sock)
+        assert False
+
     def test_buffering(self):
-        sock = FakeSocket('aaaabbbbccccdddd')
-        sock = BufferedSocket(sock)
-        assert sock.read(4) == 'aaaa'
-        assert sock.read(4) == 'bbbb'
-        assert sock.read(4) == 'cccc'
-        assert sock.read(4) == 'dddd'
-        assert sock.read(4) == ''
+        stream = self.get_stream('aaaabbbbccccdddd')
+        assert stream.read(4) == 'aaaa'
+        assert stream.read(4) == 'bbbb'
+        assert stream.read(4) == 'cccc'
+        assert stream.read(4) == 'dddd'
+        assert stream.read(4) == ''
 
     def test_read_at_boundary_of_buffer(self):
-        sock = FakeSocket('aaaa', 'bbbb')
-        sock = BufferedSocket(sock)
-        assert sock.read(2) == 'aa'
-        assert sock.read(4) == 'aabb'
-        assert sock.read(2) == 'bb'
-        assert sock.read(4) == ''
+        stream = self.get_stream('aaaa', 'bbbb')
+        assert stream.read(2) == 'aa'
+        assert stream.read(4) == 'aabb'
+        assert stream.read(2) == 'bb'
+        assert stream.read(4) == ''
 
     def test_not_enough_bytes_at_the_end(self):
-        sock = FakeSocket('aaaabbbbccccdd')
-        sock = BufferedSocket(sock)
-        assert sock.read(4) == 'aaaa'
-        assert sock.read(4) == 'bbbb'
-        assert sock.read(4) == 'cccc'
-        assert sock.read(4) == 'dd'
-        assert sock.read(4) == ''
+        stream = self.get_stream('aaaabbbbccccdd')
+        assert stream.read(4) == 'aaaa'
+        assert stream.read(4) == 'bbbb'
+        assert stream.read(4) == 'cccc'
+        assert stream.read(4) == 'dd'
+        assert stream.read(4) == ''
 
     def test_recv_returns_less_than_requested(self):
-        sock = FakeSocket('aaaa', 'bbbb', 'cccc', 'dddd')
-        sock = BufferedSocket(sock)
-        assert sock.read(6) == 'aaaabb'
-        assert sock.read(4) == 'bbcc'
-        assert sock.read(4) == 'ccdd'
-        assert sock.read(4) == 'dd'
-        assert sock.read(4) == ''
+        stream = self.get_stream('aaaa', 'bbbb', 'cccc', 'dddd')
+        assert stream.read(6) == 'aaaabb'
+        assert stream.read(4) == 'bbcc'
+        assert stream.read(4) == 'ccdd'
+        assert stream.read(4) == 'dd'
+        assert stream.read(4) == ''
 
     def test_readline(self):
-        sock = FakeSocket('aaaa\nbbbb\ncccc\ndddd')
-        sock = BufferedSocket(sock)
-        assert sock.readline() == 'aaaa\n'
-        assert sock.readline() == 'bbbb\n'
-        assert sock.readline() == 'cccc\n'
-        assert sock.readline() == 'dddd'
-        assert sock.readline() == ''
+        stream = self.get_stream('aaaa\nbbbb\ncccc\ndddd')
+        assert stream.readline() == 'aaaa\n'
+        assert stream.readline() == 'bbbb\n'
+        assert stream.readline() == 'cccc\n'
+        assert stream.readline() == 'dddd'
+        assert stream.readline() == ''
 
     def test_readline_corner_cases(self):
-        sock = FakeSocket('aaaa\n', 'bb', 'bb', '\ncc', 'cc\ndd', 'dd')
-        sock = BufferedSocket(sock)
-        assert sock.readline() == 'aaaa\n'
-        assert sock.readline() == 'bbbb\n'
-        assert sock.readline() == 'cccc\n'
-        assert sock.readline() == 'dddd'
-        assert sock.readline() == ''
+        stream = self.get_stream('aaaa\n', 'bb', 'bb', '\ncc', 'cc\ndd', 'dd')
+        assert stream.readline() == 'aaaa\n'
+        assert stream.readline() == 'bbbb\n'
+        assert stream.readline() == 'cccc\n'
+        assert stream.readline() == 'dddd'
+        assert stream.readline() == ''
 
     def test_read_and_readline(self):
-        sock = FakeSocket('aaaa\nbbbb\ncccc\ndddd')
-        sock = BufferedSocket(sock)
-        assert sock.read(2) == 'aa'
-        assert sock.readline() == 'aa\n'
-        assert sock.readline() == 'bbbb\n'
-        assert sock.read(5) == 'cccc\n'
-        assert sock.readline() == 'dddd'
-        assert sock.readline() == ''
-        assert sock.read(2) == ''
+        stream = self.get_stream('aaaa\nbbbb\ncccc\ndddd')
+        assert stream.read(2) == 'aa'
+        assert stream.readline() == 'aa\n'
+        assert stream.readline() == 'bbbb\n'
+        assert stream.read(5) == 'cccc\n'
+        assert stream.readline() == 'dddd'
+        assert stream.readline() == ''
+        assert stream.read(2) == ''
 
     def test_read_all(self):
-        sock = FakeSocket('aaaa', 'bbbb', 'cccc', 'dddd')
-        sock = BufferedSocket(sock)
-        assert sock.read() == 'aaaabbbbccccdddd'
-        assert sock.read(1) == ''
-        assert sock.read() == ''
+        stream = self.get_stream('aaaa', 'bbbb', 'cccc', 'dddd')
+        assert stream.read() == 'aaaabbbbccccdddd'
+        assert stream.read(1) == ''
+        assert stream.read() == ''
 
     def test_read_all_after_read(self):
-        sock = FakeSocket('aaaa', 'bbbb', 'cccc', 'dddd')
-        sock = BufferedSocket(sock)
-        assert sock.read(2) == 'aa' # leave 'aa' in the buffer
-        assert sock.read() == 'aabbbbccccdddd'
-        assert sock.read(1) == ''
-        assert sock.read() == ''
+        stream = self.get_stream('aaaa', 'bbbb', 'cccc', 'dddd')
+        assert stream.read(2) == 'aa' # leave 'aa' in the buffer
+        assert stream.read() == 'aabbbbccccdddd'
+        assert stream.read(1) == ''
+        assert stream.read() == ''
 
     def test_write(self):
+        if self.param != 'BufferedSocket':
+            return
         sock = FakeSocket()
         bufsock = BufferedSocket(sock)
         bufsock.write('hello ')

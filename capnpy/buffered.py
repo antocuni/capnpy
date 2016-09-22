@@ -1,28 +1,27 @@
 from capnpy.filelike import FileLike
 
-class BufferedSocket(FileLike):
+class BufferedStream(FileLike):
     """
-    file-like interface to read data from a socket in a buffered way.
-    Similar to socket.makefile(), but read() is much faster. See:
-    https://bitbucket.org/pypy/pypy/issues/2272/socket_fileobjectread-horribly-slow
+    file-like interface to read data from a generic stream in a buffered way.
 
-    write() and flush() are supported, although they are not particularly
-    optimized: write() always appends the data to its iternal buffer, which is
-    sent only when calling flush().
+    This is an abstract class: to use it, you need to subclass and implement
+    the _readchunk method; _readchunk is supposed to be slowish and to
+    return a big chunk of data, which will be kept in a buffer; read() and
+    readline() reads from it.
     """
 
-    def __init__(self, sock, bufsize=8192):
-        self.sock = sock
-        self.bufsize = bufsize
+    def __init__(self):
         self.buf = b''
         self.i = 0
-        self.wbuf = []
+
+    def _readchunk(self):
+        raise NotImplementedError
 
     def _fillbuf(self, size):
         parts = [self.buf[self.i:]]
         total = len(parts[0])
         while total < size:
-            part = self.sock.recv(self.bufsize)
+            part = self._readchunk()
             if part == b'':
                 break # connection closed, no more data
             total += len(part)
@@ -36,7 +35,7 @@ class BufferedSocket(FileLike):
         self.buf = b''
         self.i = 0
         while True:
-            part = self.sock.recv(self.bufsize)
+            part = self._readchunk()
             if part == b'':
                 break
             parts.append(part)
@@ -70,7 +69,7 @@ class BufferedSocket(FileLike):
         self.buf = b''
         self.i = 0
         while True:
-            part = self.sock.recv(self.bufsize)
+            part = self._readchunk()
             if part == b'':
                 break # connection closed, no more data
             #
@@ -86,12 +85,40 @@ class BufferedSocket(FileLike):
         return b''.join(parts)
 
     def write(self, data):
+        raise NotImplementedError
+
+    def flush(self):
+        raise NotImplementedError
+
+
+class BufferedSocket(BufferedStream):
+    """
+    file-like interface to read data from a socket in a buffered way.
+    Similar to socket.makefile(), but read() is much faster. See:
+    https://bitbucket.org/pypy/pypy/issues/2272/socket_fileobjectread-horribly-slow
+
+    write() and flush() are supported, although they are not particularly
+    optimized: write() always appends the data to its iternal buffer, which is
+    sent only when calling flush().
+    """
+
+    def __init__(self, sock, bufsize=8192):
+        super(BufferedSocket, self).__init__()
+        self.sock = sock
+        self.bufsize = bufsize
+        self.wbuf = []
+
+    def _readchunk(self):
+        return self.sock.recv(self.bufsize)
+
+    def write(self, data):
         self.wbuf.append(data)
 
     def flush(self):
         data = ''.join(self.wbuf)
         self.sock.sendall(data)
         self.wbuf = []
+
 
 class StringBuffer(FileLike):
     """
