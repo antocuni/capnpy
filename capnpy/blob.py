@@ -31,6 +31,7 @@ class CapnpBuffer(object):
     """
 
     def __init__(self, s):
+        assert s is not None
         self.s = s
 
     def __reduce__(self):

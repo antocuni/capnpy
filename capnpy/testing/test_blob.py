@@ -41,6 +41,8 @@ def test_CapnpBuffer():
     b1 = CapnpBuffer(buf)
     assert b1.read_primitive(0, Types.int64.ifmt) == 1
     assert b1.read_primitive(8, Types.int64.ifmt) == 2
+    #
+    py.test.raises(AssertionError, "CapnpBuffer(None)")
 
 def test_CapnpBuffer_pickle():
     import cPickle as pickle
