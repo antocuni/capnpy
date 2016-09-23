@@ -273,3 +273,6 @@ def test_comparisons_succeed():
     py.test.raises(TypeError, "s1 <= s2")
     py.test.raises(TypeError, "s1 > s2")
     py.test.raises(TypeError, "s1 >= s2")
+
+def test_check_null_buffer():
+    py.test.raises(AssertionError, "Struct(None, 0, 0, 0)")

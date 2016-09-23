@@ -137,6 +137,7 @@ class Blob(object):
         self._init_blob(buf)
 
     def _init_blob(self, buf):
+        assert buf is not None
         if isinstance(buf, str):
             buf = CapnpBuffer(buf)
         self._buf = buf
