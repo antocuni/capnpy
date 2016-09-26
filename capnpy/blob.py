@@ -31,7 +31,12 @@ class CapnpBuffer(object):
     """
 
     def __init__(self, s):
+        assert s is not None
         self.s = s
+
+    def __reduce__(self):
+        # pickle support
+        return CapnpBuffer, (self.s,)
 
     def read_primitive(self, offset, ifmt):
         return unpack_primitive(ifmt, self.s, offset)
@@ -101,6 +106,10 @@ class CapnpBufferWithSegments(CapnpBuffer):
         self.s = s
         self.segment_offsets = segment_offsets
 
+    def __reduce__(self):
+        # pickle support
+        return CapnpBufferWithSegments, (self.s, self.segment_offsets)
+
     def read_far_ptr(self, offset):
         """
         Read and return the ptr referenced by this far pointer
@@ -129,6 +138,7 @@ class Blob(object):
         self._init_blob(buf)
 
     def _init_blob(self, buf):
+        assert buf is not None
         if isinstance(buf, str):
             buf = CapnpBuffer(buf)
         self._buf = buf

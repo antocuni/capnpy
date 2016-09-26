@@ -54,6 +54,12 @@ class Struct(Blob):
         ptrs_size = ptr.struct_ptrs_size(p)
         self._init_from_buffer(buf, struct_offset, data_size, ptrs_size)
 
+    def __reduce__(self):
+        # pickle support
+        args = (self.__class__, self._buf, self._data_offset,
+                self._data_size, self._ptrs_size)
+        return (struct_from_buffer, args)
+
     @classmethod
     def from_buffer(cls, buf, offset, data_size, ptrs_size):
         return struct_from_buffer(cls, buf, offset, data_size, ptrs_size)

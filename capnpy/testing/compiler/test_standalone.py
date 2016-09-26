@@ -77,3 +77,26 @@ class TestStandalone(CompilerTest):
         assert r.a.y == 2
         assert r.b.x == 3
         assert r.b.y == 4
+
+    def test_pickle(self):
+        import cPickle as pickle
+        self.compile("mypoint.capnp", """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        """)
+        mypoint = self.import_('mypoint')
+        p1 = mypoint.Point(1, 2)
+        # check that we can pickle using the standard protocol
+        s = pickle.dumps(p1)
+        p2 = pickle.loads(s)
+        assert p2.x == 1
+        assert p2.y == 2
+        #
+        # and also with HIGHEST_PROTOCOL
+        s = pickle.dumps(p1, pickle.HIGHEST_PROTOCOL)
+        p2 = pickle.loads(s)
+        assert p2.x == 1
+        assert p2.y == 2

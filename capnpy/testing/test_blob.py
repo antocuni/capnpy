@@ -41,7 +41,30 @@ def test_CapnpBuffer():
     b1 = CapnpBuffer(buf)
     assert b1.read_primitive(0, Types.int64.ifmt) == 1
     assert b1.read_primitive(8, Types.int64.ifmt) == 2
+    #
+    py.test.raises(AssertionError, "CapnpBuffer(None)")
 
+def test_CapnpBuffer_pickle():
+    import cPickle as pickle
+    buf = CapnpBuffer('hello')
+    #
+    buf2 = pickle.loads(pickle.dumps(buf))
+    assert buf2.s == 'hello'
+    #
+    buf2 = pickle.loads(pickle.dumps(buf, pickle.HIGHEST_PROTOCOL))
+    assert buf2.s == 'hello'
+
+def test_CapnpBufferWithSegments_pickle():
+    import cPickle as pickle
+    buf = CapnpBufferWithSegments('hello', (1, 2, 3))
+    #
+    buf2 = pickle.loads(pickle.dumps(buf))
+    assert buf2.s == 'hello'
+    assert buf2.segment_offsets == (1, 2, 3)
+    #
+    buf2 = pickle.loads(pickle.dumps(buf, pickle.HIGHEST_PROTOCOL))
+    assert buf2.s == 'hello'
+    assert buf2.segment_offsets == (1, 2, 3)
 
 def test_float64():
     buf = '\x58\x39\xb4\xc8\x76\xbe\xf3\x3f'   # 1.234
