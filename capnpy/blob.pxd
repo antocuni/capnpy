@@ -19,7 +19,7 @@ cdef class CapnpBuffer:
     cpdef read_str(self, long p, long offset, default_, int additional_size)
 
     @cython.locals(p=long, start=long, size=long)
-    cpdef long hash_str(self, long p, long offset, long default_, int additional_size)
+    cpdef long hash_str(self, long p, long offset, long default_, int additional_size) except -1
 
     
 cdef class CapnpBufferWithSegments(CapnpBuffer):
