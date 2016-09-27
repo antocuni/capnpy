@@ -172,7 +172,7 @@ class Node__Struct:
             std_params = ctor.params[1:]
             #
             ns.w('@classmethod')
-            with ns.def_('new_' + tag_name, ['cls'] + ctor.argnames):
+            with ns.def_('new_' + tag_name, ['cls'] + ctor.params):
                 call = m.code.call('cls.' + ctor_name, ctor.argnames)
                 ns.w('buf = {call}', call=call)
                 ns.w('return cls.from_buffer(buf, 0, {data_size}, {ptrs_size})')

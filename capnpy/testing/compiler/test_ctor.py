@@ -421,16 +421,19 @@ class TestDefaults(CompilerTest):
         """
         mod = self.compile(schema)
         p = mod.Shape.new_circle()
+        assert p.circle == 0
         assert p.area == 0
         assert p.perimeter == 0
         assert p.is_circle()
         #
         p = mod.Shape.new_square()
+        assert p.square == 0
         assert p.area == 0
         assert p.perimeter == 0
         assert p.is_square()
         #
         p = mod.Shape.new_empty()
+        assert p.empty is None
         assert p.area == 0
         assert p.perimeter == 0
         assert p.is_empty()
