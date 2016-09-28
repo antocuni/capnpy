@@ -1,7 +1,8 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2016-04-27 03:05
+# generated on 2016-09-28 15:28
 
+from capnpy.ptr import E_IS_FAR_POINTER as _E_IS_FAR_POINTER
 from capnpy.struct_ import Struct as _Struct
 from capnpy.struct_ import assert_undefined as _assert_undefined
 from capnpy.struct_ import undefined as _undefined
@@ -15,8 +16,6 @@ from capnpy.util import text_repr as _text_repr
 from capnpy.util import float32_repr as _float32_repr
 from capnpy.util import float64_repr as _float64_repr
 from capnpy.util import extend_module_maybe as _extend_module_maybe
-
-_E_IS_FAR_POINTER = -1 # XXX
 
 #### FORWARD DECLARATIONS ####
 
@@ -340,15 +339,16 @@ class Method(_Struct):
     @property
     def paramBrand(self):
         # no union check
-        p = self._read_fast_ptr(16)
+        offset = 16
+        p = self._read_fast_ptr(offset)
         if p == _E_IS_FAR_POINTER:
-            offset, p = self._read_far_ptr(16)
+            offset, p = self._read_far_ptr(offset)
         else:
-            offset = 16 + self._ptrs_offset
+            offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Brand.__new__(Brand)
-        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        obj._init_from_pointer(self._buf, offset, p)
         return obj
     
     def get_paramBrand(self):
@@ -364,15 +364,16 @@ class Method(_Struct):
     @property
     def resultBrand(self):
         # no union check
-        p = self._read_fast_ptr(24)
+        offset = 24
+        p = self._read_fast_ptr(offset)
         if p == _E_IS_FAR_POINTER:
-            offset, p = self._read_far_ptr(24)
+            offset, p = self._read_far_ptr(offset)
         else:
-            offset = 24 + self._ptrs_offset
+            offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Brand.__new__(Brand)
-        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        obj._init_from_pointer(self._buf, offset, p)
         return obj
     
     def get_resultBrand(self):
@@ -604,14 +605,14 @@ class Type_anyPointer(_Struct):
         return parameterIndex,
     
     @staticmethod
-    def __new_unconstrained():
+    def __new_unconstrained(unconstrained):
         builder = _StructBuilder('xxxxxxxxhxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 0
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_unconstrained(cls):
-        buf = cls.__new_unconstrained()
+    def new_unconstrained(cls, unconstrained):
+        buf = cls.__new_unconstrained(unconstrained)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
@@ -684,15 +685,16 @@ class Type_struct(_Struct):
     @property
     def brand(self):
         # no union check
-        p = self._read_fast_ptr(0)
+        offset = 0
+        p = self._read_fast_ptr(offset)
         if p == _E_IS_FAR_POINTER:
-            offset, p = self._read_far_ptr(0)
+            offset, p = self._read_far_ptr(offset)
         else:
-            offset = 0 + self._ptrs_offset
+            offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Brand.__new__(Brand)
-        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        obj._init_from_pointer(self._buf, offset, p)
         return obj
     
     def get_brand(self):
@@ -740,15 +742,16 @@ class Type_enum(_Struct):
     @property
     def brand(self):
         # no union check
-        p = self._read_fast_ptr(0)
+        offset = 0
+        p = self._read_fast_ptr(offset)
         if p == _E_IS_FAR_POINTER:
-            offset, p = self._read_far_ptr(0)
+            offset, p = self._read_far_ptr(offset)
         else:
-            offset = 0 + self._ptrs_offset
+            offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Brand.__new__(Brand)
-        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        obj._init_from_pointer(self._buf, offset, p)
         return obj
     
     def get_brand(self):
@@ -796,15 +799,16 @@ class Type_interface(_Struct):
     @property
     def brand(self):
         # no union check
-        p = self._read_fast_ptr(0)
+        offset = 0
+        p = self._read_fast_ptr(offset)
         if p == _E_IS_FAR_POINTER:
-            offset, p = self._read_far_ptr(0)
+            offset, p = self._read_far_ptr(offset)
         else:
-            offset = 0 + self._ptrs_offset
+            offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Brand.__new__(Brand)
-        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        obj._init_from_pointer(self._buf, offset, p)
         return obj
     
     def get_brand(self):
@@ -844,15 +848,16 @@ class Type_list(_Struct):
     @property
     def elementType(self):
         # no union check
-        p = self._read_fast_ptr(0)
+        offset = 0
+        p = self._read_fast_ptr(offset)
         if p == _E_IS_FAR_POINTER:
-            offset, p = self._read_far_ptr(0)
+            offset, p = self._read_far_ptr(offset)
         else:
-            offset = 0 + self._ptrs_offset
+            offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Type.__new__(Type)
-        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        obj._init_from_pointer(self._buf, offset, p)
         return obj
     
     def get_elementType(self):
@@ -1061,157 +1066,157 @@ class Type(_Struct):
         return unconstrained, parameter, implicitMethodParameter,
     
     @staticmethod
-    def __new_void():
+    def __new_void(void):
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 0
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_void(cls):
-        buf = cls.__new_void()
+    def new_void(cls, void):
+        buf = cls.__new_void(void)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_bool():
+    def __new_bool(bool):
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 1
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_bool(cls):
-        buf = cls.__new_bool()
+    def new_bool(cls, bool):
+        buf = cls.__new_bool(bool)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_int8():
+    def __new_int8(int8):
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 2
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_int8(cls):
-        buf = cls.__new_int8()
+    def new_int8(cls, int8):
+        buf = cls.__new_int8(int8)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_int16():
+    def __new_int16(int16):
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 3
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_int16(cls):
-        buf = cls.__new_int16()
+    def new_int16(cls, int16):
+        buf = cls.__new_int16(int16)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_int32():
+    def __new_int32(int32):
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 4
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_int32(cls):
-        buf = cls.__new_int32()
+    def new_int32(cls, int32):
+        buf = cls.__new_int32(int32)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_int64():
+    def __new_int64(int64):
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 5
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_int64(cls):
-        buf = cls.__new_int64()
+    def new_int64(cls, int64):
+        buf = cls.__new_int64(int64)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_uint8():
+    def __new_uint8(uint8):
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 6
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_uint8(cls):
-        buf = cls.__new_uint8()
+    def new_uint8(cls, uint8):
+        buf = cls.__new_uint8(uint8)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_uint16():
+    def __new_uint16(uint16):
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 7
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_uint16(cls):
-        buf = cls.__new_uint16()
+    def new_uint16(cls, uint16):
+        buf = cls.__new_uint16(uint16)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_uint32():
+    def __new_uint32(uint32):
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 8
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_uint32(cls):
-        buf = cls.__new_uint32()
+    def new_uint32(cls, uint32):
+        buf = cls.__new_uint32(uint32)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_uint64():
+    def __new_uint64(uint64):
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 9
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_uint64(cls):
-        buf = cls.__new_uint64()
+    def new_uint64(cls, uint64):
+        buf = cls.__new_uint64(uint64)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_float32():
+    def __new_float32(float32):
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 10
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_float32(cls):
-        buf = cls.__new_float32()
+    def new_float32(cls, float32):
+        buf = cls.__new_float32(float32)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_float64():
+    def __new_float64(float64):
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 11
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_float64(cls):
-        buf = cls.__new_float64()
+    def new_float64(cls, float64):
+        buf = cls.__new_float64(float64)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_text():
+    def __new_text(text):
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 12
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_text(cls):
-        buf = cls.__new_text()
+    def new_text(cls, text):
+        buf = cls.__new_text(text)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_data():
+    def __new_data(data):
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 13
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_data(cls):
-        buf = cls.__new_data()
+    def new_data(cls, data):
+        buf = cls.__new_data(data)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
@@ -1267,11 +1272,11 @@ class Type(_Struct):
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_anyPointer(*args):
+    def __new_anyPointer(*args, **kwargs):
         raise NotImplementedError('Unsupported field type: (name = "parameter", codeOrder = 1, discriminantValue = 1, group = (typeId = 11372142272178113157), ordinal = (implicit = void))')
     @classmethod
-    def new_anyPointer(cls, *args):
-        buf = cls.__new_anyPointer(*args)
+    def new_anyPointer(cls):
+        buf = cls.__new_anyPointer()
         return cls.from_buffer(buf, 0, 3, 1)
     
     def __init__(self, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined):
@@ -1777,14 +1782,14 @@ class Field_ordinal(_Struct):
         return value
     
     @staticmethod
-    def __new_implicit():
+    def __new_implicit(implicit):
         builder = _StructBuilder('xxxxxxxxxxhxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 0
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_implicit(cls):
-        buf = cls.__new_implicit()
+    def new_implicit(cls, implicit):
+        buf = cls.__new_implicit(implicit)
         return cls.from_buffer(buf, 0, 3, 4)
     
     @staticmethod
@@ -1835,15 +1840,16 @@ class Field_slot(_Struct):
     @property
     def type(self):
         # no union check
-        p = self._read_fast_ptr(16)
+        offset = 16
+        p = self._read_fast_ptr(offset)
         if p == _E_IS_FAR_POINTER:
-            offset, p = self._read_far_ptr(16)
+            offset, p = self._read_far_ptr(offset)
         else:
-            offset = 16 + self._ptrs_offset
+            offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Type.__new__(Type)
-        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        obj._init_from_pointer(self._buf, offset, p)
         return obj
     
     def get_type(self):
@@ -1859,15 +1865,16 @@ class Field_slot(_Struct):
     @property
     def defaultValue(self):
         # no union check
-        p = self._read_fast_ptr(24)
+        offset = 24
+        p = self._read_fast_ptr(offset)
         if p == _E_IS_FAR_POINTER:
-            offset, p = self._read_far_ptr(24)
+            offset, p = self._read_far_ptr(offset)
         else:
-            offset = 24 + self._ptrs_offset
+            offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Value.__new__(Value)
-        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        obj._init_from_pointer(self._buf, offset, p)
         return obj
     
     def get_defaultValue(self):
@@ -1889,11 +1896,11 @@ class Field_slot(_Struct):
         return value
     
     @staticmethod
-    def __new(*args):
+    def __new(*args, **kwargs):
         raise NotImplementedError('Unsupported field type: (name = "hadExplicitDefault", codeOrder = 3, discriminantValue = 65535, slot = (offset = 128, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 10))')
     
-    def __init__(self, *args):
-        buf = self.__new(*args)
+    def __init__(self):
+        buf = self.__new()
         _Struct.__init__(self, buf, 0, 3, 4)
     
     def shortrepr(self):
@@ -2000,11 +2007,11 @@ class Field(_Struct):
         return implicit, explicit,
     
     @staticmethod
-    def __new_slot(*args):
+    def __new_slot(*args, **kwargs):
         raise NotImplementedError('Unsupported field type: (name = "hadExplicitDefault", codeOrder = 3, discriminantValue = 65535, slot = (offset = 128, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 10))')
     @classmethod
-    def new_slot(cls, *args):
-        buf = cls.__new_slot(*args)
+    def new_slot(cls):
+        buf = cls.__new_slot()
         return cls.from_buffer(buf, 0, 3, 4)
     
     @staticmethod
@@ -2013,6 +2020,7 @@ class Field(_Struct):
         __which__ = 1
         group_0, = group
         ordinal_1, = ordinal
+        discriminantValue ^= 65535
         name = builder.alloc_text(24, name)
         annotations = builder.alloc_list(32, _StructList, Annotation, annotations)
         buf = builder.build(codeOrder, discriminantValue, __which__, ordinal_1, group_0, name, annotations)
@@ -2064,15 +2072,16 @@ class Superclass(_Struct):
     @property
     def brand(self):
         # no union check
-        p = self._read_fast_ptr(0)
+        offset = 0
+        p = self._read_fast_ptr(offset)
         if p == _E_IS_FAR_POINTER:
-            offset, p = self._read_far_ptr(0)
+            offset, p = self._read_far_ptr(offset)
         else:
-            offset = 0 + self._ptrs_offset
+            offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Brand.__new__(Brand)
-        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        obj._init_from_pointer(self._buf, offset, p)
         return obj
     
     def get_brand(self):
@@ -2271,6 +2280,8 @@ class Value(_Struct):
     @property
     def list(self):
         self._ensure_union(14)
+        if not self.has_list():
+            return None
         raise ValueError("Cannot get fields of type AnyPointer")
     
     def has_list(self):
@@ -2288,6 +2299,8 @@ class Value(_Struct):
     @property
     def struct(self):
         self._ensure_union(16)
+        if not self.has_struct():
+            return None
         raise ValueError("Cannot get fields of type AnyPointer")
     
     def has_struct(self):
@@ -2302,6 +2315,8 @@ class Value(_Struct):
     @property
     def anyPointer(self):
         self._ensure_union(18)
+        if not self.has_anyPointer():
+            return None
         raise ValueError("Cannot get fields of type AnyPointer")
     
     def has_anyPointer(self):
@@ -2309,22 +2324,22 @@ class Value(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new_void():
+    def __new_void(void):
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 0
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_void(cls):
-        buf = cls.__new_void()
+    def new_void(cls, void):
+        buf = cls.__new_void(void)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_bool(*args):
+    def __new_bool(*args, **kwargs):
         raise NotImplementedError('Unsupported field type: (name = "bool", codeOrder = 1, discriminantValue = 1, slot = (offset = 16, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 1))')
     @classmethod
-    def new_bool(cls, *args):
-        buf = cls.__new_bool(*args)
+    def new_bool(cls):
+        buf = cls.__new_bool()
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
@@ -2497,14 +2512,14 @@ class Value(_Struct):
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_interface():
+    def __new_interface(interface):
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 17
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_interface(cls):
-        buf = cls.__new_interface()
+    def new_interface(cls, interface):
+        buf = cls.__new_interface(interface)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
@@ -2996,15 +3011,16 @@ class Brand_Binding(_Struct):
     @property
     def type(self):
         self._ensure_union(1)
-        p = self._read_fast_ptr(0)
+        offset = 0
+        p = self._read_fast_ptr(offset)
         if p == _E_IS_FAR_POINTER:
-            offset, p = self._read_far_ptr(0)
+            offset, p = self._read_far_ptr(offset)
         else:
-            offset = 0 + self._ptrs_offset
+            offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Type.__new__(Type)
-        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        obj._init_from_pointer(self._buf, offset, p)
         return obj
     
     def get_type(self):
@@ -3018,14 +3034,14 @@ class Brand_Binding(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new_unbound():
+    def __new_unbound(unbound):
         builder = _StructBuilder('hxxxxxxxxxxxxxx')
         __which__ = 0
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_unbound(cls):
-        buf = cls.__new_unbound()
+    def new_unbound(cls, unbound):
+        buf = cls.__new_unbound(unbound)
         return cls.from_buffer(buf, 0, 1, 1)
     
     @staticmethod
@@ -3117,14 +3133,14 @@ class Brand_Scope(_Struct):
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_inherit(scopeId):
+    def __new_inherit(inherit, scopeId):
         builder = _StructBuilder('Qhxxxxxxxxxxxxxx')
         __which__ = 1
         buf = builder.build(scopeId, __which__)
         return buf
     @classmethod
-    def new_inherit(cls, scopeId):
-        buf = cls.__new_inherit(scopeId)
+    def new_inherit(cls, inherit, scopeId):
+        buf = cls.__new_inherit(inherit, scopeId)
         return cls.from_buffer(buf, 0, 2, 1)
     
     def __init__(self, scopeId, bind=_undefined, inherit=_undefined):
@@ -3207,15 +3223,16 @@ class Annotation(_Struct):
     @property
     def value(self):
         # no union check
-        p = self._read_fast_ptr(0)
+        offset = 0
+        p = self._read_fast_ptr(offset)
         if p == _E_IS_FAR_POINTER:
-            offset, p = self._read_far_ptr(0)
+            offset, p = self._read_far_ptr(offset)
         else:
-            offset = 0 + self._ptrs_offset
+            offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Value.__new__(Value)
-        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        obj._init_from_pointer(self._buf, offset, p)
         return obj
     
     def get_value(self):
@@ -3231,15 +3248,16 @@ class Annotation(_Struct):
     @property
     def brand(self):
         # no union check
-        p = self._read_fast_ptr(8)
+        offset = 8
+        p = self._read_fast_ptr(offset)
         if p == _E_IS_FAR_POINTER:
-            offset, p = self._read_far_ptr(8)
+            offset, p = self._read_far_ptr(offset)
         else:
-            offset = 8 + self._ptrs_offset
+            offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Brand.__new__(Brand)
-        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        obj._init_from_pointer(self._buf, offset, p)
         return obj
     
     def get_brand(self):
@@ -3336,15 +3354,16 @@ class Node_const(_Struct):
     @property
     def type(self):
         # no union check
-        p = self._read_fast_ptr(24)
+        offset = 24
+        p = self._read_fast_ptr(offset)
         if p == _E_IS_FAR_POINTER:
-            offset, p = self._read_far_ptr(24)
+            offset, p = self._read_far_ptr(offset)
         else:
-            offset = 24 + self._ptrs_offset
+            offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Type.__new__(Type)
-        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        obj._init_from_pointer(self._buf, offset, p)
         return obj
     
     def get_type(self):
@@ -3360,15 +3379,16 @@ class Node_const(_Struct):
     @property
     def value(self):
         # no union check
-        p = self._read_fast_ptr(32)
+        offset = 32
+        p = self._read_fast_ptr(offset)
         if p == _E_IS_FAR_POINTER:
-            offset, p = self._read_far_ptr(32)
+            offset, p = self._read_far_ptr(offset)
         else:
-            offset = 32 + self._ptrs_offset
+            offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Value.__new__(Value)
-        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        obj._init_from_pointer(self._buf, offset, p)
         return obj
     
     def get_value(self):
@@ -3425,7 +3445,10 @@ class Node_struct(_Struct):
     @property
     def preferredListEncoding(self):
         # no union check
-        return self._read_enum(26, ElementSize)
+        value = self._read_enum(26, ElementSize)
+        if 0 != 0:
+            value = ElementSize(value ^ 0)
+        return value
     
     @property
     def isGroup(self):
@@ -3467,11 +3490,11 @@ class Node_struct(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new(*args):
+    def __new(*args, **kwargs):
         raise NotImplementedError('Unsupported field type: (name = "isGroup", codeOrder = 3, discriminantValue = 65535, slot = (offset = 224, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 10))')
     
-    def __init__(self, *args):
-        buf = self.__new(*args)
+    def __init__(self):
+        buf = self.__new()
         _Struct.__init__(self, buf, 0, 5, 6)
     
     def shortrepr(self):
@@ -3495,15 +3518,16 @@ class Node_annotation(_Struct):
     @property
     def type(self):
         # no union check
-        p = self._read_fast_ptr(24)
+        offset = 24
+        p = self._read_fast_ptr(offset)
         if p == _E_IS_FAR_POINTER:
-            offset, p = self._read_far_ptr(24)
+            offset, p = self._read_far_ptr(offset)
         else:
-            offset = 24 + self._ptrs_offset
+            offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Type.__new__(Type)
-        _Struct._init_from_pointer(obj, self._buf, offset, p)
+        obj._init_from_pointer(self._buf, offset, p)
         return obj
     
     def get_type(self):
@@ -3613,11 +3637,11 @@ class Node_annotation(_Struct):
         return value
     
     @staticmethod
-    def __new(*args):
+    def __new(*args, **kwargs):
         raise NotImplementedError('Unsupported field type: (name = "targetsFile", codeOrder = 1, discriminantValue = 65535, slot = (offset = 112, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 19))')
     
-    def __init__(self, *args):
-        buf = self.__new(*args)
+    def __init__(self):
+        buf = self.__new()
         _Struct.__init__(self, buf, 0, 5, 6)
     
     def shortrepr(self):
@@ -3934,51 +3958,51 @@ class Node(_Struct):
         return value
     
     @staticmethod
-    def __new_file(*args):
+    def __new_file(*args, **kwargs):
         raise NotImplementedError('Unsupported field type: (name = "isGeneric", codeOrder = 5, discriminantValue = 65535, slot = (offset = 288, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 33))')
     @classmethod
-    def new_file(cls, *args):
-        buf = cls.__new_file(*args)
+    def new_file(cls):
+        buf = cls.__new_file()
         return cls.from_buffer(buf, 0, 5, 6)
     
     @staticmethod
-    def __new_struct(*args):
+    def __new_struct(*args, **kwargs):
         raise NotImplementedError('Unsupported field type: (name = "isGroup", codeOrder = 3, discriminantValue = 65535, slot = (offset = 224, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 10))')
     @classmethod
-    def new_struct(cls, *args):
-        buf = cls.__new_struct(*args)
+    def new_struct(cls):
+        buf = cls.__new_struct()
         return cls.from_buffer(buf, 0, 5, 6)
     
     @staticmethod
-    def __new_enum(*args):
+    def __new_enum(*args, **kwargs):
         raise NotImplementedError('Unsupported field type: (name = "isGeneric", codeOrder = 5, discriminantValue = 65535, slot = (offset = 288, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 33))')
     @classmethod
-    def new_enum(cls, *args):
-        buf = cls.__new_enum(*args)
+    def new_enum(cls):
+        buf = cls.__new_enum()
         return cls.from_buffer(buf, 0, 5, 6)
     
     @staticmethod
-    def __new_interface(*args):
+    def __new_interface(*args, **kwargs):
         raise NotImplementedError('Unsupported field type: (name = "isGeneric", codeOrder = 5, discriminantValue = 65535, slot = (offset = 288, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 33))')
     @classmethod
-    def new_interface(cls, *args):
-        buf = cls.__new_interface(*args)
+    def new_interface(cls):
+        buf = cls.__new_interface()
         return cls.from_buffer(buf, 0, 5, 6)
     
     @staticmethod
-    def __new_const(*args):
+    def __new_const(*args, **kwargs):
         raise NotImplementedError('Unsupported field type: (name = "isGeneric", codeOrder = 5, discriminantValue = 65535, slot = (offset = 288, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 33))')
     @classmethod
-    def new_const(cls, *args):
-        buf = cls.__new_const(*args)
+    def new_const(cls):
+        buf = cls.__new_const()
         return cls.from_buffer(buf, 0, 5, 6)
     
     @staticmethod
-    def __new_annotation(*args):
+    def __new_annotation(*args, **kwargs):
         raise NotImplementedError('Unsupported field type: (name = "targetsFile", codeOrder = 1, discriminantValue = 65535, slot = (offset = 112, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 19))')
     @classmethod
-    def new_annotation(cls, *args):
-        buf = cls.__new_annotation(*args)
+    def new_annotation(cls):
+        buf = cls.__new_annotation()
         return cls.from_buffer(buf, 0, 5, 6)
     
     def __init__(self, id, displayName, displayNamePrefixLength, scopeId, nestedNodes, annotations, parameters, isGeneric, file=_undefined, struct=_undefined, enum=_undefined, interface=_undefined, const=_undefined, annotation=_undefined):
