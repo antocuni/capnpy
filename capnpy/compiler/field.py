@@ -185,6 +185,8 @@ class Field__Slot:
         ns.name = name
         m.def_property(ns, name, """
             {ensure_union}
+            if not self.has_{name}():
+                return None
             raise ValueError("Cannot get fields of type AnyPointer")
         """)
         self._emit_has_method(ns)
