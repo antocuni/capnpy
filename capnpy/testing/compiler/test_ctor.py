@@ -1,6 +1,6 @@
 import py
 import pytest
-from capnpy.schema import Field, Type
+from capnpy.schema import Field, Type, Value
 from capnpy.compiler.structor import Structor
 from capnpy.testing.compiler.support import CompilerTest
 
@@ -17,14 +17,16 @@ class TestComputeFormat(object):
         return FakeModuleGenerator()
 
     def test_compute_format_simple(self, m):
-        fields = [Field.new_slot('x', 0, Type.new_int64()),
-                  Field.new_slot('y', 1, Type.new_int64())]
+        val = Value.new_int64(0)
+        fields = [Field.new_slot('x', 0, Type.new_int64(), val),
+                  Field.new_slot('y', 1, Type.new_int64(), val)]
         s = Structor(m, 'fake', data_size=2, ptrs_size=0, fields=fields)
         assert s.fmt == 'qq'
 
     def test_compute_format_holes(self, m):
-        fields = [Field.new_slot('x', 0, Type.new_int32()),
-                  Field.new_slot('y', 1, Type.new_int64())]
+        val = Value.new_int64(0)
+        fields = [Field.new_slot('x', 0, Type.new_int32(), val),
+                  Field.new_slot('y', 1, Type.new_int64(), val)]
         s = Structor(m, 'fake', data_size=2, ptrs_size=0, fields=fields)
         assert s.fmt == 'ixxxxq'
 

@@ -216,7 +216,7 @@ class Type:
 class Field:
 
     @classmethod
-    def new_slot(cls, name, offset, type):
+    def new_slot(cls, name, offset, type, default_value=None):
         """
         This is a very limited version of new_slot. Once we have full support for
         constructor, its signature will be more complex.
@@ -253,7 +253,7 @@ class Field:
         ptr_name = builder.alloc_text(24, name)
         ptr_annotations = 0
         ptr_slot_type = builder.alloc_struct(40, Type, type)
-        ptr_slot_defaultValue = 0
+        ptr_slot_defaultValue = builder.alloc_struct(48, Value, default_value)
         #
         buf = builder.build(codeOrder, discriminantValue, slot_offset,
                             tag, ordinal_tag, ordinal_explicit, padding,
