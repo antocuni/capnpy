@@ -9,6 +9,29 @@ class Unsupported(Exception):
     pass
 
 class Structor(object):
+    """
+    Create a struct constructor.
+
+    Some terminology:
+
+      - fields: the list of schema.Field objects, as it appears in
+                schema.Node.struct
+
+      - argnames: the name of arguments taken by the ctor
+
+      - params: [(argname, default)], for each argname in argnames
+
+      - llfields: flattened list of "low level fields", as they are used to
+                  build the buffer.  Normally, each field corresponds to one
+                  llfield, but each group field has many llfields
+
+      - llnames: {llfield: llname}; the llname if the name of the variable
+                 used to contain the value of each llfield. For llfields
+                 inside groups, it is "groupname_fieldname".
+
+    In case of groups, we generate code to map the single argname into the
+    many llfields: this is called "unpacking"
+    """
 
     _unsupported = None
 
@@ -23,8 +46,8 @@ class Structor(object):
         #
         self.argnames = []    # the arguments accepted by the ctor, in order
         self.params = []
-        self.fields = []      # the fields as passed to StructBuilder
-        self.field_name = {}  # for plain fields is simply f.name, but in case
+        self.llfields = []    # "low level fields", passed to StructBuilder
+        self.llname = {}      # for plain fields is simply f.name, but in case
                               # of groups it's groupname_fieldname
         self.groups = []
         try:
@@ -90,19 +113,20 @@ class Structor(object):
         name = self.m._field_name(f)
         if prefix:
             name = '%s_%s' % (prefix, name)
-        self.fields.append(f)
-        self.field_name[f] = name
+        self.llfields.append(f)
+        self.llname[f] = name
         return name
 
     def _append_group(self, f):
         groupname = self.m._field_name(f)
         group = self.m.allnodes[f.group.typeId]
         self.groups.append((groupname, group))
-        for i, f in enumerate(group.struct.fields):
+        for f in group.struct.fields:
             if f.is_void():
                 continue
-            self.fields.append(f)
-            self.field_name[f] = '%s_%d' % (groupname, i)
+            fname = self.m._field_name(f)
+            self.llfields.append(f)
+            self.llname[f] = '%s_%s' % (groupname, fname)
         return groupname
 
     def _slot_offset(self, f):
@@ -121,7 +145,7 @@ class Structor(object):
             for i in range(offset+1, offset+size):
                 fmt[i] = None
 
-        for f in self.fields:
+        for f in self.llfields:
             if not f.is_slot() or f.slot.type.is_bool():
                 raise Unsupported('Unsupported field type: %s' % f.shortrepr())
             elif f.is_void():
@@ -158,8 +182,8 @@ class Structor(object):
         argnames = self.argnames
 
         # for for building, we sort them by offset
-        self.fields.sort(key=lambda f: self._slot_offset(f))
-        buildnames = [self.field_name[f] for f in self.fields if not f.is_void()]
+        self.llfields.sort(key=lambda f: self._slot_offset(f))
+        buildnames = [self.llname[f] for f in self.llfields if not f.is_void()]
 
         if len(argnames) != len(set(argnames)):
             raise ValueError("Duplicate field name(s): %s" % argnames)
@@ -170,12 +194,12 @@ class Structor(object):
                 code.w('__which__ = {tag_value}', tag_value=int(self.tag_value))
             #
             for groupname, group in self.groups:
-                argnames = [self.field_name[f] for f in group.struct.fields
+                argnames = [self.llname[f] for f in group.struct.fields
                             if not f.is_void()]
                 code.w('{args}, = {groupname}',
                        args=code.args(argnames), groupname=groupname)
             #
-            for f in self.fields:
+            for f in self.llfields:
                 if f.is_text():
                     self._field_text(code, f)
                 elif f.is_data():
@@ -209,7 +233,8 @@ class Structor(object):
         #
         ns = code.new_scope()
         ns.fname = f.nullable_group
-        ns.ww("""
+        ns.ww(
+    """
             if {fname} is None:
                 {fname}_is_null = 1
                 {fname}_value = 0
@@ -219,17 +244,17 @@ class Structor(object):
         """)
 
     def _field_text(self, code, f):
-        fname = self.field_name[f]
+        fname = self.llname[f]
         code.w('{arg} = builder.alloc_text({offset}, {arg})',
                arg=fname, offset=self._slot_offset(f))
 
     def _field_data(self, code, f):
-        fname = self.field_name[f]
+        fname = self.llname[f]
         code.w('{arg} = builder.alloc_data({offset}, {arg})',
                arg=fname, offset=self._slot_offset(f))
 
     def _field_struct(self, code, f):
-        fname = self.field_name[f]
+        fname = self.llname[f]
         offset = self._slot_offset(f)
         structname = f.slot.type.runtime_name(self.m)
         code.w('{arg} = builder.alloc_struct({offset}, {structname}, {arg})',
@@ -237,7 +262,7 @@ class Structor(object):
 
     def _field_list(self, code, f):
         ns = code.new_scope()
-        ns.fname = self.field_name[f]
+        ns.fname = self.llname[f]
         ns.offset = self._slot_offset(f)
         itemtype = f.slot.type.list.elementType
         ns.itemtype = itemtype.runtime_name(self.m)
@@ -255,7 +280,7 @@ class Structor(object):
 
     def _field_primitive(self, code, f):
         if f.slot.hadExplicitDefault:
-            fname = self.field_name[f]
+            fname = self.llname[f]
             ns = code.new_scope()
             ns.arg = fname
             ns.default_ = f.slot.defaultValue.as_pyobj()
