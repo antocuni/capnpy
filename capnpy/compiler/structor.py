@@ -60,15 +60,7 @@ class Structor(object):
     def init_fields(self, fields):
         defaults = []
         for f in fields:
-            if f.is_nullable(self.m):
-                # use "foo_is_null" and "foo_value" as fields, but "foo" in the arguments
-                fname, f_is_null, f_value = self._unpack_nullable(f)
-                self._append_field(f_is_null, fname)
-                self._append_field(f_value, fname)
-                self.argnames.append(fname)
-                f_value.nullable_group = fname
-                defaults.append('None') # XXX fixme
-            elif f.is_group():
+            if f.is_group():
                 fname = self._append_group(f)
                 self.argnames.append(fname)
                 defaults.append('None') # XXX fixme
@@ -92,22 +84,6 @@ class Structor(object):
             tag_field = Field.new_slot('__which__', tag_offset, Type.new_int16())
             self._append_field(tag_field)
 
-    def _unpack_nullable(self, field):
-        assert field.is_group()
-        name = self.m._field_name(field)
-        def error():
-            msg = '%s: nullable groups must have exactly two fields: "isNull" and "value"'
-            raise ValueError(msg % name)
-        #
-        group = self.m.allnodes[field.group.typeId]
-        if len(group.struct.fields) != 2:
-            error()
-        f_is_null, f_value = group.struct.fields
-        if f_is_null.name != 'isNull':
-            error()
-        if f_value.name != 'value':
-            error()
-        return name, f_is_null, f_value
 
     def _append_field(self, f, prefix=None):
         name = self.m._field_name(f)
@@ -118,9 +94,12 @@ class Structor(object):
         return name
 
     def _append_group(self, f):
+        nullable = f.is_nullable(self.m)
+        if nullable:
+            nullable.check(self.m)
         groupname = self.m._field_name(f)
         group = self.m.allnodes[f.group.typeId]
-        self.groups.append((groupname, group))
+        self.groups.append((f, groupname, group))
         for f in group.struct.fields:
             if f.is_void():
                 continue
@@ -193,11 +172,11 @@ class Structor(object):
             if self.tag_value is not None:
                 code.w('__which__ = {tag_value}', tag_value=int(self.tag_value))
             #
-            for groupname, group in self.groups:
-                argnames = [self.llname[f] for f in group.struct.fields
-                            if not f.is_void()]
-                code.w('{args}, = {groupname}',
-                       args=code.args(argnames), groupname=groupname)
+            for f, groupname, group in self.groups:
+                if f.is_nullable(self.m):
+                    self._unpack_nullable(code, groupname)
+                else:
+                    self._unpack_group(code, groupname, group)
             #
             for f in self.llfields:
                 if f.is_text():
@@ -208,8 +187,6 @@ class Structor(object):
                     self._field_struct(code, f)
                 elif f.is_list():
                     self._field_list(code, f)
-                elif hasattr(f, 'nullable_group'):
-                    self._field_nullable(code, f)
                 elif f.is_primitive() or f.is_enum():
                     self._field_primitive(code, f)
                 elif f.is_void():
@@ -221,7 +198,13 @@ class Structor(object):
             code.w('buf =', code.call('builder.build', buildnames))
             code.w('return buf')
 
-    def _field_nullable(self, code, f):
+    def _unpack_group(self, code, groupname, group):
+        argnames = [self.llname[f] for f in group.struct.fields
+                    if not f.is_void()]
+        code.w('{args}, = {groupname}',
+               args=code.args(argnames), groupname=groupname)
+
+    def _unpack_nullable(self, code, groupname):
         # def __init__(self, ..., x, ...):
         #     ...
         #     if x is None:
@@ -232,9 +215,9 @@ class Structor(object):
         #         x_value = x
         #
         ns = code.new_scope()
-        ns.fname = f.nullable_group
+        ns.fname = groupname
         ns.ww(
-    """
+        """
             if {fname} is None:
                 {fname}_is_null = 1
                 {fname}_value = 0
