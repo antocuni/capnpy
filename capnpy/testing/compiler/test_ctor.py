@@ -383,6 +383,22 @@ class TestDefaults(CompilerTest):
         assert p.y == 0
         assert p.color == mod.Color.blue == 2
 
+    @pytest.mark.xfail
+    def test_group(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            position :group {
+                x @0 :Int64 = 100;
+                y @1 :Int64 = 200;
+            }
+        }
+        """
+        mod = self.compile(schema)
+        p = mod.Point()
+        assert p.position.x == 100
+        assert p.position.y == 200
+
     def test_union_generic(self):
         schema = """
         @0xbf5147cbbecf40c1;

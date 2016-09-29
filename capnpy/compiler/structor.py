@@ -44,11 +44,11 @@ class Structor(object):
                 self._append_field(f_value, fname)
                 self.argnames.append(fname)
                 f_value.nullable_group = fname
-                xxx
+                defaults.append('None') # XXX fixme
             elif f.is_group():
                 fname = self._append_group(f)
                 self.argnames.append(fname)
-                xxx
+                defaults.append('None') # XXX fixme
             elif f.is_void():
                 fname = self._append_field(f)
                 self.argnames.append(fname)
