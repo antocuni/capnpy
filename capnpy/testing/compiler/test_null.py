@@ -113,3 +113,19 @@ class TestNullable(CompilerTest):
         assert not foo._x.is_null
         assert foo._x.value == 42
         assert foo.x == 42
+
+    def test_bad_nullable(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        struct Foo {
+            x :group $Py.nullable {
+                wrongName @0 :Int8;
+                value  @1 :Int64;
+            }
+        }
+        """
+        exc = py.test.raises(ValueError, "self.compile(schema)")
+        msg = str(exc.value)
+        assert msg == ('x: nullable groups must have exactly two fields: '
+                       '"isNull" and "value"')
