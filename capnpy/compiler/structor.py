@@ -64,10 +64,6 @@ class Structor(object):
                 fname = self._append_group(f)
                 self.argnames.append(fname)
                 defaults.append('None') # XXX fixme
-            elif f.is_void():
-                fname = self._append_field(f)
-                self.argnames.append(fname)
-                defaults.append('None')
             else:
                 fname = self._append_field(f)
                 default = f.slot.defaultValue.as_pyobj()
