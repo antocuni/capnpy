@@ -39,20 +39,15 @@ class Structor(object):
                  tag_offset=None, tag_value=None):
         self.m = m
         self.name = name
-        self.data_size = data_size
-        self.ptrs_size = ptrs_size
-        self.tag_offset = tag_offset
+        self.layout = Layout(data_size, ptrs_size, tag_offset)
+        self.llname = self.layout.llname # XXX
         self.tag_value = tag_value
         #
         self.argnames = []    # the arguments accepted by the ctor, in order
         self.params = []
-        self.llfields = []    # "low level fields", passed to StructBuilder
-        self.llname = {}      # for plain fields is simply f.name, but in case
-                              # of groups it's groupname_fieldname
         self.groups = []
         try:
             self.init_fields(fields)
-            self.fmt = self._compute_format()
         except Unsupported as e:
             self.argnames = []
             self._unsupported = e.message
@@ -65,23 +60,13 @@ class Structor(object):
                 self._append_group(f)
                 defaults.append('None') # XXX fixme
             else:
-                self._append_field(f)
+                self.layout.add(f, self.m._field_name(f))
                 default = f.slot.defaultValue.as_pyobj()
                 defaults.append(str(default))
 
         assert len(self.argnames) == len(defaults)
         self.params = zip(self.argnames, defaults)
-
-        if self.tag_offset is not None:
-            # add a field to represent the tag, but don't add it to argnames,
-            # as it's implicit
-            tag_offset = self.tag_offset/2 # from bytes to multiple of int16
-            tag_field = Field.new_slot('__which__', tag_offset, Type.new_int16())
-            self._append_field(tag_field)
-
-    def _append_field(self, f):
-        self.llfields.append(f)
-        self.llname[f] = self.m._field_name(f)
+        self.layout.finish()
 
     def _append_group(self, f):
         nullable = f.is_nullable(self.m)
@@ -94,37 +79,7 @@ class Structor(object):
             if f.is_void():
                 continue
             fname = self.m._field_name(f)
-            self.llfields.append(f)
-            self.llname[f] = '%s_%s' % (groupname, fname)
-
-    def _slot_offset(self, f):
-        offset = f.slot.offset * f.slot.get_size()
-        if f.slot.type.is_pointer():
-            offset += self.data_size*8
-        return offset
-
-    def _compute_format(self):
-        total_length = (self.data_size + self.ptrs_size)*8
-        fmt = ['x'] * total_length
-
-        def set(offset, t):
-            fmt[offset] = t
-            size = struct.calcsize(t)
-            for i in range(offset+1, offset+size):
-                fmt[i] = None
-
-        for f in self.llfields:
-            if not f.is_slot() or f.slot.type.is_bool():
-                raise Unsupported('Unsupported field type: %s' % f.shortrepr())
-            elif f.is_void():
-                continue
-            set(self._slot_offset(f), f.slot.get_fmt())
-        #
-        # remove all the Nones
-        fmt = [ch for ch in fmt if ch is not None]
-        fmt = ''.join(fmt)
-        assert struct.calcsize(fmt) == total_length
-        return fmt
+            self.layout.add(f, '%s_%s' % (groupname, fname))
 
     def declare(self, code):
         if self._unsupported is not None:
@@ -150,14 +105,15 @@ class Structor(object):
         argnames = self.argnames
 
         # for for building, we sort them by offset
-        self.llfields.sort(key=lambda f: self._slot_offset(f))
-        buildnames = [self.llname[f] for f in self.llfields if not f.is_void()]
+        buildnames = [self.llname[f] for f in self.layout.llfields
+                      if not f.is_void()]
 
         if len(argnames) != len(set(argnames)):
             raise ValueError("Duplicate field name(s): %s" % argnames)
         code.w('@staticmethod')
         with code.def_(self.name, self.params):
-            code.w('builder = _StructBuilder({fmt})', fmt=repr(self.fmt))
+            code.w('builder = _StructBuilder({fmt})',
+                   fmt=repr(self.layout.fmt))
             if self.tag_value is not None:
                 code.w('__which__ = {tag_value}', tag_value=int(self.tag_value))
             #
@@ -167,7 +123,7 @@ class Structor(object):
                 else:
                     self._unpack_group(code, groupname, group)
             #
-            for f in self.llfields:
+            for f in self.layout.llfields:
                 if f.is_text():
                     self._field_text(code, f)
                 elif f.is_data():
@@ -218,16 +174,16 @@ class Structor(object):
     def _field_text(self, code, f):
         fname = self.llname[f]
         code.w('{arg} = builder.alloc_text({offset}, {arg})',
-               arg=fname, offset=self._slot_offset(f))
+               arg=fname, offset=self.layout.slot_offset(f))
 
     def _field_data(self, code, f):
         fname = self.llname[f]
         code.w('{arg} = builder.alloc_data({offset}, {arg})',
-               arg=fname, offset=self._slot_offset(f))
+               arg=fname, offset=self.layout.slot_offset(f))
 
     def _field_struct(self, code, f):
         fname = self.llname[f]
-        offset = self._slot_offset(f)
+        offset = self.layout.slot_offset(f)
         structname = f.slot.type.runtime_name(self.m)
         code.w('{arg} = builder.alloc_struct({offset}, {structname}, {arg})',
                arg=fname, offset=offset, structname=structname)
@@ -235,7 +191,7 @@ class Structor(object):
     def _field_list(self, code, f):
         ns = code.new_scope()
         ns.fname = self.llname[f]
-        ns.offset = self._slot_offset(f)
+        ns.offset = self.layout.slot_offset(f)
         itemtype = f.slot.type.list.elementType
         ns.itemtype = itemtype.runtime_name(self.m)
         #
@@ -257,3 +213,62 @@ class Structor(object):
             ns.arg = fname
             ns.default_ = f.slot.defaultValue.as_pyobj()
             ns.w('{arg} ^= {default_}')
+
+
+
+class Layout(object):
+    """
+    Low level layout of a struct
+    """
+
+    def __init__(self, data_size, ptrs_size, tag_offset):
+        self.data_size = data_size
+        self.ptrs_size = ptrs_size
+        self.fmt = None    # computed later
+        self.llfields = [] # "low level fields", passed to StructBuilder
+        self.llname = {}   # for plain fields is simply f.name, but in case
+                           # of groups it's groupname_fieldname
+        #
+        if tag_offset is not None:
+            # add a field to represent the tag
+            tag_offset /= 2 # from bytes to multiple of int16
+            f = Field.new_slot('__which__', tag_offset, Type.new_int16())
+            self.add(f, '__which__')
+
+    def add(self, f, name):
+        assert self.fmt is None, "Cannot call add() after finish()"
+        self.llfields.append(f)
+        self.llname[f] = name
+
+    def finish(self):
+        """
+        Compute the format string and sort llfields in order of offset
+        """
+        total_length = (self.data_size + self.ptrs_size)*8
+        fmt = ['x'] * total_length
+
+        def set(offset, t):
+            fmt[offset] = t
+            size = struct.calcsize(t)
+            for i in range(offset+1, offset+size):
+                fmt[i] = None
+
+        self.llfields.sort(key=lambda f: self.slot_offset(f))
+        for f in self.llfields:
+            if not f.is_slot() or f.slot.type.is_bool():
+                raise Unsupported('Unsupported field type: %s' % f.shortrepr())
+            elif f.is_void():
+                continue
+            set(self.slot_offset(f), f.slot.get_fmt())
+        #
+        # remove all the Nones
+        fmt = [ch for ch in fmt if ch is not None]
+        fmt = ''.join(fmt)
+        assert struct.calcsize(fmt) == total_length
+        self.fmt = fmt
+
+    def slot_offset(self, f):
+        offset = f.slot.offset * f.slot.get_size()
+        if f.slot.type.is_pointer():
+            offset += self.data_size*8
+        return offset
