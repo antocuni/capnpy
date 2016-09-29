@@ -6,23 +6,30 @@ from capnpy.testing.compiler.support import CompilerTest
 
 class TestLayout(object):
 
-    def test_compute_format_simple(self):
+    @pytest.fixture
+    def m(self):
+        class FakeModuleGenerator:
+            def _field_name(self, f):
+                return f.name
+        return FakeModuleGenerator()
+
+    def test_compute_format_simple(self, m):
         val = Value.new_int64(0)
         fields = [Field.new_slot('x', 0, Type.new_int64(), val),
                   Field.new_slot('y', 1, Type.new_int64(), val)]
-        layout = Layout(data_size=2, ptrs_size=0, tag_offset=None)
+        layout = Layout(m, data_size=2, ptrs_size=0, tag_offset=None)
         for f in fields:
-            layout.add(f, '')
+            layout.add(f)
         layout.finish()
         assert layout.fmt == 'qq'
 
-    def test_compute_format_holes(self):
+    def test_compute_format_holes(self, m):
         val = Value.new_int64(0)
         fields = [Field.new_slot('x', 0, Type.new_int32(), val),
                   Field.new_slot('y', 1, Type.new_int64(), val)]
-        layout = Layout(data_size=2, ptrs_size=0, tag_offset=None)
+        layout = Layout(m, data_size=2, ptrs_size=0, tag_offset=None)
         for f in fields:
-            layout.add(f, '')
+            layout.add(f)
         layout.finish()
         assert layout.fmt == 'ixxxxq'
 

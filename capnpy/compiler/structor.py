@@ -39,47 +39,35 @@ class Structor(object):
                  tag_offset=None, tag_value=None):
         self.m = m
         self.name = name
-        self.layout = Layout(data_size, ptrs_size, tag_offset)
-        self.llname = self.layout.llname # XXX
+        self.fields = fields
         self.tag_value = tag_value
-        #
         self.argnames = []    # the arguments accepted by the ctor, in order
         self.params = []
         self.groups = []
+        #
+        self.layout = Layout(m, data_size, ptrs_size, tag_offset)
+        self.layout.add_many(fields)
         try:
-            self.init_fields(fields)
+            self.layout.finish()
         except Unsupported as e:
             self.argnames = []
             self._unsupported = e.message
+        #
+        self.llname = self.layout.llname # XXX
+        self.init_fields(fields)
 
     def init_fields(self, fields):
         defaults = []
         self.argnames = [self.m._field_name(f) for f in fields]
         for f in fields:
             if f.is_group():
-                self._append_group(f)
                 defaults.append('None') # XXX fixme
             else:
-                self.layout.add(f, self.m._field_name(f))
                 default = f.slot.defaultValue.as_pyobj()
                 defaults.append(str(default))
 
         assert len(self.argnames) == len(defaults)
         self.params = zip(self.argnames, defaults)
-        self.layout.finish()
-
-    def _append_group(self, f):
-        nullable = f.is_nullable(self.m)
-        if nullable:
-            nullable.check(self.m)
-        groupname = self.m._field_name(f)
-        group = self.m.allnodes[f.group.typeId]
-        self.groups.append((f, groupname, group))
-        for f in group.struct.fields:
-            if f.is_void():
-                continue
-            fname = self.m._field_name(f)
-            self.layout.add(f, '%s_%s' % (groupname, fname))
 
     def declare(self, code):
         if self._unsupported is not None:
@@ -113,11 +101,11 @@ class Structor(object):
             if self.tag_value is not None:
                 code.w('__which__ = {tag_value}', tag_value=int(self.tag_value))
             #
-            for f, groupname, group in self.groups:
+            for f in self.fields:
                 if f.is_nullable(self.m):
-                    self._unpack_nullable(code, groupname)
-                else:
-                    self._unpack_group(code, groupname, group)
+                    self._unpack_nullable(code, f)
+                elif f.is_group():
+                    self._unpack_group(code, f)
             #
             for f in self.layout.llfields:
                 if f.is_text():
@@ -142,13 +130,15 @@ class Structor(object):
             code.w('buf =', code.call('builder.build', buildnames))
             code.w('return buf')
 
-    def _unpack_group(self, code, groupname, group):
+    def _unpack_group(self, code, f):
+        group = self.m.allnodes[f.group.typeId]
+        groupname = self.m._field_name(f)
         argnames = [self.llname[f] for f in group.struct.fields
                     if not f.is_void()]
         code.w('{args}, = {groupname}',
                args=code.args(argnames), groupname=groupname)
 
-    def _unpack_nullable(self, code, groupname):
+    def _unpack_nullable(self, code, f):
         # def __init__(self, ..., x, ...):
         #     ...
         #     if x is None:
@@ -159,7 +149,7 @@ class Structor(object):
         #         x_value = x
         #
         ns = code.new_scope()
-        ns.fname = groupname
+        ns.fname = self.m._field_name(f)
         ns.ww(
         """
             if {fname} is None:
@@ -220,7 +210,8 @@ class Layout(object):
     Low level layout of a struct
     """
 
-    def __init__(self, data_size, ptrs_size, tag_offset):
+    def __init__(self, m, data_size, ptrs_size, tag_offset):
+        self.m = m
         self.data_size = data_size
         self.ptrs_size = ptrs_size
         self.fmt = None    # computed later
@@ -232,12 +223,25 @@ class Layout(object):
             # add a field to represent the tag
             tag_offset /= 2 # from bytes to multiple of int16
             f = Field.new_slot('__which__', tag_offset, Type.new_int16())
-            self.add(f, '__which__')
+            self.add(f)
 
-    def add(self, f, name):
+    def add_many(self, fields, prefix=None):
+        for f in fields:
+            self.add(f, prefix)
+
+    def add(self, f, prefix=None):
         assert self.fmt is None, "Cannot call add() after finish()"
+        fname = self.m._field_name(f)
+        if prefix:
+            fname = '%s_%s' % (prefix, fname)
+        if f.is_group():
+            group = self.m.allnodes[f.group.typeId]
+            self.add_many(group.struct.fields, prefix=fname)
+            return
+        #
+        assert f.is_slot()
         self.llfields.append(f)
-        self.llname[f] = name
+        self.llname[f] = fname
 
     def finish(self):
         """

@@ -205,7 +205,9 @@ class Field__Group:
         groupnode = m.allnodes[self.group.typeId]
         ns.groupcls = groupnode.compile_name(m)
         ns.name = name
-        if self.is_nullable(m):
+        nullable = self.is_nullable(m)
+        if nullable:
+            nullable.check(m)
             ns.privname = '_' + name
             ns.ww("""
                 @property
