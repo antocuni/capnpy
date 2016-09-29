@@ -104,10 +104,6 @@ class Structor(object):
         # the parameters have the same order as fields
         argnames = self.argnames
 
-        # for for building, we sort them by offset
-        buildnames = [self.llname[f] for f in self.layout.llfields
-                      if not f.is_void()]
-
         if len(argnames) != len(set(argnames)):
             raise ValueError("Duplicate field name(s): %s" % argnames)
         code.w('@staticmethod')
@@ -139,7 +135,10 @@ class Structor(object):
                 else:
                     code.w("raise NotImplementedError('Unsupported field type: {f}')",
                            f=f.shortrepr())
-                #
+            #
+            buildnames = [self.llname[f]
+                          for f in self.layout.llfields
+                          if not f.is_void()]
             code.w('buf =', code.call('builder.build', buildnames))
             code.w('return buf')
 
