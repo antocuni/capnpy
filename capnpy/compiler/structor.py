@@ -59,15 +59,14 @@ class Structor(object):
 
     def init_fields(self, fields):
         defaults = []
+        self.argnames = [self.m._field_name(f) for f in fields]
         for f in fields:
             if f.is_group():
-                fname = self._append_group(f)
-                self.argnames.append(fname)
+                self._append_group(f)
                 defaults.append('None') # XXX fixme
             else:
-                fname = self._append_field(f)
+                self._append_field(f)
                 default = f.slot.defaultValue.as_pyobj()
-                self.argnames.append(fname)
                 defaults.append(str(default))
 
         assert len(self.argnames) == len(defaults)
@@ -80,14 +79,9 @@ class Structor(object):
             tag_field = Field.new_slot('__which__', tag_offset, Type.new_int16())
             self._append_field(tag_field)
 
-
-    def _append_field(self, f, prefix=None):
-        name = self.m._field_name(f)
-        if prefix:
-            name = '%s_%s' % (prefix, name)
+    def _append_field(self, f):
         self.llfields.append(f)
-        self.llname[f] = name
-        return name
+        self.llname[f] = self.m._field_name(f)
 
     def _append_group(self, f):
         nullable = f.is_nullable(self.m)
@@ -102,7 +96,6 @@ class Structor(object):
             fname = self.m._field_name(f)
             self.llfields.append(f)
             self.llname[f] = '%s_%s' % (groupname, fname)
-        return groupname
 
     def _slot_offset(self, f):
         offset = f.slot.offset * f.slot.get_size()
