@@ -120,3 +120,9 @@ class TestStandalone(CompilerTest):
             assert f.points[1].x == 3
             assert f.points[1].y == 4
             assert f.ints == [1, 2, 3]
+        #
+        for proto in (0, pickle.HIGHEST_PROTOCOL):
+            py.test.raises(TypeError, "pickle.dumps(f.points, proto)")
+        #
+        for proto in (0, pickle.HIGHEST_PROTOCOL):
+            py.test.raises(TypeError, "pickle.dumps(f.ints, proto)")

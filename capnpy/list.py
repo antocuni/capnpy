@@ -28,6 +28,11 @@ class List(Blob):
         self._item_type = item_type
         self._set_list_tag(size_tag, item_count)
 
+    def __reduce__(self):
+        raise TypeError("Cannot pickle capnpy List directly. Either pickle "
+                        "the outer structure containing it, or convert it "
+                        "to a Python list before pickling")
+
     def _read_ptr_generic(self, offset):
         offset += self._offset
         return offset, self._buf.read_ptr(offset)
