@@ -282,10 +282,10 @@ class Node__Struct:
         ann = m.has_annotation(self, annotate.key)
         if ann is None:
             return
-        assert ann.value.is_text()
+        assert ann.annotation.value.is_text()
         allfields = [f.name for f in self.struct.fields]
         # we expect keyfields to be something like "x, y, z" or "*"
-        txt = ann.value.text.strip()
+        txt = ann.annotation.value.text.strip()
         if txt == '*':
             fieldnames = allfields
         else:

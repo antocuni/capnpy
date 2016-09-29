@@ -26,7 +26,7 @@ class ModuleGenerator(object):
         self.extra_annotations = defaultdict(list) # obj -> [ann]
 
     def register_extra_annotation(self, obj, ann):
-        self.extra_annotations[obj].append(ann)
+        self.extra_annotations[obj].append(ann.annotation)
 
     def has_annotation(self, obj, anncls):
         annotations = self.extra_annotations.get(obj, [])
@@ -34,7 +34,12 @@ class ModuleGenerator(object):
             annotations += obj.annotations
         for ann in annotations:
             if ann.id == anncls.__id__:
-                return ann
+                # XXX: probably "annotation" should be taken by the
+                # constructor
+                res = anncls()
+                res.annotation = ann
+                res.target = obj
+                return res
         return None
 
     def w(self, *args, **kwargs):
