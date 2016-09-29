@@ -89,14 +89,34 @@ class TestStandalone(CompilerTest):
         """)
         mypoint = self.import_('mypoint')
         p1 = mypoint.Point(1, 2)
-        # check that we can pickle using the standard protocol
-        s = pickle.dumps(p1)
-        p2 = pickle.loads(s)
-        assert p2.x == 1
-        assert p2.y == 2
-        #
-        # and also with HIGHEST_PROTOCOL
-        s = pickle.dumps(p1, pickle.HIGHEST_PROTOCOL)
-        p2 = pickle.loads(s)
-        assert p2.x == 1
-        assert p2.y == 2
+        for proto in (0, pickle.HIGHEST_PROTOCOL):
+            s = pickle.dumps(p1, proto)
+            p2 = pickle.loads(s)
+            assert p2.x == 1
+            assert p2.y == 2
+
+    def test_pickle_list(self):
+        import cPickle as pickle
+        self.compile("example.capnp", """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        struct Foo {
+            points @0 :List(Point);
+            ints @1 :List(Int64);
+        }
+        """)
+        mod = self.import_('example')
+        p1 = mod.Point(1, 2)
+        p2 = mod.Point(3, 4)
+        f = mod.Foo(points=[p1, p2], ints=[1, 2, 3])
+        for proto in (0, pickle.HIGHEST_PROTOCOL):
+            s = pickle.dumps(f, proto)
+            f2 = pickle.loads(s)
+            assert f.points[0].x == 1
+            assert f.points[0].y == 2
+            assert f.points[1].x == 3
+            assert f.points[1].y == 4
+            assert f.ints == [1, 2, 3]
