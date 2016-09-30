@@ -218,6 +218,29 @@ class TestConstructors(CompilerTest):
         assert p.position.y == 2
         assert p.color == 'red'
 
+    def test_nested_group(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Shape {
+            position :group {
+                a :group {
+                    x @0 :Int64;
+                    y @1 :Int64;
+                }
+                b :group {
+                    x @2 :Int64;
+                    y @3 :Int64;
+                }
+            }
+        }
+        """
+        mod = self.compile(schema)
+        p = mod.Shape(position=((1, 2), (3, 4)))
+        assert p.position.a.x == 1
+        assert p.position.a.y == 2
+        assert p.position.b.x == 3
+        assert p.position.b.y == 4
+
     def test_group_named_params(self):
         schema = """
         @0xbf5147cbbecf40c1;
