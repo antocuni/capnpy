@@ -4,7 +4,7 @@ Structor -> struct ctor -> struct construtor :)
 
 import struct
 from capnpy.schema import Field, Type
-from capnpy.compiler.fieldtree import FieldTree
+from capnpy.compiler.fieldtree import FieldTree, Node
 
 class Unsupported(Exception):
     pass
@@ -14,24 +14,8 @@ class Structor(object):
     Create a struct constructor.
 
     Some terminology:
-
-      - fields: the list of schema.Field objects, as it appears in
-                schema.Node.struct
-
       - argnames: the name of arguments taken by the ctor
-
       - params: [(argname, default)], for each argname in argnames
-
-      - llfields: flattened list of "low level fields", as they are used to
-                  build the buffer.  Normally, each field corresponds to one
-                  llfield, but each group field has many llfields
-
-      - llnames: {llfield: llname}; the llname if the name of the variable
-                 used to contain the value of each llfield. For llfields
-                 inside groups, it is "groupname_fieldname".
-
-    In case of groups, we generate code to map the single argname into the
-    many llfields: this is called "unpacking"
     """
 
     _unsupported = None
@@ -52,7 +36,6 @@ class Structor(object):
             self.argnames = []
             self._unsupported = e.message
         #
-        self.llname = self.layout.llname # XXX
         self.init_fields(fields)
 
     def init_fields(self, fields):
@@ -103,40 +86,39 @@ class Structor(object):
             for node in self.fieldtree.allnodes():
                 f = node.f
                 if f.is_nullable(self.m):
-                    self.handle_nullable(code, f)
+                    self.handle_nullable(code, node)
                 elif f.is_group():
-                    self.handle_group(code, f)
+                    self.handle_group(code, node)
                 elif f.is_text():
-                    self.handle_text(code, f)
+                    self.handle_text(code, node)
                 elif f.is_data():
-                    self.handle_data(code, f)
+                    self.handle_data(code, node)
                 elif f.is_struct():
-                    self.handle_struct(code, f)
+                    self.handle_struct(code, node)
                 elif f.is_list():
-                    self.handle_list(code, f)
+                    self.handle_list(code, node)
                 elif f.is_primitive() or f.is_enum():
-                    self.handle_primitive(code, f)
+                    self.handle_primitive(code, node)
                 elif f.is_void():
                     pass # nothing to do
                 else:
                     code.w("raise NotImplementedError('Unsupported field type: {f}')",
-                           f=f.shortrepr())
+                           f=node.f.shortrepr())
             #
-            buildnames = [self.llname[f]
-                          for f in self.layout.llfields
-                          if not f.is_void()]
+            buildnames = [n.varname for n in self.layout.slots
+                          if not n.f.is_void()]
             code.w('buf =', code.call('builder.build', buildnames))
             code.w('return buf')
 
-    def handle_group(self, code, f):
-        group = self.m.allnodes[f.group.typeId]
-        groupname = self.m._field_name(f)
-        argnames = [self.llname[f] for f in group.struct.fields
-                    if not f.is_void()]
-        code.w('{args}, = {groupname}',
-               args=code.args(argnames), groupname=groupname)
+    def handle_group(self, code, node):
+        ns = code.new_scope()
+        ns.group = node.varname
+        argnames = [child.varname for child in node.children
+                    if not child.f.is_void()] # XXX: handle void more consistently
+        ns.args = code.args(argnames)
+        ns.w('{args}, = {group}')
 
-    def handle_nullable(self, code, f):
+    def handle_nullable(self, code, node):
         # def __init__(self, ..., x, ...):
         #     ...
         #     if x is None:
@@ -147,7 +129,7 @@ class Structor(object):
         #         x_value = x
         #
         ns = code.new_scope()
-        ns.fname = self.m._field_name(f)
+        ns.fname = node.varname
         ns.ww(
         """
             if {fname} is None:
@@ -158,28 +140,25 @@ class Structor(object):
                 {fname}_value = {fname}
         """)
 
-    def handle_text(self, code, f):
-        fname = self.llname[f]
+    def handle_text(self, code, node):
         code.w('{arg} = builder.alloc_text({offset}, {arg})',
-               arg=fname, offset=self.layout.slot_offset(f))
+               arg=node.varname, offset=self.layout.slot_offset(node.f))
 
-    def handle_data(self, code, f):
-        fname = self.llname[f]
+    def handle_data(self, code, node):
         code.w('{arg} = builder.alloc_data({offset}, {arg})',
-               arg=fname, offset=self.layout.slot_offset(f))
+               arg=node.varname, offset=self.layout.slot_offset(node.f))
 
-    def handle_struct(self, code, f):
-        fname = self.llname[f]
-        offset = self.layout.slot_offset(f)
-        structname = f.slot.type.runtime_name(self.m)
+    def handle_struct(self, code, node):
+        offset = self.layout.slot_offset(node.f)
+        structname = node.f.slot.type.runtime_name(self.m)
         code.w('{arg} = builder.alloc_struct({offset}, {structname}, {arg})',
-               arg=fname, offset=offset, structname=structname)
+               arg=node.varname, offset=offset, structname=structname)
 
-    def handle_list(self, code, f):
+    def handle_list(self, code, node):
         ns = code.new_scope()
-        ns.fname = self.llname[f]
-        ns.offset = self.layout.slot_offset(f)
-        itemtype = f.slot.type.list.elementType
+        ns.fname = node.varname
+        ns.offset = self.layout.slot_offset(node.f)
+        itemtype = node.f.slot.type.list.elementType
         ns.itemtype = itemtype.runtime_name(self.m)
         #
         if itemtype.is_primitive():
@@ -193,12 +172,11 @@ class Structor(object):
         #
         ns.w('{fname} = builder.alloc_list({offset}, {listcls}, {itemtype}, {fname})')
 
-    def handle_primitive(self, code, f):
-        if f.slot.hadExplicitDefault:
-            fname = self.llname[f]
+    def handle_primitive(self, code, node):
+        if node.f.slot.hadExplicitDefault:
             ns = code.new_scope()
-            ns.arg = fname
-            ns.default_ = f.slot.defaultValue.as_pyobj()
+            ns.arg = node.varname
+            ns.default_ = node.f.slot.defaultValue.as_pyobj()
             ns.w('{arg} ^= {default_}')
 
 
@@ -213,26 +191,22 @@ class Layout(object):
         self.data_size = data_size
         self.ptrs_size = ptrs_size
         self.fmt = None    # computed later
-        self.llfields = [] # "low level fields", passed to StructBuilder
-        self.llname = {}   # for plain fields is simply f.name, but in case
-                           # of groups it's groupname_fieldname
+        self.slots = []
         #
         if tag_offset is not None:
             # add a field to represent the tag
             tag_offset /= 2 # from bytes to multiple of int16
             f = Field.new_slot('__which__', tag_offset, Type.new_int16())
-            self.llfields.append(f)
-            self.llname[f] = '__which__'
+            node = Node(m, f, prefix=None)
+            self.slots.append(node)
 
     def add_tree(self, tree):
-        for node in tree.allslots():
-            self.llfields.append(node.f)
-            self.llname[node.f] = node.varname
+        self.slots += tree.allslots()
         self._finish()
 
     def _finish(self):
         """
-        Compute the format string and sort llfields in order of offset
+        Compute the format string and sort the slots in order of offset
         """
         total_length = (self.data_size + self.ptrs_size)*8
         fmt = ['x'] * total_length
@@ -243,8 +217,9 @@ class Layout(object):
             for i in range(offset+1, offset+size):
                 fmt[i] = None
 
-        self.llfields.sort(key=lambda f: self.slot_offset(f))
-        for f in self.llfields:
+        self.slots.sort(key=lambda node: self.slot_offset(node.f))
+        for node in self.slots:
+            f = node.f
             if not f.is_slot() or f.slot.type.is_bool():
                 raise Unsupported('Unsupported field type: %s' % f.shortrepr())
             elif f.is_void():
