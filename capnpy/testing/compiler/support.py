@@ -3,7 +3,7 @@ import pytest
 import textwrap
 import capnpy
 from capnpy.blob import PYX
-from capnpy.compiler.compiler import DynamicCompiler
+from capnpy.compiler.compiler import DynamicCompiler, BaseCompiler
 
 
 @pytest.mark.usefixtures('initargs')
@@ -45,6 +45,14 @@ class CompilerTest:
         schema = comp.load_schema(importname='/tmp.capnp', pyx=self.pyx,
                                   **kwds)
         return schema
+
+    def getm(self, s, **kwds):
+        comp = BaseCompiler([self.tmpdir])
+        tmp_capnp = self.tmpdir.join('tmp.capnp')
+        tmp_capnp.write(s)
+        m, src = comp.generate_py_source(tmp_capnp, convert_case=True,
+                                         pyx=self.pyx)
+        return m
 
     def write(self, filename, src, **kwds):
         src = textwrap.dedent(src)
