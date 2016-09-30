@@ -4,6 +4,7 @@ Structor -> struct ctor -> struct construtor :)
 
 import struct
 from capnpy.schema import Field, Type
+from capnpy.compiler.fieldtree import FieldTree
 
 class Unsupported(Exception):
     pass
@@ -39,16 +40,14 @@ class Structor(object):
                  tag_offset=None, tag_value=None):
         self.m = m
         self.name = name
-        self.fields = fields
+        self.fieldtree = FieldTree(m, fields)
         self.tag_value = tag_value
         self.argnames = []    # the arguments accepted by the ctor, in order
         self.params = []
-        self.groups = []
         #
         self.layout = Layout(m, data_size, ptrs_size, tag_offset)
-        self.layout.add_many(fields)
         try:
-            self.layout.finish()
+            self.layout.add_tree(self.fieldtree)
         except Unsupported as e:
             self.argnames = []
             self._unsupported = e.message
@@ -101,14 +100,13 @@ class Structor(object):
             if self.tag_value is not None:
                 code.w('__which__ = {tag_value}', tag_value=int(self.tag_value))
             #
-            for f in self.fields:
+            for node in self.fieldtree.allnodes():
+                f = node.f
                 if f.is_nullable(self.m):
                     self._unpack_nullable(code, f)
                 elif f.is_group():
                     self._unpack_group(code, f)
-            #
-            for f in self.layout.llfields:
-                if f.is_text():
+                elif f.is_text():
                     self._field_text(code, f)
                 elif f.is_data():
                     self._field_data(code, f)
@@ -223,27 +221,16 @@ class Layout(object):
             # add a field to represent the tag
             tag_offset /= 2 # from bytes to multiple of int16
             f = Field.new_slot('__which__', tag_offset, Type.new_int16())
-            self.add(f)
+            self.llfields.append(f)
+            self.llname[f] = '__which__'
 
-    def add_many(self, fields, prefix=None):
-        for f in fields:
-            self.add(f, prefix)
+    def add_tree(self, tree):
+        for node in tree.allslots():
+            self.llfields.append(node.f)
+            self.llname[node.f] = node.varname
+        self._finish()
 
-    def add(self, f, prefix=None):
-        assert self.fmt is None, "Cannot call add() after finish()"
-        fname = self.m._field_name(f)
-        if prefix:
-            fname = '%s_%s' % (prefix, fname)
-        if f.is_group():
-            group = self.m.allnodes[f.group.typeId]
-            self.add_many(group.struct.fields, prefix=fname)
-            return
-        #
-        assert f.is_slot()
-        self.llfields.append(f)
-        self.llname[f] = fname
-
-    def finish(self):
+    def _finish(self):
         """
         Compute the format string and sort llfields in order of offset
         """

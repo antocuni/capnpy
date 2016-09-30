@@ -1,7 +1,7 @@
 import py
 import pytest
 from capnpy.schema import Field, Type, Value
-from capnpy.compiler.structor import Structor, Layout
+from capnpy.compiler.structor import Structor, Layout, FieldTree
 from capnpy.testing.compiler.support import CompilerTest
 
 class TestLayout(object):
@@ -18,9 +18,8 @@ class TestLayout(object):
         fields = [Field.new_slot('x', 0, Type.new_int64(), val),
                   Field.new_slot('y', 1, Type.new_int64(), val)]
         layout = Layout(m, data_size=2, ptrs_size=0, tag_offset=None)
-        for f in fields:
-            layout.add(f)
-        layout.finish()
+        tree = FieldTree(m, fields)
+        layout.add_tree(tree)
         assert layout.fmt == 'qq'
 
     def test_compute_format_holes(self, m):
@@ -28,9 +27,8 @@ class TestLayout(object):
         fields = [Field.new_slot('x', 0, Type.new_int32(), val),
                   Field.new_slot('y', 1, Type.new_int64(), val)]
         layout = Layout(m, data_size=2, ptrs_size=0, tag_offset=None)
-        for f in fields:
-            layout.add(f)
-        layout.finish()
+        tree = FieldTree(m, fields)
+        layout.add_tree(tree)
         assert layout.fmt == 'ixxxxq'
 
 
