@@ -103,19 +103,19 @@ class Structor(object):
             for node in self.fieldtree.allnodes():
                 f = node.f
                 if f.is_nullable(self.m):
-                    self._unpack_nullable(code, f)
+                    self.handle_nullable(code, f)
                 elif f.is_group():
-                    self._unpack_group(code, f)
+                    self.handle_group(code, f)
                 elif f.is_text():
-                    self._field_text(code, f)
+                    self.handle_text(code, f)
                 elif f.is_data():
-                    self._field_data(code, f)
+                    self.handle_data(code, f)
                 elif f.is_struct():
-                    self._field_struct(code, f)
+                    self.handle_struct(code, f)
                 elif f.is_list():
-                    self._field_list(code, f)
+                    self.handle_list(code, f)
                 elif f.is_primitive() or f.is_enum():
-                    self._field_primitive(code, f)
+                    self.handle_primitive(code, f)
                 elif f.is_void():
                     pass # nothing to do
                 else:
@@ -128,7 +128,7 @@ class Structor(object):
             code.w('buf =', code.call('builder.build', buildnames))
             code.w('return buf')
 
-    def _unpack_group(self, code, f):
+    def handle_group(self, code, f):
         group = self.m.allnodes[f.group.typeId]
         groupname = self.m._field_name(f)
         argnames = [self.llname[f] for f in group.struct.fields
@@ -136,7 +136,7 @@ class Structor(object):
         code.w('{args}, = {groupname}',
                args=code.args(argnames), groupname=groupname)
 
-    def _unpack_nullable(self, code, f):
+    def handle_nullable(self, code, f):
         # def __init__(self, ..., x, ...):
         #     ...
         #     if x is None:
@@ -158,24 +158,24 @@ class Structor(object):
                 {fname}_value = {fname}
         """)
 
-    def _field_text(self, code, f):
+    def handle_text(self, code, f):
         fname = self.llname[f]
         code.w('{arg} = builder.alloc_text({offset}, {arg})',
                arg=fname, offset=self.layout.slot_offset(f))
 
-    def _field_data(self, code, f):
+    def handle_data(self, code, f):
         fname = self.llname[f]
         code.w('{arg} = builder.alloc_data({offset}, {arg})',
                arg=fname, offset=self.layout.slot_offset(f))
 
-    def _field_struct(self, code, f):
+    def handle_struct(self, code, f):
         fname = self.llname[f]
         offset = self.layout.slot_offset(f)
         structname = f.slot.type.runtime_name(self.m)
         code.w('{arg} = builder.alloc_struct({offset}, {structname}, {arg})',
                arg=fname, offset=offset, structname=structname)
 
-    def _field_list(self, code, f):
+    def handle_list(self, code, f):
         ns = code.new_scope()
         ns.fname = self.llname[f]
         ns.offset = self.layout.slot_offset(f)
@@ -193,7 +193,7 @@ class Structor(object):
         #
         ns.w('{fname} = builder.alloc_list({offset}, {listcls}, {itemtype}, {fname})')
 
-    def _field_primitive(self, code, f):
+    def handle_primitive(self, code, f):
         if f.slot.hadExplicitDefault:
             fname = self.llname[f]
             ns = code.new_scope()
