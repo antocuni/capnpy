@@ -16,7 +16,7 @@ class TestFieldTree(CompilerTest):
         address :group {
             street @2 :Text;
             position :group {
-                x @3 :Int64;
+                x @3 :Int64 = 42;
                 y @4 :Int64;
             }
         }
@@ -74,3 +74,19 @@ class TestFieldTree(CompilerTest):
                             'address_street',
                             'address_position_x',
                             'address_position_y']
+
+    def test_default(self):
+        m = self.getm(self.schema)
+        person = self.find_node(m, 'Person')
+        tree = FieldTree(m, person.struct.fields)
+        items = [(node.varname, node.default) for node in tree.allnodes()]
+        assert items == [
+            ('name', '(None, None,)'),
+            ('name_first', 'None'),
+            ('name_last', 'None'),
+            ('address', '(None, (42, 0,),)'),
+            ('address_street', 'None'),
+            ('address_position', '(42, 0,)'),
+            ('address_position_x', '42'),
+            ('address_position_y', '0'),
+        ]

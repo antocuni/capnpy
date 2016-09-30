@@ -50,12 +50,27 @@ class Node(AbstractNode):
         self.varname = m._field_name(f)
         if prefix:
             self.varname = '%s_%s' % (prefix, self.varname)
+        self._init_children(m)
+        # self.default is a *string* containing a Python repr of the default
+        # value
+        self._init_default(m)
+
+    def _init_children(self, m):
         self.children = []
-        if f.is_group():
-            group = m.allnodes[f.group.typeId]
+        if self.f.is_group():
+            group = m.allnodes[self.f.group.typeId]
             for fchild in group.struct.fields:
                 child = Node(m, fchild, prefix=self.varname)
                 self.children.append(child)
+
+    def _init_default(self, m):
+        if self.f.is_slot():
+            default_val = self.f.slot.defaultValue.as_pyobj()
+            self.default = str(default_val)
+        else:
+            assert self.f.is_group()
+            items = [child.default for child in self.children]
+            self.default = '(%s,)' % ', '.join(items)
 
     def __repr__(self):
         return '<Node %s: %s>' % (self.varname, self.f.which())

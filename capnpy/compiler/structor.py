@@ -3,7 +3,7 @@ Structor -> struct ctor -> struct construtor :)
 """
 
 import struct
-from capnpy.schema import Field, Type
+from capnpy.schema import Field, Type, Value
 from capnpy.compiler.fieldtree import FieldTree, Node
 
 class Unsupported(Exception):
@@ -18,38 +18,35 @@ class Structor(object):
       - params: [(argname, default)], for each argname in argnames
     """
 
-    _unsupported = None
-
     def __init__(self, m, name, data_size, ptrs_size, fields,
                  tag_offset=None, tag_value=None):
         self.m = m
         self.name = name
         self.fieldtree = FieldTree(m, fields)
         self.tag_value = tag_value
-        self.argnames = []    # the arguments accepted by the ctor, in order
-        self.params = []
-        #
-        self.layout = Layout(m, data_size, ptrs_size, tag_offset)
+        self._init_layout(data_size, ptrs_size, tag_offset)
+        self._init_args()
+
+    def _init_layout(self, data_size, ptrs_size, tag_offset):
+        self.layout = Layout(self.m, data_size, ptrs_size, tag_offset)
         try:
             self.layout.add_tree(self.fieldtree)
         except Unsupported as e:
-            self.argnames = []
             self._unsupported = e.message
+        else:
+            self._unsupported = None
+
+    def _init_args(self):
+        self.argnames = []
+        self.params = []
+        if self._unsupported:
+            return
         #
-        self.init_fields(fields)
-
-    def init_fields(self, fields):
-        defaults = []
-        self.argnames = [self.m._field_name(f) for f in fields]
-        for f in fields:
-            if f.is_group():
-                defaults.append('None') # XXX fixme
-            else:
-                default = f.slot.defaultValue.as_pyobj()
-                defaults.append(str(default))
-
-        assert len(self.argnames) == len(defaults)
-        self.params = zip(self.argnames, defaults)
+        # the arguments taken by the ctor corresponds to the varname of the
+        # *first* level of the tree
+        for node in self.fieldtree.children:
+            self.argnames.append(node.varname)
+            self.params.append((node.varname, node.default))
 
     def declare(self, code):
         if self._unsupported is not None:
@@ -196,7 +193,9 @@ class Layout(object):
         if tag_offset is not None:
             # add a field to represent the tag
             tag_offset /= 2 # from bytes to multiple of int16
-            f = Field.new_slot('__which__', tag_offset, Type.new_int16())
+            f = Field.new_slot('__which__', tag_offset,
+                               Type.new_int16(),
+                               Value.new_int16(0))
             node = Node(m, f, prefix=None)
             self.slots.append(node)
 
