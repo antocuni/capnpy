@@ -216,7 +216,7 @@ class Field__Group:
         #
         nullable = self.is_nullable(m)
         if nullable:
-            self._emit_nullable(self, m, ns, name, nullable)
+            self._emit_nullable(m, ns, name, nullable)
         else:
             # these are emitted only for non-nullable groups
             self._emit_ctor_like(m, ns, name)
