@@ -42,6 +42,24 @@ class FieldTree(AbstractNode):
     def __repr__(self):
         return '<FieldTree>'
 
+    def get_args_and_params(self):
+        """
+        Return argnames and params, to be used to emit ctors and other functions.
+
+          - argnames are the plain variable names
+
+          - params are tuples (varname, default), where default is a *string*
+            which when eval()ued computes the default value of the parameter
+
+        Note that the arguments taken by the ctor corresponds to the varname
+        of the *first* level of the tree
+        """
+        argnames = []
+        params = []
+        for node in self.children:
+            argnames.append(node.varname)
+            params.append((node.varname, node.default))
+        return argnames, params
 
 class Node(AbstractNode):
 

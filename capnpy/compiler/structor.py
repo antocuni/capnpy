@@ -37,16 +37,11 @@ class Structor(object):
             self._unsupported = None
 
     def _init_args(self):
-        self.argnames = []
-        self.params = []
         if self._unsupported:
+            self.argnames = []
+            self.params = []
             return
-        #
-        # the arguments taken by the ctor corresponds to the varname of the
-        # *first* level of the tree
-        for node in self.fieldtree.children:
-            self.argnames.append(node.varname)
-            self.params.append((node.varname, node.default))
+        self.argnames, self.params = self.fieldtree.get_args_and_params()
 
     def declare(self, code):
         if self._unsupported is not None:

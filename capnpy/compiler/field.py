@@ -243,11 +243,7 @@ class Field__Group:
         ##
         groupnode = m.allnodes[self.group.typeId]
         tree = FieldTree(m, groupnode.struct.fields)
-        argnames = []
-        params = []
-        for node in tree.children:
-            argnames.append(node.varname)
-            params.append((node.varname, node.default))
+        argnames, params = tree.get_args_and_params()
         #
         ns.argnames = m.code.args(argnames)
         ns.params = m.code.params(params)

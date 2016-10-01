@@ -90,3 +90,15 @@ class TestFieldTree(CompilerTest):
             ('address_position_x', '42'),
             ('address_position_y', '0'),
         ]
+
+    def test_args_and_params(self):
+        m = self.getm(self.schema)
+        person = self.find_node(m, 'Person')
+        tree = FieldTree(m, person.struct.fields)
+        args, params = tree.get_args_and_params()
+        assert args == ['name', 'address']
+        params = [(varname, eval(default)) for varname, default in params]
+        assert params == [
+            ('name', (None, None)),
+            ('address', (None, (42, 0)))
+            ]
