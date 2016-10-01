@@ -206,6 +206,21 @@ class Field__Group:
         groupnode = m.allnodes[self.group.typeId]
         ns.groupcls = groupnode.compile_name(m)
         ns.name = name
+        nullable = self.is_nullable(m)
+        if nullable:
+            nullable.check(m)
+            ns.privname = '_' + name
+            ns.ww("""
+                @property
+                def {name}(self):
+                    g = self.{privname}
+                    if g.is_null:
+                        return None
+                    return g.value
+            """)
+            name = ns.privname
+            ns.w()
+        #
         m.def_property(ns, name, """
             {ensure_union}
             obj = {groupcls}.__new__({groupcls})
@@ -214,26 +229,10 @@ class Field__Group:
             return obj
         """)
         #
-        nullable = self.is_nullable(m)
-        if nullable:
-            self._emit_nullable(m, ns, name, nullable)
-        else:
+        if not nullable:
             # these are emitted only for non-nullable groups
             self._emit_ctor_like(m, ns, name)
 
-    def _emit_nullable(self, m, ns, name, nullable):
-        nullable.check(m)
-        ns.privname = '_' + name
-        ns.ww("""
-            @property
-            def {name}(self):
-                g = self.{privname}
-                if g.is_null:
-                    return None
-                return g.value
-        """)
-        name = ns.privname
-        ns.w()
 
     def _emit_ctor_like(self, m, ns, name):
         ## emit something like this:
