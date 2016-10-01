@@ -1,5 +1,6 @@
 from capnpy import schema
 from capnpy.type import Types
+from capnpy.compiler.fieldtree import FieldTree
 
 @schema.Field.__extend__
 class Field:
@@ -205,21 +206,6 @@ class Field__Group:
         groupnode = m.allnodes[self.group.typeId]
         ns.groupcls = groupnode.compile_name(m)
         ns.name = name
-        nullable = self.is_nullable(m)
-        if nullable:
-            nullable.check(m)
-            ns.privname = '_' + name
-            ns.ww("""
-                @property
-                def {name}(self):
-                    g = self.{privname}
-                    if g.is_null:
-                        return None
-                    return g.value
-            """)
-            name = ns.privname
-            ns.w()
-        #
         m.def_property(ns, name, """
             {ensure_union}
             obj = {groupcls}.__new__({groupcls})
@@ -228,15 +214,47 @@ class Field__Group:
             return obj
         """)
         #
-        # emit also a "constructor-like" function, to be used as a parameter
-        # of __init__
-        if not self.is_nullable(m):
-            argnames = [m._field_name(f) for f in groupnode.struct.fields]
-            ns.arglist = m.code.args(argnames)
-            ns.capitalname = ns.name.capitalize()
-            ns.ww("""
-                @staticmethod
-                def {capitalname}({arglist}):
-                    return {arglist},
-            """)
-            ns.w()
+        nullable = self.is_nullable(m)
+        if nullable:
+            self._emit_nullable(self, m, ns, name, nullable)
+        else:
+            # these are emitted only for non-nullable groups
+            self._emit_ctor_like(m, ns, name)
+
+    def _emit_nullable(self, m, ns, name, nullable):
+        nullable.check(m)
+        ns.privname = '_' + name
+        ns.ww("""
+            @property
+            def {name}(self):
+                g = self.{privname}
+                if g.is_null:
+                    return None
+                return g.value
+        """)
+        name = ns.privname
+        ns.w()
+
+    def _emit_ctor_like(self, m, ns, name):
+        ## emit something like this:
+        ## @staticmethod
+        ## def Position(x=0, y=42):
+        ##     return x, y
+        ##
+        groupnode = m.allnodes[self.group.typeId]
+        tree = FieldTree(m, groupnode.struct.fields)
+        argnames = []
+        params = []
+        for node in tree.children:
+            argnames.append(node.varname)
+            params.append((node.varname, node.default))
+        #
+        ns.argnames = m.code.args(argnames)
+        ns.params = m.code.params(params)
+        ns.capitalname = ns.name.capitalize()
+        ns.ww("""
+            @staticmethod
+            def {capitalname}({params}):
+                return {argnames},
+        """)
+        ns.w()

@@ -422,7 +422,6 @@ class TestDefaults(CompilerTest):
         assert p.position.x == 100
         assert p.position.y == 200
 
-    @pytest.mark.xfail
     def test_group_named_params(self):
         schema = """
         @0xbf5147cbbecf40c1;
@@ -432,17 +431,19 @@ class TestDefaults(CompilerTest):
                 y @1 :Int64;
             }
             color :group {
-                alpha @2 :Float64 = 1.0;
+                alpha @2 :UInt8 = 255;
                 name  @3 :Text;
             }
         }
         """
         mod = self.compile(schema)
+        assert mod.Point.Position() == (42, 0)
+        assert mod.Point.Color() == (255, None)
         p = mod.Point(position=mod.Point.Position(y=2),
                       color=mod.Point.Color(name='red'))
         assert p.position.x == 42
         assert p.position.y == 2
-        assert p.color.alpha == 1.0
+        assert p.color.alpha == 255
         assert p.color.name == 'red'
 
     def test_union_generic(self):
