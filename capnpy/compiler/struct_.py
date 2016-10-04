@@ -153,16 +153,12 @@ class Node__Struct:
         ns.data_size = self.struct.dataWordCount
         ns.ptrs_size = self.struct.pointerCount
         #
-        std_fields = [] # non-union fields
-        tag_fields = [] # union fields
+        # create the specific ctors
+        tags = [] # [(f, args)]
         for f in self.struct.fields:
             if f.is_part_of_union():
-                tag_fields.append(f)
-            else:
-                std_fields.append(f)
-
-        for tag_field in tag_fields:
-            self._emit_ctor_union_specific(m, ns, tag_field, std_fields)
+                args = self._emit_ctor_union_specific(m, ns, f)
+                tags.append((f, args))
 
         # finally, create the __init__
         # def __init__(cls, x, y, square=undefined, circle=undefined):
@@ -181,35 +177,32 @@ class Node__Struct:
         _, params = tree.get_args_and_params()
         ns.params = m.code.params(params)
         with ns.block('def __init__(self, {params}):'):
-            for tag_field in tag_fields:
+            for tag_field, ctor_args in tags:
                 tag_field_name = m._field_name(tag_field)
                 with ns.block('if {name} is not _undefined:', name=tag_field_name):
                     # emit the series of _assert_undefined, for each other tag field
-                    for other_tag_field in tag_fields:
+                    for other_tag_field, _ in tags:
                         if other_tag_field is tag_field:
                             continue
                         ns.w('_assert_undefined({fname}, "{fname}", "{myname}")',
                              fname=m._field_name(other_tag_field),
                              myname=tag_field_name)
                     #
-                    # return cls.new_square(x=x, y=y)
-                    args = [m._field_name(f) for f in std_fields]
-                    args.append(m._field_name(tag_field))
-                    args = ['%s=%s' % (arg, arg) for arg in args]
                     ns.w('buf = self.__new_{ctor}({args})',
-                         ctor=tag_field_name, args=m.code.args(args))
+                         ctor=tag_field_name, args=m.code.args(ctor_args))
                     ns.w('_Struct.__init__(self, buf, 0, {data_size}, {ptrs_size})')
                     ns.w('return')
             #
-            tags = [m._field_name(f) for f in tag_fields]
-            tags = ', '.join(tags)
+            tag_names = [m._field_name(f) for f, _ in tags]
+            tag_names = ', '.join(tag_names)
             ns.w('raise TypeError("one of the following args is required: {tags}")',
-                 tags=tags)
+                 tags=tag_names)
         ns.w()
 
-    def _emit_ctor_union_specific(self, m, ns, tag_field, std_fields):
+    def _emit_ctor_union_specific(self, m, ns, tag_field):
         tag_offset = self.struct.discriminantOffset * 2
-        fields = [tag_field] + std_fields
+        fields = [f for f in self.struct.fields
+                  if not f.is_part_of_union() or f == tag_field]
         tag_name  = m._field_name(tag_field)
         ctor_name = '__new_' + tag_name
         ctor = Structor(m, ctor_name, ns.data_size, ns.ptrs_size, fields,
@@ -222,6 +215,7 @@ class Node__Struct:
             ns.w('buf = {call}', call=call)
             ns.w('return cls.from_buffer(buf, 0, {data_size}, {ptrs_size})')
         ns.w()
+        return ctor.argnames
 
     def _emit_repr(self, m):
         # def shortrepr(self):
