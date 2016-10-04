@@ -105,8 +105,7 @@ class Structor(object):
     def handle_group(self, code, node):
         ns = code.new_scope()
         ns.group = node.varname
-        argnames = [child.varname for child in node.children
-                    if not child.f.is_void()] # XXX: handle void more consistently
+        argnames = [child.varname for child in node.children]
         ns.args = code.args(argnames)
         ns.w('{args}, = {group}')
 
