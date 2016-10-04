@@ -138,7 +138,7 @@ class Node__Struct:
         # suppose we have a tag whose members are 'circle' and 'square': we
         # create three ctors:
         #
-        #     def __init__(self, x, y, square=undefined, circle=undefined):  ...
+        #     def __init__(self, x, y, square=undefined, circle=undefined):
         #
         #     @classmethod
         #     def new_square(cls, x, y): ...
@@ -151,7 +151,6 @@ class Node__Struct:
         ns = m.code.new_scope()
         ns.data_size = self.struct.dataWordCount
         ns.ptrs_size = self.struct.pointerCount
-        tag_offset = self.struct.discriminantOffset * 2
         #
         std_fields = [] # non-union fields
         tag_fields = [] # union fields
@@ -160,24 +159,10 @@ class Node__Struct:
                 tag_fields.append(f)
             else:
                 std_fields.append(f)
-        #
-        # now, we create a separate ctor for each tag value
+
         for tag_field in tag_fields:
-            fields = [tag_field] + std_fields
-            tag_name  = m._field_name(tag_field)
-            ctor_name = '__new_' + tag_name
-            ctor = Structor(m, ctor_name, ns.data_size, ns.ptrs_size, fields,
-                            tag_offset, tag_field.discriminantValue)
-            ctor.declare(m.code)
-            std_params = ctor.params[1:]
-            #
-            ns.w('@classmethod')
-            with ns.def_('new_' + tag_name, ['cls'] + ctor.params):
-                call = m.code.call('cls.' + ctor_name, ctor.argnames)
-                ns.w('buf = {call}', call=call)
-                ns.w('return cls.from_buffer(buf, 0, {data_size}, {ptrs_size})')
-            ns.w()
-        #
+            std_params = self._emit_ctor_union_specific(m, ns, tag_field, std_fields)
+
         # finally, create the __init__
         # def __init__(cls, x, y, square=undefined, circle=undefined):
         #     if square is not undefined:
@@ -221,6 +206,24 @@ class Node__Struct:
             ns.w('raise TypeError("one of the following args is required: {tags}")',
                  tags=tags)
         ns.w()
+
+    def _emit_ctor_union_specific(self, m, ns, tag_field, std_fields):
+        tag_offset = self.struct.discriminantOffset * 2
+        fields = [tag_field] + std_fields
+        tag_name  = m._field_name(tag_field)
+        ctor_name = '__new_' + tag_name
+        ctor = Structor(m, ctor_name, ns.data_size, ns.ptrs_size, fields,
+                        tag_offset, tag_field.discriminantValue)
+        ctor.declare(m.code)
+        std_params = ctor.params[1:]
+        #
+        ns.w('@classmethod')
+        with ns.def_('new_' + tag_name, ['cls'] + ctor.params):
+            call = m.code.call('cls.' + ctor_name, ctor.argnames)
+            ns.w('buf = {call}', call=call)
+            ns.w('return cls.from_buffer(buf, 0, {data_size}, {ptrs_size})')
+        ns.w()
+        return std_params # XXX
 
     def _emit_repr(self, m):
         # def shortrepr(self):
