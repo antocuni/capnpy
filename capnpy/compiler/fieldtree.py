@@ -27,7 +27,11 @@ class AbstractNode(object):
 
     def _add_children(self, m, fields, prefix, union_default):
         for f in fields:
-            if f.is_void() and not f.is_part_of_union():
+            # if this is a "generic union ctor" and the field is a
+            # discriminant, we force the inclusion even if it's a void
+            is_generic_ctor = union_default is not None
+            force_void = f.is_part_of_union() and is_generic_ctor
+            if f.is_void() and not force_void:
                 continue
             node = Node(m, f, prefix, union_default)
             self.children.append(node)
