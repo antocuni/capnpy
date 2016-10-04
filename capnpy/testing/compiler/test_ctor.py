@@ -282,8 +282,6 @@ class TestConstructors(CompilerTest):
         assert p.position.empty is None
 
 
-
-
 class TestDefaults(CompilerTest):
     
     def test_no_args(self):
@@ -380,60 +378,3 @@ class TestDefaults(CompilerTest):
         assert p.position.y == 2
         assert p.color.alpha == 255
         assert p.color.name == 'red'
-
-    def test_union_generic(self):
-        schema = """
-        @0xbf5147cbbecf40c1;
-        struct Shape {
-          area @0 :Int64;
-          perimeter @1 :Int64;
-          union {
-            circle @2 :Int64;      # radius
-            square @3 :Int64;      # width
-            empty  @4 :Void;
-          }
-        }
-        """
-        mod = self.compile(schema)
-        p = mod.Shape(circle=42)
-        assert p.area == 0
-        assert p.perimeter == 0
-        assert p.is_circle()
-        assert p.circle == 42
-        #
-        p = mod.Shape(empty=None)
-        assert p.area == 0
-        assert p.perimeter == 0
-        assert p.is_empty()
-
-    def test_union_specific(self):
-        schema = """
-        @0xbf5147cbbecf40c1;
-        struct Shape {
-          area @0 :Int64;
-          perimeter @1 :Int64;
-          union {
-            circle @2 :Int64;      # radius
-            square @3 :Int64;      # width
-            empty  @4 :Void;
-          }
-        }
-        """
-        mod = self.compile(schema)
-        p = mod.Shape.new_circle()
-        assert p.circle == 0
-        assert p.area == 0
-        assert p.perimeter == 0
-        assert p.is_circle()
-        #
-        p = mod.Shape.new_square()
-        assert p.square == 0
-        assert p.area == 0
-        assert p.perimeter == 0
-        assert p.is_square()
-        #
-        p = mod.Shape.new_empty()
-        assert p.empty is None
-        assert p.area == 0
-        assert p.perimeter == 0
-        assert p.is_empty()

@@ -68,3 +68,35 @@ class TestUnionConstructors(CompilerTest):
         einfo = py.test.raises(TypeError, "mod.Shape(area=0, perimeter=0)")
         assert str(einfo.value) == ("one of the following args is required: "
                                     "circle, square, empty")
+
+
+    def test_default_generic(self, mod):
+        p = mod.Shape(circle=42)
+        assert p.area == 0
+        assert p.perimeter == 0
+        assert p.is_circle()
+        assert p.circle == 42
+        #
+        p = mod.Shape(empty=None)
+        assert p.area == 0
+        assert p.perimeter == 0
+        assert p.is_empty()
+
+    def test_default_specific(self, mod):
+        p = mod.Shape.new_circle()
+        assert p.circle == 0
+        assert p.area == 0
+        assert p.perimeter == 0
+        assert p.is_circle()
+        #
+        p = mod.Shape.new_square()
+        assert p.square == 0
+        assert p.area == 0
+        assert p.perimeter == 0
+        assert p.is_square()
+        #
+        p = mod.Shape.new_empty()
+        assert p.empty is None
+        assert p.area == 0
+        assert p.perimeter == 0
+        assert p.is_empty()
