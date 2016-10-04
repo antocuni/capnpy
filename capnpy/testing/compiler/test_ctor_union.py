@@ -65,6 +65,15 @@ class TestSpecificCtors(BaseTestUnionConstructors):
         assert p.perimeter == 0
         assert p.is_empty()
 
+    @py.test.mark.xfail
+    def test_no_void_args(self, mod):
+        py.test.raises(TypeError, "mod.Shape.new_empty(empty=None)")
+        p = mod.Shape.new_empty(1, 2)
+        assert p.is_empty()
+        assert p.empty is None
+        assert p.area == 1
+        assert p.perimeter == 2
+
 
 class TestGenericCtor(BaseTestUnionConstructors):
 

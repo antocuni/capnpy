@@ -27,6 +27,9 @@ class Type:
                                 Type.__tag__.list,
                                 Type.__tag__.anyPointer)
 
+    def __repr__(self):
+        return '<Type: %s>' % self.which()
+
 @Node.__extend__
 class Node:
 
@@ -49,6 +52,12 @@ class Field:
 
     def __hash__(self):
         return hash(self.__key())
+
+    def __repr__(self):
+        if self.is_slot():
+            return '<Field %s: %s>' % (self.name, self.slot.type.which())
+        else:
+            return '<Field %s: %s>' % (self.name, self.which())
 
     def _equals(self, other):
         return self.__key() == other.__key()
