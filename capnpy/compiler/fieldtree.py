@@ -25,11 +25,11 @@ class AbstractNode(object):
             if node.f.is_slot():
                 yield node
 
-    def _add_children(self, m, fields, prefix):
+    def _add_children(self, m, fields, prefix, union_default):
         for f in fields:
             if f.is_void() and not f.is_part_of_union():
                 continue
-            node = Node(m, f, prefix)
+            node = Node(m, f, prefix, union_default)
             self.children.append(node)
 
 
@@ -40,9 +40,9 @@ class FieldTree(AbstractNode):
     Each node can be a group or a slot; all leaves are slots.
     """
 
-    def __init__(self, m, fields):
+    def __init__(self, m, fields, union_default=None):
         self.children = []
-        self._add_children(m, fields, prefix=None)
+        self._add_children(m, fields, prefix=None, union_default=union_default)
 
     def __repr__(self):
         return '<FieldTree>'
@@ -68,8 +68,9 @@ class FieldTree(AbstractNode):
 
 class Node(AbstractNode):
 
-    def __init__(self, m, f, prefix):
+    def __init__(self, m, f, prefix, union_default=None):
         self.f = f
+        self.union_default = union_default
         self.varname = m._field_name(f)
         if prefix:
             self.varname = '%s_%s' % (prefix, self.varname)
@@ -82,12 +83,15 @@ class Node(AbstractNode):
         self.children = []
         if self.f.is_group():
             group = m.allnodes[self.f.group.typeId]
-            self._add_children(m, group.struct.fields, prefix=self.varname)
+            self._add_children(m, group.struct.fields, prefix=self.varname,
+                               union_default=self.union_default)
 
     def _init_default(self, m):
         if self.f.is_slot():
             default_val = self.f.slot.defaultValue.as_pyobj()
             self.default = str(default_val)
+            if self.f.is_part_of_union() and self.union_default is not None:
+                self.default = self.union_default
         else:
             assert self.f.is_group()
             items = [child.default for child in self.children]

@@ -103,6 +103,32 @@ class TestFieldTree(CompilerTest):
             ('address', (None, (42, 0)))
             ]
 
+    def test_args_and_params_union(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Baz {
+            union {
+                foo @0 :Int64;
+                bar @1 :Int64;
+            }
+        }
+        """
+        m = self.getm(schema)
+        baz = self.find_struct(m, 'Baz')
+        tree = FieldTree(m, baz.struct.fields)
+        args, params = tree.get_args_and_params()
+        assert params == [
+            ('foo', '0'),
+            ('bar', '0'),
+            ]
+        #
+        tree = FieldTree(m, baz.struct.fields, union_default='_undefined')
+        args, params = tree.get_args_and_params()
+        assert params == [
+            ('foo', '_undefined'),
+            ('bar', '_undefined'),
+            ]
+
     def test_void_args(self):
         schema = """
         @0xbf5147cbbecf40c1;
