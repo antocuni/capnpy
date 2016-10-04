@@ -2,6 +2,7 @@ from capnpy import annotate
 from capnpy import schema
 from capnpy.type import Types
 from capnpy.compiler.structor import Structor
+from capnpy.compiler.fieldtree import FieldTree
 
 try:
     from capnpy import _hash
@@ -161,7 +162,7 @@ class Node__Struct:
                 std_fields.append(f)
 
         for tag_field in tag_fields:
-            std_params = self._emit_ctor_union_specific(m, ns, tag_field, std_fields)
+            self._emit_ctor_union_specific(m, ns, tag_field, std_fields)
 
         # finally, create the __init__
         # def __init__(cls, x, y, square=undefined, circle=undefined):
@@ -176,9 +177,8 @@ class Node__Struct:
         #         _Struct.__init__(self, buf, 0, None)
         #         return
         #     raise TypeError("one of the following args is required: square, circle")
-        params = std_params[:]
-        for f in tag_fields:
-            params.append((m._field_name(f), '_undefined'))
+        tree = FieldTree(m, self.struct.fields, union_default='_undefined')
+        _, params = tree.get_args_and_params()
         ns.params = m.code.params(params)
         with ns.block('def __init__(self, {params}):'):
             for tag_field in tag_fields:
@@ -215,7 +215,6 @@ class Node__Struct:
         ctor = Structor(m, ctor_name, ns.data_size, ns.ptrs_size, fields,
                         tag_offset, tag_field.discriminantValue)
         ctor.declare(m.code)
-        std_params = ctor.params[1:]
         #
         ns.w('@classmethod')
         with ns.def_('new_' + tag_name, ['cls'] + ctor.params):
@@ -223,7 +222,6 @@ class Node__Struct:
             ns.w('buf = {call}', call=call)
             ns.w('return cls.from_buffer(buf, 0, {data_size}, {ptrs_size})')
         ns.w()
-        return std_params # XXX
 
     def _emit_repr(self, m):
         # def shortrepr(self):
