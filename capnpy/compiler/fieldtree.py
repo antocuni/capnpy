@@ -27,8 +27,7 @@ class AbstractNode(object):
 
     def _add_children(self, m, fields, prefix):
         for f in fields:
-            # ignore void fields, unless they are part of an union
-            if f.is_void() and not f.is_discriminant():
+            if f.is_void() and not f.is_part_of_union():
                 continue
             node = Node(m, f, prefix)
             self.children.append(node)

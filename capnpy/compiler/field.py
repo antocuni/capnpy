@@ -8,14 +8,12 @@ class Field:
     def emit(self, m, node):
         name = m._field_name(self)
         ns = m.code.new_scope()
-        if self.is_discriminant():
+        if self.is_part_of_union():
             ns.ensure_union = 'self._ensure_union(%s)' % self.discriminantValue
         else:
             ns.ensure_union = '# no union check'
         self._emit(m, ns, name)
 
-    def is_discriminant(self):
-        return self.discriminantValue != Field.noDiscriminant
 
 @schema.Field__Slot.__extend__
 class Field__Slot:
