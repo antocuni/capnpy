@@ -2,7 +2,7 @@ import py
 import pytest
 from capnpy.testing.compiler.support import CompilerTest
 
-class TestUnionConstructors(CompilerTest):
+class BaseTestUnionConstructors(CompilerTest):
 
     @py.test.fixture
     def mod(self):
@@ -20,7 +20,10 @@ class TestUnionConstructors(CompilerTest):
         """
         return self.compile(schema)
 
-    def test_specific_ctors(self, mod):
+
+class TestSpecificCtors(BaseTestUnionConstructors):
+
+    def test_simple(self, mod):
         s = mod.Shape.new_circle(area=1, circle=2, perimeter=3)
         assert s.which() == mod.Shape.__tag__.circle
         assert s.area == 1
@@ -43,7 +46,29 @@ class TestUnionConstructors(CompilerTest):
                '\x01\x00\x00\x00\x00\x00\x00\x00')  # __tag__ == 1 (square)
         assert s._buf.s == buf
 
-    def test_generic_ctor(self, mod):
+    def test_default(self, mod):
+        p = mod.Shape.new_circle()
+        assert p.circle == 0
+        assert p.area == 0
+        assert p.perimeter == 0
+        assert p.is_circle()
+        #
+        p = mod.Shape.new_square()
+        assert p.square == 0
+        assert p.area == 0
+        assert p.perimeter == 0
+        assert p.is_square()
+        #
+        p = mod.Shape.new_empty()
+        assert p.empty is None
+        assert p.area == 0
+        assert p.perimeter == 0
+        assert p.is_empty()
+
+
+class TestGenericCtor(BaseTestUnionConstructors):
+
+    def test_simple(self, mod):
         # test the __init__
         s = mod.Shape(area=1, square=2, perimeter=3)
         assert s.which() == mod.Shape.__tag__.square
@@ -51,7 +76,7 @@ class TestUnionConstructors(CompilerTest):
         assert s.square == 2
         assert s.perimeter == 3
 
-    def test_generic_ctor_void_arg(self, mod):
+    def test_void_arg(self, mod):
         s = mod.Shape(area=1, empty=None, perimeter=3)
         assert s.which() == mod.Shape.__tag__.empty
         assert s.area == 1
@@ -70,7 +95,7 @@ class TestUnionConstructors(CompilerTest):
                                     "circle, square, empty")
 
 
-    def test_default_generic(self, mod):
+    def test_default(self, mod):
         p = mod.Shape(circle=42)
         assert p.area == 0
         assert p.perimeter == 0
@@ -78,25 +103,6 @@ class TestUnionConstructors(CompilerTest):
         assert p.circle == 42
         #
         p = mod.Shape(empty=None)
-        assert p.area == 0
-        assert p.perimeter == 0
-        assert p.is_empty()
-
-    def test_default_specific(self, mod):
-        p = mod.Shape.new_circle()
-        assert p.circle == 0
-        assert p.area == 0
-        assert p.perimeter == 0
-        assert p.is_circle()
-        #
-        p = mod.Shape.new_square()
-        assert p.square == 0
-        assert p.area == 0
-        assert p.perimeter == 0
-        assert p.is_square()
-        #
-        p = mod.Shape.new_empty()
-        assert p.empty is None
         assert p.area == 0
         assert p.perimeter == 0
         assert p.is_empty()
