@@ -23,15 +23,15 @@ class TestFieldTree(CompilerTest):
     }
     """
 
-    def find_node(self, m, name):
+    def find_struct(self, m, name):
         for node in m.allnodes.values():
-            if node.shortname(m) == name:
+            if node.is_struct() and node.shortname(m) == name:
                 return node
         raise KeyError("Cannot find node %s" % name)
 
     def test_pprint(self, capsys):
         m = self.getm(self.schema)
-        person = self.find_node(m, 'Person')
+        person = self.find_struct(m, 'Person')
         tree = FieldTree(m, person.struct.fields)
         tree.pprint()
         out, err = capsys.readouterr()
@@ -50,7 +50,7 @@ class TestFieldTree(CompilerTest):
 
     def test_allnodes(self):
         m = self.getm(self.schema)
-        person = self.find_node(m, 'Person')
+        person = self.find_struct(m, 'Person')
         tree = FieldTree(m, person.struct.fields)
         nodes = tree.allnodes()
         varnames = [node.varname for node in nodes]
@@ -65,7 +65,7 @@ class TestFieldTree(CompilerTest):
 
     def test_allslots(self):
         m = self.getm(self.schema)
-        person = self.find_node(m, 'Person')
+        person = self.find_struct(m, 'Person')
         tree = FieldTree(m, person.struct.fields)
         nodes = tree.allslots()
         varnames = [node.varname for node in nodes]
@@ -77,7 +77,7 @@ class TestFieldTree(CompilerTest):
 
     def test_default(self):
         m = self.getm(self.schema)
-        person = self.find_node(m, 'Person')
+        person = self.find_struct(m, 'Person')
         tree = FieldTree(m, person.struct.fields)
         items = [(node.varname, node.default) for node in tree.allnodes()]
         assert items == [
@@ -93,7 +93,7 @@ class TestFieldTree(CompilerTest):
 
     def test_args_and_params(self):
         m = self.getm(self.schema)
-        person = self.find_node(m, 'Person')
+        person = self.find_struct(m, 'Person')
         tree = FieldTree(m, person.struct.fields)
         args, params = tree.get_args_and_params()
         assert args == ['name', 'address']
@@ -102,3 +102,25 @@ class TestFieldTree(CompilerTest):
             ('name', (None, None)),
             ('address', (None, (42, 0)))
             ]
+
+    def test_void_args(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            a @0 :Int64;
+            b @1 :Void;
+            bar :group {
+                c @2 :Int64;
+                d @3 :Void;
+            }
+            baz :union {
+                e @4 :Int64;
+                f @5 :Void;
+            }
+        }
+        """
+        m = self.getm(schema)
+        foo = self.find_struct(m, 'Foo')
+        tree = FieldTree(m, foo.struct.fields)
+        varnames = [node.varname for node in tree.allslots()]
+        assert varnames == ['a', 'bar_c', 'baz_e', 'baz_f']

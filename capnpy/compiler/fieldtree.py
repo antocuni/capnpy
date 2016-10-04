@@ -25,6 +25,14 @@ class AbstractNode(object):
             if node.f.is_slot():
                 yield node
 
+    def _add_children(self, m, fields, prefix):
+        for f in fields:
+            # ignore void fields, unless they are part of an union
+            if f.is_void() and not f.is_discriminant():
+                continue
+            node = Node(m, f, prefix)
+            self.children.append(node)
+
 
 class FieldTree(AbstractNode):
     """
@@ -35,9 +43,7 @@ class FieldTree(AbstractNode):
 
     def __init__(self, m, fields):
         self.children = []
-        for f in fields:
-            node = Node(m, f, prefix=None)
-            self.children.append(node)
+        self._add_children(m, fields, prefix=None)
 
     def __repr__(self):
         return '<FieldTree>'
@@ -77,9 +83,7 @@ class Node(AbstractNode):
         self.children = []
         if self.f.is_group():
             group = m.allnodes[self.f.group.typeId]
-            for fchild in group.struct.fields:
-                child = Node(m, fchild, prefix=self.varname)
-                self.children.append(child)
+            self._add_children(m, group.struct.fields, prefix=self.varname)
 
     def _init_default(self, m):
         if self.f.is_slot():
