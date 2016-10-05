@@ -218,7 +218,7 @@ class TestShortRepr(CompilerTest):
         p = self.mod.P.new_x(1)
         self.check(p, '(x = 1)')
         #
-        p = self.mod.P.new_y(None)
+        p = self.mod.P.new_y()
         self.check(p, '(y = void)')
         #
         p = self.mod.P.new_z('hello')
