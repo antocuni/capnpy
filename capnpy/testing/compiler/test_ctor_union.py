@@ -114,3 +114,23 @@ class TestGenericCtor(BaseTestUnionConstructors):
         assert p.area == 0
         assert p.perimeter == 0
         assert p.is_empty()
+
+
+class TestMisc(CompilerTest):
+
+    @pytest.mark.xfail
+    def test_named_union(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Field {
+          name @0 :Text;
+          type :union {
+              int @1 :Void;
+              float @2 :Void;
+              pointer @3 :Text;
+          }
+        }
+        """
+        mod = self.compile(schema)
+        XXX
+
