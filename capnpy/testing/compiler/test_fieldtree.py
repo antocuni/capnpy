@@ -149,4 +149,8 @@ class TestFieldTree(CompilerTest):
         foo = self.find_struct(m, 'Foo')
         tree = FieldTree(m, foo.struct.fields)
         varnames = [node.varname for node in tree.allslots()]
+        assert varnames == ['a', 'bar_c', 'baz_e']
+        #
+        tree = FieldTree(m, foo.struct.fields, union_default='_undefined')
+        varnames = [node.varname for node in tree.allslots()]
         assert varnames == ['a', 'bar_c', 'baz_e', 'baz_f']
