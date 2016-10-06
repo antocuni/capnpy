@@ -16,12 +16,31 @@ class Structor(object):
     Some terminology:
       - argnames: the name of arguments taken by the ctor
       - params: [(argname, default)], for each argname in argnames
+
+    The **private** constructor is a static method which build and return a
+    buffer. The **public** constructor is a classmethod which return a fully
+    constructed object around the buffer returned by the private constructor::
+
+        # private constructor
+        @staticmethod
+        def __new(x, y):
+            ...
+            return builder.build(x, y)
+
+        # public constructor
+        @classmethod
+        def new(cls, x, y):
+            buf = cls.__new(x, y)
+            return cls.from_buffer(buf, ...)
     """
 
-    def __init__(self, m, name, data_size, ptrs_size, fields,
+    def __init__(self, m, suffix, data_size, ptrs_size, fields,
                  tag_offset=None, tag_value=None):
         self.m = m
-        self.name = name
+        self.name = 'new'
+        if suffix:
+            self.name += '_' + suffix
+        self.private_name = '__' + self.name
         self.fieldtree = FieldTree(m, fields)
         self.tag_value = tag_value
         self._init_layout(data_size, ptrs_size, tag_offset)
@@ -43,21 +62,29 @@ class Structor(object):
             return
         self.argnames, self.params = self.fieldtree.get_args_and_params()
 
-    def declare(self, code):
-        if self._unsupported is not None:
-            return self._decl_unsupported(code)
-        else:
-            return self._decl_ctor(code)
+    def emit_public(self, code, ns):
+        ns.w('@classmethod')
+        with ns.def_(self.name, ['cls'] + self.params):
+            call = code.call('cls.' + self.private_name, self.argnames)
+            ns.w('buf = {call}', call=call)
+            ns.w('return cls.from_buffer(buf, 0, {data_size}, {ptrs_size})')
+        ns.w()
 
-    def _decl_unsupported(self, code):
+    def emit_private(self, code):
+        if self._unsupported is not None:
+            return self._emit_unsupported(code)
+        else:
+            return self._emit_private(code)
+
+    def _emit_unsupported(self, code):
         code.w('@staticmethod')
-        with code.def_(self.name, self.argnames, '*args', '**kwargs'):
+        with code.def_(self.private_name, self.argnames, '*args', '**kwargs'):
             code.w('raise NotImplementedError({msg})', msg=repr(self._unsupported))
 
-    def _decl_ctor(self, code):
+    def _emit_private(self, code):
         ## generate a constructor which looks like this
         ## @staticmethod
-        ## def ctor(x=0, y=0, z=None):
+        ## def __new(x=0, y=0, z=None):
         ##     builder = _StructBuilder('qqq')
         ##     z = builder.alloc_text(16, z)
         ##     buf = builder.build(x, y)
@@ -69,7 +96,7 @@ class Structor(object):
         if len(argnames) != len(set(argnames)):
             raise ValueError("Duplicate field name(s): %s" % argnames)
         code.w('@staticmethod')
-        with code.def_(self.name, self.params):
+        with code.def_(self.private_name, self.params):
             code.w('builder = _StructBuilder({fmt})',
                    fmt=repr(self.layout.fmt))
             if self.tag_value is not None:

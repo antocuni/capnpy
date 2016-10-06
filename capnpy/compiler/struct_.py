@@ -126,8 +126,8 @@ class Node__Struct:
             self._emit_init_nounion(m, ns)
 
     def _emit_init_nounion(self, m, ns):
-        ctor = Structor(m, '__new', ns.data_size, ns.ptrs_size, self.struct.fields)
-        ctor.declare(m.code)
+        ctor = Structor(m, '', ns.data_size, ns.ptrs_size, self.struct.fields)
+        ctor.emit_private(m.code)
         ns.w()
         #
         with ns.def_('__init__', ['self'] + ctor.params):
@@ -150,7 +150,7 @@ class Node__Struct:
         #     if _buf is None:
         #         raise TypeError("one of the following args is required: square, circle")
         #     _Struct.__init__(self, buf, 0, None)
-
+        #
         tree = FieldTree(m, self.struct.fields, union_default='_undefined')
         _, params = tree.get_args_and_params()
         ns.params = m.code.params(params)
@@ -186,17 +186,10 @@ class Node__Struct:
         fields = [f for f in self.struct.fields
                   if not f.is_part_of_union() or f == tag_field]
         tag_name  = m._field_name(tag_field)
-        ctor_name = '__new_' + tag_name
-        ctor = Structor(m, ctor_name, ns.data_size, ns.ptrs_size, fields,
+        ctor = Structor(m, tag_name, ns.data_size, ns.ptrs_size, fields,
                         tag_offset, tag_field.discriminantValue)
-        ctor.declare(m.code)
-        #
-        ns.w('@classmethod')
-        with ns.def_('new_' + tag_name, ['cls'] + ctor.params):
-            call = m.code.call('cls.' + ctor_name, ctor.argnames)
-            ns.w('buf = {call}', call=call)
-            ns.w('return cls.from_buffer(buf, 0, {data_size}, {ptrs_size})')
-        ns.w()
+        ctor.emit_private(m.code)
+        ctor.emit_public(m.code, ns)
         return ctor.argnames
 
     def _emit_repr(self, m):
