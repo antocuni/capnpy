@@ -73,6 +73,33 @@ class TestSpecificCtors(BaseTestUnionConstructors):
         assert p.area == 1
         assert p.perimeter == 2
 
+    def test_args_order(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Shape {
+          area @0 :Int64;
+          perimeter @1 :Int64;
+          union {
+            circle @2 :Int64;      # radius
+            square @3 :Int64;      # width
+            empty  @4 :Void;
+          }
+          color @5 :Text;
+        }
+        """
+        mod = self.compile(schema)
+        # the order is: area, perimeter, [circle/square], color
+        p = mod.Shape.new_empty(1, 2, 'red')
+        assert p.area == 1
+        assert p.perimeter == 2
+        assert p.color == 'red'
+        #
+        p = mod.Shape.new_square(1, 2, 3, 'red')
+        assert p.area == 1
+        assert p.perimeter == 2
+        assert p.square == 3
+        assert p.color == 'red'
+
 
 class TestGenericCtor(BaseTestUnionConstructors):
 
