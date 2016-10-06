@@ -98,3 +98,8 @@ def test_hash_str():
     h = b.hash_str(p, 0, 0, additional_size=0)
     assert h == hash("hello capnproto\0")
 
+def test_hash_str_exception():
+    buf = ''
+    p = ptr.new_struct(0, 1, 1) # this is the wrong type of pointer
+    b = CapnpBuffer(buf)
+    py.test.raises(AssertionError, "b.hash_str(p, 0, 0, 0)")
