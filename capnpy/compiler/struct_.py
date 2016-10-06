@@ -116,15 +116,16 @@ class Node__Struct:
         ns.w()
 
     def _emit_ctors(self, m):
-        if self.struct.discriminantCount:
-            self._emit_ctors_union(m)
-        else:
-            self._emit_ctor_nounion(m)
-
-    def _emit_ctor_nounion(self, m):
         ns = m.code.new_scope()
         ns.data_size = self.struct.dataWordCount
         ns.ptrs_size = self.struct.pointerCount
+        if self.struct.discriminantCount:
+            tags = self._emit_ctors_union(m, ns)
+            self._emit_init_union(m, ns, tags)
+        else:
+            self._emit_init_nounion(m, ns)
+
+    def _emit_init_nounion(self, m, ns):
         ctor = Structor(m, '__new', ns.data_size, ns.ptrs_size, self.struct.fields)
         ctor.declare(m.code)
         ns.w()
@@ -135,32 +136,7 @@ class Node__Struct:
             ns.w('_Struct.__init__(self, buf, 0, {data_size}, {ptrs_size})')
         ns.w()
 
-    def _emit_ctors_union(self, m):
-        # suppose we have a tag whose members are 'circle' and 'square': we
-        # create three ctors:
-        #
-        #     def __init__(self, x, y, square=undefined, circle=undefined):
-        #
-        #     @classmethod
-        #     def new_square(cls, x, y): ...
-        #
-        #     @classmethod
-        #     def new_circle(cls, x, y): ...
-        #
-        # when calling __init__, one and only one of square and circle must be given. 
-        #
-        ns = m.code.new_scope()
-        ns.data_size = self.struct.dataWordCount
-        ns.ptrs_size = self.struct.pointerCount
-        #
-        # create the specific ctors
-        tags = [] # [(f, args)]
-        for f in self.struct.fields:
-            if f.is_part_of_union():
-                args = self._emit_ctor_union_specific(m, ns, f)
-                tags.append((f, args))
-
-        # finally, create the __init__
+    def _emit_init_union(self, m, ns, tags):
         # def __init__(cls, x, y, square=undefined, circle=undefined):
         #     _buf = None
         #     _curtag = None
@@ -197,7 +173,15 @@ class Node__Struct:
             ns.w('_Struct.__init__(self, _buf, 0, {data_size}, {ptrs_size})')
         ns.w()
 
-    def _emit_ctor_union_specific(self, m, ns, tag_field):
+    def _emit_ctors_union(self, m, ns):
+        tags = [] # [(f, args)]
+        for f in self.struct.fields:
+            if f.is_part_of_union():
+                args = self._emit_one_ctor_union(m, ns, f)
+                tags.append((f, args))
+        return tags
+
+    def _emit_one_ctor_union(self, m, ns, tag_field):
         tag_offset = self.struct.discriminantOffset * 2
         fields = [f for f in self.struct.fields
                   if not f.is_part_of_union() or f == tag_field]
