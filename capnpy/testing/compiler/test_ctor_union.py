@@ -116,21 +116,38 @@ class TestGenericCtor(BaseTestUnionConstructors):
         assert p.is_empty()
 
 
-class TestMisc(CompilerTest):
+class TestNamedUnion(CompilerTest):
 
-    @pytest.mark.xfail
-    def test_named_union(self):
+    @py.test.fixture
+    def mod(self):
         schema = """
         @0xbf5147cbbecf40c1;
-        struct Field {
+        struct Person {
           name @0 :Text;
-          type :union {
-              int @1 :Void;
-              float @2 :Void;
-              pointer @3 :Text;
+          job :union {
+              unemployed @1 :Void;
+              retired @2 :Void;
+              worker @3 :Text;
           }
         }
         """
-        mod = self.compile(schema)
-        XXX
+        return self.compile(schema)
 
+    def test_specific(self, mod):
+        p = mod.Person.new_unemployed(name='foo')
+        assert p.name == 'foo'
+        assert p.job.is_unemployed()
+        #
+        p = mod.Person.new_retired(name='foo')
+        assert p.name == 'foo'
+        assert p.job.is_retired()
+        #
+        p = mod.Person.new_worker(name='foo', worker='capnpy')
+        assert p.name == 'foo'
+        assert p.job.worker == 'capnpy'
+
+    @py.test.mark.xfail
+    def test_generic(self, mod):
+        p = mod.Person(name='foo', unemployed=None)
+        assert p.name == 'foo'
+        assert p.job.is_unemployed()

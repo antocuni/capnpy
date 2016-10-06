@@ -123,8 +123,13 @@ class Node__Struct:
         if self.struct.is_union():
             tags = self._emit_ctors_union(m, ns)
             self._emit_init_union(m, ns, tags)
-        ## elif named_union:
-        ##     XXX
+        elif named_union:
+            # Unfortunately, general support for named unions is not ready yet
+            # :(
+            # temporary(?) hack: special-case structs which have a single
+            # named union and provide constructors as if it were an anonymous
+            # union.
+            self._emit_ctors_named_union(m, ns, named_union)
         else:
             self._emit_init_nounion(m, ns)
 
@@ -179,20 +184,34 @@ class Node__Struct:
         tags = [] # [(f, args)]
         for f in self.struct.fields:
             if f.is_part_of_union():
-                args = self._emit_one_ctor_union(m, ns, f)
-                tags.append((f, args))
+                tag_field = f
+                fields = [f for f in self.struct.fields
+                          if not f.is_part_of_union() or f == tag_field]
+                args = self._emit_one_ctor_union(m, ns, fields, tag_field)
+                tags.append((tag_field, args))
         return tags
 
-    def _emit_one_ctor_union(self, m, ns, tag_field):
+    def _emit_one_ctor_union(self, m, ns, fields, tag_field):
         tag_offset = self.struct.discriminantOffset * 2
-        fields = [f for f in self.struct.fields
-                  if not f.is_part_of_union() or f == tag_field]
         tag_name  = m._field_name(tag_field)
         ctor = Structor(m, tag_name, ns.data_size, ns.ptrs_size, fields,
                         tag_offset, tag_field.discriminantValue)
         ctor.emit_private(m.code)
         ctor.emit_public(m.code, ns)
         return ctor.argnames
+
+    def _emit_ctors_named_union(self, m, ns, named_union):
+        # hack hack hack: try to generate the same code as if it were an
+        # anonymous union
+        #
+        # emit the private/public constructors
+        group = m.allnodes[named_union.group.typeId]
+        other_fields = list(self.struct.fields)
+        other_fields.remove(named_union)
+        for tag_field in group.struct.fields:
+            fields = other_fields + [tag_field]
+            self._emit_one_ctor_union(m, ns, fields, tag_field)
+
 
     def _emit_repr(self, m):
         # def shortrepr(self):
