@@ -129,7 +129,8 @@ class Node__Struct:
             # temporary(?) hack: special-case structs which have a single
             # named union and provide constructors as if it were an anonymous
             # union.
-            self._emit_ctors_named_union(m, ns, named_union)
+            tags = self._emit_ctors_named_union(m, ns, named_union)
+            self._emit_init_union(m, ns, tags, named_union=named_union)
         else:
             self._emit_init_nounion(m, ns)
 
@@ -143,7 +144,7 @@ class Node__Struct:
             ns.w('_Struct.__init__(self, _buf, 0, {data_size}, {ptrs_size})')
         ns.w()
 
-    def _emit_init_union(self, m, ns, tags):
+    def _emit_init_union(self, m, ns, tags, named_union=None):
         # def __init__(cls, x, y, square=undefined, circle=undefined):
         #     _buf = None
         #     _curtag = None
@@ -164,10 +165,24 @@ class Node__Struct:
         with ns.block('def __init__(self, {params}):'):
             ns.w('_buf = None')
             ns.w('_curtag = None')
+            #
+            ns.prefix = ''
+            if named_union:
+                # hack hack support for named union; hopefully this will all go away
+                mynodes = [node for node in tree.children if node.f == named_union]
+                assert len(mynodes) == 1
+                mynodes[0].emit_unpack_group(m.code)
+                ns.prefix = named_union.name + '_'
+            #
             for tag_field, ctor_args in tags:
                 ns.tagname = m._field_name(tag_field)
-                with ns.block('if {tagname} is not _undefined:'):
+                with ns.block('if {prefix}{tagname} is not _undefined:'):
                     ns.w('_curtag = _check_tag(_curtag, {tagname!r})')
+                    if ns.prefix:
+                        # hack hack; moreover, this has a risk of a name clash
+                        # in case the fields inside and outside the union have
+                        # the same names
+                        ns.w('{tagname} = {prefix}{tagname}')
                     ns.w('_buf = self.__new_{tagname}({args})',
                          args=m.code.args(ctor_args))
             #
@@ -191,13 +206,14 @@ class Node__Struct:
                 tags.append((tag_field, args))
         return tags
 
-    def _emit_one_ctor_union(self, m, ns, fields, tag_field):
+    def _emit_one_ctor_union(self, m, ns, fields, tag_field, emit_public=True):
         tag_offset = self.struct.discriminantOffset * 2
         tag_name  = m._field_name(tag_field)
         ctor = Structor(m, tag_name, ns.data_size, ns.ptrs_size, fields,
                         tag_offset, tag_field.discriminantValue)
         ctor.emit_private(m.code)
-        ctor.emit_public(m.code, ns)
+        if emit_public:
+            ctor.emit_public(m.code, ns)
         return ctor.argnames
 
     def _emit_ctors_named_union(self, m, ns, named_union):
@@ -208,10 +224,14 @@ class Node__Struct:
         group = m.allnodes[named_union.group.typeId]
         other_fields = list(self.struct.fields)
         other_fields.remove(named_union)
+        #
+        tags = []
         for tag_field in group.struct.fields:
             fields = other_fields + [tag_field]
-            self._emit_one_ctor_union(m, ns, fields, tag_field)
-
+            args = self._emit_one_ctor_union(m, ns, fields, tag_field,
+                                             emit_public=False)
+            tags.append((tag_field, args))
+        return tags
 
     def _emit_repr(self, m):
         # def shortrepr(self):

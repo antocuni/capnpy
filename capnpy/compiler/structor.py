@@ -130,11 +130,7 @@ class Structor(object):
             code.w('return buf')
 
     def handle_group(self, code, node):
-        ns = code.new_scope()
-        ns.group = node.varname
-        argnames = [child.varname for child in node.children]
-        ns.args = code.args(argnames)
-        ns.w('{args}, = {group}')
+        node.emit_unpack_group(code)
 
     def handle_nullable(self, code, node):
         # def __init__(self, ..., x, ...):
