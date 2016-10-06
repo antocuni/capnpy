@@ -1,10 +1,10 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2016-04-27 21:46
+# generated on 2016-10-06 18:10
 
 from capnpy.ptr import E_IS_FAR_POINTER as _E_IS_FAR_POINTER
 from capnpy.struct_ import Struct as _Struct
-from capnpy.struct_ import assert_undefined as _assert_undefined
+from capnpy.struct_ import check_tag as _check_tag
 from capnpy.struct_ import undefined as _undefined
 from capnpy.enum import enum as _enum
 from capnpy.blob import Types as _Types
