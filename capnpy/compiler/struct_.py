@@ -119,9 +119,12 @@ class Node__Struct:
         ns = m.code.new_scope()
         ns.data_size = self.struct.dataWordCount
         ns.ptrs_size = self.struct.pointerCount
-        if self.struct.discriminantCount:
+        named_union = self.struct.get_unique_named_union(m)
+        if self.struct.is_union():
             tags = self._emit_ctors_union(m, ns)
             self._emit_init_union(m, ns, tags)
+        ## elif named_union:
+        ##     XXX
         else:
             self._emit_init_nounion(m, ns)
 

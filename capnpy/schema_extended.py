@@ -55,9 +55,9 @@ class Field:
 
     def __repr__(self):
         if self.is_slot():
-            return '<Field %s: %s>' % (self.name, self.slot.type.which())
+            return "<Field '%s': %s>" % (self.name, self.slot.type.which())
         else:
-            return '<Field %s: %s>' % (self.name, self.which())
+            return "<Field '%s': %s>" % (self.name, self.which())
 
     def _equals(self, other):
         return self.__key() == other.__key()
@@ -164,6 +164,22 @@ class Node:
         return self
 
 
+@Node_struct.__extend__
+class Node_struct:
+
+    def is_union(self):
+        return self.discriminantCount > 0
+
+    def get_unique_named_union(self, m):
+        unions = []
+        for f in self.fields:
+            if f.is_group():
+                group = m.allnodes[f.group.typeId]
+                if group.struct.is_union():
+                    unions.append(f)
+        if len(unions) == 1:
+            return unions[0]
+        return None
 
 class Field__Slot(Field): pass
 class Field__Group(Field): pass
