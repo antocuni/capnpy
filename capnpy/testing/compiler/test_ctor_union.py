@@ -95,7 +95,7 @@ class TestGenericCtor(BaseTestUnionConstructors):
         einfo = py.test.raises(TypeError,
                               "mod.Shape(area=0, perimeter=0, circle=1, square=2)")
         assert str(einfo.value) == ('got multiple values for the union tag: '
-                                    'square, circle')
+                                    'circle, square')
 
     def test_no_tags(self, mod):
         einfo = py.test.raises(TypeError, "mod.Shape(area=0, perimeter=0)")

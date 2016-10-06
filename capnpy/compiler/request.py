@@ -44,7 +44,7 @@ class RequestedFile:
         m.w("")
         m.w("from capnpy.ptr {cimport} E_IS_FAR_POINTER as _E_IS_FAR_POINTER")
         m.w("from capnpy.struct_ {cimport} Struct as _Struct")
-        m.w("from capnpy.struct_ {cimport} assert_undefined as _assert_undefined")
+        m.w("from capnpy.struct_ {cimport} check_tag as _check_tag")
         m.w("from capnpy.struct_ import undefined as _undefined")
         m.w("from capnpy.enum import enum as _enum")
         m.w("from capnpy.blob import Types as _Types")

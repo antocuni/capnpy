@@ -10,6 +10,12 @@ def assert_undefined(val, name, other_name):
         raise TypeError("got multiple values for the union tag: %s, %s" %
                         (name, other_name))
 
+def check_tag(curtag, newtag):
+    if curtag is not None:
+        raise TypeError("got multiple values for the union tag: %s, %s" %
+                        (curtag, newtag))
+    return newtag
+
 
 def struct_from_buffer(cls, buf, offset, data_size, ptrs_size):
     """

@@ -162,41 +162,39 @@ class Node__Struct:
 
         # finally, create the __init__
         # def __init__(cls, x, y, square=undefined, circle=undefined):
+        #     _buf = None
+        #     _curtag = None
         #     if square is not undefined:
-        #         _assert_undefined(circle, 'circle', 'square')
-        #         buf = cls.__new_squadre(x=x, y=y)
-        #         _Struct.__init__(self, buf, 0, None)
-        #         return
+        #         _curtag = _check_tag(_curtag, 'square')
+        #         _buf = cls.__new_squadre(x=x, y=y)
         #     if circle is not undefined:
-        #         _assert_undefined(square, 'square', 'circle')
-        #         buf = cls.__new_circle(x=x, y=y)
-        #         _Struct.__init__(self, buf, 0, None)
-        #         return
-        #     raise TypeError("one of the following args is required: square, circle")
+        #         _curtag = _check_tag(_curtag, 'circle')
+        #         _buf = cls.__new_circle(x=x, y=y)
+        #
+        #     if _buf is None:
+        #         raise TypeError("one of the following args is required: square, circle")
+        #     _Struct.__init__(self, buf, 0, None)
+
         tree = FieldTree(m, self.struct.fields, union_default='_undefined')
         _, params = tree.get_args_and_params()
         ns.params = m.code.params(params)
         with ns.block('def __init__(self, {params}):'):
+            ns.w('_buf = None')
+            ns.w('_curtag = None')
             for tag_field, ctor_args in tags:
-                tag_field_name = m._field_name(tag_field)
-                with ns.block('if {name} is not _undefined:', name=tag_field_name):
-                    # emit the series of _assert_undefined, for each other tag field
-                    for other_tag_field, _ in tags:
-                        if other_tag_field is tag_field:
-                            continue
-                        ns.w('_assert_undefined({fname}, "{fname}", "{myname}")',
-                             fname=m._field_name(other_tag_field),
-                             myname=tag_field_name)
-                    #
-                    ns.w('buf = self.__new_{ctor}({args})',
-                         ctor=tag_field_name, args=m.code.args(ctor_args))
-                    ns.w('_Struct.__init__(self, buf, 0, {data_size}, {ptrs_size})')
-                    ns.w('return')
+                ns.tagname = m._field_name(tag_field)
+                with ns.block('if {tagname} is not _undefined:'):
+                    ns.w('_curtag = _check_tag(_curtag, {tagname!r})')
+                    ns.w('_buf = self.__new_{tagname}({args})',
+                         args=m.code.args(ctor_args))
             #
-            tag_names = [m._field_name(f) for f, _ in tags]
-            tag_names = ', '.join(tag_names)
-            ns.w('raise TypeError("one of the following args is required: {tags}")',
-                 tags=tag_names)
+            with ns.block('if _buf is None:'):
+                ns.tags = [m._field_name(f) for f, _ in tags]
+                ns.tags = ', '.join(ns.tags)
+                ns.w('raise TypeError("one of the following args is required: '
+                     '{tags}")')
+            #
+            ns.w('_Struct.__init__(self, _buf, 0, {data_size}, {ptrs_size})')
         ns.w()
 
     def _emit_ctor_union_specific(self, m, ns, tag_field):
