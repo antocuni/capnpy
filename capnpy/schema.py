@@ -1,10 +1,10 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2016-09-28 15:28
+# generated on 2016-10-06 18:06
 
 from capnpy.ptr import E_IS_FAR_POINTER as _E_IS_FAR_POINTER
 from capnpy.struct_ import Struct as _Struct
-from capnpy.struct_ import assert_undefined as _assert_undefined
+from capnpy.struct_ import check_tag as _check_tag
 from capnpy.struct_ import undefined as _undefined
 from capnpy.enum import enum as _enum
 from capnpy.blob import Types as _Types
@@ -144,13 +144,13 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new(id, name):
+    def __new(id=0, name=None):
         builder = _StructBuilder('Qq')
         name = builder.alloc_text(8, name)
         buf = builder.build(id, name)
         return buf
     
-    def __init__(self, id, name):
+    def __init__(self, id=0, name=None):
         buf = self.__new(id, name)
         _Struct.__init__(self, buf, 0, 1, 1)
     
@@ -204,14 +204,14 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new(id, filename, imports):
+    def __new(id=0, filename=None, imports=None):
         builder = _StructBuilder('Qqq')
         filename = builder.alloc_text(8, filename)
         imports = builder.alloc_list(16, _StructList, CodeGeneratorRequest.RequestedFile.Import, imports)
         buf = builder.build(id, filename, imports)
         return buf
     
-    def __init__(self, id, filename, imports):
+    def __init__(self, id=0, filename=None, imports=None):
         buf = self.__new(id, filename, imports)
         _Struct.__init__(self, buf, 0, 1, 2)
     
@@ -261,14 +261,14 @@ class CodeGeneratorRequest(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new(nodes, requestedFiles):
+    def __new(nodes=None, requestedFiles=None):
         builder = _StructBuilder('qq')
         nodes = builder.alloc_list(0, _StructList, Node, nodes)
         requestedFiles = builder.alloc_list(8, _StructList, CodeGeneratorRequest.RequestedFile, requestedFiles)
         buf = builder.build(nodes, requestedFiles)
         return buf
     
-    def __init__(self, nodes, requestedFiles):
+    def __init__(self, nodes=None, requestedFiles=None):
         buf = self.__new(nodes, requestedFiles)
         _Struct.__init__(self, buf, 0, 0, 2)
     
@@ -402,7 +402,7 @@ class Method(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new(name, codeOrder, paramStructType, resultStructType, annotations, paramBrand, resultBrand, implicitParameters):
+    def __new(name=None, codeOrder=0, paramStructType=0, resultStructType=0, annotations=None, paramBrand=None, resultBrand=None, implicitParameters=None):
         builder = _StructBuilder('HxxxxxxQQqqqqq')
         name = builder.alloc_text(24, name)
         annotations = builder.alloc_list(32, _StructList, Annotation, annotations)
@@ -412,7 +412,7 @@ class Method(_Struct):
         buf = builder.build(codeOrder, paramStructType, resultStructType, name, annotations, paramBrand, resultBrand, implicitParameters)
         return buf
     
-    def __init__(self, name, codeOrder, paramStructType, resultStructType, annotations, paramBrand, resultBrand, implicitParameters):
+    def __init__(self, name=None, codeOrder=0, paramStructType=0, resultStructType=0, annotations=None, paramBrand=None, resultBrand=None, implicitParameters=None):
         buf = self.__new(name, codeOrder, paramStructType, resultStructType, annotations, paramBrand, resultBrand, implicitParameters)
         _Struct.__init__(self, buf, 0, 3, 5)
     
@@ -471,14 +471,14 @@ class Enumerant(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new(name, codeOrder, annotations):
+    def __new(name=None, codeOrder=0, annotations=None):
         builder = _StructBuilder('Hxxxxxxqq')
         name = builder.alloc_text(8, name)
         annotations = builder.alloc_list(16, _StructList, Annotation, annotations)
         buf = builder.build(codeOrder, name, annotations)
         return buf
     
-    def __init__(self, name, codeOrder, annotations):
+    def __init__(self, name=None, codeOrder=0, annotations=None):
         buf = self.__new(name, codeOrder, annotations)
         _Struct.__init__(self, buf, 0, 1, 2)
     
@@ -513,12 +513,12 @@ class Type_anyPointer_parameter(_Struct):
         return value
     
     @staticmethod
-    def __new(scopeId, parameterIndex):
+    def __new(scopeId=0, parameterIndex=0):
         builder = _StructBuilder('xxxxxxxxxxHxxxxQxxxxxxxx')
         buf = builder.build(parameterIndex, scopeId)
         return buf
     
-    def __init__(self, scopeId, parameterIndex):
+    def __init__(self, scopeId=0, parameterIndex=0):
         buf = self.__new(scopeId, parameterIndex)
         _Struct.__init__(self, buf, 0, 3, 1)
     
@@ -544,12 +544,12 @@ class Type_anyPointer_implicitMethodParameter(_Struct):
         return value
     
     @staticmethod
-    def __new(parameterIndex):
+    def __new(parameterIndex=0):
         builder = _StructBuilder('xxxxxxxxxxHxxxxxxxxxxxxxxxxxxxx')
         buf = builder.build(parameterIndex)
         return buf
     
-    def __init__(self, parameterIndex):
+    def __init__(self, parameterIndex=0):
         buf = self.__new(parameterIndex)
         _Struct.__init__(self, buf, 0, 3, 1)
     
@@ -589,7 +589,7 @@ class Type_anyPointer(_Struct):
         return obj
     
     @staticmethod
-    def Parameter(scopeId, parameterIndex):
+    def Parameter(scopeId=0, parameterIndex=0):
         return scopeId, parameterIndex,
     
     @property
@@ -601,64 +601,59 @@ class Type_anyPointer(_Struct):
         return obj
     
     @staticmethod
-    def Implicitmethodparameter(parameterIndex):
+    def Implicitmethodparameter(parameterIndex=0):
         return parameterIndex,
     
     @staticmethod
-    def __new_unconstrained(unconstrained):
+    def __new_unconstrained():
         builder = _StructBuilder('xxxxxxxxhxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 0
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_unconstrained(cls, unconstrained):
-        buf = cls.__new_unconstrained(unconstrained)
+    def new_unconstrained(cls):
+        buf = cls.__new_unconstrained()
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_parameter(parameter):
+    def __new_parameter(parameter=(0, 0,)):
         builder = _StructBuilder('xxxxxxxxhHxxxxQxxxxxxxx')
         __which__ = 1
-        parameter_0, parameter_1, = parameter
-        buf = builder.build(__which__, parameter_1, parameter_0)
+        parameter_scopeId, parameter_parameterIndex, = parameter
+        buf = builder.build(__which__, parameter_parameterIndex, parameter_scopeId)
         return buf
     @classmethod
-    def new_parameter(cls, parameter):
+    def new_parameter(cls, parameter=(0, 0,)):
         buf = cls.__new_parameter(parameter)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_implicitMethodParameter(implicitMethodParameter):
+    def __new_implicitMethodParameter(implicitMethodParameter=(0,)):
         builder = _StructBuilder('xxxxxxxxhHxxxxxxxxxxxxxxxxxxxx')
         __which__ = 2
-        implicitMethodParameter_0, = implicitMethodParameter
-        buf = builder.build(__which__, implicitMethodParameter_0)
+        implicitMethodParameter_parameterIndex, = implicitMethodParameter
+        buf = builder.build(__which__, implicitMethodParameter_parameterIndex)
         return buf
     @classmethod
-    def new_implicitMethodParameter(cls, implicitMethodParameter):
+    def new_implicitMethodParameter(cls, implicitMethodParameter=(0,)):
         buf = cls.__new_implicitMethodParameter(implicitMethodParameter)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    def __init__(self, unconstrained=_undefined, parameter=_undefined, implicitMethodParameter=_undefined):
+    def __init__(self, unconstrained=_undefined, parameter=(0, 0,), implicitMethodParameter=(0,)):
+        _buf = None
+        _curtag = None
         if unconstrained is not _undefined:
-            _assert_undefined(parameter, "parameter", "unconstrained")
-            _assert_undefined(implicitMethodParameter, "implicitMethodParameter", "unconstrained")
-            buf = self.__new_unconstrained(unconstrained=unconstrained)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'unconstrained')
+            _buf = self.__new_unconstrained()
         if parameter is not _undefined:
-            _assert_undefined(unconstrained, "unconstrained", "parameter")
-            _assert_undefined(implicitMethodParameter, "implicitMethodParameter", "parameter")
-            buf = self.__new_parameter(parameter=parameter)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'parameter')
+            _buf = self.__new_parameter(parameter)
         if implicitMethodParameter is not _undefined:
-            _assert_undefined(unconstrained, "unconstrained", "implicitMethodParameter")
-            _assert_undefined(parameter, "parameter", "implicitMethodParameter")
-            buf = self.__new_implicitMethodParameter(implicitMethodParameter=implicitMethodParameter)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
-        raise TypeError("one of the following args is required: unconstrained, parameter, implicitMethodParameter")
+            _curtag = _check_tag(_curtag, 'implicitMethodParameter')
+            _buf = self.__new_implicitMethodParameter(implicitMethodParameter)
+        if _buf is None:
+            raise TypeError("one of the following args is required: unconstrained, parameter, implicitMethodParameter")
+        _Struct.__init__(self, _buf, 0, 3, 1)
     
     def shortrepr(self):
         parts = []
@@ -708,13 +703,13 @@ class Type_struct(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new(typeId, brand):
+    def __new(typeId=0, brand=None):
         builder = _StructBuilder('xxxxxxxxQxxxxxxxxq')
         brand = builder.alloc_struct(24, Brand, brand)
         buf = builder.build(typeId, brand)
         return buf
     
-    def __init__(self, typeId, brand):
+    def __init__(self, typeId=0, brand=None):
         buf = self.__new(typeId, brand)
         _Struct.__init__(self, buf, 0, 3, 1)
     
@@ -765,13 +760,13 @@ class Type_enum(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new(typeId, brand):
+    def __new(typeId=0, brand=None):
         builder = _StructBuilder('xxxxxxxxQxxxxxxxxq')
         brand = builder.alloc_struct(24, Brand, brand)
         buf = builder.build(typeId, brand)
         return buf
     
-    def __init__(self, typeId, brand):
+    def __init__(self, typeId=0, brand=None):
         buf = self.__new(typeId, brand)
         _Struct.__init__(self, buf, 0, 3, 1)
     
@@ -822,13 +817,13 @@ class Type_interface(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new(typeId, brand):
+    def __new(typeId=0, brand=None):
         builder = _StructBuilder('xxxxxxxxQxxxxxxxxq')
         brand = builder.alloc_struct(24, Brand, brand)
         buf = builder.build(typeId, brand)
         return buf
     
-    def __init__(self, typeId, brand):
+    def __init__(self, typeId=0, brand=None):
         buf = self.__new(typeId, brand)
         _Struct.__init__(self, buf, 0, 3, 1)
     
@@ -871,13 +866,13 @@ class Type_list(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new(elementType):
+    def __new(elementType=None):
         builder = _StructBuilder('xxxxxxxxxxxxxxxxxxxxxxxxq')
         elementType = builder.alloc_struct(24, Type, elementType)
         buf = builder.build(elementType)
         return buf
     
-    def __init__(self, elementType):
+    def __init__(self, elementType=None):
         buf = self.__new(elementType)
         _Struct.__init__(self, buf, 0, 3, 1)
     
@@ -1014,7 +1009,7 @@ class Type(_Struct):
         return obj
     
     @staticmethod
-    def List(elementType):
+    def List(elementType=None):
         return elementType,
     
     @property
@@ -1026,7 +1021,7 @@ class Type(_Struct):
         return obj
     
     @staticmethod
-    def Enum(typeId, brand):
+    def Enum(typeId=0, brand=None):
         return typeId, brand,
     
     @property
@@ -1038,7 +1033,7 @@ class Type(_Struct):
         return obj
     
     @staticmethod
-    def Struct(typeId, brand):
+    def Struct(typeId=0, brand=None):
         return typeId, brand,
     
     @property
@@ -1050,7 +1045,7 @@ class Type(_Struct):
         return obj
     
     @staticmethod
-    def Interface(typeId, brand):
+    def Interface(typeId=0, brand=None):
         return typeId, brand,
     
     @property
@@ -1062,643 +1057,292 @@ class Type(_Struct):
         return obj
     
     @staticmethod
-    def Anypointer(unconstrained, parameter, implicitMethodParameter):
-        return unconstrained, parameter, implicitMethodParameter,
+    def Anypointer(parameter=(0, 0,), implicitMethodParameter=(0,)):
+        return parameter, implicitMethodParameter,
     
     @staticmethod
-    def __new_void(void):
+    def __new_void():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 0
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_void(cls, void):
-        buf = cls.__new_void(void)
+    def new_void(cls):
+        buf = cls.__new_void()
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_bool(bool):
+    def __new_bool():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 1
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_bool(cls, bool):
-        buf = cls.__new_bool(bool)
+    def new_bool(cls):
+        buf = cls.__new_bool()
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_int8(int8):
+    def __new_int8():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 2
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_int8(cls, int8):
-        buf = cls.__new_int8(int8)
+    def new_int8(cls):
+        buf = cls.__new_int8()
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_int16(int16):
+    def __new_int16():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 3
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_int16(cls, int16):
-        buf = cls.__new_int16(int16)
+    def new_int16(cls):
+        buf = cls.__new_int16()
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_int32(int32):
+    def __new_int32():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 4
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_int32(cls, int32):
-        buf = cls.__new_int32(int32)
+    def new_int32(cls):
+        buf = cls.__new_int32()
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_int64(int64):
+    def __new_int64():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 5
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_int64(cls, int64):
-        buf = cls.__new_int64(int64)
+    def new_int64(cls):
+        buf = cls.__new_int64()
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_uint8(uint8):
+    def __new_uint8():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 6
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_uint8(cls, uint8):
-        buf = cls.__new_uint8(uint8)
+    def new_uint8(cls):
+        buf = cls.__new_uint8()
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_uint16(uint16):
+    def __new_uint16():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 7
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_uint16(cls, uint16):
-        buf = cls.__new_uint16(uint16)
+    def new_uint16(cls):
+        buf = cls.__new_uint16()
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_uint32(uint32):
+    def __new_uint32():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 8
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_uint32(cls, uint32):
-        buf = cls.__new_uint32(uint32)
+    def new_uint32(cls):
+        buf = cls.__new_uint32()
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_uint64(uint64):
+    def __new_uint64():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 9
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_uint64(cls, uint64):
-        buf = cls.__new_uint64(uint64)
+    def new_uint64(cls):
+        buf = cls.__new_uint64()
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_float32(float32):
+    def __new_float32():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 10
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_float32(cls, float32):
-        buf = cls.__new_float32(float32)
+    def new_float32(cls):
+        buf = cls.__new_float32()
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_float64(float64):
+    def __new_float64():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 11
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_float64(cls, float64):
-        buf = cls.__new_float64(float64)
+    def new_float64(cls):
+        buf = cls.__new_float64()
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_text(text):
+    def __new_text():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 12
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_text(cls, text):
-        buf = cls.__new_text(text)
+    def new_text(cls):
+        buf = cls.__new_text()
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_data(data):
+    def __new_data():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 13
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_data(cls, data):
-        buf = cls.__new_data(data)
+    def new_data(cls):
+        buf = cls.__new_data()
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_list(list):
+    def __new_list(list=(None,)):
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxq')
         __which__ = 14
-        list_0, = list
-        list_0 = builder.alloc_struct(24, Type, list_0)
-        buf = builder.build(__which__, list_0)
+        list_elementType, = list
+        list_elementType = builder.alloc_struct(24, Type, list_elementType)
+        buf = builder.build(__which__, list_elementType)
         return buf
     @classmethod
-    def new_list(cls, list):
+    def new_list(cls, list=(None,)):
         buf = cls.__new_list(list)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_enum(enum):
+    def __new_enum(enum=(0, None,)):
         builder = _StructBuilder('hxxxxxxQxxxxxxxxq')
         __which__ = 15
-        enum_0, enum_1, = enum
-        enum_1 = builder.alloc_struct(24, Brand, enum_1)
-        buf = builder.build(__which__, enum_0, enum_1)
+        enum_typeId, enum_brand, = enum
+        enum_brand = builder.alloc_struct(24, Brand, enum_brand)
+        buf = builder.build(__which__, enum_typeId, enum_brand)
         return buf
     @classmethod
-    def new_enum(cls, enum):
+    def new_enum(cls, enum=(0, None,)):
         buf = cls.__new_enum(enum)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_struct(struct):
+    def __new_struct(struct=(0, None,)):
         builder = _StructBuilder('hxxxxxxQxxxxxxxxq')
         __which__ = 16
-        struct_0, struct_1, = struct
-        struct_1 = builder.alloc_struct(24, Brand, struct_1)
-        buf = builder.build(__which__, struct_0, struct_1)
+        struct_typeId, struct_brand, = struct
+        struct_brand = builder.alloc_struct(24, Brand, struct_brand)
+        buf = builder.build(__which__, struct_typeId, struct_brand)
         return buf
     @classmethod
-    def new_struct(cls, struct):
+    def new_struct(cls, struct=(0, None,)):
         buf = cls.__new_struct(struct)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_interface(interface):
+    def __new_interface(interface=(0, None,)):
         builder = _StructBuilder('hxxxxxxQxxxxxxxxq')
         __which__ = 17
-        interface_0, interface_1, = interface
-        interface_1 = builder.alloc_struct(24, Brand, interface_1)
-        buf = builder.build(__which__, interface_0, interface_1)
+        interface_typeId, interface_brand, = interface
+        interface_brand = builder.alloc_struct(24, Brand, interface_brand)
+        buf = builder.build(__which__, interface_typeId, interface_brand)
         return buf
     @classmethod
-    def new_interface(cls, interface):
+    def new_interface(cls, interface=(0, None,)):
         buf = cls.__new_interface(interface)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @staticmethod
-    def __new_anyPointer(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: (name = "parameter", codeOrder = 1, discriminantValue = 1, group = (typeId = 11372142272178113157), ordinal = (implicit = void))')
+    def __new_anyPointer(anyPointer=((0, 0,), (0,),)):
+        builder = _StructBuilder('hxxxxxxxxHxxxxQxxxxxxxx')
+        __which__ = 18
+        anyPointer_parameter, anyPointer_implicitMethodParameter, = anyPointer
+        anyPointer_parameter_scopeId, anyPointer_parameter_parameterIndex, = anyPointer_parameter
+        anyPointer_implicitMethodParameter_parameterIndex, = anyPointer_implicitMethodParameter
+        buf = builder.build(__which__, anyPointer_parameter_parameterIndex, anyPointer_implicitMethodParameter_parameterIndex, anyPointer_parameter_scopeId)
+        return buf
     @classmethod
-    def new_anyPointer(cls):
-        buf = cls.__new_anyPointer()
+    def new_anyPointer(cls, anyPointer=((0, 0,), (0,),)):
+        buf = cls.__new_anyPointer(anyPointer)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    def __init__(self, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined):
+    def __init__(self, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=(None,), enum=(0, None,), struct=(0, None,), interface=(0, None,), anyPointer=(_undefined, (0, 0,), (0,),)):
+        _buf = None
+        _curtag = None
         if void is not _undefined:
-            _assert_undefined(bool, "bool", "void")
-            _assert_undefined(int8, "int8", "void")
-            _assert_undefined(int16, "int16", "void")
-            _assert_undefined(int32, "int32", "void")
-            _assert_undefined(int64, "int64", "void")
-            _assert_undefined(uint8, "uint8", "void")
-            _assert_undefined(uint16, "uint16", "void")
-            _assert_undefined(uint32, "uint32", "void")
-            _assert_undefined(uint64, "uint64", "void")
-            _assert_undefined(float32, "float32", "void")
-            _assert_undefined(float64, "float64", "void")
-            _assert_undefined(text, "text", "void")
-            _assert_undefined(data, "data", "void")
-            _assert_undefined(list, "list", "void")
-            _assert_undefined(enum, "enum", "void")
-            _assert_undefined(struct, "struct", "void")
-            _assert_undefined(interface, "interface", "void")
-            _assert_undefined(anyPointer, "anyPointer", "void")
-            buf = self.__new_void(void=void)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'void')
+            _buf = self.__new_void()
         if bool is not _undefined:
-            _assert_undefined(void, "void", "bool")
-            _assert_undefined(int8, "int8", "bool")
-            _assert_undefined(int16, "int16", "bool")
-            _assert_undefined(int32, "int32", "bool")
-            _assert_undefined(int64, "int64", "bool")
-            _assert_undefined(uint8, "uint8", "bool")
-            _assert_undefined(uint16, "uint16", "bool")
-            _assert_undefined(uint32, "uint32", "bool")
-            _assert_undefined(uint64, "uint64", "bool")
-            _assert_undefined(float32, "float32", "bool")
-            _assert_undefined(float64, "float64", "bool")
-            _assert_undefined(text, "text", "bool")
-            _assert_undefined(data, "data", "bool")
-            _assert_undefined(list, "list", "bool")
-            _assert_undefined(enum, "enum", "bool")
-            _assert_undefined(struct, "struct", "bool")
-            _assert_undefined(interface, "interface", "bool")
-            _assert_undefined(anyPointer, "anyPointer", "bool")
-            buf = self.__new_bool(bool=bool)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'bool')
+            _buf = self.__new_bool()
         if int8 is not _undefined:
-            _assert_undefined(void, "void", "int8")
-            _assert_undefined(bool, "bool", "int8")
-            _assert_undefined(int16, "int16", "int8")
-            _assert_undefined(int32, "int32", "int8")
-            _assert_undefined(int64, "int64", "int8")
-            _assert_undefined(uint8, "uint8", "int8")
-            _assert_undefined(uint16, "uint16", "int8")
-            _assert_undefined(uint32, "uint32", "int8")
-            _assert_undefined(uint64, "uint64", "int8")
-            _assert_undefined(float32, "float32", "int8")
-            _assert_undefined(float64, "float64", "int8")
-            _assert_undefined(text, "text", "int8")
-            _assert_undefined(data, "data", "int8")
-            _assert_undefined(list, "list", "int8")
-            _assert_undefined(enum, "enum", "int8")
-            _assert_undefined(struct, "struct", "int8")
-            _assert_undefined(interface, "interface", "int8")
-            _assert_undefined(anyPointer, "anyPointer", "int8")
-            buf = self.__new_int8(int8=int8)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'int8')
+            _buf = self.__new_int8()
         if int16 is not _undefined:
-            _assert_undefined(void, "void", "int16")
-            _assert_undefined(bool, "bool", "int16")
-            _assert_undefined(int8, "int8", "int16")
-            _assert_undefined(int32, "int32", "int16")
-            _assert_undefined(int64, "int64", "int16")
-            _assert_undefined(uint8, "uint8", "int16")
-            _assert_undefined(uint16, "uint16", "int16")
-            _assert_undefined(uint32, "uint32", "int16")
-            _assert_undefined(uint64, "uint64", "int16")
-            _assert_undefined(float32, "float32", "int16")
-            _assert_undefined(float64, "float64", "int16")
-            _assert_undefined(text, "text", "int16")
-            _assert_undefined(data, "data", "int16")
-            _assert_undefined(list, "list", "int16")
-            _assert_undefined(enum, "enum", "int16")
-            _assert_undefined(struct, "struct", "int16")
-            _assert_undefined(interface, "interface", "int16")
-            _assert_undefined(anyPointer, "anyPointer", "int16")
-            buf = self.__new_int16(int16=int16)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'int16')
+            _buf = self.__new_int16()
         if int32 is not _undefined:
-            _assert_undefined(void, "void", "int32")
-            _assert_undefined(bool, "bool", "int32")
-            _assert_undefined(int8, "int8", "int32")
-            _assert_undefined(int16, "int16", "int32")
-            _assert_undefined(int64, "int64", "int32")
-            _assert_undefined(uint8, "uint8", "int32")
-            _assert_undefined(uint16, "uint16", "int32")
-            _assert_undefined(uint32, "uint32", "int32")
-            _assert_undefined(uint64, "uint64", "int32")
-            _assert_undefined(float32, "float32", "int32")
-            _assert_undefined(float64, "float64", "int32")
-            _assert_undefined(text, "text", "int32")
-            _assert_undefined(data, "data", "int32")
-            _assert_undefined(list, "list", "int32")
-            _assert_undefined(enum, "enum", "int32")
-            _assert_undefined(struct, "struct", "int32")
-            _assert_undefined(interface, "interface", "int32")
-            _assert_undefined(anyPointer, "anyPointer", "int32")
-            buf = self.__new_int32(int32=int32)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'int32')
+            _buf = self.__new_int32()
         if int64 is not _undefined:
-            _assert_undefined(void, "void", "int64")
-            _assert_undefined(bool, "bool", "int64")
-            _assert_undefined(int8, "int8", "int64")
-            _assert_undefined(int16, "int16", "int64")
-            _assert_undefined(int32, "int32", "int64")
-            _assert_undefined(uint8, "uint8", "int64")
-            _assert_undefined(uint16, "uint16", "int64")
-            _assert_undefined(uint32, "uint32", "int64")
-            _assert_undefined(uint64, "uint64", "int64")
-            _assert_undefined(float32, "float32", "int64")
-            _assert_undefined(float64, "float64", "int64")
-            _assert_undefined(text, "text", "int64")
-            _assert_undefined(data, "data", "int64")
-            _assert_undefined(list, "list", "int64")
-            _assert_undefined(enum, "enum", "int64")
-            _assert_undefined(struct, "struct", "int64")
-            _assert_undefined(interface, "interface", "int64")
-            _assert_undefined(anyPointer, "anyPointer", "int64")
-            buf = self.__new_int64(int64=int64)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'int64')
+            _buf = self.__new_int64()
         if uint8 is not _undefined:
-            _assert_undefined(void, "void", "uint8")
-            _assert_undefined(bool, "bool", "uint8")
-            _assert_undefined(int8, "int8", "uint8")
-            _assert_undefined(int16, "int16", "uint8")
-            _assert_undefined(int32, "int32", "uint8")
-            _assert_undefined(int64, "int64", "uint8")
-            _assert_undefined(uint16, "uint16", "uint8")
-            _assert_undefined(uint32, "uint32", "uint8")
-            _assert_undefined(uint64, "uint64", "uint8")
-            _assert_undefined(float32, "float32", "uint8")
-            _assert_undefined(float64, "float64", "uint8")
-            _assert_undefined(text, "text", "uint8")
-            _assert_undefined(data, "data", "uint8")
-            _assert_undefined(list, "list", "uint8")
-            _assert_undefined(enum, "enum", "uint8")
-            _assert_undefined(struct, "struct", "uint8")
-            _assert_undefined(interface, "interface", "uint8")
-            _assert_undefined(anyPointer, "anyPointer", "uint8")
-            buf = self.__new_uint8(uint8=uint8)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'uint8')
+            _buf = self.__new_uint8()
         if uint16 is not _undefined:
-            _assert_undefined(void, "void", "uint16")
-            _assert_undefined(bool, "bool", "uint16")
-            _assert_undefined(int8, "int8", "uint16")
-            _assert_undefined(int16, "int16", "uint16")
-            _assert_undefined(int32, "int32", "uint16")
-            _assert_undefined(int64, "int64", "uint16")
-            _assert_undefined(uint8, "uint8", "uint16")
-            _assert_undefined(uint32, "uint32", "uint16")
-            _assert_undefined(uint64, "uint64", "uint16")
-            _assert_undefined(float32, "float32", "uint16")
-            _assert_undefined(float64, "float64", "uint16")
-            _assert_undefined(text, "text", "uint16")
-            _assert_undefined(data, "data", "uint16")
-            _assert_undefined(list, "list", "uint16")
-            _assert_undefined(enum, "enum", "uint16")
-            _assert_undefined(struct, "struct", "uint16")
-            _assert_undefined(interface, "interface", "uint16")
-            _assert_undefined(anyPointer, "anyPointer", "uint16")
-            buf = self.__new_uint16(uint16=uint16)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'uint16')
+            _buf = self.__new_uint16()
         if uint32 is not _undefined:
-            _assert_undefined(void, "void", "uint32")
-            _assert_undefined(bool, "bool", "uint32")
-            _assert_undefined(int8, "int8", "uint32")
-            _assert_undefined(int16, "int16", "uint32")
-            _assert_undefined(int32, "int32", "uint32")
-            _assert_undefined(int64, "int64", "uint32")
-            _assert_undefined(uint8, "uint8", "uint32")
-            _assert_undefined(uint16, "uint16", "uint32")
-            _assert_undefined(uint64, "uint64", "uint32")
-            _assert_undefined(float32, "float32", "uint32")
-            _assert_undefined(float64, "float64", "uint32")
-            _assert_undefined(text, "text", "uint32")
-            _assert_undefined(data, "data", "uint32")
-            _assert_undefined(list, "list", "uint32")
-            _assert_undefined(enum, "enum", "uint32")
-            _assert_undefined(struct, "struct", "uint32")
-            _assert_undefined(interface, "interface", "uint32")
-            _assert_undefined(anyPointer, "anyPointer", "uint32")
-            buf = self.__new_uint32(uint32=uint32)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'uint32')
+            _buf = self.__new_uint32()
         if uint64 is not _undefined:
-            _assert_undefined(void, "void", "uint64")
-            _assert_undefined(bool, "bool", "uint64")
-            _assert_undefined(int8, "int8", "uint64")
-            _assert_undefined(int16, "int16", "uint64")
-            _assert_undefined(int32, "int32", "uint64")
-            _assert_undefined(int64, "int64", "uint64")
-            _assert_undefined(uint8, "uint8", "uint64")
-            _assert_undefined(uint16, "uint16", "uint64")
-            _assert_undefined(uint32, "uint32", "uint64")
-            _assert_undefined(float32, "float32", "uint64")
-            _assert_undefined(float64, "float64", "uint64")
-            _assert_undefined(text, "text", "uint64")
-            _assert_undefined(data, "data", "uint64")
-            _assert_undefined(list, "list", "uint64")
-            _assert_undefined(enum, "enum", "uint64")
-            _assert_undefined(struct, "struct", "uint64")
-            _assert_undefined(interface, "interface", "uint64")
-            _assert_undefined(anyPointer, "anyPointer", "uint64")
-            buf = self.__new_uint64(uint64=uint64)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'uint64')
+            _buf = self.__new_uint64()
         if float32 is not _undefined:
-            _assert_undefined(void, "void", "float32")
-            _assert_undefined(bool, "bool", "float32")
-            _assert_undefined(int8, "int8", "float32")
-            _assert_undefined(int16, "int16", "float32")
-            _assert_undefined(int32, "int32", "float32")
-            _assert_undefined(int64, "int64", "float32")
-            _assert_undefined(uint8, "uint8", "float32")
-            _assert_undefined(uint16, "uint16", "float32")
-            _assert_undefined(uint32, "uint32", "float32")
-            _assert_undefined(uint64, "uint64", "float32")
-            _assert_undefined(float64, "float64", "float32")
-            _assert_undefined(text, "text", "float32")
-            _assert_undefined(data, "data", "float32")
-            _assert_undefined(list, "list", "float32")
-            _assert_undefined(enum, "enum", "float32")
-            _assert_undefined(struct, "struct", "float32")
-            _assert_undefined(interface, "interface", "float32")
-            _assert_undefined(anyPointer, "anyPointer", "float32")
-            buf = self.__new_float32(float32=float32)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'float32')
+            _buf = self.__new_float32()
         if float64 is not _undefined:
-            _assert_undefined(void, "void", "float64")
-            _assert_undefined(bool, "bool", "float64")
-            _assert_undefined(int8, "int8", "float64")
-            _assert_undefined(int16, "int16", "float64")
-            _assert_undefined(int32, "int32", "float64")
-            _assert_undefined(int64, "int64", "float64")
-            _assert_undefined(uint8, "uint8", "float64")
-            _assert_undefined(uint16, "uint16", "float64")
-            _assert_undefined(uint32, "uint32", "float64")
-            _assert_undefined(uint64, "uint64", "float64")
-            _assert_undefined(float32, "float32", "float64")
-            _assert_undefined(text, "text", "float64")
-            _assert_undefined(data, "data", "float64")
-            _assert_undefined(list, "list", "float64")
-            _assert_undefined(enum, "enum", "float64")
-            _assert_undefined(struct, "struct", "float64")
-            _assert_undefined(interface, "interface", "float64")
-            _assert_undefined(anyPointer, "anyPointer", "float64")
-            buf = self.__new_float64(float64=float64)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'float64')
+            _buf = self.__new_float64()
         if text is not _undefined:
-            _assert_undefined(void, "void", "text")
-            _assert_undefined(bool, "bool", "text")
-            _assert_undefined(int8, "int8", "text")
-            _assert_undefined(int16, "int16", "text")
-            _assert_undefined(int32, "int32", "text")
-            _assert_undefined(int64, "int64", "text")
-            _assert_undefined(uint8, "uint8", "text")
-            _assert_undefined(uint16, "uint16", "text")
-            _assert_undefined(uint32, "uint32", "text")
-            _assert_undefined(uint64, "uint64", "text")
-            _assert_undefined(float32, "float32", "text")
-            _assert_undefined(float64, "float64", "text")
-            _assert_undefined(data, "data", "text")
-            _assert_undefined(list, "list", "text")
-            _assert_undefined(enum, "enum", "text")
-            _assert_undefined(struct, "struct", "text")
-            _assert_undefined(interface, "interface", "text")
-            _assert_undefined(anyPointer, "anyPointer", "text")
-            buf = self.__new_text(text=text)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'text')
+            _buf = self.__new_text()
         if data is not _undefined:
-            _assert_undefined(void, "void", "data")
-            _assert_undefined(bool, "bool", "data")
-            _assert_undefined(int8, "int8", "data")
-            _assert_undefined(int16, "int16", "data")
-            _assert_undefined(int32, "int32", "data")
-            _assert_undefined(int64, "int64", "data")
-            _assert_undefined(uint8, "uint8", "data")
-            _assert_undefined(uint16, "uint16", "data")
-            _assert_undefined(uint32, "uint32", "data")
-            _assert_undefined(uint64, "uint64", "data")
-            _assert_undefined(float32, "float32", "data")
-            _assert_undefined(float64, "float64", "data")
-            _assert_undefined(text, "text", "data")
-            _assert_undefined(list, "list", "data")
-            _assert_undefined(enum, "enum", "data")
-            _assert_undefined(struct, "struct", "data")
-            _assert_undefined(interface, "interface", "data")
-            _assert_undefined(anyPointer, "anyPointer", "data")
-            buf = self.__new_data(data=data)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'data')
+            _buf = self.__new_data()
         if list is not _undefined:
-            _assert_undefined(void, "void", "list")
-            _assert_undefined(bool, "bool", "list")
-            _assert_undefined(int8, "int8", "list")
-            _assert_undefined(int16, "int16", "list")
-            _assert_undefined(int32, "int32", "list")
-            _assert_undefined(int64, "int64", "list")
-            _assert_undefined(uint8, "uint8", "list")
-            _assert_undefined(uint16, "uint16", "list")
-            _assert_undefined(uint32, "uint32", "list")
-            _assert_undefined(uint64, "uint64", "list")
-            _assert_undefined(float32, "float32", "list")
-            _assert_undefined(float64, "float64", "list")
-            _assert_undefined(text, "text", "list")
-            _assert_undefined(data, "data", "list")
-            _assert_undefined(enum, "enum", "list")
-            _assert_undefined(struct, "struct", "list")
-            _assert_undefined(interface, "interface", "list")
-            _assert_undefined(anyPointer, "anyPointer", "list")
-            buf = self.__new_list(list=list)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'list')
+            _buf = self.__new_list(list)
         if enum is not _undefined:
-            _assert_undefined(void, "void", "enum")
-            _assert_undefined(bool, "bool", "enum")
-            _assert_undefined(int8, "int8", "enum")
-            _assert_undefined(int16, "int16", "enum")
-            _assert_undefined(int32, "int32", "enum")
-            _assert_undefined(int64, "int64", "enum")
-            _assert_undefined(uint8, "uint8", "enum")
-            _assert_undefined(uint16, "uint16", "enum")
-            _assert_undefined(uint32, "uint32", "enum")
-            _assert_undefined(uint64, "uint64", "enum")
-            _assert_undefined(float32, "float32", "enum")
-            _assert_undefined(float64, "float64", "enum")
-            _assert_undefined(text, "text", "enum")
-            _assert_undefined(data, "data", "enum")
-            _assert_undefined(list, "list", "enum")
-            _assert_undefined(struct, "struct", "enum")
-            _assert_undefined(interface, "interface", "enum")
-            _assert_undefined(anyPointer, "anyPointer", "enum")
-            buf = self.__new_enum(enum=enum)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'enum')
+            _buf = self.__new_enum(enum)
         if struct is not _undefined:
-            _assert_undefined(void, "void", "struct")
-            _assert_undefined(bool, "bool", "struct")
-            _assert_undefined(int8, "int8", "struct")
-            _assert_undefined(int16, "int16", "struct")
-            _assert_undefined(int32, "int32", "struct")
-            _assert_undefined(int64, "int64", "struct")
-            _assert_undefined(uint8, "uint8", "struct")
-            _assert_undefined(uint16, "uint16", "struct")
-            _assert_undefined(uint32, "uint32", "struct")
-            _assert_undefined(uint64, "uint64", "struct")
-            _assert_undefined(float32, "float32", "struct")
-            _assert_undefined(float64, "float64", "struct")
-            _assert_undefined(text, "text", "struct")
-            _assert_undefined(data, "data", "struct")
-            _assert_undefined(list, "list", "struct")
-            _assert_undefined(enum, "enum", "struct")
-            _assert_undefined(interface, "interface", "struct")
-            _assert_undefined(anyPointer, "anyPointer", "struct")
-            buf = self.__new_struct(struct=struct)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'struct')
+            _buf = self.__new_struct(struct)
         if interface is not _undefined:
-            _assert_undefined(void, "void", "interface")
-            _assert_undefined(bool, "bool", "interface")
-            _assert_undefined(int8, "int8", "interface")
-            _assert_undefined(int16, "int16", "interface")
-            _assert_undefined(int32, "int32", "interface")
-            _assert_undefined(int64, "int64", "interface")
-            _assert_undefined(uint8, "uint8", "interface")
-            _assert_undefined(uint16, "uint16", "interface")
-            _assert_undefined(uint32, "uint32", "interface")
-            _assert_undefined(uint64, "uint64", "interface")
-            _assert_undefined(float32, "float32", "interface")
-            _assert_undefined(float64, "float64", "interface")
-            _assert_undefined(text, "text", "interface")
-            _assert_undefined(data, "data", "interface")
-            _assert_undefined(list, "list", "interface")
-            _assert_undefined(enum, "enum", "interface")
-            _assert_undefined(struct, "struct", "interface")
-            _assert_undefined(anyPointer, "anyPointer", "interface")
-            buf = self.__new_interface(interface=interface)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
+            _curtag = _check_tag(_curtag, 'interface')
+            _buf = self.__new_interface(interface)
         if anyPointer is not _undefined:
-            _assert_undefined(void, "void", "anyPointer")
-            _assert_undefined(bool, "bool", "anyPointer")
-            _assert_undefined(int8, "int8", "anyPointer")
-            _assert_undefined(int16, "int16", "anyPointer")
-            _assert_undefined(int32, "int32", "anyPointer")
-            _assert_undefined(int64, "int64", "anyPointer")
-            _assert_undefined(uint8, "uint8", "anyPointer")
-            _assert_undefined(uint16, "uint16", "anyPointer")
-            _assert_undefined(uint32, "uint32", "anyPointer")
-            _assert_undefined(uint64, "uint64", "anyPointer")
-            _assert_undefined(float32, "float32", "anyPointer")
-            _assert_undefined(float64, "float64", "anyPointer")
-            _assert_undefined(text, "text", "anyPointer")
-            _assert_undefined(data, "data", "anyPointer")
-            _assert_undefined(list, "list", "anyPointer")
-            _assert_undefined(enum, "enum", "anyPointer")
-            _assert_undefined(struct, "struct", "anyPointer")
-            _assert_undefined(interface, "interface", "anyPointer")
-            buf = self.__new_anyPointer(anyPointer=anyPointer)
-            _Struct.__init__(self, buf, 0, 3, 1)
-            return
-        raise TypeError("one of the following args is required: void, bool, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, text, data, list, enum, struct, interface, anyPointer")
+            _curtag = _check_tag(_curtag, 'anyPointer')
+            _buf = self.__new_anyPointer(anyPointer)
+        if _buf is None:
+            raise TypeError("one of the following args is required: void, bool, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, text, data, list, enum, struct, interface, anyPointer")
+        _Struct.__init__(self, _buf, 0, 3, 1)
     
     def shortrepr(self):
         parts = []
@@ -1739,12 +1383,12 @@ class Field_group(_Struct):
         return value
     
     @staticmethod
-    def __new(typeId):
+    def __new(typeId=0):
         builder = _StructBuilder('xxxxxxxxxxxxxxxxQxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         buf = builder.build(typeId)
         return buf
     
-    def __init__(self, typeId):
+    def __init__(self, typeId=0):
         buf = self.__new(typeId)
         _Struct.__init__(self, buf, 0, 3, 4)
     
@@ -1782,39 +1426,39 @@ class Field_ordinal(_Struct):
         return value
     
     @staticmethod
-    def __new_implicit(implicit):
+    def __new_implicit():
         builder = _StructBuilder('xxxxxxxxxxhxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 0
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_implicit(cls, implicit):
-        buf = cls.__new_implicit(implicit)
+    def new_implicit(cls):
+        buf = cls.__new_implicit()
         return cls.from_buffer(buf, 0, 3, 4)
     
     @staticmethod
-    def __new_explicit(explicit):
+    def __new_explicit(explicit=0):
         builder = _StructBuilder('xxxxxxxxxxhHxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 1
         buf = builder.build(__which__, explicit)
         return buf
     @classmethod
-    def new_explicit(cls, explicit):
+    def new_explicit(cls, explicit=0):
         buf = cls.__new_explicit(explicit)
         return cls.from_buffer(buf, 0, 3, 4)
     
     def __init__(self, implicit=_undefined, explicit=_undefined):
+        _buf = None
+        _curtag = None
         if implicit is not _undefined:
-            _assert_undefined(explicit, "explicit", "implicit")
-            buf = self.__new_implicit(implicit=implicit)
-            _Struct.__init__(self, buf, 0, 3, 4)
-            return
+            _curtag = _check_tag(_curtag, 'implicit')
+            _buf = self.__new_implicit()
         if explicit is not _undefined:
-            _assert_undefined(implicit, "implicit", "explicit")
-            buf = self.__new_explicit(explicit=explicit)
-            _Struct.__init__(self, buf, 0, 3, 4)
-            return
-        raise TypeError("one of the following args is required: implicit, explicit")
+            _curtag = _check_tag(_curtag, 'explicit')
+            _buf = self.__new_explicit(explicit)
+        if _buf is None:
+            raise TypeError("one of the following args is required: implicit, explicit")
+        _Struct.__init__(self, _buf, 0, 3, 4)
     
     def shortrepr(self):
         parts = []
@@ -1979,7 +1623,7 @@ class Field(_Struct):
         return obj
     
     @staticmethod
-    def Slot(offset, type, defaultValue, hadExplicitDefault):
+    def Slot(offset=0, type=None, defaultValue=None, hadExplicitDefault=False):
         return offset, type, defaultValue, hadExplicitDefault,
     
     @property
@@ -1991,7 +1635,7 @@ class Field(_Struct):
         return obj
     
     @staticmethod
-    def Group(typeId):
+    def Group(typeId=0):
         return typeId,
     
     @property
@@ -2003,8 +1647,8 @@ class Field(_Struct):
         return obj
     
     @staticmethod
-    def Ordinal(implicit, explicit):
-        return implicit, explicit,
+    def Ordinal(explicit=0):
+        return explicit,
     
     @staticmethod
     def __new_slot(*args, **kwargs):
@@ -2015,33 +1659,33 @@ class Field(_Struct):
         return cls.from_buffer(buf, 0, 3, 4)
     
     @staticmethod
-    def __new_group(group, name, codeOrder, annotations, discriminantValue, ordinal):
+    def __new_group(name=None, codeOrder=0, annotations=None, discriminantValue=65535, group=(0,), ordinal=(0,)):
         builder = _StructBuilder('HHxxxxhxxHxxQqqxxxxxxxxxxxxxxxx')
         __which__ = 1
-        group_0, = group
-        ordinal_1, = ordinal
-        discriminantValue ^= 65535
         name = builder.alloc_text(24, name)
         annotations = builder.alloc_list(32, _StructList, Annotation, annotations)
-        buf = builder.build(codeOrder, discriminantValue, __which__, ordinal_1, group_0, name, annotations)
+        discriminantValue ^= 65535
+        group_typeId, = group
+        ordinal_explicit, = ordinal
+        buf = builder.build(codeOrder, discriminantValue, __which__, ordinal_explicit, group_typeId, name, annotations)
         return buf
     @classmethod
-    def new_group(cls, group, name, codeOrder, annotations, discriminantValue, ordinal):
-        buf = cls.__new_group(group, name, codeOrder, annotations, discriminantValue, ordinal)
+    def new_group(cls, name=None, codeOrder=0, annotations=None, discriminantValue=65535, group=(0,), ordinal=(0,)):
+        buf = cls.__new_group(name, codeOrder, annotations, discriminantValue, group, ordinal)
         return cls.from_buffer(buf, 0, 3, 4)
     
-    def __init__(self, name, codeOrder, annotations, discriminantValue, ordinal, slot=_undefined, group=_undefined):
+    def __init__(self, name=None, codeOrder=0, annotations=None, discriminantValue=65535, slot=(0, None, None, False,), group=(0,), ordinal=(_undefined, _undefined,)):
+        _buf = None
+        _curtag = None
         if slot is not _undefined:
-            _assert_undefined(group, "group", "slot")
-            buf = self.__new_slot(name=name, codeOrder=codeOrder, annotations=annotations, discriminantValue=discriminantValue, ordinal=ordinal, slot=slot)
-            _Struct.__init__(self, buf, 0, 3, 4)
-            return
+            _curtag = _check_tag(_curtag, 'slot')
+            _buf = self.__new_slot()
         if group is not _undefined:
-            _assert_undefined(slot, "slot", "group")
-            buf = self.__new_group(name=name, codeOrder=codeOrder, annotations=annotations, discriminantValue=discriminantValue, ordinal=ordinal, group=group)
-            _Struct.__init__(self, buf, 0, 3, 4)
-            return
-        raise TypeError("one of the following args is required: slot, group")
+            _curtag = _check_tag(_curtag, 'group')
+            _buf = self.__new_group(name, codeOrder, annotations, discriminantValue, group, ordinal)
+        if _buf is None:
+            raise TypeError("one of the following args is required: slot, group")
+        _Struct.__init__(self, _buf, 0, 3, 4)
     
     def shortrepr(self):
         parts = []
@@ -2095,13 +1739,13 @@ class Superclass(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new(id, brand):
+    def __new(id=0, brand=None):
         builder = _StructBuilder('Qq')
         brand = builder.alloc_struct(8, Brand, brand)
         buf = builder.build(id, brand)
         return buf
     
-    def __init__(self, id, brand):
+    def __init__(self, id=0, brand=None):
         buf = self.__new(id, brand)
         _Struct.__init__(self, buf, 0, 1, 1)
     
@@ -2324,14 +1968,14 @@ class Value(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new_void(void):
+    def __new_void():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 0
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_void(cls, void):
-        buf = cls.__new_void(void)
+    def new_void(cls):
+        buf = cls.__new_void()
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
@@ -2343,617 +1987,260 @@ class Value(_Struct):
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_int8(int8):
+    def __new_int8(int8=0):
         builder = _StructBuilder('hbxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 2
         buf = builder.build(__which__, int8)
         return buf
     @classmethod
-    def new_int8(cls, int8):
+    def new_int8(cls, int8=0):
         buf = cls.__new_int8(int8)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_int16(int16):
+    def __new_int16(int16=0):
         builder = _StructBuilder('hhxxxxxxxxxxxxxxxxxxxx')
         __which__ = 3
         buf = builder.build(__which__, int16)
         return buf
     @classmethod
-    def new_int16(cls, int16):
+    def new_int16(cls, int16=0):
         buf = cls.__new_int16(int16)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_int32(int32):
+    def __new_int32(int32=0):
         builder = _StructBuilder('hxxixxxxxxxxxxxxxxxx')
         __which__ = 4
         buf = builder.build(__which__, int32)
         return buf
     @classmethod
-    def new_int32(cls, int32):
+    def new_int32(cls, int32=0):
         buf = cls.__new_int32(int32)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_int64(int64):
+    def __new_int64(int64=0):
         builder = _StructBuilder('hxxxxxxqxxxxxxxx')
         __which__ = 5
         buf = builder.build(__which__, int64)
         return buf
     @classmethod
-    def new_int64(cls, int64):
+    def new_int64(cls, int64=0):
         buf = cls.__new_int64(int64)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_uint8(uint8):
+    def __new_uint8(uint8=0):
         builder = _StructBuilder('hBxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 6
         buf = builder.build(__which__, uint8)
         return buf
     @classmethod
-    def new_uint8(cls, uint8):
+    def new_uint8(cls, uint8=0):
         buf = cls.__new_uint8(uint8)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_uint16(uint16):
+    def __new_uint16(uint16=0):
         builder = _StructBuilder('hHxxxxxxxxxxxxxxxxxxxx')
         __which__ = 7
         buf = builder.build(__which__, uint16)
         return buf
     @classmethod
-    def new_uint16(cls, uint16):
+    def new_uint16(cls, uint16=0):
         buf = cls.__new_uint16(uint16)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_uint32(uint32):
+    def __new_uint32(uint32=0):
         builder = _StructBuilder('hxxIxxxxxxxxxxxxxxxx')
         __which__ = 8
         buf = builder.build(__which__, uint32)
         return buf
     @classmethod
-    def new_uint32(cls, uint32):
+    def new_uint32(cls, uint32=0):
         buf = cls.__new_uint32(uint32)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_uint64(uint64):
+    def __new_uint64(uint64=0):
         builder = _StructBuilder('hxxxxxxQxxxxxxxx')
         __which__ = 9
         buf = builder.build(__which__, uint64)
         return buf
     @classmethod
-    def new_uint64(cls, uint64):
+    def new_uint64(cls, uint64=0):
         buf = cls.__new_uint64(uint64)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_float32(float32):
+    def __new_float32(float32=0.0):
         builder = _StructBuilder('hxxfxxxxxxxxxxxxxxxx')
         __which__ = 10
         buf = builder.build(__which__, float32)
         return buf
     @classmethod
-    def new_float32(cls, float32):
+    def new_float32(cls, float32=0.0):
         buf = cls.__new_float32(float32)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_float64(float64):
+    def __new_float64(float64=0.0):
         builder = _StructBuilder('hxxxxxxdxxxxxxxx')
         __which__ = 11
         buf = builder.build(__which__, float64)
         return buf
     @classmethod
-    def new_float64(cls, float64):
+    def new_float64(cls, float64=0.0):
         buf = cls.__new_float64(float64)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_text(text):
+    def __new_text(text=None):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 12
         text = builder.alloc_text(16, text)
         buf = builder.build(__which__, text)
         return buf
     @classmethod
-    def new_text(cls, text):
+    def new_text(cls, text=None):
         buf = cls.__new_text(text)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_data(data):
+    def __new_data(data=None):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 13
         data = builder.alloc_data(16, data)
         buf = builder.build(__which__, data)
         return buf
     @classmethod
-    def new_data(cls, data):
+    def new_data(cls, data=None):
         buf = cls.__new_data(data)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_list(list):
+    def __new_list(list=None):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 14
         raise NotImplementedError('Unsupported field type: (name = "list", codeOrder = 14, discriminantValue = 14, slot = (offset = 0, type = (anyPointer = (unconstrained = void)), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 14))')
         buf = builder.build(__which__, list)
         return buf
     @classmethod
-    def new_list(cls, list):
+    def new_list(cls, list=None):
         buf = cls.__new_list(list)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_enum(enum):
+    def __new_enum(enum=0):
         builder = _StructBuilder('hHxxxxxxxxxxxxxxxxxxxx')
         __which__ = 15
         buf = builder.build(__which__, enum)
         return buf
     @classmethod
-    def new_enum(cls, enum):
+    def new_enum(cls, enum=0):
         buf = cls.__new_enum(enum)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_struct(struct):
+    def __new_struct(struct=None):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 16
         raise NotImplementedError('Unsupported field type: (name = "struct", codeOrder = 16, discriminantValue = 16, slot = (offset = 0, type = (anyPointer = (unconstrained = void)), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 16))')
         buf = builder.build(__which__, struct)
         return buf
     @classmethod
-    def new_struct(cls, struct):
+    def new_struct(cls, struct=None):
         buf = cls.__new_struct(struct)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_interface(interface):
+    def __new_interface():
         builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxx')
         __which__ = 17
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_interface(cls, interface):
-        buf = cls.__new_interface(interface)
+    def new_interface(cls):
+        buf = cls.__new_interface()
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_anyPointer(anyPointer):
+    def __new_anyPointer(anyPointer=None):
         builder = _StructBuilder('hxxxxxxxxxxxxxxq')
         __which__ = 18
         raise NotImplementedError('Unsupported field type: (name = "anyPointer", codeOrder = 18, discriminantValue = 18, slot = (offset = 0, type = (anyPointer = (unconstrained = void)), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 18))')
         buf = builder.build(__which__, anyPointer)
         return buf
     @classmethod
-    def new_anyPointer(cls, anyPointer):
+    def new_anyPointer(cls, anyPointer=None):
         buf = cls.__new_anyPointer(anyPointer)
         return cls.from_buffer(buf, 0, 2, 1)
     
     def __init__(self, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined):
+        _buf = None
+        _curtag = None
         if void is not _undefined:
-            _assert_undefined(bool, "bool", "void")
-            _assert_undefined(int8, "int8", "void")
-            _assert_undefined(int16, "int16", "void")
-            _assert_undefined(int32, "int32", "void")
-            _assert_undefined(int64, "int64", "void")
-            _assert_undefined(uint8, "uint8", "void")
-            _assert_undefined(uint16, "uint16", "void")
-            _assert_undefined(uint32, "uint32", "void")
-            _assert_undefined(uint64, "uint64", "void")
-            _assert_undefined(float32, "float32", "void")
-            _assert_undefined(float64, "float64", "void")
-            _assert_undefined(text, "text", "void")
-            _assert_undefined(data, "data", "void")
-            _assert_undefined(list, "list", "void")
-            _assert_undefined(enum, "enum", "void")
-            _assert_undefined(struct, "struct", "void")
-            _assert_undefined(interface, "interface", "void")
-            _assert_undefined(anyPointer, "anyPointer", "void")
-            buf = self.__new_void(void=void)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'void')
+            _buf = self.__new_void()
         if bool is not _undefined:
-            _assert_undefined(void, "void", "bool")
-            _assert_undefined(int8, "int8", "bool")
-            _assert_undefined(int16, "int16", "bool")
-            _assert_undefined(int32, "int32", "bool")
-            _assert_undefined(int64, "int64", "bool")
-            _assert_undefined(uint8, "uint8", "bool")
-            _assert_undefined(uint16, "uint16", "bool")
-            _assert_undefined(uint32, "uint32", "bool")
-            _assert_undefined(uint64, "uint64", "bool")
-            _assert_undefined(float32, "float32", "bool")
-            _assert_undefined(float64, "float64", "bool")
-            _assert_undefined(text, "text", "bool")
-            _assert_undefined(data, "data", "bool")
-            _assert_undefined(list, "list", "bool")
-            _assert_undefined(enum, "enum", "bool")
-            _assert_undefined(struct, "struct", "bool")
-            _assert_undefined(interface, "interface", "bool")
-            _assert_undefined(anyPointer, "anyPointer", "bool")
-            buf = self.__new_bool(bool=bool)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'bool')
+            _buf = self.__new_bool()
         if int8 is not _undefined:
-            _assert_undefined(void, "void", "int8")
-            _assert_undefined(bool, "bool", "int8")
-            _assert_undefined(int16, "int16", "int8")
-            _assert_undefined(int32, "int32", "int8")
-            _assert_undefined(int64, "int64", "int8")
-            _assert_undefined(uint8, "uint8", "int8")
-            _assert_undefined(uint16, "uint16", "int8")
-            _assert_undefined(uint32, "uint32", "int8")
-            _assert_undefined(uint64, "uint64", "int8")
-            _assert_undefined(float32, "float32", "int8")
-            _assert_undefined(float64, "float64", "int8")
-            _assert_undefined(text, "text", "int8")
-            _assert_undefined(data, "data", "int8")
-            _assert_undefined(list, "list", "int8")
-            _assert_undefined(enum, "enum", "int8")
-            _assert_undefined(struct, "struct", "int8")
-            _assert_undefined(interface, "interface", "int8")
-            _assert_undefined(anyPointer, "anyPointer", "int8")
-            buf = self.__new_int8(int8=int8)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'int8')
+            _buf = self.__new_int8(int8)
         if int16 is not _undefined:
-            _assert_undefined(void, "void", "int16")
-            _assert_undefined(bool, "bool", "int16")
-            _assert_undefined(int8, "int8", "int16")
-            _assert_undefined(int32, "int32", "int16")
-            _assert_undefined(int64, "int64", "int16")
-            _assert_undefined(uint8, "uint8", "int16")
-            _assert_undefined(uint16, "uint16", "int16")
-            _assert_undefined(uint32, "uint32", "int16")
-            _assert_undefined(uint64, "uint64", "int16")
-            _assert_undefined(float32, "float32", "int16")
-            _assert_undefined(float64, "float64", "int16")
-            _assert_undefined(text, "text", "int16")
-            _assert_undefined(data, "data", "int16")
-            _assert_undefined(list, "list", "int16")
-            _assert_undefined(enum, "enum", "int16")
-            _assert_undefined(struct, "struct", "int16")
-            _assert_undefined(interface, "interface", "int16")
-            _assert_undefined(anyPointer, "anyPointer", "int16")
-            buf = self.__new_int16(int16=int16)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'int16')
+            _buf = self.__new_int16(int16)
         if int32 is not _undefined:
-            _assert_undefined(void, "void", "int32")
-            _assert_undefined(bool, "bool", "int32")
-            _assert_undefined(int8, "int8", "int32")
-            _assert_undefined(int16, "int16", "int32")
-            _assert_undefined(int64, "int64", "int32")
-            _assert_undefined(uint8, "uint8", "int32")
-            _assert_undefined(uint16, "uint16", "int32")
-            _assert_undefined(uint32, "uint32", "int32")
-            _assert_undefined(uint64, "uint64", "int32")
-            _assert_undefined(float32, "float32", "int32")
-            _assert_undefined(float64, "float64", "int32")
-            _assert_undefined(text, "text", "int32")
-            _assert_undefined(data, "data", "int32")
-            _assert_undefined(list, "list", "int32")
-            _assert_undefined(enum, "enum", "int32")
-            _assert_undefined(struct, "struct", "int32")
-            _assert_undefined(interface, "interface", "int32")
-            _assert_undefined(anyPointer, "anyPointer", "int32")
-            buf = self.__new_int32(int32=int32)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'int32')
+            _buf = self.__new_int32(int32)
         if int64 is not _undefined:
-            _assert_undefined(void, "void", "int64")
-            _assert_undefined(bool, "bool", "int64")
-            _assert_undefined(int8, "int8", "int64")
-            _assert_undefined(int16, "int16", "int64")
-            _assert_undefined(int32, "int32", "int64")
-            _assert_undefined(uint8, "uint8", "int64")
-            _assert_undefined(uint16, "uint16", "int64")
-            _assert_undefined(uint32, "uint32", "int64")
-            _assert_undefined(uint64, "uint64", "int64")
-            _assert_undefined(float32, "float32", "int64")
-            _assert_undefined(float64, "float64", "int64")
-            _assert_undefined(text, "text", "int64")
-            _assert_undefined(data, "data", "int64")
-            _assert_undefined(list, "list", "int64")
-            _assert_undefined(enum, "enum", "int64")
-            _assert_undefined(struct, "struct", "int64")
-            _assert_undefined(interface, "interface", "int64")
-            _assert_undefined(anyPointer, "anyPointer", "int64")
-            buf = self.__new_int64(int64=int64)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'int64')
+            _buf = self.__new_int64(int64)
         if uint8 is not _undefined:
-            _assert_undefined(void, "void", "uint8")
-            _assert_undefined(bool, "bool", "uint8")
-            _assert_undefined(int8, "int8", "uint8")
-            _assert_undefined(int16, "int16", "uint8")
-            _assert_undefined(int32, "int32", "uint8")
-            _assert_undefined(int64, "int64", "uint8")
-            _assert_undefined(uint16, "uint16", "uint8")
-            _assert_undefined(uint32, "uint32", "uint8")
-            _assert_undefined(uint64, "uint64", "uint8")
-            _assert_undefined(float32, "float32", "uint8")
-            _assert_undefined(float64, "float64", "uint8")
-            _assert_undefined(text, "text", "uint8")
-            _assert_undefined(data, "data", "uint8")
-            _assert_undefined(list, "list", "uint8")
-            _assert_undefined(enum, "enum", "uint8")
-            _assert_undefined(struct, "struct", "uint8")
-            _assert_undefined(interface, "interface", "uint8")
-            _assert_undefined(anyPointer, "anyPointer", "uint8")
-            buf = self.__new_uint8(uint8=uint8)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'uint8')
+            _buf = self.__new_uint8(uint8)
         if uint16 is not _undefined:
-            _assert_undefined(void, "void", "uint16")
-            _assert_undefined(bool, "bool", "uint16")
-            _assert_undefined(int8, "int8", "uint16")
-            _assert_undefined(int16, "int16", "uint16")
-            _assert_undefined(int32, "int32", "uint16")
-            _assert_undefined(int64, "int64", "uint16")
-            _assert_undefined(uint8, "uint8", "uint16")
-            _assert_undefined(uint32, "uint32", "uint16")
-            _assert_undefined(uint64, "uint64", "uint16")
-            _assert_undefined(float32, "float32", "uint16")
-            _assert_undefined(float64, "float64", "uint16")
-            _assert_undefined(text, "text", "uint16")
-            _assert_undefined(data, "data", "uint16")
-            _assert_undefined(list, "list", "uint16")
-            _assert_undefined(enum, "enum", "uint16")
-            _assert_undefined(struct, "struct", "uint16")
-            _assert_undefined(interface, "interface", "uint16")
-            _assert_undefined(anyPointer, "anyPointer", "uint16")
-            buf = self.__new_uint16(uint16=uint16)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'uint16')
+            _buf = self.__new_uint16(uint16)
         if uint32 is not _undefined:
-            _assert_undefined(void, "void", "uint32")
-            _assert_undefined(bool, "bool", "uint32")
-            _assert_undefined(int8, "int8", "uint32")
-            _assert_undefined(int16, "int16", "uint32")
-            _assert_undefined(int32, "int32", "uint32")
-            _assert_undefined(int64, "int64", "uint32")
-            _assert_undefined(uint8, "uint8", "uint32")
-            _assert_undefined(uint16, "uint16", "uint32")
-            _assert_undefined(uint64, "uint64", "uint32")
-            _assert_undefined(float32, "float32", "uint32")
-            _assert_undefined(float64, "float64", "uint32")
-            _assert_undefined(text, "text", "uint32")
-            _assert_undefined(data, "data", "uint32")
-            _assert_undefined(list, "list", "uint32")
-            _assert_undefined(enum, "enum", "uint32")
-            _assert_undefined(struct, "struct", "uint32")
-            _assert_undefined(interface, "interface", "uint32")
-            _assert_undefined(anyPointer, "anyPointer", "uint32")
-            buf = self.__new_uint32(uint32=uint32)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'uint32')
+            _buf = self.__new_uint32(uint32)
         if uint64 is not _undefined:
-            _assert_undefined(void, "void", "uint64")
-            _assert_undefined(bool, "bool", "uint64")
-            _assert_undefined(int8, "int8", "uint64")
-            _assert_undefined(int16, "int16", "uint64")
-            _assert_undefined(int32, "int32", "uint64")
-            _assert_undefined(int64, "int64", "uint64")
-            _assert_undefined(uint8, "uint8", "uint64")
-            _assert_undefined(uint16, "uint16", "uint64")
-            _assert_undefined(uint32, "uint32", "uint64")
-            _assert_undefined(float32, "float32", "uint64")
-            _assert_undefined(float64, "float64", "uint64")
-            _assert_undefined(text, "text", "uint64")
-            _assert_undefined(data, "data", "uint64")
-            _assert_undefined(list, "list", "uint64")
-            _assert_undefined(enum, "enum", "uint64")
-            _assert_undefined(struct, "struct", "uint64")
-            _assert_undefined(interface, "interface", "uint64")
-            _assert_undefined(anyPointer, "anyPointer", "uint64")
-            buf = self.__new_uint64(uint64=uint64)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'uint64')
+            _buf = self.__new_uint64(uint64)
         if float32 is not _undefined:
-            _assert_undefined(void, "void", "float32")
-            _assert_undefined(bool, "bool", "float32")
-            _assert_undefined(int8, "int8", "float32")
-            _assert_undefined(int16, "int16", "float32")
-            _assert_undefined(int32, "int32", "float32")
-            _assert_undefined(int64, "int64", "float32")
-            _assert_undefined(uint8, "uint8", "float32")
-            _assert_undefined(uint16, "uint16", "float32")
-            _assert_undefined(uint32, "uint32", "float32")
-            _assert_undefined(uint64, "uint64", "float32")
-            _assert_undefined(float64, "float64", "float32")
-            _assert_undefined(text, "text", "float32")
-            _assert_undefined(data, "data", "float32")
-            _assert_undefined(list, "list", "float32")
-            _assert_undefined(enum, "enum", "float32")
-            _assert_undefined(struct, "struct", "float32")
-            _assert_undefined(interface, "interface", "float32")
-            _assert_undefined(anyPointer, "anyPointer", "float32")
-            buf = self.__new_float32(float32=float32)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'float32')
+            _buf = self.__new_float32(float32)
         if float64 is not _undefined:
-            _assert_undefined(void, "void", "float64")
-            _assert_undefined(bool, "bool", "float64")
-            _assert_undefined(int8, "int8", "float64")
-            _assert_undefined(int16, "int16", "float64")
-            _assert_undefined(int32, "int32", "float64")
-            _assert_undefined(int64, "int64", "float64")
-            _assert_undefined(uint8, "uint8", "float64")
-            _assert_undefined(uint16, "uint16", "float64")
-            _assert_undefined(uint32, "uint32", "float64")
-            _assert_undefined(uint64, "uint64", "float64")
-            _assert_undefined(float32, "float32", "float64")
-            _assert_undefined(text, "text", "float64")
-            _assert_undefined(data, "data", "float64")
-            _assert_undefined(list, "list", "float64")
-            _assert_undefined(enum, "enum", "float64")
-            _assert_undefined(struct, "struct", "float64")
-            _assert_undefined(interface, "interface", "float64")
-            _assert_undefined(anyPointer, "anyPointer", "float64")
-            buf = self.__new_float64(float64=float64)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'float64')
+            _buf = self.__new_float64(float64)
         if text is not _undefined:
-            _assert_undefined(void, "void", "text")
-            _assert_undefined(bool, "bool", "text")
-            _assert_undefined(int8, "int8", "text")
-            _assert_undefined(int16, "int16", "text")
-            _assert_undefined(int32, "int32", "text")
-            _assert_undefined(int64, "int64", "text")
-            _assert_undefined(uint8, "uint8", "text")
-            _assert_undefined(uint16, "uint16", "text")
-            _assert_undefined(uint32, "uint32", "text")
-            _assert_undefined(uint64, "uint64", "text")
-            _assert_undefined(float32, "float32", "text")
-            _assert_undefined(float64, "float64", "text")
-            _assert_undefined(data, "data", "text")
-            _assert_undefined(list, "list", "text")
-            _assert_undefined(enum, "enum", "text")
-            _assert_undefined(struct, "struct", "text")
-            _assert_undefined(interface, "interface", "text")
-            _assert_undefined(anyPointer, "anyPointer", "text")
-            buf = self.__new_text(text=text)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'text')
+            _buf = self.__new_text(text)
         if data is not _undefined:
-            _assert_undefined(void, "void", "data")
-            _assert_undefined(bool, "bool", "data")
-            _assert_undefined(int8, "int8", "data")
-            _assert_undefined(int16, "int16", "data")
-            _assert_undefined(int32, "int32", "data")
-            _assert_undefined(int64, "int64", "data")
-            _assert_undefined(uint8, "uint8", "data")
-            _assert_undefined(uint16, "uint16", "data")
-            _assert_undefined(uint32, "uint32", "data")
-            _assert_undefined(uint64, "uint64", "data")
-            _assert_undefined(float32, "float32", "data")
-            _assert_undefined(float64, "float64", "data")
-            _assert_undefined(text, "text", "data")
-            _assert_undefined(list, "list", "data")
-            _assert_undefined(enum, "enum", "data")
-            _assert_undefined(struct, "struct", "data")
-            _assert_undefined(interface, "interface", "data")
-            _assert_undefined(anyPointer, "anyPointer", "data")
-            buf = self.__new_data(data=data)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'data')
+            _buf = self.__new_data(data)
         if list is not _undefined:
-            _assert_undefined(void, "void", "list")
-            _assert_undefined(bool, "bool", "list")
-            _assert_undefined(int8, "int8", "list")
-            _assert_undefined(int16, "int16", "list")
-            _assert_undefined(int32, "int32", "list")
-            _assert_undefined(int64, "int64", "list")
-            _assert_undefined(uint8, "uint8", "list")
-            _assert_undefined(uint16, "uint16", "list")
-            _assert_undefined(uint32, "uint32", "list")
-            _assert_undefined(uint64, "uint64", "list")
-            _assert_undefined(float32, "float32", "list")
-            _assert_undefined(float64, "float64", "list")
-            _assert_undefined(text, "text", "list")
-            _assert_undefined(data, "data", "list")
-            _assert_undefined(enum, "enum", "list")
-            _assert_undefined(struct, "struct", "list")
-            _assert_undefined(interface, "interface", "list")
-            _assert_undefined(anyPointer, "anyPointer", "list")
-            buf = self.__new_list(list=list)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'list')
+            _buf = self.__new_list(list)
         if enum is not _undefined:
-            _assert_undefined(void, "void", "enum")
-            _assert_undefined(bool, "bool", "enum")
-            _assert_undefined(int8, "int8", "enum")
-            _assert_undefined(int16, "int16", "enum")
-            _assert_undefined(int32, "int32", "enum")
-            _assert_undefined(int64, "int64", "enum")
-            _assert_undefined(uint8, "uint8", "enum")
-            _assert_undefined(uint16, "uint16", "enum")
-            _assert_undefined(uint32, "uint32", "enum")
-            _assert_undefined(uint64, "uint64", "enum")
-            _assert_undefined(float32, "float32", "enum")
-            _assert_undefined(float64, "float64", "enum")
-            _assert_undefined(text, "text", "enum")
-            _assert_undefined(data, "data", "enum")
-            _assert_undefined(list, "list", "enum")
-            _assert_undefined(struct, "struct", "enum")
-            _assert_undefined(interface, "interface", "enum")
-            _assert_undefined(anyPointer, "anyPointer", "enum")
-            buf = self.__new_enum(enum=enum)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'enum')
+            _buf = self.__new_enum(enum)
         if struct is not _undefined:
-            _assert_undefined(void, "void", "struct")
-            _assert_undefined(bool, "bool", "struct")
-            _assert_undefined(int8, "int8", "struct")
-            _assert_undefined(int16, "int16", "struct")
-            _assert_undefined(int32, "int32", "struct")
-            _assert_undefined(int64, "int64", "struct")
-            _assert_undefined(uint8, "uint8", "struct")
-            _assert_undefined(uint16, "uint16", "struct")
-            _assert_undefined(uint32, "uint32", "struct")
-            _assert_undefined(uint64, "uint64", "struct")
-            _assert_undefined(float32, "float32", "struct")
-            _assert_undefined(float64, "float64", "struct")
-            _assert_undefined(text, "text", "struct")
-            _assert_undefined(data, "data", "struct")
-            _assert_undefined(list, "list", "struct")
-            _assert_undefined(enum, "enum", "struct")
-            _assert_undefined(interface, "interface", "struct")
-            _assert_undefined(anyPointer, "anyPointer", "struct")
-            buf = self.__new_struct(struct=struct)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'struct')
+            _buf = self.__new_struct(struct)
         if interface is not _undefined:
-            _assert_undefined(void, "void", "interface")
-            _assert_undefined(bool, "bool", "interface")
-            _assert_undefined(int8, "int8", "interface")
-            _assert_undefined(int16, "int16", "interface")
-            _assert_undefined(int32, "int32", "interface")
-            _assert_undefined(int64, "int64", "interface")
-            _assert_undefined(uint8, "uint8", "interface")
-            _assert_undefined(uint16, "uint16", "interface")
-            _assert_undefined(uint32, "uint32", "interface")
-            _assert_undefined(uint64, "uint64", "interface")
-            _assert_undefined(float32, "float32", "interface")
-            _assert_undefined(float64, "float64", "interface")
-            _assert_undefined(text, "text", "interface")
-            _assert_undefined(data, "data", "interface")
-            _assert_undefined(list, "list", "interface")
-            _assert_undefined(enum, "enum", "interface")
-            _assert_undefined(struct, "struct", "interface")
-            _assert_undefined(anyPointer, "anyPointer", "interface")
-            buf = self.__new_interface(interface=interface)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'interface')
+            _buf = self.__new_interface()
         if anyPointer is not _undefined:
-            _assert_undefined(void, "void", "anyPointer")
-            _assert_undefined(bool, "bool", "anyPointer")
-            _assert_undefined(int8, "int8", "anyPointer")
-            _assert_undefined(int16, "int16", "anyPointer")
-            _assert_undefined(int32, "int32", "anyPointer")
-            _assert_undefined(int64, "int64", "anyPointer")
-            _assert_undefined(uint8, "uint8", "anyPointer")
-            _assert_undefined(uint16, "uint16", "anyPointer")
-            _assert_undefined(uint32, "uint32", "anyPointer")
-            _assert_undefined(uint64, "uint64", "anyPointer")
-            _assert_undefined(float32, "float32", "anyPointer")
-            _assert_undefined(float64, "float64", "anyPointer")
-            _assert_undefined(text, "text", "anyPointer")
-            _assert_undefined(data, "data", "anyPointer")
-            _assert_undefined(list, "list", "anyPointer")
-            _assert_undefined(enum, "enum", "anyPointer")
-            _assert_undefined(struct, "struct", "anyPointer")
-            _assert_undefined(interface, "interface", "anyPointer")
-            buf = self.__new_anyPointer(anyPointer=anyPointer)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
-        raise TypeError("one of the following args is required: void, bool, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, text, data, list, enum, struct, interface, anyPointer")
+            _curtag = _check_tag(_curtag, 'anyPointer')
+            _buf = self.__new_anyPointer(anyPointer)
+        if _buf is None:
+            raise TypeError("one of the following args is required: void, bool, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, text, data, list, enum, struct, interface, anyPointer")
+        _Struct.__init__(self, _buf, 0, 2, 1)
     
     def shortrepr(self):
         parts = []
@@ -3034,40 +2321,40 @@ class Brand_Binding(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new_unbound(unbound):
+    def __new_unbound():
         builder = _StructBuilder('hxxxxxxxxxxxxxx')
         __which__ = 0
         buf = builder.build(__which__)
         return buf
     @classmethod
-    def new_unbound(cls, unbound):
-        buf = cls.__new_unbound(unbound)
+    def new_unbound(cls):
+        buf = cls.__new_unbound()
         return cls.from_buffer(buf, 0, 1, 1)
     
     @staticmethod
-    def __new_type(type):
+    def __new_type(type=None):
         builder = _StructBuilder('hxxxxxxq')
         __which__ = 1
         type = builder.alloc_struct(8, Type, type)
         buf = builder.build(__which__, type)
         return buf
     @classmethod
-    def new_type(cls, type):
+    def new_type(cls, type=None):
         buf = cls.__new_type(type)
         return cls.from_buffer(buf, 0, 1, 1)
     
     def __init__(self, unbound=_undefined, type=_undefined):
+        _buf = None
+        _curtag = None
         if unbound is not _undefined:
-            _assert_undefined(type, "type", "unbound")
-            buf = self.__new_unbound(unbound=unbound)
-            _Struct.__init__(self, buf, 0, 1, 1)
-            return
+            _curtag = _check_tag(_curtag, 'unbound')
+            _buf = self.__new_unbound()
         if type is not _undefined:
-            _assert_undefined(unbound, "unbound", "type")
-            buf = self.__new_type(type=type)
-            _Struct.__init__(self, buf, 0, 1, 1)
-            return
-        raise TypeError("one of the following args is required: unbound, type")
+            _curtag = _check_tag(_curtag, 'type')
+            _buf = self.__new_type(type)
+        if _buf is None:
+            raise TypeError("one of the following args is required: unbound, type")
+        _Struct.__init__(self, _buf, 0, 1, 1)
     
     def shortrepr(self):
         parts = []
@@ -3121,40 +2408,40 @@ class Brand_Scope(_Struct):
         return None
     
     @staticmethod
-    def __new_bind(bind, scopeId):
+    def __new_bind(scopeId=0, bind=None):
         builder = _StructBuilder('Qhxxxxxxq')
         __which__ = 0
         bind = builder.alloc_list(16, _StructList, Brand.Binding, bind)
         buf = builder.build(scopeId, __which__, bind)
         return buf
     @classmethod
-    def new_bind(cls, bind, scopeId):
-        buf = cls.__new_bind(bind, scopeId)
+    def new_bind(cls, scopeId=0, bind=None):
+        buf = cls.__new_bind(scopeId, bind)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @staticmethod
-    def __new_inherit(inherit, scopeId):
+    def __new_inherit(scopeId=0):
         builder = _StructBuilder('Qhxxxxxxxxxxxxxx')
         __which__ = 1
         buf = builder.build(scopeId, __which__)
         return buf
     @classmethod
-    def new_inherit(cls, inherit, scopeId):
-        buf = cls.__new_inherit(inherit, scopeId)
+    def new_inherit(cls, scopeId=0):
+        buf = cls.__new_inherit(scopeId)
         return cls.from_buffer(buf, 0, 2, 1)
     
-    def __init__(self, scopeId, bind=_undefined, inherit=_undefined):
+    def __init__(self, scopeId=0, bind=_undefined, inherit=_undefined):
+        _buf = None
+        _curtag = None
         if bind is not _undefined:
-            _assert_undefined(inherit, "inherit", "bind")
-            buf = self.__new_bind(scopeId=scopeId, bind=bind)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
+            _curtag = _check_tag(_curtag, 'bind')
+            _buf = self.__new_bind(scopeId, bind)
         if inherit is not _undefined:
-            _assert_undefined(bind, "bind", "inherit")
-            buf = self.__new_inherit(scopeId=scopeId, inherit=inherit)
-            _Struct.__init__(self, buf, 0, 2, 1)
-            return
-        raise TypeError("one of the following args is required: bind, inherit")
+            _curtag = _check_tag(_curtag, 'inherit')
+            _buf = self.__new_inherit(scopeId)
+        if _buf is None:
+            raise TypeError("one of the following args is required: bind, inherit")
+        _Struct.__init__(self, _buf, 0, 2, 1)
     
     def shortrepr(self):
         parts = []
@@ -3190,13 +2477,13 @@ class Brand(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new(scopes):
+    def __new(scopes=None):
         builder = _StructBuilder('q')
         scopes = builder.alloc_list(0, _StructList, Brand.Scope, scopes)
         buf = builder.build(scopes)
         return buf
     
-    def __init__(self, scopes):
+    def __init__(self, scopes=None):
         buf = self.__new(scopes)
         _Struct.__init__(self, buf, 0, 0, 1)
     
@@ -3271,14 +2558,14 @@ class Annotation(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new(id, value, brand):
+    def __new(id=0, value=None, brand=None):
         builder = _StructBuilder('Qqq')
         value = builder.alloc_struct(8, Value, value)
         brand = builder.alloc_struct(16, Brand, brand)
         buf = builder.build(id, value, brand)
         return buf
     
-    def __init__(self, id, value, brand):
+    def __init__(self, id=0, value=None, brand=None):
         buf = self.__new(id, value, brand)
         _Struct.__init__(self, buf, 0, 1, 2)
     
@@ -3327,14 +2614,14 @@ class Node_interface(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new(methods, superclasses):
+    def __new(methods=None, superclasses=None):
         builder = _StructBuilder('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxqqxxxxxxxx')
         methods = builder.alloc_list(64, _StructList, Method, methods)
         superclasses = builder.alloc_list(72, _StructList, Superclass, superclasses)
         buf = builder.build(methods, superclasses)
         return buf
     
-    def __init__(self, methods, superclasses):
+    def __init__(self, methods=None, superclasses=None):
         buf = self.__new(methods, superclasses)
         _Struct.__init__(self, buf, 0, 5, 6)
     
@@ -3402,14 +2689,14 @@ class Node_const(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new(type, value):
+    def __new(type=None, value=None):
         builder = _StructBuilder('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxqqxxxxxxxx')
         type = builder.alloc_struct(64, Type, type)
         value = builder.alloc_struct(72, Value, value)
         buf = builder.build(type, value)
         return buf
     
-    def __init__(self, type, value):
+    def __init__(self, type=None, value=None):
         buf = self.__new(type, value)
         _Struct.__init__(self, buf, 0, 5, 6)
     
@@ -3684,13 +2971,13 @@ class Node_enum(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new(enumerants):
+    def __new(enumerants=None):
         builder = _StructBuilder('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxqxxxxxxxxxxxxxxxx')
         enumerants = builder.alloc_list(64, _StructList, Enumerant, enumerants)
         buf = builder.build(enumerants)
         return buf
     
-    def __init__(self, enumerants):
+    def __init__(self, enumerants=None):
         buf = self.__new(enumerants)
         _Struct.__init__(self, buf, 0, 5, 6)
     
@@ -3727,13 +3014,13 @@ class Node_NestedNode(_Struct):
         return value
     
     @staticmethod
-    def __new(name, id):
+    def __new(name=None, id=0):
         builder = _StructBuilder('Qq')
         name = builder.alloc_text(8, name)
         buf = builder.build(id, name)
         return buf
     
-    def __init__(self, name, id):
+    def __init__(self, name=None, id=0):
         buf = self.__new(name, id)
         _Struct.__init__(self, buf, 0, 1, 1)
     
@@ -3763,13 +3050,13 @@ class Node_Parameter(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new(name):
+    def __new(name=None):
         builder = _StructBuilder('q')
         name = builder.alloc_text(0, name)
         buf = builder.build(name)
         return buf
     
-    def __init__(self, name):
+    def __init__(self, name=None):
         buf = self.__new(name)
         _Struct.__init__(self, buf, 0, 0, 1)
     
@@ -3883,7 +3170,7 @@ class Node(_Struct):
         return obj
     
     @staticmethod
-    def Struct(dataWordCount, pointerCount, preferredListEncoding, isGroup, discriminantCount, discriminantOffset, fields):
+    def Struct(dataWordCount=0, pointerCount=0, preferredListEncoding=0, isGroup=False, discriminantCount=0, discriminantOffset=0, fields=None):
         return dataWordCount, pointerCount, preferredListEncoding, isGroup, discriminantCount, discriminantOffset, fields,
     
     @property
@@ -3895,7 +3182,7 @@ class Node(_Struct):
         return obj
     
     @staticmethod
-    def Enum(enumerants):
+    def Enum(enumerants=None):
         return enumerants,
     
     @property
@@ -3907,7 +3194,7 @@ class Node(_Struct):
         return obj
     
     @staticmethod
-    def Interface(methods, superclasses):
+    def Interface(methods=None, superclasses=None):
         return methods, superclasses,
     
     @property
@@ -3919,7 +3206,7 @@ class Node(_Struct):
         return obj
     
     @staticmethod
-    def Const(type, value):
+    def Const(type=None, value=None):
         return type, value,
     
     @property
@@ -3931,7 +3218,7 @@ class Node(_Struct):
         return obj
     
     @staticmethod
-    def Annotation(type, targetsFile, targetsConst, targetsEnum, targetsEnumerant, targetsStruct, targetsField, targetsUnion, targetsGroup, targetsInterface, targetsMethod, targetsParam, targetsAnnotation):
+    def Annotation(type=None, targetsFile=False, targetsConst=False, targetsEnum=False, targetsEnumerant=False, targetsStruct=False, targetsField=False, targetsUnion=False, targetsGroup=False, targetsInterface=False, targetsMethod=False, targetsParam=False, targetsAnnotation=False):
         return type, targetsFile, targetsConst, targetsEnum, targetsEnumerant, targetsStruct, targetsField, targetsUnion, targetsGroup, targetsInterface, targetsMethod, targetsParam, targetsAnnotation,
     
     @property
@@ -4005,62 +3292,30 @@ class Node(_Struct):
         buf = cls.__new_annotation()
         return cls.from_buffer(buf, 0, 5, 6)
     
-    def __init__(self, id, displayName, displayNamePrefixLength, scopeId, nestedNodes, annotations, parameters, isGeneric, file=_undefined, struct=_undefined, enum=_undefined, interface=_undefined, const=_undefined, annotation=_undefined):
+    def __init__(self, id=0, displayName=None, displayNamePrefixLength=0, scopeId=0, nestedNodes=None, annotations=None, file=_undefined, struct=(0, 0, 0, False, 0, 0, None,), enum=(None,), interface=(None, None,), const=(None, None,), annotation=(None, False, False, False, False, False, False, False, False, False, False, False, False,), parameters=None, isGeneric=False):
+        _buf = None
+        _curtag = None
         if file is not _undefined:
-            _assert_undefined(struct, "struct", "file")
-            _assert_undefined(enum, "enum", "file")
-            _assert_undefined(interface, "interface", "file")
-            _assert_undefined(const, "const", "file")
-            _assert_undefined(annotation, "annotation", "file")
-            buf = self.__new_file(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, parameters=parameters, isGeneric=isGeneric, file=file)
-            _Struct.__init__(self, buf, 0, 5, 6)
-            return
+            _curtag = _check_tag(_curtag, 'file')
+            _buf = self.__new_file()
         if struct is not _undefined:
-            _assert_undefined(file, "file", "struct")
-            _assert_undefined(enum, "enum", "struct")
-            _assert_undefined(interface, "interface", "struct")
-            _assert_undefined(const, "const", "struct")
-            _assert_undefined(annotation, "annotation", "struct")
-            buf = self.__new_struct(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, parameters=parameters, isGeneric=isGeneric, struct=struct)
-            _Struct.__init__(self, buf, 0, 5, 6)
-            return
+            _curtag = _check_tag(_curtag, 'struct')
+            _buf = self.__new_struct()
         if enum is not _undefined:
-            _assert_undefined(file, "file", "enum")
-            _assert_undefined(struct, "struct", "enum")
-            _assert_undefined(interface, "interface", "enum")
-            _assert_undefined(const, "const", "enum")
-            _assert_undefined(annotation, "annotation", "enum")
-            buf = self.__new_enum(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, parameters=parameters, isGeneric=isGeneric, enum=enum)
-            _Struct.__init__(self, buf, 0, 5, 6)
-            return
+            _curtag = _check_tag(_curtag, 'enum')
+            _buf = self.__new_enum()
         if interface is not _undefined:
-            _assert_undefined(file, "file", "interface")
-            _assert_undefined(struct, "struct", "interface")
-            _assert_undefined(enum, "enum", "interface")
-            _assert_undefined(const, "const", "interface")
-            _assert_undefined(annotation, "annotation", "interface")
-            buf = self.__new_interface(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, parameters=parameters, isGeneric=isGeneric, interface=interface)
-            _Struct.__init__(self, buf, 0, 5, 6)
-            return
+            _curtag = _check_tag(_curtag, 'interface')
+            _buf = self.__new_interface()
         if const is not _undefined:
-            _assert_undefined(file, "file", "const")
-            _assert_undefined(struct, "struct", "const")
-            _assert_undefined(enum, "enum", "const")
-            _assert_undefined(interface, "interface", "const")
-            _assert_undefined(annotation, "annotation", "const")
-            buf = self.__new_const(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, parameters=parameters, isGeneric=isGeneric, const=const)
-            _Struct.__init__(self, buf, 0, 5, 6)
-            return
+            _curtag = _check_tag(_curtag, 'const')
+            _buf = self.__new_const()
         if annotation is not _undefined:
-            _assert_undefined(file, "file", "annotation")
-            _assert_undefined(struct, "struct", "annotation")
-            _assert_undefined(enum, "enum", "annotation")
-            _assert_undefined(interface, "interface", "annotation")
-            _assert_undefined(const, "const", "annotation")
-            buf = self.__new_annotation(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, parameters=parameters, isGeneric=isGeneric, annotation=annotation)
-            _Struct.__init__(self, buf, 0, 5, 6)
-            return
-        raise TypeError("one of the following args is required: file, struct, enum, interface, const, annotation")
+            _curtag = _check_tag(_curtag, 'annotation')
+            _buf = self.__new_annotation()
+        if _buf is None:
+            raise TypeError("one of the following args is required: file, struct, enum, interface, const, annotation")
+        _Struct.__init__(self, _buf, 0, 5, 6)
     
     def shortrepr(self):
         parts = []
