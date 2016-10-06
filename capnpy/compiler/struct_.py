@@ -129,11 +129,10 @@ class Node__Struct:
         ctor = Structor(m, '', ns.data_size, ns.ptrs_size, self.struct.fields)
         ctor.emit_private(m.code)
         ns.w()
-        #
         with ns.def_('__init__', ['self'] + ctor.params):
             call = m.code.call('self.__new', ctor.argnames)
-            ns.w('buf = {call}', call=call)
-            ns.w('_Struct.__init__(self, buf, 0, {data_size}, {ptrs_size})')
+            ns.w('_buf = {call}', call=call)
+            ns.w('_Struct.__init__(self, _buf, 0, {data_size}, {ptrs_size})')
         ns.w()
 
     def _emit_init_union(self, m, ns, tags):
