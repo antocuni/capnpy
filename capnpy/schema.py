@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2016-10-06 18:06
+# generated on 2016-10-07 11:19
 
 from capnpy.ptr import E_IS_FAR_POINTER as _E_IS_FAR_POINTER
 from capnpy.struct_ import Struct as _Struct
@@ -151,8 +151,8 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
         return buf
     
     def __init__(self, id=0, name=None):
-        buf = self.__new(id, name)
-        _Struct.__init__(self, buf, 0, 1, 1)
+        _buf = self.__new(id, name)
+        _Struct.__init__(self, _buf, 0, 1, 1)
     
     def shortrepr(self):
         parts = []
@@ -212,8 +212,8 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
         return buf
     
     def __init__(self, id=0, filename=None, imports=None):
-        buf = self.__new(id, filename, imports)
-        _Struct.__init__(self, buf, 0, 1, 2)
+        _buf = self.__new(id, filename, imports)
+        _Struct.__init__(self, _buf, 0, 1, 2)
     
     def shortrepr(self):
         parts = []
@@ -269,8 +269,8 @@ class CodeGeneratorRequest(_Struct):
         return buf
     
     def __init__(self, nodes=None, requestedFiles=None):
-        buf = self.__new(nodes, requestedFiles)
-        _Struct.__init__(self, buf, 0, 0, 2)
+        _buf = self.__new(nodes, requestedFiles)
+        _Struct.__init__(self, _buf, 0, 0, 2)
     
     def shortrepr(self):
         parts = []
@@ -413,8 +413,8 @@ class Method(_Struct):
         return buf
     
     def __init__(self, name=None, codeOrder=0, paramStructType=0, resultStructType=0, annotations=None, paramBrand=None, resultBrand=None, implicitParameters=None):
-        buf = self.__new(name, codeOrder, paramStructType, resultStructType, annotations, paramBrand, resultBrand, implicitParameters)
-        _Struct.__init__(self, buf, 0, 3, 5)
+        _buf = self.__new(name, codeOrder, paramStructType, resultStructType, annotations, paramBrand, resultBrand, implicitParameters)
+        _Struct.__init__(self, _buf, 0, 3, 5)
     
     def shortrepr(self):
         parts = []
@@ -479,8 +479,8 @@ class Enumerant(_Struct):
         return buf
     
     def __init__(self, name=None, codeOrder=0, annotations=None):
-        buf = self.__new(name, codeOrder, annotations)
-        _Struct.__init__(self, buf, 0, 1, 2)
+        _buf = self.__new(name, codeOrder, annotations)
+        _Struct.__init__(self, _buf, 0, 1, 2)
     
     def shortrepr(self):
         parts = []
@@ -512,16 +512,6 @@ class Type_anyPointer_parameter(_Struct):
             value = value ^ 0
         return value
     
-    @staticmethod
-    def __new(scopeId=0, parameterIndex=0):
-        builder = _StructBuilder('xxxxxxxxxxHxxxxQxxxxxxxx')
-        buf = builder.build(parameterIndex, scopeId)
-        return buf
-    
-    def __init__(self, scopeId=0, parameterIndex=0):
-        buf = self.__new(scopeId, parameterIndex)
-        _Struct.__init__(self, buf, 0, 3, 1)
-    
     def shortrepr(self):
         parts = []
         parts.append("scopeId = %s" % self.scopeId)
@@ -542,16 +532,6 @@ class Type_anyPointer_implicitMethodParameter(_Struct):
         if 0 != 0:
             value = value ^ 0
         return value
-    
-    @staticmethod
-    def __new(parameterIndex=0):
-        builder = _StructBuilder('xxxxxxxxxxHxxxxxxxxxxxxxxxxxxxx')
-        buf = builder.build(parameterIndex)
-        return buf
-    
-    def __init__(self, parameterIndex=0):
-        buf = self.__new(parameterIndex)
-        _Struct.__init__(self, buf, 0, 3, 1)
     
     def shortrepr(self):
         parts = []
@@ -604,57 +584,6 @@ class Type_anyPointer(_Struct):
     def Implicitmethodparameter(parameterIndex=0):
         return parameterIndex,
     
-    @staticmethod
-    def __new_unconstrained():
-        builder = _StructBuilder('xxxxxxxxhxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 0
-        buf = builder.build(__which__)
-        return buf
-    @classmethod
-    def new_unconstrained(cls):
-        buf = cls.__new_unconstrained()
-        return cls.from_buffer(buf, 0, 3, 1)
-    
-    @staticmethod
-    def __new_parameter(parameter=(0, 0,)):
-        builder = _StructBuilder('xxxxxxxxhHxxxxQxxxxxxxx')
-        __which__ = 1
-        parameter_scopeId, parameter_parameterIndex, = parameter
-        buf = builder.build(__which__, parameter_parameterIndex, parameter_scopeId)
-        return buf
-    @classmethod
-    def new_parameter(cls, parameter=(0, 0,)):
-        buf = cls.__new_parameter(parameter)
-        return cls.from_buffer(buf, 0, 3, 1)
-    
-    @staticmethod
-    def __new_implicitMethodParameter(implicitMethodParameter=(0,)):
-        builder = _StructBuilder('xxxxxxxxhHxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 2
-        implicitMethodParameter_parameterIndex, = implicitMethodParameter
-        buf = builder.build(__which__, implicitMethodParameter_parameterIndex)
-        return buf
-    @classmethod
-    def new_implicitMethodParameter(cls, implicitMethodParameter=(0,)):
-        buf = cls.__new_implicitMethodParameter(implicitMethodParameter)
-        return cls.from_buffer(buf, 0, 3, 1)
-    
-    def __init__(self, unconstrained=_undefined, parameter=(0, 0,), implicitMethodParameter=(0,)):
-        _buf = None
-        _curtag = None
-        if unconstrained is not _undefined:
-            _curtag = _check_tag(_curtag, 'unconstrained')
-            _buf = self.__new_unconstrained()
-        if parameter is not _undefined:
-            _curtag = _check_tag(_curtag, 'parameter')
-            _buf = self.__new_parameter(parameter)
-        if implicitMethodParameter is not _undefined:
-            _curtag = _check_tag(_curtag, 'implicitMethodParameter')
-            _buf = self.__new_implicitMethodParameter(implicitMethodParameter)
-        if _buf is None:
-            raise TypeError("one of the following args is required: unconstrained, parameter, implicitMethodParameter")
-        _Struct.__init__(self, _buf, 0, 3, 1)
-    
     def shortrepr(self):
         parts = []
         if self.is_unconstrained(): parts.append("unconstrained = %s" % "void")
@@ -702,17 +631,6 @@ class Type_struct(_Struct):
         ptr = self._read_fast_ptr(0)
         return ptr != 0
     
-    @staticmethod
-    def __new(typeId=0, brand=None):
-        builder = _StructBuilder('xxxxxxxxQxxxxxxxxq')
-        brand = builder.alloc_struct(24, Brand, brand)
-        buf = builder.build(typeId, brand)
-        return buf
-    
-    def __init__(self, typeId=0, brand=None):
-        buf = self.__new(typeId, brand)
-        _Struct.__init__(self, buf, 0, 3, 1)
-    
     def shortrepr(self):
         parts = []
         parts.append("typeId = %s" % self.typeId)
@@ -758,17 +676,6 @@ class Type_enum(_Struct):
     def has_brand(self):
         ptr = self._read_fast_ptr(0)
         return ptr != 0
-    
-    @staticmethod
-    def __new(typeId=0, brand=None):
-        builder = _StructBuilder('xxxxxxxxQxxxxxxxxq')
-        brand = builder.alloc_struct(24, Brand, brand)
-        buf = builder.build(typeId, brand)
-        return buf
-    
-    def __init__(self, typeId=0, brand=None):
-        buf = self.__new(typeId, brand)
-        _Struct.__init__(self, buf, 0, 3, 1)
     
     def shortrepr(self):
         parts = []
@@ -816,17 +723,6 @@ class Type_interface(_Struct):
         ptr = self._read_fast_ptr(0)
         return ptr != 0
     
-    @staticmethod
-    def __new(typeId=0, brand=None):
-        builder = _StructBuilder('xxxxxxxxQxxxxxxxxq')
-        brand = builder.alloc_struct(24, Brand, brand)
-        buf = builder.build(typeId, brand)
-        return buf
-    
-    def __init__(self, typeId=0, brand=None):
-        buf = self.__new(typeId, brand)
-        _Struct.__init__(self, buf, 0, 3, 1)
-    
     def shortrepr(self):
         parts = []
         parts.append("typeId = %s" % self.typeId)
@@ -864,17 +760,6 @@ class Type_list(_Struct):
     def has_elementType(self):
         ptr = self._read_fast_ptr(0)
         return ptr != 0
-    
-    @staticmethod
-    def __new(elementType=None):
-        builder = _StructBuilder('xxxxxxxxxxxxxxxxxxxxxxxxq')
-        elementType = builder.alloc_struct(24, Type, elementType)
-        buf = builder.build(elementType)
-        return buf
-    
-    def __init__(self, elementType=None):
-        buf = self.__new(elementType)
-        _Struct.__init__(self, buf, 0, 3, 1)
     
     def shortrepr(self):
         parts = []
@@ -1382,16 +1267,6 @@ class Field_group(_Struct):
             value = value ^ 0
         return value
     
-    @staticmethod
-    def __new(typeId=0):
-        builder = _StructBuilder('xxxxxxxxxxxxxxxxQxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        buf = builder.build(typeId)
-        return buf
-    
-    def __init__(self, typeId=0):
-        buf = self.__new(typeId)
-        _Struct.__init__(self, buf, 0, 3, 4)
-    
     def shortrepr(self):
         parts = []
         parts.append("typeId = %s" % self.typeId)
@@ -1424,41 +1299,6 @@ class Field_ordinal(_Struct):
         if 0 != 0:
             value = value ^ 0
         return value
-    
-    @staticmethod
-    def __new_implicit():
-        builder = _StructBuilder('xxxxxxxxxxhxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 0
-        buf = builder.build(__which__)
-        return buf
-    @classmethod
-    def new_implicit(cls):
-        buf = cls.__new_implicit()
-        return cls.from_buffer(buf, 0, 3, 4)
-    
-    @staticmethod
-    def __new_explicit(explicit=0):
-        builder = _StructBuilder('xxxxxxxxxxhHxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 1
-        buf = builder.build(__which__, explicit)
-        return buf
-    @classmethod
-    def new_explicit(cls, explicit=0):
-        buf = cls.__new_explicit(explicit)
-        return cls.from_buffer(buf, 0, 3, 4)
-    
-    def __init__(self, implicit=_undefined, explicit=_undefined):
-        _buf = None
-        _curtag = None
-        if implicit is not _undefined:
-            _curtag = _check_tag(_curtag, 'implicit')
-            _buf = self.__new_implicit()
-        if explicit is not _undefined:
-            _curtag = _check_tag(_curtag, 'explicit')
-            _buf = self.__new_explicit(explicit)
-        if _buf is None:
-            raise TypeError("one of the following args is required: implicit, explicit")
-        _Struct.__init__(self, _buf, 0, 3, 4)
     
     def shortrepr(self):
         parts = []
@@ -1538,14 +1378,6 @@ class Field_slot(_Struct):
         if False != 0:
             value = value ^ False
         return value
-    
-    @staticmethod
-    def __new(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: (name = "hadExplicitDefault", codeOrder = 3, discriminantValue = 65535, slot = (offset = 128, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 10))')
-    
-    def __init__(self):
-        buf = self.__new()
-        _Struct.__init__(self, buf, 0, 3, 4)
     
     def shortrepr(self):
         parts = []
@@ -1746,8 +1578,8 @@ class Superclass(_Struct):
         return buf
     
     def __init__(self, id=0, brand=None):
-        buf = self.__new(id, brand)
-        _Struct.__init__(self, buf, 0, 1, 1)
+        _buf = self.__new(id, brand)
+        _Struct.__init__(self, _buf, 0, 1, 1)
     
     def shortrepr(self):
         parts = []
@@ -2484,8 +2316,8 @@ class Brand(_Struct):
         return buf
     
     def __init__(self, scopes=None):
-        buf = self.__new(scopes)
-        _Struct.__init__(self, buf, 0, 0, 1)
+        _buf = self.__new(scopes)
+        _Struct.__init__(self, _buf, 0, 0, 1)
     
     def shortrepr(self):
         parts = []
@@ -2566,8 +2398,8 @@ class Annotation(_Struct):
         return buf
     
     def __init__(self, id=0, value=None, brand=None):
-        buf = self.__new(id, value, brand)
-        _Struct.__init__(self, buf, 0, 1, 2)
+        _buf = self.__new(id, value, brand)
+        _Struct.__init__(self, _buf, 0, 1, 2)
     
     def shortrepr(self):
         parts = []
@@ -2612,18 +2444,6 @@ class Node_interface(_Struct):
     def has_superclasses(self):
         ptr = self._read_fast_ptr(32)
         return ptr != 0
-    
-    @staticmethod
-    def __new(methods=None, superclasses=None):
-        builder = _StructBuilder('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxqqxxxxxxxx')
-        methods = builder.alloc_list(64, _StructList, Method, methods)
-        superclasses = builder.alloc_list(72, _StructList, Superclass, superclasses)
-        buf = builder.build(methods, superclasses)
-        return buf
-    
-    def __init__(self, methods=None, superclasses=None):
-        buf = self.__new(methods, superclasses)
-        _Struct.__init__(self, buf, 0, 5, 6)
     
     def shortrepr(self):
         parts = []
@@ -2687,18 +2507,6 @@ class Node_const(_Struct):
     def has_value(self):
         ptr = self._read_fast_ptr(32)
         return ptr != 0
-    
-    @staticmethod
-    def __new(type=None, value=None):
-        builder = _StructBuilder('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxqqxxxxxxxx')
-        type = builder.alloc_struct(64, Type, type)
-        value = builder.alloc_struct(72, Value, value)
-        buf = builder.build(type, value)
-        return buf
-    
-    def __init__(self, type=None, value=None):
-        buf = self.__new(type, value)
-        _Struct.__init__(self, buf, 0, 5, 6)
     
     def shortrepr(self):
         parts = []
@@ -2775,14 +2583,6 @@ class Node_struct(_Struct):
     def has_fields(self):
         ptr = self._read_fast_ptr(24)
         return ptr != 0
-    
-    @staticmethod
-    def __new(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: (name = "isGroup", codeOrder = 3, discriminantValue = 65535, slot = (offset = 224, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 10))')
-    
-    def __init__(self):
-        buf = self.__new()
-        _Struct.__init__(self, buf, 0, 5, 6)
     
     def shortrepr(self):
         parts = []
@@ -2923,14 +2723,6 @@ class Node_annotation(_Struct):
             value = value ^ False
         return value
     
-    @staticmethod
-    def __new(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: (name = "targetsFile", codeOrder = 1, discriminantValue = 65535, slot = (offset = 112, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 19))')
-    
-    def __init__(self):
-        buf = self.__new()
-        _Struct.__init__(self, buf, 0, 5, 6)
-    
     def shortrepr(self):
         parts = []
         if self.has_type(): parts.append("type = %s" % self.get_type().shortrepr())
@@ -2969,17 +2761,6 @@ class Node_enum(_Struct):
     def has_enumerants(self):
         ptr = self._read_fast_ptr(24)
         return ptr != 0
-    
-    @staticmethod
-    def __new(enumerants=None):
-        builder = _StructBuilder('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxqxxxxxxxxxxxxxxxx')
-        enumerants = builder.alloc_list(64, _StructList, Enumerant, enumerants)
-        buf = builder.build(enumerants)
-        return buf
-    
-    def __init__(self, enumerants=None):
-        buf = self.__new(enumerants)
-        _Struct.__init__(self, buf, 0, 5, 6)
     
     def shortrepr(self):
         parts = []
@@ -3021,8 +2802,8 @@ class Node_NestedNode(_Struct):
         return buf
     
     def __init__(self, name=None, id=0):
-        buf = self.__new(name, id)
-        _Struct.__init__(self, buf, 0, 1, 1)
+        _buf = self.__new(name, id)
+        _Struct.__init__(self, _buf, 0, 1, 1)
     
     def shortrepr(self):
         parts = []
@@ -3057,8 +2838,8 @@ class Node_Parameter(_Struct):
         return buf
     
     def __init__(self, name=None):
-        buf = self.__new(name)
-        _Struct.__init__(self, buf, 0, 0, 1)
+        _buf = self.__new(name)
+        _Struct.__init__(self, _buf, 0, 0, 1)
     
     def shortrepr(self):
         parts = []
