@@ -116,6 +116,8 @@ class Node__Struct:
         ns.w()
 
     def _emit_ctors(self, m):
+        if self.struct.isGroup:
+            return
         ns = m.code.new_scope()
         ns.data_size = self.struct.dataWordCount
         ns.ptrs_size = self.struct.pointerCount
