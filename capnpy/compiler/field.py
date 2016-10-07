@@ -243,7 +243,10 @@ class Field__Group:
         ##     return x, y
         ##
         groupnode = m.allnodes[self.group.typeId]
-        tree = FieldTree(m, groupnode.struct.fields)
+        union_default = None
+        if groupnode.struct.is_union():
+            union_default = '_undefined'
+        tree = FieldTree(m, groupnode.struct.fields, union_default)
         argnames, params = tree.get_args_and_params()
         #
         ns.argnames = m.code.args(argnames)

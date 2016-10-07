@@ -161,19 +161,14 @@ class TestNamedUnion(CompilerTest):
         return self.compile(schema)
 
     def test_generic(self, mod):
-        # XXX: this should be generated automatically by the schema compiler
-        from capnpy.struct_ import undefined
-        def Job(unemployed=undefined, retired=undefined, worker=undefined):
-            return unemployed, retired, worker
-        #
-        p = mod.Person(name='foo', job=Job(unemployed=None))
+        p = mod.Person(name='foo', job=mod.Person.Job(unemployed=None))
         assert p.name == 'foo'
         assert p.job.is_unemployed()
         #
-        p = mod.Person(name='foo', job=Job(retired=None))
+        p = mod.Person(name='foo', job=mod.Person.Job(retired=None))
         assert p.name == 'foo'
         assert p.job.is_retired()
         #
-        p = mod.Person(name='foo', job=Job(worker='capnpy'))
+        p = mod.Person(name='foo', job=mod.Person.Job(worker='capnpy'))
         assert p.name == 'foo'
         assert p.job.worker == 'capnpy'
