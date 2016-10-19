@@ -74,7 +74,7 @@ Requirements:
   1. ``cython >= 0.23``: Cython is needed only if you want to enable pyx mode
      on CPython
 
-  2. ``capnp >= 0.5.3``: as explained above, you need the ``capnp`` executable
+  2. ``capnp >= 0.5.0``: as explained above, you need the ``capnp`` executable
      only for dynamic loading, or to compile the schema
 
 
@@ -84,7 +84,7 @@ Dynamic loading
 To dynamically load a capnproto schema, use ``capnpy.load_schema``; its full
 signature is::
 
-    def load_schema(self, modname=None, importname=None, filename=None, convert_case=True):
+    def load_schema(self, modname=None, importname=None, filename=None, convert_case=True, pyx='auto'):
         ...
 
 ``modname``, ``importname`` and ``filename`` corresponds to three different
@@ -127,6 +127,9 @@ Additionally, you can also specify the ``convert_case`` parameter. By default,
 ``personName``, the compiled Python module will contain a field named
 ``person_name``. You can disable this automatic translation by passing
 ``convert_case=False``.
+
+Finally, ``pyx`` controls whether to use Cython to compile the schema. The
+default is to enable pyx mode when on CPython, and to disable when on PyPy.
 
 
 Manual compilation
@@ -196,7 +199,7 @@ For example::
     100 200
 
 Alternatively, you can call ``load``/``loads`` directly on the class, and
-``dump`` directly on the objects::
+``dumps`` directly on the objects::
 
     >>> import capnpy
     >>> example = capnpy.load_schema('example')
@@ -320,12 +323,8 @@ If you try to specify two conflicting fields, you get an error::
 
     >>> Shape(area=16, square=4, circle=5)
     Traceback (most recent call last):
-      File "<stdin>", line 1, in <module>
-      File "<0-codegen capnpy/compiler/__init__.py:145>", line 89, in __init__
-        self._assert_undefined(square, "square", "circle")
-      File "capnpy/struct_.py", line 70, in _assert_undefined
-        (name, other_name))
-    TypeError: got multiple values for the union tag: square, circle
+    ...
+    TypeError: got multiple values for the union tag: circle, square
 
 The second way is to use one of the special ``new_*()`` alternate
 constructors::
