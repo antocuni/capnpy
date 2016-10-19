@@ -172,3 +172,5 @@ class TestNamedUnion(CompilerTest):
         p = mod.Person(name='foo', job=mod.Person.Job(worker='capnpy'))
         assert p.name == 'foo'
         assert p.job.worker == 'capnpy'
+        #
+        pytest.raises(TypeError, "mod.Person(name='foo', job=mod.Person.Job())")
