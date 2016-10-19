@@ -404,6 +404,38 @@ access the field, and the capitalized ``Point.Position`` which is used to
 construct new objects.
 
 
+Named unions
+-------------
+
+Named unions are a special case of groups. Suppose to have the following schema::
+
+    @0xbf5147cbbecf40c1;
+    struct Person {
+      name @0 :Text;
+      job :union {
+          unemployed @1 :Void;
+          retired @2 :Void;
+          worker @3 :Text;
+      }
+    }
+
+You can instantiate new objects as you would do with a normal group. If you
+want to specify a ``void`` union field, you can use ``None``::
+
+    >>> example = capnpy.load_schema('example')
+    >>> p1 = example.Person(name='John', job=example.Person.Job(retired=None))
+    >>> p2 = example.Person(name='John', job=example.Person.Job(worker='capnpy'))
+
+Reading named unions is the same as anonymous ones::
+
+    >>> p1.job.which()
+    <job.__tag__.retired: 1>
+    >>> p1.job.is_retired()
+    True
+    >>> p2.job.worker
+    'capnpy'
+
+
 Equality and hashing
 ---------------------
 
