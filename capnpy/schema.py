@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2016-10-07 11:19
+# generated on 2016-10-20 17:03
 
 from capnpy.ptr import E_IS_FAR_POINTER as _E_IS_FAR_POINTER
 from capnpy.struct_ import Struct as _Struct
@@ -942,8 +942,8 @@ class Type(_Struct):
         return obj
     
     @staticmethod
-    def Anypointer(parameter=(0, 0,), implicitMethodParameter=(0,)):
-        return parameter, implicitMethodParameter,
+    def Anypointer(unconstrained=_undefined, parameter=(0, 0,), implicitMethodParameter=(0,)):
+        return unconstrained, parameter, implicitMethodParameter,
     
     @staticmethod
     def __new_void():
@@ -1479,8 +1479,8 @@ class Field(_Struct):
         return obj
     
     @staticmethod
-    def Ordinal(explicit=0):
-        return explicit,
+    def Ordinal(implicit=_undefined, explicit=_undefined):
+        return implicit, explicit,
     
     @staticmethod
     def __new_slot(*args, **kwargs):
