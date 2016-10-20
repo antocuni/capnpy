@@ -208,34 +208,6 @@ class Field:
 import struct
 from capnpy.builder import StructBuilder
 
-@Type.__extend__
-class Type:
-
-    @classmethod
-    def __new_primitive(cls, tag):
-        assert 0 <= tag <= 13, 'non-primitive types non supported'
-        assert cls.__tag_offset__ == 0 # the tag is the first 16 bits
-        assert cls.__static_data_size__ + cls.__static_ptrs_size__ == 4 # 32 bytes in total
-        fmt = 'h' + 'x'*30
-        assert struct.calcsize(fmt) == 32
-        buf = struct.pack(fmt, tag)
-        return cls.from_buffer(buf, 0, cls.__static_data_size__, cls.__static_ptrs_size__)
-
-    new_void = classmethod(lambda cls: cls.__new_primitive(0))
-    new_bool = classmethod(lambda cls: cls.__new_primitive(1))
-    new_int8 = classmethod(lambda cls: cls.__new_primitive(2))
-    new_int16 = classmethod(lambda cls: cls.__new_primitive(3))
-    new_int32 = classmethod(lambda cls: cls.__new_primitive(4))
-    new_int64 = classmethod(lambda cls: cls.__new_primitive(5))
-    new_uint8 = classmethod(lambda cls: cls.__new_primitive(6))
-    new_uint16 = classmethod(lambda cls: cls.__new_primitive(7))
-    new_uint32 = classmethod(lambda cls: cls.__new_primitive(8))
-    new_uint64 = classmethod(lambda cls: cls.__new_primitive(9))
-    new_float32 = classmethod(lambda cls: cls.__new_primitive(10))
-    new_float64 = classmethod(lambda cls: cls.__new_primitive(11))
-    new_text = classmethod(lambda cls: cls.__new_primitive(12))
-    new_data = classmethod(lambda cls: cls.__new_primitive(13))
-
 
 @Field.__extend__
 class Field:
