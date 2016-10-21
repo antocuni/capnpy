@@ -195,13 +195,14 @@ def test_alloc_list_of_structs_with_pointers():
 
 
 def test_MutableBuilder():
-    builder = MutableBuilder(16)
-    ptr1 = builder.alloc_text(0, 'hello capnp')
-    ptr2 = builder.alloc_text(8, 'hi world')
-    builder.set(Types.int64.ifmt, 0, ptr1)
-    builder.set(Types.int64.ifmt, 8, ptr2)
+    builder = MutableBuilder(24)
+    builder.alloc_text(0, 'hello capnp')
+    builder.set(Types.int16.ifmt, 8, 0xAA)
+    builder.set(Types.int32.ifmt, 12, 0xBBCC)
+    builder.alloc_text(16, 'hi world')
     buf = builder.build()
-    expected_buf = ('\x05\x00\x00\x00\x62\x00\x00\x00'
+    expected_buf = ('\x09\x00\x00\x00\x62\x00\x00\x00'
+                    '\xAA\x00\x00\x00\xCC\xBB\x00\x00'
                     '\x09\x00\x00\x00\x4a\x00\x00\x00'
                     'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
                     'p' 'n' 'p' '\x00\x00\x00\x00\x00'

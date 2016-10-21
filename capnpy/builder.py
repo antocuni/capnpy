@@ -1,5 +1,6 @@
 import struct
 from capnpy import ptr
+from capnpy.type import Types
 
 class AbstractBuilder(object):
 
@@ -12,6 +13,9 @@ class AbstractBuilder(object):
         self._extra.append(s)
         self._total_length += len(s)
         self._force_alignment()
+
+    def _record_allocation(self, offset, p):
+        pass
 
     def _force_alignment(self):
         padding = 8 - (self._total_length % 8)
@@ -36,8 +40,9 @@ class AbstractBuilder(object):
         # we need to take the compact repr of the struct, else we might get
         # garbage and wrong offsets. See
         # test_alloc_list_of_structs_with_pointers
-        self._alloc(value.compact()._buf.s)
         p = ptr.new_struct(ptr_offset, data_size, ptrs_size)
+        self._alloc(value.compact()._buf.s)
+        self._record_allocation(offset, p)
         return p
 
     def alloc_data(self, offset, value, suffix=None):
@@ -48,6 +53,7 @@ class AbstractBuilder(object):
         ptr_offset = self._calc_relative_offset(offset)
         p = ptr.new_list(ptr_offset, ptr.LIST_SIZE_8, len(value))
         self._alloc(value)
+        self._record_allocation(offset, p)
         return p
 
     def alloc_text(self, offset, value):
@@ -84,6 +90,7 @@ class AbstractBuilder(object):
         ptr_offset = self._calc_relative_offset(offset)
         ptr = self._new_ptrlist(listbuilder.size_tag, ptr_offset, item_type, item_count)
         self._alloc(listbuilder.build())
+        self._record_allocation(offset, ptr)
         return ptr
 
 class StructBuilder(AbstractBuilder):
@@ -105,6 +112,9 @@ class MutableBuilder(AbstractBuilder):
     def __init__(self, length):
         AbstractBuilder.__init__(self, length)
         self._buf = bytearray(length)
+
+    def _record_allocation(self, offset, p):
+        self.set(Types.int64.ifmt, offset, p)
 
     def set(self, ifmt, offset, value):
         # XXX: in unpack.py we use mychr, which is faster than chr on pypy
