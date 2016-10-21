@@ -8,11 +8,10 @@ class AbstractBuilder(object):
         self._extra = []
         self._total_length = self._length # the total length, including the chunks in _extra
 
-    def _alloc(self, s, aligned=True):
+    def _alloc(self, s):
         self._extra.append(s)
         self._total_length += len(s)
-        if aligned:
-            self._force_alignment()
+        self._force_alignment()
 
     def _force_alignment(self):
         padding = 8 - (self._total_length % 8)
