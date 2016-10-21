@@ -99,3 +99,18 @@ class StructBuilder(AbstractBuilder):
     def build(self, *items):
         s = struct.pack(self._fmt, *items)
         return s + ''.join(self._extra)
+
+
+class MutableBuilder(AbstractBuilder):
+
+    def __init__(self, length):
+        AbstractBuilder.__init__(self, length)
+        self._buf = bytearray(length)
+
+    def set(self, ifmt, offset, value):
+        # XXX: in unpack.py we use mychr, which is faster than chr on pypy
+        fmt = '<' + chr(ifmt)
+        struct.pack_into(fmt, self._buf, offset, value)
+
+    def build(self):
+        return str(self._buf) + ''.join(self._extra)

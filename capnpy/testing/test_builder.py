@@ -1,5 +1,5 @@
 import py
-from capnpy.builder import StructBuilder
+from capnpy.builder import StructBuilder, MutableBuilder
 from capnpy.blob import Types
 from capnpy.list import PrimitiveList, StructList, StringList
 from capnpy.struct_ import Struct
@@ -191,4 +191,20 @@ def test_alloc_list_of_structs_with_pointers():
                     '\x05\x00\x00\x00\x32\x00\x00\x00'    # name=ptr
                     'J' 'o' 'h' 'n' '\x00\x00\x00\x00'    # John
                     'E' 'm' 'i' 'l' 'y' '\x00\x00\x00')   # Emily
+    assert buf == expected_buf
+
+
+def test_MutableBuilder():
+    builder = MutableBuilder(16)
+    ptr1 = builder.alloc_text(0, 'hello capnp')
+    ptr2 = builder.alloc_text(8, 'hi world')
+    builder.set(Types.int64.ifmt, 0, ptr1)
+    builder.set(Types.int64.ifmt, 8, ptr2)
+    buf = builder.build()
+    expected_buf = ('\x05\x00\x00\x00\x62\x00\x00\x00'
+                    '\x09\x00\x00\x00\x4a\x00\x00\x00'
+                    'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
+                    'p' 'n' 'p' '\x00\x00\x00\x00\x00'
+                    'h' 'i' ' ' 'w' 'o' 'r' 'l' 'd'
+                    '\x00\x00\x00\x00\x00\x00\x00\x00')
     assert buf == expected_buf
