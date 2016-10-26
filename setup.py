@@ -59,7 +59,7 @@ setup(name="capnpy",
           'capnpy': ['*.capnp', '*.pyx', '*.pxd', '*.h']
           },
       ext_modules = ext_modules,
-      install_requires=['pypytools', 'docopt'],
+      install_requires=['pypytools>=0.2', 'docopt'],
       setup_requires=['setuptools_scm'],
       zip_safe=False,
       entry_points = {
