@@ -174,3 +174,24 @@ class TestNamedUnion(CompilerTest):
         assert p.job.worker == 'capnpy'
         #
         pytest.raises(TypeError, "mod.Person(name='foo', job=mod.Person.Job())")
+
+    @pytest.mark.xfail
+    def test_group_inside_union(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Person {
+          name @0 :Text;
+          job :union {
+              unemployed @1 :Void;
+              retired @2 :Void;
+              worker @3 :Text;
+              manager :group {
+                  title @4 :Text;
+                  company @5 :Text;
+             }
+          }
+        }
+        """
+        mod = self.compile(schema)
+        p = mod.Person(name='foo', job=mod.Person.Job(unemployed=None))
+        assert p.job.is_unemployed()
