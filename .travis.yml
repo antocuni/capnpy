@@ -18,6 +18,7 @@ addons:
     packages:
       - gcc-4.8
       - g++-4.8
+      - python-dev
 
 install:
   - curl -O https://capnproto.org/capnproto-c++-0.5.3.tar.gz
@@ -29,4 +30,6 @@ install:
   - cd ../
   - pip install tox-travis
 
-script: tox
+script:
+  - pip install Cython --install-option="--no-cython-compile"
+  - tox
