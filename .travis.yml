@@ -1,6 +1,32 @@
 sudo: false
 language: python
+
 python:
   - "2.7"
-install: pip install tox-travis
+
+env:
+  global:
+    - CC=gcc-4.8
+    - CXX=g++-4.8
+    - export PATH="$PATH:$HOME/bin"
+    - export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$HOME/lib"
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-4.8
+      - g++-4.8
+
+install:
+  - curl -O https://capnproto.org/capnproto-c++-0.5.3.tar.gz
+  - tar zxf capnproto-c++-0.5.3.tar.gz
+  - cd capnproto-c++-0.5.3
+  - ./configure --prefix=$HOME
+  - make -j3
+  - make install
+  - cd ../
+  - pip install tox-travis
+
 script: tox
