@@ -44,10 +44,20 @@ def get_cython_extensions():
         )
     return cythonize(map(getext, files), gdb_debug=False)
 
+# we try to cythonize() the files even if USE_CYTHON is False; this way, we
+# make sure that the *.c files will be included in the sdist. This is needed
+# so that people (and tox!) can download the sdist and build the extensions
+# *without* having cython installed
+if HAS_CYTHON:
+    cython_modules = get_cython_extensions()
+else:
+    cython_modules = []
+#
+if USE_CYTHON:
+    ext_modules = cython_modules
+else:
+    ext_modules = []
 
-ext_modules = []
-if USE_CYTHON and HAS_CYTHON:
-    ext_modules = get_cython_extensions()
 
 setup(name="capnpy",
       author='Antonio Cuni',
@@ -56,7 +66,7 @@ setup(name="capnpy",
       use_scm_version=True,
       packages = find_packages(),
       package_data = {
-          'capnpy': ['*.capnp', '*.pyx', '*.pxd', '*.h']
+          'capnpy': ['*.capnp', '*.pyx', '*.pxd', '*.h', '*.c']
           },
       ext_modules = ext_modules,
       install_requires=['pypytools>=0.2', 'docopt'],
