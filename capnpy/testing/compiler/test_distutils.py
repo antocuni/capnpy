@@ -1,8 +1,22 @@
 import py
+import pytest
 import sys
 import os
 from capnpy.testing.compiler.support import CompilerTest
-from capnpy.compiler.compiler import DistutilsCompiler, PKGDIR
+from capnpy.compiler.compiler import DistutilsCompiler
+
+@pytest.fixture
+def ROOT():
+    import pkg_resources
+    try:
+        dist = pkg_resources.get_distribution('capnpy')
+    except pkg_resources.DistributionNotFound:
+        raise ValueError("Cannot find the capnpy distribution: "
+                         "please run setup.py install. "
+                         "If you are running the tests from the checkout, "
+                         "please run setup.py egg_info")
+    #
+    return py.path.local(dist.location)
 
 class TestDistutilsCompiler(CompilerTest):
 
@@ -50,8 +64,7 @@ class TestDistutilsCompiler(CompilerTest):
 
 class TestSetup(CompilerTest):
 
-    def test_setup_build(self, monkeypatch):
-        ROOT = PKGDIR.dirpath()
+    def test_setup_build(self, monkeypatch, ROOT):
         self.write("example.capnp", """
         @0xbf5147cbbecf40c1;
         struct Point {
@@ -82,10 +95,7 @@ class TestSetup(CompilerTest):
         #
         assert outfile.check(file=True)
 
-    def test_setuptools_build(self, monkeypatch):
-        ROOT = PKGDIR.dirpath()
-        if ROOT.join('capnpy.egg-info').check(dir=False):
-            raise ValueError('You must run setup.py egg_info before running this test')
+    def test_setuptools_build(self, monkeypatch, ROOT):
         self.write("example.capnp", """
         @0xbf5147cbbecf40c1;
         struct Point {
