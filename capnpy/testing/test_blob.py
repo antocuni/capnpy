@@ -1,7 +1,8 @@
 import py
+import os
 import struct
 from capnpy.blob import (CapnpBuffer, CapnpBufferWithSegments, Blob, Types,
-                         unpack_primitive)
+                         unpack_primitive, PYX)
 from capnpy import ptr
 from capnpy.struct_ import Struct
 
@@ -20,6 +21,11 @@ class BlobForTests(Blob):
     def _read_far_ptr(self, offset):
         return self._buf.read_far_ptr(self._offset+offset)
 
+
+def test_tox_PYX():
+    tox_env = os.environ.get('TOX_ENV', None)
+    if tox_env == 'cy27':
+        assert PYX
 
 def test_unpack_primitive():
     s = struct.pack('q', 1234)
