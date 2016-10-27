@@ -4,6 +4,13 @@ types. The idea is that if you have C variables, you can compute fast hashes
 *without* having to allocate real Python object
 """
 
+cdef extern from "Python.h":
+    ctypedef struct _Py_HashSecret_t:
+        long prefix
+        long suffix
+    _Py_HashSecret_t _Py_HashSecret
+
+
 cpdef long inthash(long v):
     if v == -1:
         return -2
@@ -28,7 +35,8 @@ cpdef long strhash(bytes a, long start, long size):
     cdef long x
     #
     p += start
-    x = p[0]<<7
+    x = _Py_HashSecret.prefix
+    x ^= p[0]<<7
     while True:
         n -= 1
         if n < 0:
@@ -36,6 +44,7 @@ cpdef long strhash(bytes a, long start, long size):
         x = (1000003*x) ^ p[0]
         p += 1
     x ^= size
+    x ^= _Py_HashSecret.suffix
     if x == -1:
         x = -2
     return x
