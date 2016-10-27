@@ -1,5 +1,6 @@
 import py
 import sys
+from pypytools import IS_PYPY
 from capnpy import _hash
 
 def test_inthash():
@@ -22,8 +23,12 @@ def test_longhash():
     assert h(maxulong) == hash(maxulong) == hash(-1)
 
 def test_strhash():
+    expected_hash_empty_string = 0
+    if IS_PYPY:
+        expected_hash_empty_string = -2
+    #
     h = _hash.strhash
-    assert h('', 0, 0) == hash('') == 0
+    assert h('', 0, 0) == hash('') == expected_hash_empty_string
     assert h('hello', 0, 5) == hash('hello')
     assert h('hello', 1, 4) == hash('ello')
     assert h('hello', 1, 3) == hash('ell')
