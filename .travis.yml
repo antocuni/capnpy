@@ -20,7 +20,7 @@ addons:
       - python-dev
 
 before_install:
-  - openssl aes-256-cbc -K $encrypted_571f1f821904_key -iv $encrypted_571f1f821904_iv ./travis/travis.rsa.enc -out ./travis/travis.rsa -d
+  - openssl aes-256-cbc -K $encrypted_571f1f821904_key -iv $encrypted_571f1f821904_iv -in ./travis/travis.rsa.enc -out ./travis/travis.rsa -d
 
 install:
   - curl -O https://capnproto.org/capnproto-c++-0.5.3.tar.gz
