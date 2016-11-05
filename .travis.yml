@@ -34,5 +34,6 @@ install:
   - pip install tox-travis
 
 script:
+  - bash ./travis/clone-benchmarks-repo.sh
   - tox
-
+  - bash ./travis/commit-results.sh
