@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Cloning benchmarks branch"
-set -v
+#set -v
 
 REPO=`git config remote.origin.url`
 BRANCH=benchmarks

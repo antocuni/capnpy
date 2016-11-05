@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Commit result..."
-set -v
+#set -v
 
 # get SHA and EMAIL of the current revision
 SHA=`git rev-parse --verify HEAD`
