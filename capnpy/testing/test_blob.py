@@ -24,8 +24,10 @@ class BlobForTests(Blob):
 
 def test_tox_PYX():
     tox_env = os.environ.get('TOX_ENV', None)
-    if tox_env == 'cy27':
+    if tox_env == 'py27':
         assert PYX
+    elif tox_env == 'py27-pure':
+        assert not PYX
 
 def test_unpack_primitive():
     s = struct.pack('q', 1234)
