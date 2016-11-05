@@ -26,7 +26,7 @@ def test_tox_PYX():
     tox_env = os.environ.get('TOX_ENV', None)
     if tox_env == 'py27':
         assert PYX
-    elif tox_env == 'py27-pure':
+    elif tox_env == 'nopyx':
         assert not PYX
 
 def test_unpack_primitive():
