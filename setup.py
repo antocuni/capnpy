@@ -64,10 +64,8 @@ setup(name="capnpy",
       author_email='anto.cuni@gmail.com',
       url='https://bitbucket.org/antocuni/capnpy',
       use_scm_version=True,
+      include_package_data=True,
       packages = find_packages(),
-      package_data = {
-          'capnpy': ['*.capnp', '*.pyx', '*.pxd', '*.h', '*.c']
-          },
       ext_modules = ext_modules,
       install_requires=['pypytools>=0.2', 'docopt'],
       setup_requires=['setuptools_scm'],
