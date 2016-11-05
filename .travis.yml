@@ -3,11 +3,13 @@ language: python
 python:
   - '2.7'
 
+# ucspi-tcp is currently not allowed on travis, so for now we use the binary
+# we committed to the repo. That's why we add travis/bin to the PATH
 env:
   global:
     - CC=gcc-4.8
     - CXX=g++-4.8
-    - export PATH="$PATH:$HOME/bin"
+    - export PATH="$PATH:$HOME/bin:$TRAVIS_BUILD_DIR/travis/bin"
     - export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$HOME/lib"
 
 addons:
@@ -18,7 +20,7 @@ addons:
       - gcc-4.8
       - g++-4.8
       - python-dev
-      - ucspi-tcp # for tcp server
+      #- ucspi-tcp # for tcpserver, see the comment above
 
 before_install:
   - openssl aes-256-cbc -K $encrypted_571f1f821904_key -iv $encrypted_571f1f821904_iv -in ./travis/travis.rsa.enc -out ./travis/travis.rsa -d
