@@ -5,18 +5,18 @@ import subprocess
 from cStringIO import StringIO
 from capnpy.buffered import BufferedStream, BufferedSocket
 
-@pytest.mark.usefixtures('initargs')
 class TestBuffered(object):
 
     # apparently, the slowdown of makefile is not completely linear. E.g. by
     # using 20 MB I got a 20x slowdown compared to BufferedSocket, on PyPy.
     # Anyway, 1 MB should be enough to show that BufferedSocket is much faster
     SIZE = 1 * (1024*1024) # MB
-    PORT = 5000
 
-    @pytest.fixture
-    def initargs(self, request, tmpdir):
-        self.tmpdir = tmpdir
+    @pytest.fixture(scope='class')
+    def server(self, request, tmpdir_factory):
+        host = '127.0.0.1'
+        port = '5000'
+        tmpdir = tmpdir_factory.mktemp('buffered')
         # create the file to serve
         mystream = tmpdir.join('mystream')
         with mystream.open('wb') as f:
@@ -26,8 +26,7 @@ class TestBuffered(object):
                 f.write(ch)
         #
         # start tcpserver
-        cmd = ['tcpserver', '127.0.0.1', str(self.PORT),
-               'cat', str(mystream)]
+        cmd = ['tcpserver', host, port, 'cat', str(mystream)]
         p = subprocess.Popen(cmd)
         #
         # stop tcpserver
@@ -39,6 +38,8 @@ class TestBuffered(object):
             if p.returncode is None:
                 p.communicate()
         request.addfinalizer(finalize)
+        #
+        return host, port
 
     def do_benchmark(self, benchmark, open_connection):
         def count_bytes():
@@ -55,14 +56,15 @@ class TestBuffered(object):
         assert res == self.SIZE
 
     @pytest.mark.benchmark(group="buffered")
-    def test_BufferedSocket(self, benchmark):
+    def test_BufferedSocket(self, benchmark, server):
         def open_connection():
-            sock = socket.create_connection(('127.0.0.1', self.PORT))
+            host, port = server
+            sock = socket.create_connection((host, port))
             return BufferedSocket(sock)
         self.do_benchmark(benchmark, open_connection)
 
     @pytest.mark.benchmark(group="buffered")
-    def test_BufferedStream(self, benchmark):
+    def test_BufferedStream(self, benchmark, server):
         # this is like BufferedSocket, but with the overhead that _readchunk
         # is written in Python instead of Cython; this simulates what happens
         # if an user of capnpy wants to wrap its own stream reader
@@ -75,12 +77,14 @@ class TestBuffered(object):
                 return self.sock.recv(8192)
 
         def open_connection():
-            return MyStream('127.0.0.1', self.PORT)
+            host, port = server
+            return MyStream(host, port)
         self.do_benchmark(benchmark, open_connection)
 
     @pytest.mark.benchmark(group="buffered")
-    def test_makefile(self, benchmark):
+    def test_makefile(self, benchmark, server):
         def open_connection():
-            sock = socket.create_connection(('127.0.0.1', self.PORT))
+            host, port = server
+            sock = socket.create_connection((host, port))
             return sock.makefile()
         self.do_benchmark(benchmark, open_connection)
