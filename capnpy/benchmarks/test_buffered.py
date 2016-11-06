@@ -2,6 +2,7 @@ import pytest
 import socket
 import random
 import subprocess
+import time
 from cStringIO import StringIO
 from capnpy.buffered import BufferedStream, BufferedSocket
 
@@ -39,6 +40,7 @@ class TestBuffered(object):
                 p.communicate()
         request.addfinalizer(finalize)
         #
+        time.sleep(0.1) # give tcpserver enough time to start
         return host, port
 
     def do_benchmark(self, benchmark, open_connection):
