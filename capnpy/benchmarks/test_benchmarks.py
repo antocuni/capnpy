@@ -148,7 +148,7 @@ class TestMessage(object):
 
     N = 2000
 
-    @pytest.mark.benchmark(group="getattr")
+    @pytest.mark.benchmark(group="load")
     def test_load(self, tmpdir, schema, benchmark):
         if not hasattr(schema.MyStruct, 'load'):
             py.test.skip('N/A')
