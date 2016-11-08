@@ -92,7 +92,7 @@ class TestGetAttr(object):
         res = benchmark(sum_attr, obj)
         assert res == 3*self.N
 
-    @pytest.mark.benchmark(group="getattr")
+    @pytest.mark.benchmark(group="getattr_special")
     def test_which(self, schema, benchmark):
         if schema.__name__ != 'Capnpy':
             py.test.skip('N/A')
@@ -109,7 +109,7 @@ class TestGetAttr(object):
         res = benchmark(sum_which, obj)
         assert res == self.N*2
 
-    @pytest.mark.benchmark(group="getattr")
+    @pytest.mark.benchmark(group="getattr_special")
     def test___which__(self, schema, benchmark):
         if schema.__name__ != 'Capnpy':
             py.test.skip('N/A')
@@ -126,7 +126,7 @@ class TestGetAttr(object):
         res = benchmark(sum_which, obj)
         assert res == self.N*2
 
-    @pytest.mark.benchmark(group="getattr")
+    @pytest.mark.benchmark(group="getattr_special")
     def test_is_union(self, schema, benchmark):
         if schema.__name__ != 'Capnpy':
             py.test.skip('N/A')
