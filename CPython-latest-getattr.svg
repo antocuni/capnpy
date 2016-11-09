@@ -1,0 +1,434 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" class="pygal-chart" id="chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg"><!--Generated with pygal 2.3.0 (etree) ©Kozea 2012-2016 on 2016-11-09--><!--http://pygal.org--><!--http://github.com/Kozea/pygal--><defs><style type="text/css">/*
+ * This file is part of pygal
+ *
+ * A python svg graph plotting library
+ * Copyright © 2012 Kozea
+
+ * This library is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with pygal. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+*/
+
+/*
+ * Font-sizes from config, override with care
+ */
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390  {
+  -webkit-user-select: none;
+  -webkit-font-smoothing: antialiased;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .title {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 16px;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .legends .legend text {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 14px;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis text {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 10px;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis text.major {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 10px;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .text-overlay text.value {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 16px;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .text-overlay text.label {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 10px;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .tooltip {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 14px;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 text.no_data {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 64px;
+}
+
+/*
+ * This file is part of pygal
+ *
+ * A python svg graph plotting library
+ * Copyright © 2012 Kozea
+
+ * This library is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with pygal. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+*/
+
+/*
+ * Styles from config
+ */
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 {
+  background-color: rgba(249, 249, 249, 1);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 path,
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 line,
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 rect,
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 circle {
+  -webkit-transition: 150ms;
+  -moz-transition: 150ms;
+  transition: 150ms;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .graph &gt; .background {
+  fill: rgba(249, 249, 249, 1);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .plot &gt; .background {
+  fill: rgba(255, 255, 255, 1);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .graph {
+  fill: rgba(0, 0, 0, .87);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 text.no_data {
+  fill: rgba(0, 0, 0, 1);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .title {
+  fill: rgba(0, 0, 0, 1);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .legends .legend text {
+  fill: rgba(0, 0, 0, .87);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .legends .legend:hover text {
+  fill: rgba(0, 0, 0, 1);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis .line {
+  stroke: rgba(0, 0, 0, 1);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis .guide.line {
+  stroke: rgba(0, 0, 0, .54);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis .major.line {
+  stroke: rgba(0, 0, 0, .87);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis text.major {
+  fill: rgba(0, 0, 0, 1);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis.y .guides:hover .guide.line,
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .line-graph .axis.x .guides:hover .guide.line,
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .stackedline-graph .axis.x .guides:hover .guide.line,
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .xy-graph .axis.x .guides:hover .guide.line {
+  stroke: rgba(0, 0, 0, 1);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis .guides:hover text {
+  fill: rgba(0, 0, 0, 1);
+}
+
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .reactive {
+  fill-opacity: .7;
+  stroke-opacity: .8;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .ci {
+    stroke: rgba(0, 0, 0, .87);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .reactive.active,
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .active .reactive {
+  fill-opacity: .8;
+  stroke-opacity: .9;
+  stroke-width: 4;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .ci .reactive.active {
+  stroke-width: 1.5;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .series text {
+  fill: rgba(0, 0, 0, 1);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .tooltip rect {
+  fill: rgba(255, 255, 255, 1);
+  stroke: rgba(0, 0, 0, 1);
+  -webkit-transition: opacity 150ms;
+  -moz-transition: opacity 150ms;
+  transition: opacity 150ms;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .tooltip .label {
+  fill: rgba(0, 0, 0, .87);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .tooltip .label {
+  fill: rgba(0, 0, 0, .87);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .tooltip .legend {
+  font-size: .8em;
+  fill: rgba(0, 0, 0, .54);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .tooltip .x_label {
+  font-size: .6em;
+  fill: rgba(0, 0, 0, 1);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .tooltip .xlink {
+  font-size: .5em;
+  text-decoration: underline;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .tooltip .value {
+  font-size: 1.5em;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .bound {
+  font-size: .5em;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .max-value {
+  font-size: .75em;
+  fill: rgba(0, 0, 0, .54);
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .map-element {
+  fill: rgba(255, 255, 255, 1);
+  stroke: rgba(0, 0, 0, .54) !important;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .map-element .reactive {
+  fill-opacity: inherit;
+  stroke-opacity: inherit;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .color-0, #chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .color-0 a:visited {
+  stroke: #F44336;
+  fill: #F44336;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .color-1, #chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .color-1 a:visited {
+  stroke: #3F51B5;
+  fill: #3F51B5;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .color-2, #chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .color-2 a:visited {
+  stroke: #009688;
+  fill: #009688;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .color-3, #chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .color-3 a:visited {
+  stroke: #FFC107;
+  fill: #FFC107;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390  .text-overlay .color-0 text {
+  fill: black;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390  .text-overlay .color-1 text {
+  fill: black;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390  .text-overlay .color-2 text {
+  fill: black;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390  .text-overlay .color-3 text {
+  fill: black;
+}
+
+
+
+
+/*
+ * This file is part of pygal
+ *
+ * A python svg graph plotting library
+ * Copyright © 2012 Kozea
+
+ * This library is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with pygal. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+*/
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 text.no_data {
+  text-anchor: middle;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .guide.line {
+  fill: none;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .centered {
+  text-anchor: middle;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .title {
+  text-anchor: middle;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .legends .legend text {
+  fill-opacity: 1;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis.x text {
+  text-anchor: middle;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis.x:not(.web) text[transform] {
+  text-anchor: start;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis.x:not(.web) text[transform].backwards {
+  text-anchor: end;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis.y text {
+  text-anchor: end;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis.y text[transform].backwards {
+  text-anchor: start;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis.y2 text {
+  text-anchor: start;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis.y2 text[transform].backwards {
+  text-anchor: end;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis .guide.line {
+  stroke-dasharray: 4,4;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis .major.guide.line {
+  stroke-dasharray: 6,6;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .horizontal .axis.y .guide.line,
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .horizontal .axis.y2 .guide.line,
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .vertical .axis.x .guide.line {
+  opacity: 0;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .horizontal .axis.always_show .guide.line,
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .vertical .axis.always_show .guide.line {
+  opacity: 1 !important;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis.y .guides:hover .guide.line,
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis.y2 .guides:hover .guide.line,
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis.x .guides:hover .guide.line {
+  opacity: 1;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .axis .guides:hover text {
+  opacity: 1;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .nofill {
+  fill: none;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .subtle-fill {
+  fill-opacity: .2;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .dot {
+  stroke-width: 1px;
+  fill-opacity: 1;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .dot.active {
+  stroke-width: 5px;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .dot.negative {
+  fill: transparent;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390  text, #chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390  tspan {
+  stroke: none !important;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .series text.active {
+  opacity: 1;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .tooltip rect {
+  fill-opacity: .95;
+  stroke-width: .5;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .tooltip text {
+  fill-opacity: 1;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .showable {
+  visibility: hidden;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .showable.shown {
+  visibility: visible;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .gauge-background {
+  fill: rgba(229, 229, 229, 1);
+  stroke: none;
+}
+
+#chart-bfdfe7e9-2deb-4cf8-935e-39386d22c390 .bg-lines {
+  stroke: rgba(249, 249, 249, 1);
+  stroke-width: 2px;
+}
+</style><script type="text/javascript">window.pygal = window.pygal || {};window.pygal.config = window.pygal.config || {};window.pygal.config['bfdfe7e9-2deb-4cf8-935e-39386d22c390'] = {"dynamic_print_values": false, "truncate_label": null, "inner_radius": 0, "print_values": false, "xrange": null, "box_mode": "extremes", "title": "CPython: get attribute", "legend_at_bottom_columns": null, "height": 600, "legend_at_bottom": false, "show_legend": true, "show_dots": true, "explicit_size": false, "y_labels_major": null, "show_minor_x_labels": true, "width": 800, "force_uri_protocol": "https", "half_pie": false, "style": {"major_label_font_family": "Consolas, \"Liberation Mono\", Menlo, Courier, monospace", "title_font_family": "Consolas, \"Liberation Mono\", Menlo, Courier, monospace", "stroke_opacity": ".8", "legend_font_family": "Consolas, \"Liberation Mono\", Menlo, Courier, monospace", "colors": ["#F44336", "#3F51B5", "#009688", "#FFC107", "#FF5722", "#9C27B0", "#03A9F4", "#8BC34A", "#FF9800", "#E91E63", "#2196F3", "#4CAF50", "#FFEB3B", "#673AB7", "#00BCD4", "#CDDC39", "#9E9E9E", "#607D8B"], "legend_font_size": 14, "no_data_font_family": "Consolas, \"Liberation Mono\", Menlo, Courier, monospace", "major_label_font_size": 10, "value_background": "rgba(229, 229, 229, 1)", "ci_colors": [], "label_font_family": "Consolas, \"Liberation Mono\", Menlo, Courier, monospace", "label_font_size": 10, "tooltip_font_size": 14, "value_font_size": 16, "font_family": "Consolas, \"Liberation Mono\", Menlo, Courier, monospace", "opacity": ".7", "foreground": "rgba(0, 0, 0, .87)", "plot_background": "rgba(255, 255, 255, 1)", "value_label_font_size": 10, "value_label_font_family": "Consolas, \"Liberation Mono\", Menlo, Courier, monospace", "background": "rgba(249, 249, 249, 1)", "no_data_font_size": 64, "value_colors": [], "guide_stroke_dasharray": "4,4", "transition": "150ms", "foreground_subtle": "rgba(0, 0, 0, .54)", "value_font_family": "Consolas, \"Liberation Mono\", Menlo, Courier, monospace", "tooltip_font_family": "Consolas, \"Liberation Mono\", Menlo, Courier, monospace", "title_font_size": 16, "stroke_opacity_hover": ".9", "major_guide_stroke_dasharray": "6,6", "opacity_hover": ".8", "foreground_strong": "rgba(0, 0, 0, 1)"}, "x_label_rotation": 0, "fill": false, "missing_value_fill_truncation": "x", "zero": 0, "margin_right": null, "interpolation_parameters": {}, "x_labels_major": null, "rounded_bars": null, "show_y_labels": true, "dots_size": 2.5, "show_y_guides": true, "show_minor_y_labels": true, "x_labels": ["float32", "float64", "group.field", "int16", "int32", "int64", "int8", "list", "struct", "text", "uint16", "uint32", "uint64", "uint8"], "y_title": null, "order_min": null, "formatter": null, "disable_xml_declaration": false, "strict": false, "css": ["file://style.css", "file://graph.css"], "tooltip_fancy_mode": true, "defs": [], "show_only_major_dots": false, "y_label_rotation": 0, "show_x_labels": true, "min_scale": 4, "show_x_guides": false, "spacing": 10, "x_labels_major_count": null, "pretty_print": true, "tooltip_border_radius": 0, "interpolate": null, "js": ["//kozea.github.io/pygal.js/2.0.x/pygal-tooltips.min.js"], "y_labels": null, "stroke_style": null, "print_labels": false, "interpolation_precision": 250, "x_title": null, "y_labels_major_every": null, "logarithmic": false, "legends": ["Capnpy", "Instance", "NamedTuple", "PyCapnp"], "max_scale": 16, "print_zeroes": true, "no_data_text": "No data", "truncate_legend": null, "x_labels_major_every": null, "secondary_range": null, "legend_box_size": 12, "no_prefix": false, "stroke": true, "stack_from_top": false, "include_x_axis": false, "range": null, "classes": ["pygal-chart"], "margin_top": null, "margin_left": null, "y_labels_major_count": null, "margin_bottom": null, "inverse_y_axis": false, "margin": 20, "allow_interruptions": false, "print_values_position": "center"}</script><script type="text/javascript" xlink:href="https://kozea.github.io/pygal.js/2.0.x/pygal-tooltips.min.js" /></defs><title>CPython: get attribute</title><g class="graph bar-graph vertical"><rect class="background" height="600" width="800" x="0" y="0" /><g class="plot" transform="translate(166, 46)"><rect class="background" height="514" width="614.0" x="0" y="0" /><g class="axis y"><g class="guides"><path class="axis major line" d="M0.000000 504.115385 h614.000000" /><text class="major" x="-5" y="507.615384615">0</text><title>0</title></g><g class="guides"><path class="guide line" d="M0.000000 464.058540 h614.000000" /><text class="" x="-5" y="467.558540292">0.001</text><title>0.001</title></g><g class="guides"><path class="guide line" d="M0.000000 424.001696 h614.000000" /><text class="" x="-5" y="427.501695968">0.002</text><title>0.002</title></g><g class="guides"><path class="guide line" d="M0.000000 383.944852 h614.000000" /><text class="" x="-5" y="387.444851644">0.003</text><title>0.003</title></g><g class="guides"><path class="guide line" d="M0.000000 343.888007 h614.000000" /><text class="" x="-5" y="347.38800732">0.004</text><title>0.004</title></g><g class="guides"><path class="guide line" d="M0.000000 303.831163 h614.000000" /><text class="" x="-5" y="307.331162996">0.005</text><title>0.005</title></g><g class="guides"><path class="guide line" d="M0.000000 263.774319 h614.000000" /><text class="" x="-5" y="267.274318672">0.006</text><title>0.006</title></g><g class="guides"><path class="guide line" d="M0.000000 223.717474 h614.000000" /><text class="" x="-5" y="227.217474348">0.007</text><title>0.007</title></g><g class="guides"><path class="guide line" d="M0.000000 183.660630 h614.000000" /><text class="" x="-5" y="187.160630024">0.008</text><title>0.008</title></g><g class="guides"><path class="guide line" d="M0.000000 143.603786 h614.000000" /><text class="" x="-5" y="147.1037857">0.009</text><title>0.009</title></g><g class="guides"><path class="guide line" d="M0.000000 103.546941 h614.000000" /><text class="" x="-5" y="107.046941377">0.01</text><title>0.01</title></g><g class="guides"><path class="guide line" d="M0.000000 63.490097 h614.000000" /><text class="" x="-5" y="66.9900970527">0.011</text><title>0.011</title></g><g class="guides"><path class="guide line" d="M0.000000 23.433253 h614.000000" /><text class="" x="-5" y="26.9332527289">0.012</text><title>0.012</title></g></g><g class="axis x"><path class="line" d="M0.000000 0.000000 v514.000000" /><g class="guides"><path class="guide line" d="M32.892857 0.000000 v514.000000" /><text class="" x="32.8928571429" y="529.0">float32</text></g><g class="guides"><path class="guide line" d="M75.063187 0.000000 v514.000000" /><text class="" x="75.0631868132" y="529.0">float64</text></g><g class="guides"><path class="guide line" d="M117.233516 0.000000 v514.000000" /><text class="" x="117.233516484" y="529.0">group.…</text><title>group.field</title></g><g class="guides"><path class="guide line" d="M159.403846 0.000000 v514.000000" /><text class="" x="159.403846154" y="529.0">int16</text></g><g class="guides"><path class="guide line" d="M201.574176 0.000000 v514.000000" /><text class="" x="201.574175824" y="529.0">int32</text></g><g class="guides"><path class="guide line" d="M243.744505 0.000000 v514.000000" /><text class="" x="243.744505495" y="529.0">int64</text></g><g class="guides"><path class="guide line" d="M285.914835 0.000000 v514.000000" /><text class="" x="285.914835165" y="529.0">int8</text></g><g class="guides"><path class="guide line" d="M328.085165 0.000000 v514.000000" /><text class="" x="328.085164835" y="529.0">list</text></g><g class="guides"><path class="guide line" d="M370.255495 0.000000 v514.000000" /><text class="" x="370.255494505" y="529.0">struct</text></g><g class="guides"><path class="guide line" d="M412.425824 0.000000 v514.000000" /><text class="" x="412.425824176" y="529.0">text</text></g><g class="guides"><path class="guide line" d="M454.596154 0.000000 v514.000000" /><text class="" x="454.596153846" y="529.0">uint16</text></g><g class="guides"><path class="guide line" d="M496.766484 0.000000 v514.000000" /><text class="" x="496.766483516" y="529.0">uint32</text></g><g class="guides"><path class="guide line" d="M538.936813 0.000000 v514.000000" /><text class="" x="538.936813187" y="529.0">uint64</text></g><g class="guides"><path class="guide line" d="M581.107143 0.000000 v514.000000" /><text class="" x="581.107142857" y="529.0">uint8</text></g></g><g class="series serie-0 color-0"><g class="bars"><g class="bar"><rect class="rect reactive tooltip-trigger" height="28.7962785024" rx="0" ry="0" width="8.16417582418" x="14.8945604396" y="475.319106113" /><desc class="value">0.0007188853488</desc><desc class="x centered">18.9766483516</desc><desc class="y centered">489.717245364</desc><desc class="x_label">float32</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="28.7848004646" rx="0" ry="0" width="8.16417582418" x="57.0648901099" y="475.330584151" /><desc class="value">0.000718598805</desc><desc class="x centered">61.146978022</desc><desc class="y centered">489.722984383</desc><desc class="x_label">float64</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="46.9690626999" rx="0" ry="0" width="8.16417582418" x="99.2352197802" y="457.146321915" /><desc class="value">0.001172560233</desc><desc class="x centered">103.317307692</desc><desc class="y centered">480.630853265</desc><desc class="x_label">group.field</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="27.6717027647" rx="0" ry="0" width="8.16417582418" x="141.405549451" y="476.443681851" /><desc class="value">0.0006908108522</desc><desc class="x centered">145.487637363</desc><desc class="y centered">490.279533233</desc><desc class="x_label">int16</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="27.6809040057" rx="0" ry="0" width="8.16417582418" x="183.575879121" y="476.43448061" /><desc class="value">0.0006910405568</desc><desc class="x centered">187.657967033</desc><desc class="y centered">490.274932613</desc><desc class="x_label">int32</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="23.2512472384" rx="0" ry="0" width="8.16417582418" x="225.746208791" y="480.864137377" /><desc class="value">0.0005804562898</desc><desc class="x centered">229.828296703</desc><desc class="y centered">492.489760996</desc><desc class="x_label">int64</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="24.4167885962" rx="0" ry="0" width="8.16417582418" x="267.916538462" y="479.698596019" /><desc class="value">0.0006095534735</desc><desc class="x centered">271.998626374</desc><desc class="y centered">491.906990317</desc><desc class="x_label">int8</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="494.230769231" rx="0" ry="0" width="8.16417582418" x="310.086868132" y="9.88461538462" /><desc class="value">0.01233823526</desc><desc class="x centered">314.168956044</desc><desc class="y centered">257.0</desc><desc class="x_label">list</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="31.2170755981" rx="0" ry="0" width="8.16417582418" x="352.257197802" y="472.898309017" /><desc class="value">0.0007793193929</desc><desc class="x centered">356.339285714</desc><desc class="y centered">488.506846816</desc><desc class="x_label">struct</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="34.2221565189" rx="0" ry="0" width="8.16417582418" x="394.427527473" y="469.893228096" /><desc class="value">0.0008543398038</desc><desc class="x centered">398.509615385</desc><desc class="y centered">487.004306356</desc><desc class="x_label">text</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="26.4701236722" rx="0" ry="0" width="8.16417582418" x="436.597857143" y="477.645260943" /><desc class="value">0.0006608140037</desc><desc class="x centered">440.679945055</desc><desc class="y centered">490.880322779</desc><desc class="x_label">uint16</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="26.732095906" rx="0" ry="0" width="8.16417582418" x="478.768186813" y="477.383288709" /><desc class="value">0.0006673540155</desc><desc class="x centered">482.850274725</desc><desc class="y centered">490.749336662</desc><desc class="x_label">uint32</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="26.2953800549" rx="0" ry="0" width="8.16417582418" x="520.938516484" y="477.82000456" /><desc class="value">0.0006564516127</desc><desc class="x centered">525.020604396</desc><desc class="y centered">490.967694588</desc><desc class="x_label">uint64</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="26.7351150718" rx="0" ry="0" width="8.16417582418" x="563.108846154" y="477.380269544" /><desc class="value">0.0006674293875</desc><desc class="x centered">567.190934066</desc><desc class="y centered">490.747827079</desc><desc class="x_label">uint8</desc></g></g></g><g class="series serie-1 color-1"><g class="bars"><g class="bar"><rect class="rect reactive tooltip-trigger" height="23.3442128695" rx="0" ry="0" width="8.16417582418" x="24.172032967" y="480.771171746" /><desc class="value">0.0005827771324</desc><desc class="x centered">28.2541208791</desc><desc class="y centered">492.443278181</desc><desc class="x_label">float32</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="23.3408011296" rx="0" ry="0" width="8.16417582418" x="66.3423626374" y="480.774583486" /><desc class="value">0.00058269196</desc><desc class="x centered">70.4244505495</desc><desc class="y centered">492.444984051</desc><desc class="x_label">float64</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="28.1972997183" rx="0" ry="0" width="8.16417582418" x="108.512692308" y="475.918084897" /><desc class="value">0.0007039321293</desc><desc class="x centered">112.59478022</desc><desc class="y centered">490.016734756</desc><desc class="x_label">group.field</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="23.3683700356" rx="0" ry="0" width="8.16417582418" x="150.683021978" y="480.74701458" /><desc class="value">0.0005833802046</desc><desc class="x centered">154.76510989</desc><desc class="y centered">492.431199598</desc><desc class="x_label">int16</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="20.4338765686" rx="0" ry="0" width="8.16417582418" x="192.853351648" y="483.681508047" /><desc class="value">0.0005101219757</desc><desc class="x centered">196.93543956</desc><desc class="y centered">493.898446331</desc><desc class="x_label">int32</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="22.50070205" rx="0" ry="0" width="8.16417582418" x="235.023681319" y="481.614682565" /><desc class="value">0.0005617192874</desc><desc class="x centered">239.105769231</desc><desc class="y centered">492.86503359</desc><desc class="x_label">int64</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="23.5859729691" rx="0" ry="0" width="8.16417582418" x="277.194010989" y="480.529411646" /><desc class="value">0.0005888125579</desc><desc class="x centered">281.276098901</desc><desc class="y centered">492.322398131</desc><desc class="x_label">int8</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="21.0729333015" rx="0" ry="0" width="8.16417582418" x="319.364340659" y="483.042451314" /><desc class="value">0.0005260757221</desc><desc class="x centered">323.446428571</desc><desc class="y centered">493.578917965</desc><desc class="x_label">list</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="23.7670327756" rx="0" ry="0" width="8.16417582418" x="361.53467033" y="480.34835184" /><desc class="value">0.0005933326296</desc><desc class="x centered">365.616758242</desc><desc class="y centered">492.231868228</desc><desc class="x_label">struct</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="29.1686262831" rx="0" ry="0" width="8.16417582418" x="403.705" y="474.946758332" /><desc class="value">0.0007281808334</desc><desc class="x centered">407.787087912</desc><desc class="y centered">489.531071474</desc><desc class="x_label">text</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="23.5069732118" rx="0" ry="0" width="8.16417582418" x="445.87532967" y="480.608411404" /><desc class="value">0.0005868403667</desc><desc class="x centered">449.957417582</desc><desc class="y centered">492.361898009</desc><desc class="x_label">uint16</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="23.1596111049" rx="0" ry="0" width="8.16417582418" x="488.045659341" y="480.95577351" /><desc class="value">0.0005781686375</desc><desc class="x centered">492.127747253</desc><desc class="y centered">492.535579063</desc><desc class="x_label">uint32</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="23.4250488962" rx="0" ry="0" width="8.16417582418" x="530.215989011" y="480.690335719" /><desc class="value">0.0005847951653</desc><desc class="x centered">534.298076923</desc><desc class="y centered">492.402860167</desc><desc class="x_label">uint64</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="23.9133416522" rx="0" ry="0" width="8.16417582418" x="572.386318681" y="480.202042963" /><desc class="value">0.0005969851609</desc><desc class="x centered">576.468406593</desc><desc class="y centered">492.158713789</desc><desc class="x_label">uint8</desc></g></g></g><g class="series serie-2 color-2"><g class="bars"><g class="bar"><rect class="rect reactive tooltip-trigger" height="35.4448694064" rx="0" ry="0" width="8.16417582418" x="33.4495054945" y="468.670515209" /><desc class="value">0.0008848642474</desc><desc class="x centered">37.5315934066</desc><desc class="y centered">486.392949912</desc><desc class="x_label">float32</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="35.2566056157" rx="0" ry="0" width="8.16417582418" x="75.6198351648" y="468.858779" /><desc class="value">0.0008801643317</desc><desc class="x centered">79.7019230769</desc><desc class="y centered">486.487081808</desc><desc class="x_label">float64</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="48.1336569833" rx="0" ry="0" width="8.16417582418" x="117.790164835" y="455.981727632" /><desc class="value">0.001201633773</desc><desc class="x centered">121.872252747</desc><desc class="y centered">480.048556124</desc><desc class="x_label">group.field</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="35.1782810324" rx="0" ry="0" width="8.16417582418" x="159.960494505" y="468.937103583" /><desc class="value">0.0008782089959</desc><desc class="x centered">164.042582418</desc><desc class="y centered">486.526244099</desc><desc class="x_label">int16</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="37.9412359384" rx="0" ry="0" width="8.16417582418" x="202.130824176" y="466.174148677" /><desc class="value">0.0009471848464</desc><desc class="x centered">206.212912088</desc><desc class="y centered">485.144766646</desc><desc class="x_label">int32</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="36.6266724837" rx="0" ry="0" width="8.16417582418" x="244.301153846" y="467.488712132" /><desc class="value">0.0009143673972</desc><desc class="x centered">248.383241758</desc><desc class="y centered">485.802048374</desc><desc class="x_label">int64</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="36.8225671236" rx="0" ry="0" width="8.16417582418" x="286.471483516" y="467.292817492" /><desc class="value">0.0009192578134</desc><desc class="x centered">290.553571429</desc><desc class="y centered">485.704101054</desc><desc class="x_label">int8</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="32.3175427082" rx="0" ry="0" width="8.16417582418" x="328.641813187" y="471.797841907" /><desc class="value">0.000806792029</desc><desc class="x centered">332.723901099</desc><desc class="y centered">487.956613261</desc><desc class="x_label">list</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="31.8366575228" rx="0" ry="0" width="8.16417582418" x="370.812142857" y="472.278727093" /><desc class="value">0.0007947869599</desc><desc class="x centered">374.894230769</desc><desc class="y centered">488.197055854</desc><desc class="x_label">struct</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="39.3369225665" rx="0" ry="0" width="8.16417582418" x="412.982472527" y="464.778462049" /><desc class="value">0.0009820274969</desc><desc class="x centered">417.06456044</desc><desc class="y centered">484.446923332</desc><desc class="x_label">text</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="34.5821088265" rx="0" ry="0" width="8.16417582418" x="455.152802198" y="469.533275789" /><desc class="value">0.0008633258413</desc><desc class="x centered">459.23489011</desc><desc class="y centered">486.824330202</desc><desc class="x_label">uint16</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="35.3833800299" rx="0" ry="0" width="8.16417582418" x="497.323131868" y="468.732004586" /><desc class="value">0.0008833291945</desc><desc class="x centered">501.40521978</desc><desc class="y centered">486.4236946</desc><desc class="x_label">uint32</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="35.5439873483" rx="0" ry="0" width="8.16417582418" x="539.493461538" y="468.571397267" /><desc class="value">0.0008873386795</desc><desc class="x centered">543.575549451</desc><desc class="y centered">486.343390941</desc><desc class="x_label">uint64</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="32.15673326" rx="0" ry="0" width="8.16417582418" x="581.663791209" y="471.958651355" /><desc class="value">0.0008027774979</desc><desc class="x centered">585.745879121</desc><desc class="y centered">488.037017985</desc><desc class="x_label">uint8</desc></g></g></g><g class="series serie-3 color-3"><g class="bars"><g class="bar"><rect class="rect reactive tooltip-trigger" height="179.819866571" rx="0" ry="0" width="8.16417582418" x="42.726978022" y="324.295518044" /><desc class="value">0.004489117144</desc><desc class="x centered">46.8090659341</desc><desc class="y centered">414.20545133</desc><desc class="x_label">float32</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="173.356409522" rx="0" ry="0" width="8.16417582418" x="84.8973076923" y="330.758975094" /><desc class="value">0.004327760023</desc><desc class="x centered">88.9793956044</desc><desc class="y centered">417.437179855</desc><desc class="x_label">float64</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="292.921049528" rx="0" ry="0" width="8.16417582418" x="127.067637363" y="211.194335087" /><desc class="value">0.007312634195</desc><desc class="x centered">131.149725275</desc><desc class="y centered">357.654859851</desc><desc class="x_label">group.field</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="163.138441602" rx="0" ry="0" width="8.16417582418" x="169.237967033" y="340.976943013" /><desc class="value">0.004072673331</desc><desc class="x centered">173.320054945</desc><desc class="y centered">422.546163814</desc><desc class="x_label">int16</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="151.329548583" rx="0" ry="0" width="8.16417582418" x="211.408296703" y="352.785836032" /><desc class="value">0.003777869953</desc><desc class="x centered">215.490384615</desc><desc class="y centered">428.450610324</desc><desc class="x_label">int32</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="160.117231163" rx="0" ry="0" width="8.16417582418" x="253.578626374" y="343.998153452" /><desc class="value">0.003997250254</desc><desc class="x centered">257.660714286</desc><desc class="y centered">424.056769034</desc><desc class="x_label">int64</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="150.093470079" rx="0" ry="0" width="8.16417582418" x="295.748956044" y="354.021914537" /><desc class="value">0.003747011843</desc><desc class="x centered">299.831043956</desc><desc class="y centered">429.068649576</desc><desc class="x_label">int8</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="138.426985388" rx="0" ry="0" width="8.16417582418" x="337.919285714" y="365.688399227" /><desc class="value">0.003455763621</desc><desc class="x centered">342.001373626</desc><desc class="y centered">434.901891921</desc><desc class="x_label">list</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="255.504396797" rx="0" ry="0" width="8.16417582418" x="380.089615385" y="248.610987818" /><desc class="value">0.006378545318</desc><desc class="x centered">384.171703297</desc><desc class="y centered">376.363186217</desc><desc class="x_label">struct</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="168.536472212" rx="0" ry="0" width="8.16417582418" x="422.259945055" y="335.578912403" /><desc class="value">0.004207432589</desc><desc class="x centered">426.342032967</desc><desc class="y centered">419.847148509</desc><desc class="x_label">text</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="172.379357514" rx="0" ry="0" width="8.16417582418" x="464.430274725" y="331.736027101" /><desc class="value">0.004303368386</desc><desc class="x centered">468.512362637</desc><desc class="y centered">417.925705858</desc><desc class="x_label">uint16</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="191.911763707" rx="0" ry="0" width="8.16417582418" x="506.600604396" y="312.203620909" /><desc class="value">0.004790985584</desc><desc class="x centered">510.682692308</desc><desc class="y centered">408.159502762</desc><desc class="x_label">uint32</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="147.440659703" rx="0" ry="0" width="8.16417582418" x="548.770934066" y="356.674724912" /><desc class="value">0.003680785698</desc><desc class="x centered">552.853021978</desc><desc class="y centered">430.395054764</desc><desc class="x_label">uint64</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="186.288342718" rx="0" ry="0" width="8.16417582418" x="590.941263736" y="317.827041898" /><desc class="value">0.004650599563</desc><desc class="x centered">595.023351648</desc><desc class="y centered">410.971213257</desc><desc class="x_label">uint8</desc></g></g></g></g><g class="titles"><text class="title plot_title" x="400.0" y="26">CPython: get attribute</text></g><g class="plot overlay" transform="translate(166, 46)"><g class="series serie-0 color-0"><g class="ci"><path class="nofill reactive" d="M18.976648 475.237706 L25.976648 475.237706 M18.976648 475.237706 L11.976648 475.237706 M18.976648 475.237706 L18.976648 475.400507 L25.976648 475.400507 M18.976648 475.400507 L11.976648 475.400507" /></g><g class="ci"><path class="nofill reactive" d="M61.146978 475.298269 L68.146978 475.298269 M61.146978 475.298269 L54.146978 475.298269 M61.146978 475.298269 L61.146978 475.362899 L68.146978 475.362899 M61.146978 475.362899 L54.146978 475.362899" /></g><g class="ci"><path class="nofill reactive" d="M103.317308 456.930067 L110.317308 456.930067 M103.317308 456.930067 L96.317308 456.930067 M103.317308 456.930067 L103.317308 457.362577 L110.317308 457.362577 M103.317308 457.362577 L96.317308 457.362577" /></g><g class="ci"><path class="nofill reactive" d="M145.487637 476.303563 L152.487637 476.303563 M145.487637 476.303563 L138.487637 476.303563 M145.487637 476.303563 L145.487637 476.583800 L152.487637 476.583800 M145.487637 476.583800 L138.487637 476.583800" /></g><g class="ci"><path class="nofill reactive" d="M187.657967 476.377418 L194.657967 476.377418 M187.657967 476.377418 L180.657967 476.377418 M187.657967 476.377418 L187.657967 476.491543 L194.657967 476.491543 M187.657967 476.491543 L180.657967 476.491543" /></g><g class="ci"><path class="nofill reactive" d="M229.828297 480.656227 L236.828297 480.656227 M229.828297 480.656227 L222.828297 480.656227 M229.828297 480.656227 L229.828297 481.072048 L236.828297 481.072048 M229.828297 481.072048 L222.828297 481.072048" /></g><g class="ci"><path class="nofill reactive" d="M271.998626 479.424834 L278.998626 479.424834 M271.998626 479.424834 L264.998626 479.424834 M271.998626 479.424834 L271.998626 479.972358 L278.998626 479.972358 M271.998626 479.972358 L264.998626 479.972358" /></g><g class="ci"><path class="nofill reactive" d="M314.168956 6.816005 L321.168956 6.816005 M314.168956 6.816005 L307.168956 6.816005 M314.168956 6.816005 L314.168956 12.953226 L321.168956 12.953226 M314.168956 12.953226 L307.168956 12.953226" /></g><g class="ci"><path class="nofill reactive" d="M356.339286 472.649612 L363.339286 472.649612 M356.339286 472.649612 L349.339286 472.649612 M356.339286 472.649612 L356.339286 473.147006 L363.339286 473.147006 M356.339286 473.147006 L349.339286 473.147006" /></g><g class="ci"><path class="nofill reactive" d="M398.509615 469.417192 L405.509615 469.417192 M398.509615 469.417192 L391.509615 469.417192 M398.509615 469.417192 L398.509615 470.369264 L405.509615 470.369264 M398.509615 470.369264 L391.509615 470.369264" /></g><g class="ci"><path class="nofill reactive" d="M440.679945 477.564528 L447.679945 477.564528 M440.679945 477.564528 L433.679945 477.564528 M440.679945 477.564528 L440.679945 477.725994 L447.679945 477.725994 M440.679945 477.725994 L433.679945 477.725994" /></g><g class="ci"><path class="nofill reactive" d="M482.850275 477.302652 L489.850275 477.302652 M482.850275 477.302652 L475.850275 477.302652 M482.850275 477.302652 L482.850275 477.463926 L489.850275 477.463926 M482.850275 477.463926 L475.850275 477.463926" /></g><g class="ci"><path class="nofill reactive" d="M525.020604 477.732288 L532.020604 477.732288 M525.020604 477.732288 L518.020604 477.732288 M525.020604 477.732288 L525.020604 477.907721 L532.020604 477.907721 M525.020604 477.907721 L518.020604 477.907721" /></g><g class="ci"><path class="nofill reactive" d="M567.190934 477.267017 L574.190934 477.267017 M567.190934 477.267017 L560.190934 477.267017 M567.190934 477.267017 L567.190934 477.493522 L574.190934 477.493522 M567.190934 477.493522 L560.190934 477.493522" /></g></g><g class="series serie-1 color-1"><g class="ci"><path class="nofill reactive" d="M28.254121 480.751494 L35.254121 480.751494 M28.254121 480.751494 L21.254121 480.751494 M28.254121 480.751494 L28.254121 480.790849 L35.254121 480.790849 M28.254121 480.790849 L21.254121 480.790849" /></g><g class="ci"><path class="nofill reactive" d="M70.424451 480.756060 L77.424451 480.756060 M70.424451 480.756060 L63.424451 480.756060 M70.424451 480.756060 L70.424451 480.793107 L77.424451 480.793107 M70.424451 480.793107 L63.424451 480.793107" /></g><g class="ci"><path class="nofill reactive" d="M112.594780 475.882973 L119.594780 475.882973 M112.594780 475.882973 L105.594780 475.882973 M112.594780 475.882973 L112.594780 475.953196 L119.594780 475.953196 M112.594780 475.953196 L105.594780 475.953196" /></g><g class="ci"><path class="nofill reactive" d="M154.765110 480.636161 L161.765110 480.636161 M154.765110 480.636161 L147.765110 480.636161 M154.765110 480.636161 L154.765110 480.857868 L161.765110 480.857868 M154.765110 480.857868 L147.765110 480.857868" /></g><g class="ci"><path class="nofill reactive" d="M196.935440 483.478329 L203.935440 483.478329 M196.935440 483.478329 L189.935440 483.478329 M196.935440 483.478329 L196.935440 483.884687 L203.935440 483.884687 M196.935440 483.884687 L189.935440 483.884687" /></g><g class="ci"><path class="nofill reactive" d="M239.105769 481.435734 L246.105769 481.435734 M239.105769 481.435734 L232.105769 481.435734 M239.105769 481.435734 L239.105769 481.793631 L246.105769 481.793631 M239.105769 481.793631 L232.105769 481.793631" /></g><g class="ci"><path class="nofill reactive" d="M281.276099 480.420612 L288.276099 480.420612 M281.276099 480.420612 L274.276099 480.420612 M281.276099 480.420612 L281.276099 480.638211 L288.276099 480.638211 M281.276099 480.638211 L274.276099 480.638211" /></g><g class="ci"><path class="nofill reactive" d="M323.446429 482.850839 L330.446429 482.850839 M323.446429 482.850839 L316.446429 482.850839 M323.446429 482.850839 L323.446429 483.234063 L330.446429 483.234063 M323.446429 483.234063 L316.446429 483.234063" /></g><g class="ci"><path class="nofill reactive" d="M365.616758 480.097270 L372.616758 480.097270 M365.616758 480.097270 L358.616758 480.097270 M365.616758 480.097270 L365.616758 480.599434 L372.616758 480.599434 M365.616758 480.599434 L358.616758 480.599434" /></g><g class="ci"><path class="nofill reactive" d="M407.787088 474.863608 L414.787088 474.863608 M407.787088 474.863608 L400.787088 474.863608 M407.787088 474.863608 L407.787088 475.029909 L414.787088 475.029909 M407.787088 475.029909 L400.787088 475.029909" /></g><g class="ci"><path class="nofill reactive" d="M449.957418 480.496927 L456.957418 480.496927 M449.957418 480.496927 L442.957418 480.496927 M449.957418 480.496927 L449.957418 480.719896 L456.957418 480.719896 M449.957418 480.719896 L442.957418 480.719896" /></g><g class="ci"><path class="nofill reactive" d="M492.127747 480.926251 L499.127747 480.926251 M492.127747 480.926251 L485.127747 480.926251 M492.127747 480.926251 L492.127747 480.985296 L499.127747 480.985296 M492.127747 480.985296 L485.127747 480.985296" /></g><g class="ci"><path class="nofill reactive" d="M534.298077 480.603204 L541.298077 480.603204 M534.298077 480.603204 L527.298077 480.603204 M534.298077 480.603204 L534.298077 480.777468 L541.298077 480.777468 M534.298077 480.777468 L527.298077 480.777468" /></g><g class="ci"><path class="nofill reactive" d="M576.468407 480.101538 L583.468407 480.101538 M576.468407 480.101538 L569.468407 480.101538 M576.468407 480.101538 L576.468407 480.302548 L583.468407 480.302548 M576.468407 480.302548 L569.468407 480.302548" /></g></g><g class="series serie-2 color-2"><g class="ci"><path class="nofill reactive" d="M37.531593 468.499910 L44.531593 468.499910 M37.531593 468.499910 L30.531593 468.499910 M37.531593 468.499910 L37.531593 468.841120 L44.531593 468.841120 M37.531593 468.841120 L30.531593 468.841120" /></g><g class="ci"><path class="nofill reactive" d="M79.701923 468.613803 L86.701923 468.613803 M79.701923 468.613803 L72.701923 468.613803 M79.701923 468.613803 L79.701923 469.103755 L86.701923 469.103755 M79.701923 469.103755 L72.701923 469.103755" /></g><g class="ci"><path class="nofill reactive" d="M121.872253 455.315874 L128.872253 455.315874 M121.872253 455.315874 L114.872253 455.315874 M121.872253 455.315874 L121.872253 456.647581 L128.872253 456.647581 M121.872253 456.647581 L114.872253 456.647581" /></g><g class="ci"><path class="nofill reactive" d="M164.042582 468.592857 L171.042582 468.592857 M164.042582 468.592857 L157.042582 468.592857 M164.042582 468.592857 L164.042582 469.281350 L171.042582 469.281350 M164.042582 469.281350 L157.042582 469.281350" /></g><g class="ci"><path class="nofill reactive" d="M206.212912 466.110161 L213.212912 466.110161 M206.212912 466.110161 L199.212912 466.110161 M206.212912 466.110161 L206.212912 466.238136 L213.212912 466.238136 M206.212912 466.238136 L199.212912 466.238136" /></g><g class="ci"><path class="nofill reactive" d="M248.383242 467.274632 L255.383242 467.274632 M248.383242 467.274632 L241.383242 467.274632 M248.383242 467.274632 L248.383242 467.702793 L255.383242 467.702793 M248.383242 467.702793 L241.383242 467.702793" /></g><g class="ci"><path class="nofill reactive" d="M290.553571 467.087765 L297.553571 467.087765 M290.553571 467.087765 L283.553571 467.087765 M290.553571 467.087765 L290.553571 467.497870 L297.553571 467.497870 M290.553571 467.497870 L283.553571 467.497870" /></g><g class="ci"><path class="nofill reactive" d="M332.723901 471.403429 L339.723901 471.403429 M332.723901 471.403429 L325.723901 471.403429 M332.723901 471.403429 L332.723901 472.192255 L339.723901 472.192255 M332.723901 472.192255 L325.723901 472.192255" /></g><g class="ci"><path class="nofill reactive" d="M374.894231 472.145184 L381.894231 472.145184 M374.894231 472.145184 L367.894231 472.145184 M374.894231 472.145184 L374.894231 472.412271 L381.894231 472.412271 M374.894231 472.412271 L367.894231 472.412271" /></g><g class="ci"><path class="nofill reactive" d="M417.064560 464.496348 L424.064560 464.496348 M417.064560 464.496348 L410.064560 464.496348 M417.064560 464.496348 L417.064560 465.060576 L424.064560 465.060576 M417.064560 465.060576 L410.064560 465.060576" /></g><g class="ci"><path class="nofill reactive" d="M459.234890 469.308226 L466.234890 469.308226 M459.234890 469.308226 L452.234890 469.308226 M459.234890 469.308226 L459.234890 469.758326 L466.234890 469.758326 M459.234890 469.758326 L452.234890 469.758326" /></g><g class="ci"><path class="nofill reactive" d="M501.405220 468.477937 L508.405220 468.477937 M501.405220 468.477937 L494.405220 468.477937 M501.405220 468.477937 L501.405220 468.986072 L508.405220 468.986072 M501.405220 468.986072 L494.405220 468.986072" /></g><g class="ci"><path class="nofill reactive" d="M543.575549 468.381409 L550.575549 468.381409 M543.575549 468.381409 L536.575549 468.381409 M543.575549 468.381409 L543.575549 468.761386 L550.575549 468.761386 M543.575549 468.761386 L536.575549 468.761386" /></g><g class="ci"><path class="nofill reactive" d="M585.745879 471.535533 L592.745879 471.535533 M585.745879 471.535533 L578.745879 471.535533 M585.745879 471.535533 L585.745879 472.381770 L592.745879 472.381770 M585.745879 472.381770 L578.745879 472.381770" /></g></g><g class="series serie-3 color-3"><g class="ci"><path class="nofill reactive" d="M46.809066 322.511464 L53.809066 322.511464 M46.809066 322.511464 L39.809066 322.511464 M46.809066 322.511464 L46.809066 326.079572 L53.809066 326.079572 M46.809066 326.079572 L39.809066 326.079572" /></g><g class="ci"><path class="nofill reactive" d="M88.979396 329.618805 L95.979396 329.618805 M88.979396 329.618805 L81.979396 329.618805 M88.979396 329.618805 L88.979396 331.899145 L95.979396 331.899145 M88.979396 331.899145 L81.979396 331.899145" /></g><g class="ci"><path class="nofill reactive" d="M131.149725 203.074679 L138.149725 203.074679 M131.149725 203.074679 L124.149725 203.074679 M131.149725 203.074679 L131.149725 219.313991 L138.149725 219.313991 M131.149725 219.313991 L124.149725 219.313991" /></g><g class="ci"><path class="nofill reactive" d="M173.320055 339.671964 L180.320055 339.671964 M173.320055 339.671964 L166.320055 339.671964 M173.320055 339.671964 L173.320055 342.281922 L180.320055 342.281922 M173.320055 342.281922 L166.320055 342.281922" /></g><g class="ci"><path class="nofill reactive" d="M215.490385 348.345202 L222.490385 348.345202 M215.490385 348.345202 L208.490385 348.345202 M215.490385 348.345202 L215.490385 357.226470 L222.490385 357.226470 M215.490385 357.226470 L208.490385 357.226470" /></g><g class="ci"><path class="nofill reactive" d="M257.660714 341.946153 L264.660714 341.946153 M257.660714 341.946153 L250.660714 341.946153 M257.660714 341.946153 L257.660714 346.050154 L264.660714 346.050154 M257.660714 346.050154 L250.660714 346.050154" /></g><g class="ci"><path class="nofill reactive" d="M299.831044 351.233065 L306.831044 351.233065 M299.831044 351.233065 L292.831044 351.233065 M299.831044 351.233065 L299.831044 356.810764 L306.831044 356.810764 M299.831044 356.810764 L292.831044 356.810764" /></g><g class="ci"><path class="nofill reactive" d="M342.001374 362.894354 L349.001374 362.894354 M342.001374 362.894354 L335.001374 362.894354 M342.001374 362.894354 L342.001374 368.482444 L349.001374 368.482444 M342.001374 368.482444 L335.001374 368.482444" /></g><g class="ci"><path class="nofill reactive" d="M384.171703 238.025697 L391.171703 238.025697 M384.171703 238.025697 L377.171703 238.025697 M384.171703 238.025697 L384.171703 259.196279 L391.171703 259.196279 M384.171703 259.196279 L377.171703 259.196279" /></g><g class="ci"><path class="nofill reactive" d="M426.342033 329.399608 L433.342033 329.399608 M426.342033 329.399608 L419.342033 329.399608 M426.342033 329.399608 L426.342033 341.758216 L433.342033 341.758216 M426.342033 341.758216 L419.342033 341.758216" /></g><g class="ci"><path class="nofill reactive" d="M468.512363 327.697039 L475.512363 327.697039 M468.512363 327.697039 L461.512363 327.697039 M468.512363 327.697039 L468.512363 335.775016 L475.512363 335.775016 M468.512363 335.775016 L461.512363 335.775016" /></g><g class="ci"><path class="nofill reactive" d="M510.682692 309.247131 L517.682692 309.247131 M510.682692 309.247131 L503.682692 309.247131 M510.682692 309.247131 L510.682692 315.160111 L517.682692 315.160111 M510.682692 315.160111 L503.682692 315.160111" /></g><g class="ci"><path class="nofill reactive" d="M552.853022 352.042460 L559.853022 352.042460 M552.853022 352.042460 L545.853022 352.042460 M552.853022 352.042460 L552.853022 361.306990 L559.853022 361.306990 M552.853022 361.306990 L545.853022 361.306990" /></g><g class="ci"><path class="nofill reactive" d="M595.023352 315.224214 L602.023352 315.224214 M595.023352 315.224214 L588.023352 315.224214 M595.023352 315.224214 L595.023352 320.429870 L602.023352 320.429870 M595.023352 320.429870 L588.023352 320.429870" /></g></g></g><g class="plot text-overlay" transform="translate(166, 46)"><g class="series serie-0 color-0" /><g class="series serie-1 color-1" /><g class="series serie-2 color-2" /><g class="series serie-3 color-3" /></g><g class="plot tooltip-overlay" transform="translate(166, 46)"><g class="tooltip" style="opacity: 0" transform="translate(0 0)"><rect class="tooltip-box" height="0" rx="0" ry="0" width="0" /><g class="text" /></g></g><g class="legends" transform="translate(10, 56)"><g class="legend reactive activate-serie" id="activate-serie-0"><rect class="color-0 reactive" height="12" width="12" x="0.0" y="1.0" /><text x="17.0" y="11.2">Capnpy</text></g><g class="legend reactive activate-serie" id="activate-serie-1"><rect class="color-1 reactive" height="12" width="12" x="0.0" y="22.0" /><text x="17.0" y="32.2">Instance</text></g><g class="legend reactive activate-serie" id="activate-serie-2"><rect class="color-2 reactive" height="12" width="12" x="0.0" y="43.0" /><text x="17.0" y="53.2">NamedTuple</text></g><g class="legend reactive activate-serie" id="activate-serie-3"><rect class="color-3 reactive" height="12" width="12" x="0.0" y="64.0" /><text x="17.0" y="74.2">PyCapnp</text></g></g><g class="legends" transform="translate(790, 56)" /></g></svg>
