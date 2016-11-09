@@ -1,6 +1,7 @@
 import pytest
+import json
 from collections import namedtuple
-from generate_charts import GroupedBarChart, PyQuery
+from generate_charts import GroupedBarChart, PyQuery, ChartGenerator
 
 Point = namedtuple('Point', ['x', 'y'])
 
@@ -51,3 +52,46 @@ class TestPyQuery(object):
         lower_list = PyQuery(['hello', 'world'])
         upper_list = lower_list.upper()
         assert upper_list == ['HELLO', 'WORLD']
+
+
+class TestChartGenerator(object):
+
+    def test_find_latest(self, tmpdir):
+        cpython = tmpdir.join('cpython').ensure(dir=True)
+        pypy = tmpdir.join('pypy').ensure(dir=True)
+        for name in ('01.json', '02.json', '03.json'):
+            cpython.join(name).write('')
+        for name in ('01.json', '02.json'):
+            pypy.join(name).write('')
+        #
+        gen = ChartGenerator(tmpdir)
+        latest = gen.find_latest()
+        latest.sort()
+        assert latest == [
+            cpython.join('03.json'),
+            pypy.join('02.json')
+        ]
+
+    def test_load_one(self, tmpdir):
+        data = {
+            'machine_info': 'Intel',
+            'datetime': 'today',
+            'benchmarks': [
+                {'name': 'foo', 'time': 1},
+                {'name': 'bar', 'time': 2},
+            ]
+        }
+        myfile = tmpdir.join('myfile.json')
+        myfile.write(json.dumps(data))
+        #
+        benchmarks = ChartGenerator.load_one(myfile)
+        b1, b2 = benchmarks
+        assert b1.name == 'foo'
+        assert b1.time == 1
+        assert b1.info.machine_info == 'Intel'
+        assert b1.info.datetime == 'today'
+        #
+        assert b2.name == 'bar'
+        assert b2.time == 2
+        assert b2.info.machine_info == 'Intel'
+        assert b2.info.datetime == 'today'
