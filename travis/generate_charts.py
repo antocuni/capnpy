@@ -1,3 +1,4 @@
+import operator
 import pygal
 
 class GroupedBarChart(object):
@@ -34,3 +35,40 @@ class GroupedBarChart(object):
                       for group in groups]
             chart.add(name, series)
         return chart
+
+
+class PyQuery(list):
+    """
+    Extend a list with an API which is vaguely inspired by jQuery to filter
+    and interact with the data.
+    """
+
+    def filter(self, predicate):
+        new_items = [item for item in self if predicate(item)]
+        return self.__class__(new_items)
+
+    def getattr(self, attr, strict=False):
+        getter = operator.attrgetter(attr)
+        new_items = []
+        for item in self:
+            try:
+                new_items.append(getter(item))
+            except (AttributeError, KeyError):
+                if strict:
+                    raise
+                pass
+        return self.__class__(new_items)
+
+    def __getattr__(self, attr):
+        return self.getattr(attr, strict=True)
+
+    def __call__(self, *args, **kwds):
+        return self.__class__([item(*args, **kwds) for item in self])
+
+    def pp(self):
+        from pprint import pprint
+        for item in self:
+            if isinstance(item, DotMap):
+                item.pprint()
+            else:
+                pprint(item)
