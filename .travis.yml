@@ -34,8 +34,11 @@ install:
   - make install
   - cd ../
   - pip install tox-travis
+  - pip install pygal dotmap
 
 script:
   - bash ./travis/clone-benchmarks-repo.sh
   - tox
+  - py.test travis
+  - python travis/generate_charts.py .benchmarks
   - bash ./travis/commit-results.sh

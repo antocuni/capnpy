@@ -155,7 +155,7 @@ class ChartGenerator(object):
             chart.add(b.params.schema, attribute_type, self.get_point(b))
         #
         chart = chart.build()
-        display(chart)
+        #display(chart)
         self.save(chart, '%s-latest-getattr.svg' % impl)
 
 
