@@ -32,6 +32,8 @@ class TestGetAttr(object):
 
     @pytest.mark.benchmark(group="getattr")
     def test_numeric(self, schema, numeric_type, benchmark, obj=None):
+        # the extra_info is used to generate the charts
+        benchmark.extra_info['attribute_type'] = numeric_type
         code = Code()
         code.global_scope.N = self.N
         code.global_scope.numeric_type = numeric_type
@@ -52,6 +54,7 @@ class TestGetAttr(object):
 
     @pytest.mark.benchmark(group="getattr")
     def test_text(self, schema, benchmark):
+        benchmark.extra_info['attribute_type'] = 'text'
         def count_text(obj):
             myobjs = (obj, obj)
             res = 0
@@ -66,6 +69,7 @@ class TestGetAttr(object):
 
     @pytest.mark.benchmark(group="getattr")
     def test_struct(self, schema, benchmark):
+        benchmark.extra_info['attribute_type'] = 'struct'
         def sum_attr(obj):
             myobjs = (obj, obj)
             res = 0
@@ -80,6 +84,7 @@ class TestGetAttr(object):
 
     @pytest.mark.benchmark(group="getattr")
     def test_list(self, schema, benchmark):
+        benchmark.extra_info['attribute_type'] = 'list'
         def sum_attr(obj):
             myobjs = (obj, obj)
             res = 0
