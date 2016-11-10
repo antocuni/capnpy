@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 ==================================
-Welcome to capnpy's documentation!
+capnpy documentation
 ==================================
 
 ``capnpy`` is an implementation of Cap'n Proto for Python. Its primary goal is
@@ -15,34 +15,20 @@ a pythonic API and feeling whenever possible.
    :maxdepth: 2
 
 
+Installation and requirements
+=============================
 
-Loading schemas
----------------
+To install ``capnpy``, just type::
 
-``capnpy`` supports two different ways of loading schemas:
+  $ pip install capnpy
 
-  1. **Dynamic loading**: to compile load capnproto schemas on the fly
-
-  2. **Precompiled mode**: to generate Python bindings for a schema, to be
-     imported later (NOTE: this mode is not fully implemented as of now, but
-     will be soon)
-
-Moreover, it supports two different ways of compilation:
-
-  1. **py mode**: generate pure Python modules, which can be used either on
-     CPython or PyPy. This is optimized to be super fast on PyPy, but slowish
-     on CPython, although it has the advantage of working with no extra setup
-     (``capnpy`` itself uses ``schema.py``, a py-compiled version of
-     ``schema.capnp``)
-
-  2. **pyx mode**: generate pyx modules, which are then compiled into native
-     extension modules by Cython and GCC. It is optimized for speed on
-     CPython.
-
+``capnpy`` relies on the official capnproto implementation to parse the schema
+files, so it needs to be able to find the ``capnp`` executable to compile a
+schema.  It requires ``capnp 0.5.0`` or later.
 
 
 Quick example
--------------
+=============
 
 Suppose to have a capnp schema called ``example.capnp``::
 
@@ -54,41 +40,56 @@ Suppose to have a capnp schema called ``example.capnp``::
 
 You can use ``capnpy`` to read and write messages of type ``Point``::
 
-    import sys
     import capnpy
+
+    # load the schema using dynamic loading
     example = capnpy.load_schema('example')
-    #
-    # read a message from the stdin
-    p = capnpy.load(sys.stdin, example.Point)
-    print p.x, p.y
-    #
-    # create a new capnp object and write it as a message
-    p2 = example.Point(x=p.x+1, y=p.y+1)
-    capnpy.dump(p2, sys.stdout)
+
+    # create a new Point object
+    p = example.Point(x=1, y=2)
+
+    # serialize the message and load it back
+    message = capnpy.dumps(p)
+    p2 = capnpy.loads(message)
+    print p2.x, p2.y
 
 
-Installation and requirements
-------------------------------
+Loading schemas
+================
 
-``capnpy`` relies on the official capnproto implementation to parse the schema
-files, so it needs to be able to find the ``capnp`` executable on the path
-whenever you load or compile a schema.  This depends on the mode of operation;
-in particular:
+``capnpy`` supports two different ways of loading schemas:
 
-  1. for **dynamic loading**, you always need ``capnp`` to load a schema
+:dynamic: to compile load capnproto schemas on the fly.
+:precompiled: to generate Python bindings for a schema, to be imported
+    later.
 
-  2. in **precompiled mode**, you need ``capnp`` to compile the schema, but
-     not to load it later; this means that you can distribute the precompiled
-     schemas, and the client machines will be able to load it without having
-     to install the official capnproto distribution.
+If you use **dynamic loading**, you always need the ``capnp`` executable
+whenever you want to load a schema.
 
-Requirements:
+If use use **precompiled mode**, you need ``capnp`` to compile the schema, but
+not to load it later; this means that you can distribute the precompiled
+schemas, and the client machines will be able to load it without having to
+install the official capnproto distribution.
 
-  1. ``cython >= 0.23``: Cython is needed only if you want to enable pyx mode
-     on CPython
 
-  2. ``capnp >= 0.5.0``: as explained above, you need the ``capnp`` executable
-     only for dynamic loading, or to compile the schema
+Compilation options
+--------------------
+
+The ``capnpy`` schema compiler has two modes of compilation:
+
+:py mode: Generate pure Python modules, which can be used either on CPython or
+   PyPy: it is optimized to be super fast on PyPy, but it is slow on CPython.
+   The advantage is that it does not require ``cython``. This is the default
+   on PyPy.
+:pyx mode: Generate pyx modules, which are then compiled into native extension
+   modules by ``cython`` and ``gcc``. It is optimized for speed on
+   CPython. This is the default on CPython, if ``cython`` is available.
+
+Moreover, it supports the following options:
+
+:convert_case: If enabled, ``capnpy`` will automatically convert field names
+   from camelCase to underscore_delimiter: i.e., ``fooBar`` will become
+   ``foo_bar``. The default is **True**.
 
 
 Dynamic loading
@@ -134,12 +135,6 @@ the search path directories, which by default correspond to the ones listed in
 Finally, ``filename`` specifies the exact file name of the schema file. No
 search will be performed.
 
-Additionally, you can also specify the ``convert_case`` parameter. By default,
-``capnpy`` will translate names from **camelCase** to
-**underscore_delimiter**; e.g., if the capnproto schema contains a field named
-``personName``, the compiled Python module will contain a field named
-``person_name``. You can disable this automatic translation by passing
-``convert_case=False``.
 
 Finally, ``pyx`` controls whether to use Cython to compile the schema. The
 default is to enable pyx mode when on CPython, and to disable when on PyPy.
@@ -157,8 +152,8 @@ This will produce ``example.py`` (if you are using py mode) or ``example.so``
 (if you are using pyx mode).
 
 
-Compiling a schema using setup.py
-----------------------------------------
+``setuptools`` integration
+---------------------------
 
 If you use ``setuptools``, you can use the ``capnpy_schema`` keyword to
 automatically compile your schemas from ``setup.py``::
@@ -187,8 +182,8 @@ You can specify additional options by using ``capnpy_options``::
 
 
 
-Reading and writing messages
------------------------------
+Loading a dumping messages
+=============================
 
 The API to read and write capnproto messages is inspired by the ones offered
 by ``pickle`` and ``json``:
@@ -224,6 +219,9 @@ Alternatively, you can call ``load``/``loads`` directly on the class, and
     >>> print p2.x, p2.y
     100 200
 
+
+capnproto types
+================
 
 Struct
 -------
@@ -450,7 +448,7 @@ Reading named unions is the same as anonymous ones::
 
 
 Equality and hashing
----------------------
+====================
 
 By default, structs are not hashable and cannot be compared. To enable, you
 need to specify which fields to consider using the ``$Py.key`` annotation::
@@ -533,8 +531,8 @@ According to the Zen of Python:
 Hence, we require you to explicity specify which fields to consider.
 
 
-Adding methods to capnproto structs
-------------------------------------
+Extending ``capnpy`` structs
+=============================
 
 As described above, each capnproto Struct is converted into a Python class,
 whose attributes are specified by the capnproto schema. Moreover, with
@@ -591,6 +589,6 @@ the schema::
 
 
 ``capnpy`` vs ``pycapnp``
----------------------------
+==========================
 
 XXX write me
