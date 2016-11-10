@@ -63,14 +63,15 @@ Loading schemas
 :precompiled: to generate Python bindings for a schema, to be imported
     later.
 
-If you use **dynamic loading**, you always need the ``capnp`` executable
+If you use `dynamic loading`_, you always need the ``capnp`` executable
 whenever you want to load a schema.
 
-If use use **precompiled mode**, you need ``capnp`` to compile the schema, but
+If you use `precompiled mode`__, you need ``capnp`` to compile the schema, but
 not to load it later; this means that you can distribute the precompiled
 schemas, and the client machines will be able to load it without having to
 install the official capnproto distribution.
 
+.. __: #manual-compilation
 
 Compilation options
 --------------------
@@ -98,7 +99,9 @@ Dynamic loading
 To dynamically load a capnproto schema, use ``capnpy.load_schema``; its full
 signature is::
 
-    def load_schema(self, modname=None, importname=None, filename=None, convert_case=True, pyx='auto'):
+    def load_schema(self,
+                    modname=None, importname=None, filename=None,
+                    convert_case=True, pyx='auto'):
         ...
 
 ``modname``, ``importname`` and ``filename`` corresponds to three different
@@ -135,9 +138,7 @@ the search path directories, which by default correspond to the ones listed in
 Finally, ``filename`` specifies the exact file name of the schema file. No
 search will be performed.
 
-
-Finally, ``pyx`` controls whether to use Cython to compile the schema. The
-default is to enable pyx mode when on CPython, and to disable when on PyPy.
+``pyx`` and ``convert_case`` specify which `compilation options`_ to use.
 
 
 Manual compilation
