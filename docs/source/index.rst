@@ -12,6 +12,6 @@ to provide a library which is fast, both on CPython and PyPy, and which offers
 a pythonic API and feeling whenever possible.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    usage
