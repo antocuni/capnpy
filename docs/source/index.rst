@@ -79,9 +79,9 @@ Compilation options
 The ``capnpy`` schema compiler has two modes of compilation:
 
 :py mode: Generate pure Python modules, which can be used either on CPython or
-   PyPy: it is optimized to be super fast on PyPy, but it is slow on CPython.
-   The advantage is that it does not require ``cython``. This is the default
-   on PyPy.
+   PyPy: it is optimized to be super fast on PyPy. It produces slow code on
+   CPython, but it has the advantage of not requiring ``cython``. This is the
+   default on PyPy.
 :pyx mode: Generate pyx modules, which are then compiled into native extension
    modules by ``cython`` and ``gcc``. It is optimized for speed on
    CPython. This is the default on CPython, if ``cython`` is available.
@@ -153,8 +153,8 @@ This will produce ``example.py`` (if you are using py mode) or ``example.so``
 (if you are using pyx mode).
 
 
-``setuptools`` integration
----------------------------
+Integration with ``setuptools``
+--------------------------------
 
 If you use ``setuptools``, you can use the ``capnpy_schema`` keyword to
 automatically compile your schemas from ``setup.py``::
@@ -193,6 +193,11 @@ by ``pickle`` and ``json``:
 
   - ``capnpy.loads(s, payload)``: load a message from a string
 
+  - ``capnpy.load_all(f, payload_type)``: return a generator which yields all
+    the messages from the given file-like object
+
+  - ``capnpy.dump(obj)``: write a message to a file-like object
+
   - ``capnpy.dumps(obj)``: write a message to a string
 
 For example::
@@ -208,7 +213,7 @@ For example::
     100 200
 
 Alternatively, you can call ``load``/``loads`` directly on the class, and
-``dumps`` directly on the objects::
+``dump``/``dumps`` directly on the objects::
 
     >>> import capnpy
     >>> example = capnpy.load_schema('example')
@@ -237,14 +242,10 @@ inspired by ``namedtuples``:
     value of a field, you can instantiate a new object, as you would do with
     namedtuples
 
-  - objects can be made comparable and hashable by specifying the ``$Py.key``
-    annotation
+  - objects can be made `comparable and hashable`__ by specifying the
+    ``$Py.key`` annotation
 
-Additionally, ``capnpy`` provides ways to access capnproto-specific features:
-
-  - enums_
-
-  - unions_
+.. __: #equality-and-hashing
 
 
 Enum
