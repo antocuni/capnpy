@@ -159,8 +159,8 @@ class ChartGenerator(object):
         self.gen_getattr_special(impl, benchmarks)
         self.gen_hash(impl, benchmarks)
         self.gen_load(impl, benchmarks)
+        self.gen_ctor(impl, benchmarks)
         ## self.gen_buffered(impl, benchmarks)
-        ## self.gen_ctor(impl, benchmarks)
 
     def gen_getattr(self, impl, benchmarks):
         chart = GroupedBarChart('%s: get attribute' % impl)
@@ -204,6 +204,16 @@ class ChartGenerator(object):
             chart.add(schema, name, self.get_point(b))
         chart = chart.build()
         self.save(chart, '%s-latest-load.svg' % impl)
+
+    def gen_ctor(self, impl, benchmarks):
+        chart = GroupedBarChart('%s: Constructors' % impl)
+        benchmarks = benchmarks.filter(lambda b: b.group == 'ctor')
+        for b in benchmarks:
+            schema = b.params.schema
+            name = self.extract_test_name(b.name)
+            chart.add(schema, name, self.get_point(b))
+        chart = chart.build()
+        self.save(chart, '%s-latest-ctor.svg' % impl)
 
 
 def main():
