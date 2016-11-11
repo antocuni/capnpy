@@ -147,7 +147,7 @@ class ChartGenerator(object):
 
     @classmethod
     def extract_test_name(cls, name):
-        m = re.match(r'test_(.*)\[.*\]', name)
+        m = re.match(r'test_([^\[]+)(\[.*\])?', name)
         assert m
         return m.group(1)
 
@@ -160,7 +160,7 @@ class ChartGenerator(object):
         self.gen_hash(impl, benchmarks)
         self.gen_load(impl, benchmarks)
         self.gen_ctor(impl, benchmarks)
-        ## self.gen_buffered(impl, benchmarks)
+        self.gen_buffered(impl, benchmarks)
 
     def _gen_generic_chart(self, title, benchmarks, series, group, filename):
         chart = GroupedBarChart(title)
@@ -224,6 +224,14 @@ class ChartGenerator(object):
             group = lambda b: self.extract_test_name(b.name),
             filename = '%s-latest-ctor.svg' % impl)
 
+    def gen_buffered(self, impl, benchmarks):
+        benchmarks = benchmarks.filter(lambda b: b.group == 'buffered')
+        self._gen_generic_chart(
+            title = '%s: buffered streams' % impl,
+            benchmarks = benchmarks,
+            series = lambda b: None,
+            group = lambda b: self.extract_test_name(b.name),
+            filename = '%s-latest-buffered.svg' % impl)
 
 def main():
     if len(sys.argv) == 2:

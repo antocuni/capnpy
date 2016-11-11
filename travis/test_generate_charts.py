@@ -95,3 +95,8 @@ class TestChartGenerator(object):
         assert b2.time == 2
         assert b2.info.machine_info == 'Intel'
         assert b2.info.datetime == 'today'
+
+    def test_extract_test_name(self):
+        ex = ChartGenerator.extract_test_name
+        assert ex('test___which__[Capnpy]') == '__which__'
+        assert ex('test_BufferedSocket') == 'BufferedSocket'
