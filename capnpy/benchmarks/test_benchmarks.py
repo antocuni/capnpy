@@ -97,6 +97,10 @@ class TestGetAttr(object):
         res = benchmark(sum_attr, obj)
         assert res == 3*self.N
 
+
+class TestGetAttrSpecial(object):
+    N = 2000
+
     @pytest.mark.benchmark(group="getattr_special")
     def test_which(self, schema, benchmark):
         if schema.__name__ != 'Capnpy':

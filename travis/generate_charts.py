@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 import operator
 import json
 import py
@@ -129,6 +130,7 @@ class ChartGenerator(object):
             chart = chart.build()
         f = self.dir.join(name)
         chart.render_to_file(str(f))
+        #display(chart)
         print 'Chart saved to', f
 
     def get_point(self, b):
@@ -141,11 +143,22 @@ class ChartGenerator(object):
             }
         }
 
+    @classmethod
+    def extract_test_name(cls, name):
+        m = re.match(r'test_(.*)\[.*\]', name)
+        assert m
+        return m.group(1)
+
     def generate_latest(self, impl):
-        benchmarks = self.load_many(self.find_latest())
-        benchmarks = benchmarks.filter(
+        all_benchmarks = self.load_many(self.find_latest())
+        benchmarks = all_benchmarks.filter(
             lambda b: b.info.machine_info.python_implementation == impl)
         self.gen_getattr(impl, benchmarks)
+        self.gen_getattr_special(all_benchmarks)
+        ## self.gen_hash(impl, benchmarks)
+        ## self.gen_load(impl, benchmarks)
+        ## self.gen_buffered(impl, benchmarks)
+        ## self.gen_ctor(impl, benchmarks)
 
     def gen_getattr(self, impl, benchmarks):
         chart = GroupedBarChart('%s: get attribute' % impl)
@@ -153,10 +166,22 @@ class ChartGenerator(object):
         for b in benchmarks:
             attribute_type = b.extra_info.attribute_type
             chart.add(b.params.schema, attribute_type, self.get_point(b))
-        #
         chart = chart.build()
-        #display(chart)
         self.save(chart, '%s-latest-getattr.svg' % impl)
+
+    def gen_getattr_special(self, benchmarks):
+        chart = GroupedBarChart('Special attributes')
+        benchmarks = benchmarks.filter(lambda b: (
+            b.name == 'test_numeric[Capnpy-int16]' or
+            b.group == 'getattr_special'))
+        for b in benchmarks:
+            impl = b.info.machine_info.python_implementation
+            name = self.extract_test_name(b.name)
+            if name == 'numeric':
+                name = 'int16'
+            chart.add(impl, name, self.get_point(b))
+        chart = chart.build()
+        self.save(chart, 'latest-getattr-special.svg')
 
 
 def main():
