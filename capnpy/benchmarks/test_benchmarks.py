@@ -196,12 +196,16 @@ class TestHash(object):
     def test_hash_ints(self, schema, benchmark):
         if schema.__name__ == 'PyCapnp':
             py.test.skip('pycapnp does not implement hash properly')
+        benchmark.extra_info['schema'] = schema.__name__
+        benchmark.extra_info['type'] = 'int64'
         obj = schema.Point(1000, 2000, 3000)
         res = benchmark(self.hash_many, obj)
         assert res == 0
 
     @pytest.mark.benchmark(group="hash_int")
     def test_hash_ints_tuple(self, benchmark):
+        benchmark.extra_info['schema'] = 'tuple'
+        benchmark.extra_info['type'] = 'int64'
         obj = (1000, 2000, 3000)
         res = benchmark(self.hash_many, obj)
         assert res == 0
@@ -213,6 +217,8 @@ class TestHash(object):
         # compute it every time.
         if schema.__name__ == 'PyCapnp':
             py.test.skip('pycapnp does not implement hash properly')
+        benchmark.extra_info['schema'] = schema.__name__
+        benchmark.extra_info['type'] = 'str'
         obj = schema.StrPoint('hello world'[:], 'this is a string',
                               'this is another string')
         res = benchmark(self.hash_many, obj)
@@ -220,6 +226,8 @@ class TestHash(object):
 
     @pytest.mark.benchmark(group="hash_str")
     def test_hash_str_tuple(self, benchmark):
+        benchmark.extra_info['schema'] = 'tuple'
+        benchmark.extra_info['type'] = 'str'
         obj = ('hello world', 'this is a string', 'this is another string')
         res = benchmark(self.hash_many, obj)
         assert res == 0

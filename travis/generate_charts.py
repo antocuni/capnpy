@@ -90,8 +90,9 @@ class PyQuery(list):
 
 class ChartGenerator(object):
 
-    def __init__(self, dir):
+    def __init__(self, dir, display_filter=None):
         self.dir = dir
+        self.display_filter = display_filter
 
     def find_latest(self):
         latest = []
@@ -130,7 +131,8 @@ class ChartGenerator(object):
             chart = chart.build()
         f = self.dir.join(name)
         chart.render_to_file(str(f))
-        #display(chart)
+        if self.display_filter and self.display_filter in name:
+            display(chart)
         print 'Chart saved to', f
 
     def get_point(self, b):
@@ -155,7 +157,7 @@ class ChartGenerator(object):
             lambda b: b.info.machine_info.python_implementation == impl)
         self.gen_getattr(impl, benchmarks)
         self.gen_getattr_special(impl, benchmarks)
-        ## self.gen_hash(impl, benchmarks)
+        self.gen_hash(impl, benchmarks)
         ## self.gen_load(impl, benchmarks)
         ## self.gen_buffered(impl, benchmarks)
         ## self.gen_ctor(impl, benchmarks)
@@ -183,13 +185,29 @@ class ChartGenerator(object):
         chart = chart.build()
         self.save(chart, '%s-latest-getattr-special.svg' % impl)
 
+    def gen_hash(self, impl, benchmarks):
+        chart = GroupedBarChart('%s: hash' % impl)
+        benchmarks = benchmarks.filter(lambda b: b.group.startswith('hash'))
+        for b in benchmarks:
+            schema = b.extra_info.schema
+            type = b.extra_info.type
+            chart.add(schema, type, self.get_point(b))
+        chart = chart.build()
+        self.save(chart, '%s-latest-hash.svg' % impl)
+
 
 def main():
-    if len(sys.argv) != 2:
-        print 'Usage: generate_charts.py BENCHMARKS-DIR'
+    if len(sys.argv) == 2:
+        dir = sys.argv[1]
+        display_filter = None
+    elif len(sys.argv) == 3:
+        dir = sys.argv[1]
+        display_filter = sys.argv[2]
+    else:
+        print 'Usage: generate_charts.py BENCHMARKS-DIR [DISPLAY]'
         sys.exit(1)
-    dir = sys.argv[1]
-    gen = ChartGenerator(py.path.local(dir))
+    #
+    gen = ChartGenerator(py.path.local(dir), display_filter)
     gen.generate_latest('CPython')
     gen.generate_latest('PyPy')
 
