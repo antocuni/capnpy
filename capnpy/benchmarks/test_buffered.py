@@ -48,9 +48,9 @@ class TestBuffered(object):
         with resp.open('wb') as f:
             for i in xrange(self.SIZE):
                 ch = chr(random.randrange(255))
-                resp.write(ch)
+                f.write(ch)
         #
-        tcpserver = TcpServer(host, port, resp)
+        tcpserver = TcpServer(resp)
         def finalize():
             tcpserver.close()
         request.addfinalizer(finalize)
@@ -68,7 +68,7 @@ class TestBuffered(object):
             return tot
 
         res = benchmark(count_bytes)
-        assert res == SIZE
+        assert res == self.SIZE
 
     @pytest.mark.benchmark(group="buffered")
     def test_BufferedSocket(self, benchmark, server):
