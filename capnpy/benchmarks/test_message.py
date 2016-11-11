@@ -51,5 +51,12 @@ class TestMessage(object):
             return sock
         #
         with TcpServer(capnpfile) as server:
-            res = benchmark(self.load_N, schema, open_connection)
+            # we do NOT want to measure the connection time. So, we open many
+            # connections at once and let the benchmark use them one by one.
+            # By default tcpserver accepts up to 40 connections
+            pool = [open_connection() for _ in range(40)]
+            next_connection = iter(pool).next
+            res = benchmark(self.load_N, schema, next_connection)
+            ## for conn in pool:
+            ##     conn.close()
         assert res.int64 == 100
