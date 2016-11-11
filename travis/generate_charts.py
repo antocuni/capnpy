@@ -154,7 +154,7 @@ class ChartGenerator(object):
         benchmarks = all_benchmarks.filter(
             lambda b: b.info.machine_info.python_implementation == impl)
         self.gen_getattr(impl, benchmarks)
-        self.gen_getattr_special(all_benchmarks)
+        self.gen_getattr_special(impl, benchmarks)
         ## self.gen_hash(impl, benchmarks)
         ## self.gen_load(impl, benchmarks)
         ## self.gen_buffered(impl, benchmarks)
@@ -169,8 +169,8 @@ class ChartGenerator(object):
         chart = chart.build()
         self.save(chart, '%s-latest-getattr.svg' % impl)
 
-    def gen_getattr_special(self, benchmarks):
-        chart = GroupedBarChart('Special attributes')
+    def gen_getattr_special(self, impl, benchmarks):
+        chart = GroupedBarChart('%s: special attributes' % impl)
         benchmarks = benchmarks.filter(lambda b: (
             b.name == 'test_numeric[Capnpy-int16]' or
             b.group == 'getattr_special'))
@@ -179,9 +179,9 @@ class ChartGenerator(object):
             name = self.extract_test_name(b.name)
             if name == 'numeric':
                 name = 'int16'
-            chart.add(impl, name, self.get_point(b))
+            chart.add(None, name, self.get_point(b))
         chart = chart.build()
-        self.save(chart, 'latest-getattr-special.svg')
+        self.save(chart, '%s-latest-getattr-special.svg' % impl)
 
 
 def main():
@@ -191,6 +191,7 @@ def main():
     dir = sys.argv[1]
     gen = ChartGenerator(py.path.local(dir))
     gen.generate_latest('CPython')
+    gen.generate_latest('PyPy')
 
 if __name__ == '__main__':
     main()
