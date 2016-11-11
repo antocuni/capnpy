@@ -17,18 +17,19 @@ def schema(request):
 def numeric_type(request):
     return request.param
 
+def get_obj(schema):
+    inner = schema.MyInner(field=200)
+    obj = schema.MyStruct(padding=0, bool=100, int8=100, int16=100, int32=100,
+                          int64=100, uint8=100, uint16=100, uint32=100, uint64=100,
+                          float32=100, float64=100, text='hello world', group=(100,),
+                          inner=inner, intlist=[1, 2, 3, 4])
+    return obj
+
+
+
 class TestGetAttr(object):
 
     N = 2000
-
-    @staticmethod
-    def get_obj(schema):
-        inner = schema.MyInner(field=200)
-        obj = schema.MyStruct(padding=0, bool=100, int8=100, int16=100, int32=100,
-                              int64=100, uint8=100, uint16=100, uint32=100, uint64=100,
-                              float32=100, float64=100, text='hello world', group=(100,),
-                              inner=inner, intlist=[1, 2, 3, 4])
-        return obj
 
     @pytest.mark.benchmark(group="getattr")
     def test_numeric(self, schema, numeric_type, benchmark, obj=None):
@@ -48,7 +49,7 @@ class TestGetAttr(object):
         """)
         code.compile()
         sum_attr = code['sum_attr']
-        obj = self.get_obj(schema)
+        obj = get_obj(schema)
         res = benchmark(sum_attr, obj)
         assert res == 100*self.N
 
@@ -63,7 +64,7 @@ class TestGetAttr(object):
                 res += (obj.text == 'hello world')
             return res
         #
-        obj = self.get_obj(schema)
+        obj = get_obj(schema)
         res = benchmark(count_text, obj)
         assert res == self.N
 
@@ -78,7 +79,7 @@ class TestGetAttr(object):
                 res += obj.inner.field
             return res
         #
-        obj = self.get_obj(schema)
+        obj = get_obj(schema)
         res = benchmark(sum_attr, obj)
         assert res == 200*self.N
 
@@ -93,7 +94,7 @@ class TestGetAttr(object):
                 res += obj.intlist[2]
             return res
         #
-        obj = self.get_obj(schema)
+        obj = get_obj(schema)
         res = benchmark(sum_attr, obj)
         assert res == 3*self.N
 
@@ -151,32 +152,6 @@ class TestGetAttrSpecial(object):
         obj = schema.WithUnion.new_two(42)
         res = benchmark(sum_is, obj)
         assert res == self.N
-
-
-class TestMessage(object):
-
-    N = 2000
-
-    @pytest.mark.benchmark(group="load")
-    def test_load_from_file(self, tmpdir, schema, benchmark):
-        if not hasattr(schema.MyStruct, 'load'):
-            py.test.skip('N/A')
-        #
-        def load_from_file(f):
-            for i in range(self.N):
-                f.seek(0)
-                obj = schema.MyStruct.load(f)
-            return obj
-        #
-        # we always create the object with capnpy, so that we can dumps() it.
-        obj = TestGetAttr.get_obj(support.Capnpy)
-        # we need to use a real file instead of cStringIO, because apparently
-        # pycapnp cannot read from it
-        tmpfile = tmpdir.join('mymessage')
-        tmpfile.write(obj.dumps(), 'wb')
-        with tmpfile.open() as f:
-            res = benchmark(load_from_file, f)
-        assert res.int64 == 100
 
 
 class TestHash(object):

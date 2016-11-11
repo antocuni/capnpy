@@ -6,6 +6,34 @@ import time
 from cStringIO import StringIO
 from capnpy.buffered import BufferedStream, BufferedSocket
 
+class TcpServer(object):
+
+    host = '127.0.0.1'
+    port = '5000'
+
+    def __init__(self, fname):
+        cmd = ['tcpserver', self.host, self.port, 'cat', str(fname)]
+        self.p = subprocess.Popen(cmd)
+        time.sleep(0.1) # give tcpserver enough time to start
+
+    def close(self):
+        if not self.p:
+            return
+        try:
+            self.p.kill()
+        except OSError:
+            pass
+        if self.p.returncode is None:
+            self.p.communicate()
+        self.p = None
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, etype, evalue, tb):
+        self.close()
+
+
 class TestBuffered(object):
 
     # apparently, the slowdown of makefile is not completely linear. E.g. by
@@ -15,33 +43,18 @@ class TestBuffered(object):
 
     @pytest.fixture(scope='class')
     def server(self, request, tmpdir_factory):
-        host = '127.0.0.1'
-        port = '5000'
         tmpdir = tmpdir_factory.mktemp('buffered')
-        # create the file to serve
-        mystream = tmpdir.join('mystream')
-        with mystream.open('wb') as f:
-            buf = StringIO()
+        resp = tmpdir.join('myresponse')
+        with resp.open('wb') as f:
             for i in xrange(self.SIZE):
                 ch = chr(random.randrange(255))
-                f.write(ch)
+                resp.write(ch)
         #
-        # start tcpserver
-        cmd = ['tcpserver', host, port, 'cat', str(mystream)]
-        p = subprocess.Popen(cmd)
-        #
-        # stop tcpserver
+        tcpserver = TcpServer(host, port, resp)
         def finalize():
-            try:
-                p.kill()
-            except OSError:
-                pass
-            if p.returncode is None:
-                p.communicate()
+            tcpserver.close()
         request.addfinalizer(finalize)
-        #
-        time.sleep(0.1) # give tcpserver enough time to start
-        return host, port
+        return tcpserver
 
     def do_benchmark(self, benchmark, open_connection):
         def count_bytes():
@@ -55,12 +68,12 @@ class TestBuffered(object):
             return tot
 
         res = benchmark(count_bytes)
-        assert res == self.SIZE
+        assert res == SIZE
 
     @pytest.mark.benchmark(group="buffered")
     def test_BufferedSocket(self, benchmark, server):
         def open_connection():
-            host, port = server
+            host, port = server.host, server.port
             sock = socket.create_connection((host, port))
             return BufferedSocket(sock)
         self.do_benchmark(benchmark, open_connection)
@@ -79,14 +92,14 @@ class TestBuffered(object):
                 return self.sock.recv(8192)
 
         def open_connection():
-            host, port = server
+            host, port = server.host, server.port
             return MyStream(host, port)
         self.do_benchmark(benchmark, open_connection)
 
     @pytest.mark.benchmark(group="buffered")
     def test_makefile(self, benchmark, server):
         def open_connection():
-            host, port = server
+            host, port = server.host, server.port
             sock = socket.create_connection((host, port))
             return sock.makefile()
         self.do_benchmark(benchmark, open_connection)
