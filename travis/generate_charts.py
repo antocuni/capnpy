@@ -162,58 +162,67 @@ class ChartGenerator(object):
         self.gen_ctor(impl, benchmarks)
         ## self.gen_buffered(impl, benchmarks)
 
-    def gen_getattr(self, impl, benchmarks):
-        chart = GroupedBarChart('%s: get attribute' % impl)
-        benchmarks = benchmarks.filter(lambda b: b.group == 'getattr')
+    def _gen_generic_chart(self, title, benchmarks, series, group, filename):
+        chart = GroupedBarChart(title)
         for b in benchmarks:
-            attribute_type = b.extra_info.attribute_type
-            chart.add(b.params.schema, attribute_type, self.get_point(b))
+            series_name = series(b)
+            group_name = group(b)
+            chart.add(series_name, group_name, self.get_point(b))
         chart = chart.build()
-        self.save(chart, '%s-latest-getattr.svg' % impl)
+        self.save(chart, filename)
+
+    def gen_getattr(self, impl, benchmarks):
+        benchmarks = benchmarks.filter(lambda b: b.group == 'getattr')
+        self._gen_generic_chart(
+            title = '%s: get attribute' % impl,
+            benchmarks = benchmarks,
+            series = lambda b: b.params.schema,
+            group = lambda b: b.extra_info.attribute_type,
+            filename = '%s-latest-getattr.svg' % impl)
 
     def gen_getattr_special(self, impl, benchmarks):
-        chart = GroupedBarChart('%s: special attributes' % impl)
+        def group(b):
+            name = self.extract_test_name(b.name)
+            if name == 'numeric':
+                return 'int16'
+            return name
+        #
         benchmarks = benchmarks.filter(lambda b: (
             b.name == 'test_numeric[Capnpy-int16]' or
             b.group == 'getattr_special'))
-        for b in benchmarks:
-            impl = b.info.machine_info.python_implementation
-            name = self.extract_test_name(b.name)
-            if name == 'numeric':
-                name = 'int16'
-            chart.add(None, name, self.get_point(b))
-        chart = chart.build()
-        self.save(chart, '%s-latest-getattr-special.svg' % impl)
+        self._gen_generic_chart(
+            title = '%s: special attributes' % impl,
+            benchmarks = benchmarks,
+            series = lambda b: None,
+            group = group,
+            filename = '%s-latest-getattr-special.svg' % impl)
 
     def gen_hash(self, impl, benchmarks):
-        chart = GroupedBarChart('%s: hash' % impl)
         benchmarks = benchmarks.filter(lambda b: b.group.startswith('hash'))
-        for b in benchmarks:
-            schema = b.extra_info.schema
-            type = b.extra_info.type
-            chart.add(schema, type, self.get_point(b))
-        chart = chart.build()
-        self.save(chart, '%s-latest-hash.svg' % impl)
+        self._gen_generic_chart(
+            title = '%s: hash' % impl,
+            benchmarks = benchmarks,
+            series = lambda b: b.extra_info.schema,
+            group = lambda b: b.extra_info.type,
+            filename = '%s-latest-hash.svg' % impl)
 
     def gen_load(self, impl, benchmarks):
-        chart = GroupedBarChart('%s: load' % impl)
         benchmarks = benchmarks.filter(lambda b: b.group == 'load')
-        for b in benchmarks:
-            schema = b.params.schema
-            name = self.extract_test_name(b.name)
-            chart.add(schema, name, self.get_point(b))
-        chart = chart.build()
-        self.save(chart, '%s-latest-load.svg' % impl)
+        self._gen_generic_chart(
+            title = '%s: load' % impl,
+            benchmarks = benchmarks,
+            series = lambda b: b.params.schema,
+            group = lambda b: self.extract_test_name(b.name),
+            filename = '%s-latest-load.svg' % impl)
 
     def gen_ctor(self, impl, benchmarks):
-        chart = GroupedBarChart('%s: Constructors' % impl)
         benchmarks = benchmarks.filter(lambda b: b.group == 'ctor')
-        for b in benchmarks:
-            schema = b.params.schema
-            name = self.extract_test_name(b.name)
-            chart.add(schema, name, self.get_point(b))
-        chart = chart.build()
-        self.save(chart, '%s-latest-ctor.svg' % impl)
+        self._gen_generic_chart(
+            title = '%s: constructors' % impl,
+            benchmarks = benchmarks,
+            series = lambda b: b.params.schema,
+            group = lambda b: self.extract_test_name(b.name),
+            filename = '%s-latest-ctor.svg' % impl)
 
 
 def main():
