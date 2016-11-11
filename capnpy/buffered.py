@@ -119,6 +119,9 @@ class BufferedSocket(BufferedStream):
         self.sock.sendall(data)
         self.wbuf = []
 
+    def close(self):
+        self.sock.close()
+
 
 class StringBuffer(FileLike):
     """

@@ -25,7 +25,7 @@ class TestMessage(object):
         f = open_connection()
         for i in xrange(self.N):
             obj = schema.MyStruct.load(f)
-        #f.close()
+        f.close()
         return obj
 
     @pytest.mark.benchmark(group="load")
@@ -46,7 +46,6 @@ class TestMessage(object):
         def open_connection():
             sock = socket.create_connection((host, port))
             if schema.__name__ == 'Capnpy':
-                # XXX: capnpy should support loading from socket directly
                 sock = BufferedSocket(sock)
             return sock
         #
@@ -57,6 +56,6 @@ class TestMessage(object):
             pool = [open_connection() for _ in range(40)]
             next_connection = iter(pool).next
             res = benchmark(self.load_N, schema, next_connection)
-            ## for conn in pool:
-            ##     conn.close()
+            for conn in pool:
+                conn.close()
         assert res.int64 == 100
