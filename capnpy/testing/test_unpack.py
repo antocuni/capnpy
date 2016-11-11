@@ -2,6 +2,7 @@ import py
 import sys
 import struct
 import math
+from pypytools import IS_PYPY
 from capnpy.unpack import unpack_primitive
 
 def test_unpack_primitive_ints():
@@ -26,6 +27,8 @@ def test_unpack_primitive_floats():
 def test_uint64():
     if sys.maxint != (1 << 63)-1:
         py.test.skip('64 bit only')
+    if IS_PYPY and sys.pypy_version_info < (5, 6):
+        py.test.skip('Broken on PyPy<5.6')
     #
     buf = struct.pack('Q', sys.maxint)
     val = unpack_primitive(ord('Q'), buf, 0)
