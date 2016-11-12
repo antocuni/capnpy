@@ -34,6 +34,7 @@ install:
   - make -j3
   - make install
   - cd ../
+  - pip install -U pip # so that we can use wheels
   - pip install tox-travis
   - pip install pygal dotmap scipy
 
