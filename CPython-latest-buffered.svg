@@ -1,0 +1,407 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" class="pygal-chart" id="chart-eba92d90-4b49-47a6-a2d2-8f762d5da074" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg"><!--Generated with pygal 2.3.0 (etree) ©Kozea 2012-2016 on 2016-11-12--><!--http://pygal.org--><!--http://github.com/Kozea/pygal--><defs><style type="text/css">/*
+ * This file is part of pygal
+ *
+ * A python svg graph plotting library
+ * Copyright © 2012 Kozea
+
+ * This library is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with pygal. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+*/
+
+/*
+ * Font-sizes from config, override with care
+ */
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074  {
+  -webkit-user-select: none;
+  -webkit-font-smoothing: antialiased;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .title {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 16px;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .legends .legend text {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 14px;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis text {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 10px;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis text.major {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 10px;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .text-overlay text.value {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 16px;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .text-overlay text.label {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 10px;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .tooltip {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 14px;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 text.no_data {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 64px;
+}
+
+/*
+ * This file is part of pygal
+ *
+ * A python svg graph plotting library
+ * Copyright © 2012 Kozea
+
+ * This library is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with pygal. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+*/
+
+/*
+ * Styles from config
+ */
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 {
+  background-color: rgba(249, 249, 249, 1);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 path,
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 line,
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 rect,
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 circle {
+  -webkit-transition: 150ms;
+  -moz-transition: 150ms;
+  transition: 150ms;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .graph &gt; .background {
+  fill: rgba(249, 249, 249, 1);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .plot &gt; .background {
+  fill: rgba(255, 255, 255, 1);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .graph {
+  fill: rgba(0, 0, 0, .87);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 text.no_data {
+  fill: rgba(0, 0, 0, 1);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .title {
+  fill: rgba(0, 0, 0, 1);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .legends .legend text {
+  fill: rgba(0, 0, 0, .87);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .legends .legend:hover text {
+  fill: rgba(0, 0, 0, 1);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis .line {
+  stroke: rgba(0, 0, 0, 1);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis .guide.line {
+  stroke: rgba(0, 0, 0, .54);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis .major.line {
+  stroke: rgba(0, 0, 0, .87);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis text.major {
+  fill: rgba(0, 0, 0, 1);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis.y .guides:hover .guide.line,
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .line-graph .axis.x .guides:hover .guide.line,
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .stackedline-graph .axis.x .guides:hover .guide.line,
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .xy-graph .axis.x .guides:hover .guide.line {
+  stroke: rgba(0, 0, 0, 1);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis .guides:hover text {
+  fill: rgba(0, 0, 0, 1);
+}
+
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .reactive {
+  fill-opacity: .7;
+  stroke-opacity: .8;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .ci {
+    stroke: rgba(0, 0, 0, .87);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .reactive.active,
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .active .reactive {
+  fill-opacity: .8;
+  stroke-opacity: .9;
+  stroke-width: 4;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .ci .reactive.active {
+  stroke-width: 1.5;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .series text {
+  fill: rgba(0, 0, 0, 1);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .tooltip rect {
+  fill: rgba(255, 255, 255, 1);
+  stroke: rgba(0, 0, 0, 1);
+  -webkit-transition: opacity 150ms;
+  -moz-transition: opacity 150ms;
+  transition: opacity 150ms;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .tooltip .label {
+  fill: rgba(0, 0, 0, .87);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .tooltip .label {
+  fill: rgba(0, 0, 0, .87);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .tooltip .legend {
+  font-size: .8em;
+  fill: rgba(0, 0, 0, .54);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .tooltip .x_label {
+  font-size: .6em;
+  fill: rgba(0, 0, 0, 1);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .tooltip .xlink {
+  font-size: .5em;
+  text-decoration: underline;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .tooltip .value {
+  font-size: 1.5em;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .bound {
+  font-size: .5em;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .max-value {
+  font-size: .75em;
+  fill: rgba(0, 0, 0, .54);
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .map-element {
+  fill: rgba(255, 255, 255, 1);
+  stroke: rgba(0, 0, 0, .54) !important;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .map-element .reactive {
+  fill-opacity: inherit;
+  stroke-opacity: inherit;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .color-0, #chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .color-0 a:visited {
+  stroke: #F44336;
+  fill: #F44336;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074  .text-overlay .color-0 text {
+  fill: black;
+}
+
+
+
+
+/*
+ * This file is part of pygal
+ *
+ * A python svg graph plotting library
+ * Copyright © 2012 Kozea
+
+ * This library is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with pygal. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+*/
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 text.no_data {
+  text-anchor: middle;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .guide.line {
+  fill: none;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .centered {
+  text-anchor: middle;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .title {
+  text-anchor: middle;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .legends .legend text {
+  fill-opacity: 1;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis.x text {
+  text-anchor: middle;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis.x:not(.web) text[transform] {
+  text-anchor: start;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis.x:not(.web) text[transform].backwards {
+  text-anchor: end;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis.y text {
+  text-anchor: end;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis.y text[transform].backwards {
+  text-anchor: start;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis.y2 text {
+  text-anchor: start;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis.y2 text[transform].backwards {
+  text-anchor: end;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis .guide.line {
+  stroke-dasharray: 4,4;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis .major.guide.line {
+  stroke-dasharray: 6,6;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .horizontal .axis.y .guide.line,
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .horizontal .axis.y2 .guide.line,
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .vertical .axis.x .guide.line {
+  opacity: 0;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .horizontal .axis.always_show .guide.line,
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .vertical .axis.always_show .guide.line {
+  opacity: 1 !important;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis.y .guides:hover .guide.line,
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis.y2 .guides:hover .guide.line,
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis.x .guides:hover .guide.line {
+  opacity: 1;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .axis .guides:hover text {
+  opacity: 1;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .nofill {
+  fill: none;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .subtle-fill {
+  fill-opacity: .2;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .dot {
+  stroke-width: 1px;
+  fill-opacity: 1;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .dot.active {
+  stroke-width: 5px;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .dot.negative {
+  fill: transparent;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074  text, #chart-eba92d90-4b49-47a6-a2d2-8f762d5da074  tspan {
+  stroke: none !important;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .series text.active {
+  opacity: 1;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .tooltip rect {
+  fill-opacity: .95;
+  stroke-width: .5;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .tooltip text {
+  fill-opacity: 1;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .showable {
+  visibility: hidden;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .showable.shown {
+  visibility: visible;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .gauge-background {
+  fill: rgba(229, 229, 229, 1);
+  stroke: none;
+}
+
+#chart-eba92d90-4b49-47a6-a2d2-8f762d5da074 .bg-lines {
+  stroke: rgba(249, 249, 249, 1);
+  stroke-width: 2px;
+}
+</style><script type="text/javascript">window.pygal = window.pygal || {};window.pygal.config = window.pygal.config || {};window.pygal.config['eba92d90-4b49-47a6-a2d2-8f762d5da074'] = {"dynamic_print_values": false, "truncate_label": null, "inner_radius": 0, "print_values": false, "xrange": null, "box_mode": "extremes", "title": "CPython: buffered streams", "legend_at_bottom_columns": null, "height": 600, "legend_at_bottom": false, "show_legend": true, "show_dots": true, "explicit_size": false, "y_labels_major": null, "show_minor_x_labels": true, "width": 800, "force_uri_protocol": "https", "half_pie": false, "style": {"major_label_font_family": "Consolas, \"Liberation Mono\", Menlo, Courier, monospace", "title_font_family": "Consolas, \"Liberation Mono\", Menlo, Courier, monospace", "stroke_opacity": ".8", "legend_font_family": "Consolas, \"Liberation Mono\", Menlo, Courier, monospace", "colors": ["#F44336", "#3F51B5", "#009688", "#FFC107", "#FF5722", "#9C27B0", "#03A9F4", "#8BC34A", "#FF9800", "#E91E63", "#2196F3", "#4CAF50", "#FFEB3B", "#673AB7", "#00BCD4", "#CDDC39", "#9E9E9E", "#607D8B"], "legend_font_size": 14, "no_data_font_family": "Consolas, \"Liberation Mono\", Menlo, Courier, monospace", "major_label_font_size": 10, "value_background": "rgba(229, 229, 229, 1)", "ci_colors": [], "label_font_family": "Consolas, \"Liberation Mono\", Menlo, Courier, monospace", "label_font_size": 10, "tooltip_font_size": 14, "value_font_size": 16, "font_family": "Consolas, \"Liberation Mono\", Menlo, Courier, monospace", "opacity": ".7", "foreground": "rgba(0, 0, 0, .87)", "plot_background": "rgba(255, 255, 255, 1)", "value_label_font_size": 10, "value_label_font_family": "Consolas, \"Liberation Mono\", Menlo, Courier, monospace", "background": "rgba(249, 249, 249, 1)", "no_data_font_size": 64, "value_colors": [], "guide_stroke_dasharray": "4,4", "transition": "150ms", "foreground_subtle": "rgba(0, 0, 0, .54)", "value_font_family": "Consolas, \"Liberation Mono\", Menlo, Courier, monospace", "tooltip_font_family": "Consolas, \"Liberation Mono\", Menlo, Courier, monospace", "title_font_size": 16, "stroke_opacity_hover": ".9", "major_guide_stroke_dasharray": "6,6", "opacity_hover": ".8", "foreground_strong": "rgba(0, 0, 0, 1)"}, "x_label_rotation": 0, "fill": false, "missing_value_fill_truncation": "x", "zero": 0, "margin_right": null, "interpolation_parameters": {}, "x_labels_major": null, "rounded_bars": null, "show_y_labels": true, "dots_size": 2.5, "show_y_guides": true, "show_minor_y_labels": true, "x_labels": ["BufferedSocket", "BufferedStream", "makefile"], "y_title": null, "order_min": null, "formatter": null, "disable_xml_declaration": false, "strict": false, "css": ["file://style.css", "file://graph.css"], "tooltip_fancy_mode": true, "defs": [], "show_only_major_dots": false, "y_label_rotation": 0, "show_x_labels": true, "min_scale": 4, "show_x_guides": false, "spacing": 10, "x_labels_major_count": null, "pretty_print": true, "tooltip_border_radius": 0, "interpolate": null, "js": ["//kozea.github.io/pygal.js/2.0.x/pygal-tooltips.min.js"], "y_labels": null, "stroke_style": null, "print_labels": false, "interpolation_precision": 250, "x_title": null, "y_labels_major_every": null, "logarithmic": false, "legends": [null], "max_scale": 16, "print_zeroes": true, "no_data_text": "No data", "truncate_legend": null, "x_labels_major_every": null, "secondary_range": null, "legend_box_size": 12, "no_prefix": false, "stroke": true, "stack_from_top": false, "include_x_axis": false, "range": null, "classes": ["pygal-chart"], "margin_top": null, "margin_left": null, "y_labels_major_count": null, "margin_bottom": null, "inverse_y_axis": false, "margin": 20, "allow_interruptions": false, "print_values_position": "center"}</script><script type="text/javascript" xlink:href="https://kozea.github.io/pygal.js/2.0.x/pygal-tooltips.min.js" /></defs><title>CPython: buffered streams</title><g class="graph bar-graph vertical"><rect class="background" height="600" width="800" x="0" y="0" /><g class="plot" transform="translate(70, 46)"><rect class="background" height="514" width="710.0" x="0" y="0" /><g class="axis y"><g class="guides"><path class="axis major line" d="M0.000000 504.115385 h710.000000" /><text class="major" x="-5" y="507.615384615">0</text><title>0</title></g><g class="guides"><path class="guide line" d="M0.000000 470.364037 h710.000000" /><text class="" x="-5" y="473.864036672">0.2</text><title>0.2</title></g><g class="guides"><path class="guide line" d="M0.000000 436.612689 h710.000000" /><text class="" x="-5" y="440.112688728">0.4</text><title>0.4</title></g><g class="guides"><path class="guide line" d="M0.000000 402.861341 h710.000000" /><text class="" x="-5" y="406.361340784">0.6</text><title>0.6</title></g><g class="guides"><path class="guide line" d="M0.000000 369.109993 h710.000000" /><text class="" x="-5" y="372.609992841">0.8</text><title>0.8</title></g><g class="guides"><path class="major guide line" d="M0.000000 335.358645 h710.000000" /><text class="major" x="-5" y="338.858644897">1</text><title>1</title></g><g class="guides"><path class="guide line" d="M0.000000 301.607297 h710.000000" /><text class="" x="-5" y="305.107296953">1.2</text><title>1.2</title></g><g class="guides"><path class="guide line" d="M0.000000 267.855949 h710.000000" /><text class="" x="-5" y="271.355949009">1.4</text><title>1.4</title></g><g class="guides"><path class="guide line" d="M0.000000 234.104601 h710.000000" /><text class="" x="-5" y="237.604601066">1.6</text><title>1.6</title></g><g class="guides"><path class="guide line" d="M0.000000 200.353253 h710.000000" /><text class="" x="-5" y="203.853253122">1.8</text><title>1.8</title></g><g class="guides"><path class="major guide line" d="M0.000000 166.601905 h710.000000" /><text class="major" x="-5" y="170.101905178">2</text><title>2</title></g><g class="guides"><path class="guide line" d="M0.000000 132.850557 h710.000000" /><text class="" x="-5" y="136.350557235">2.2</text><title>2.2</title></g><g class="guides"><path class="guide line" d="M0.000000 99.099209 h710.000000" /><text class="" x="-5" y="102.599209291">2.4</text><title>2.4</title></g><g class="guides"><path class="guide line" d="M0.000000 65.347861 h710.000000" /><text class="" x="-5" y="68.8478613472">2.6</text><title>2.6</title></g><g class="guides"><path class="guide line" d="M0.000000 31.596513 h710.000000" /><text class="" x="-5" y="35.0965134035">2.8</text><title>2.8</title></g></g><g class="axis x"><path class="line" d="M0.000000 0.000000 v514.000000" /><g class="guides"><path class="guide line" d="M127.435897 0.000000 v514.000000" /><text class="" x="127.435897436" y="529.0">BufferedSocket</text></g><g class="guides"><path class="guide line" d="M355.000000 0.000000 v514.000000" /><text class="" x="355.0" y="529.0">BufferedStream</text></g><g class="guides"><path class="guide line" d="M582.564103 0.000000 v514.000000" /><text class="" x="582.564102564" y="529.0">makefile</text></g></g><g class="series serie-0 color-0"><g class="bars"><g class="bar"><rect class="rect reactive tooltip-trigger" height="70.6262476676" rx="0" ry="0" width="176.225641026" x="39.3230769231" y="433.489136948" /><desc class="value">0.4185091972</desc><desc class="x centered">127.435897436</desc><desc class="y centered">468.802260782</desc><desc class="x_label">BufferedSocket</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="66.7839826893" rx="0" ry="0" width="176.225641026" x="266.887179487" y="437.331401926" /><desc class="value">0.3957411289</desc><desc class="x centered">355.0</desc><desc class="y centered">470.723393271</desc><desc class="x_label">BufferedStream</desc></g><g class="bar"><rect class="rect reactive tooltip-trigger" height="494.230769231" rx="0" ry="0" width="176.225641026" x="494.451282051" y="9.88461538462" /><desc class="value">2.928657961</desc><desc class="x centered">582.564102564</desc><desc class="y centered">257.0</desc><desc class="x_label">makefile</desc></g></g></g></g><g class="titles"><text class="title plot_title" x="400.0" y="26">CPython: buffered streams</text></g><g class="plot overlay" transform="translate(70, 46)"><g class="series serie-0 color-0"><g class="ci"><path class="nofill reactive" d="M127.435897 426.631556 L134.435897 426.631556 M127.435897 426.631556 L120.435897 426.631556 M127.435897 426.631556 L127.435897 440.346718 L134.435897 440.346718 M127.435897 440.346718 L120.435897 440.346718" /></g><g class="ci"><path class="nofill reactive" d="M355.000000 433.477272 L362.000000 433.477272 M355.000000 433.477272 L348.000000 433.477272 M355.000000 433.477272 L355.000000 441.185532 L362.000000 441.185532 M355.000000 441.185532 L348.000000 441.185532" /></g><g class="ci"><path class="nofill reactive" d="M582.564103 3.321243 L589.564103 3.321243 M582.564103 3.321243 L575.564103 3.321243 M582.564103 3.321243 L582.564103 16.447987 L589.564103 16.447987 M582.564103 16.447987 L575.564103 16.447987" /></g></g></g><g class="plot text-overlay" transform="translate(70, 46)"><g class="series serie-0 color-0" /></g><g class="plot tooltip-overlay" transform="translate(70, 46)"><g class="tooltip" style="opacity: 0" transform="translate(0 0)"><rect class="tooltip-box" height="0" rx="0" ry="0" width="0" /><g class="text" /></g></g><g class="legends" transform="translate(10, 56)" /><g class="legends" transform="translate(790, 56)" /></g></svg>
