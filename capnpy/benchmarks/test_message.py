@@ -9,7 +9,9 @@ from capnpy.benchmarks.test_buffered import TcpServer
 
 class TestMessage(object):
 
-    N = 50000
+    # we need a huge N because pytest_benchmark because else the time is
+    # dominated by open_connection() in test_load_from_socket
+    N = 500000
 
     @pytest.fixture(scope="class")
     def capnpfile(self, tmpdir_factory):
@@ -50,12 +52,5 @@ class TestMessage(object):
             return sock
         #
         with TcpServer(capnpfile) as server:
-            # we do NOT want to measure the connection time. So, we open many
-            # connections at once and let the benchmark use them one by one.
-            # By default tcpserver accepts up to 40 connections
-            pool = [open_connection() for _ in range(40)]
-            next_connection = iter(pool).next
-            res = benchmark(self.load_N, schema, next_connection)
-            for conn in pool:
-                conn.close()
+            res = benchmark(self.load_N, schema, open_connection)
         assert res.int64 == 100
