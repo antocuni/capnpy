@@ -24,6 +24,8 @@ git config user.name "Travis CI"
 
 # git fetch origin $TARGET_BRANCH:$TARGET_BRANCH
 # git checkout $TARGET_BRANCH || (git checkout --orphan $TARGET_BRANCH; git rm --cached -r .)
+git pull # pull again and hope in a fast-forward, in case another travis job
+         # committed in the meantime
 git add .
 git commit -m "add benchmark results for commit $SHA"
 git push $SSH_REPO $TARGET_BRANCH
