@@ -50,19 +50,10 @@ class BenchmarkDirective(Directive):
         return eval(src, self.namespace)
 
     def _run(self):
-        self.namespace = {'charter': self.charter}
-        if self.content:
-            src = py.code.Source('\n'.join(self.content))
-            exec src.compile() in self.namespace
-        #
+        title = self.arguments[0]
+        charts = self.charter.run_directive(title, self.options, self.content)
         nodes = []
-        for impl in 'CPython', 'PyPy':
-            chart = self.charter.get_chart(
-                impl = impl,
-                title = '%s [%s]' % (self.arguments[0], impl),
-                filter = self.get_function('filter'),
-                series = self.get_function('series'),
-                group = self.get_function('group'))
+        for chart in charts:
             svg = '<embed src="%s" />' % chart.render_data_uri()
             nodes.append(docutils.nodes.raw('', svg, format='html'))
         return nodes

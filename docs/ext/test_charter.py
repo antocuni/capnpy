@@ -1,9 +1,23 @@
 import pytest
 import json
+from mock import Mock
 from collections import namedtuple
 from charter import GroupedBarChart, PyQuery, Charter
 
 Point = namedtuple('Point', ['x', 'y'])
+
+class MyCharter(Charter):
+    def __init__(self):
+        pass
+
+    def get_chart(self, impl, title, filter, series, group):
+        chart = Mock()
+        chart.impl = impl
+        chart.title = title
+        chart.filter = filter
+        chart.series = series
+        chart.group = group
+        return chart
 
 def test_GroupedBarChart():
     ch = GroupedBarChart('My Title')
@@ -100,3 +114,36 @@ class TestCharter(object):
         ex = Charter.extract_test_name
         assert ex('test___which__[Capnpy]') == '__which__'
         assert ex('test_BufferedSocket') == 'BufferedSocket'
+
+    def test_run_directive_simple(self):
+        charter = MyCharter()
+        options = {
+            'filter': 'b+1',
+            'series': 'b+2',
+            'group': 'b+3',
+        }
+        charts = charter.run_directive('My title', options, [])
+        ch1, ch2 = charts
+        assert ch1.impl == 'CPython'
+        assert ch1.title == 'My title [CPython]'
+        assert ch2.impl == 'PyPy'
+        assert ch2.title == 'My title [PyPy]'
+        for ch in charts:
+            assert ch.filter(0) == 1
+            assert ch.series(0) == 2
+            assert ch.group(0) == 3
+
+    def test_run_directive_content(self):
+        charter = MyCharter()
+        options = {
+            'filter': 'myfilter(b)',
+            'series': 'b+2',
+            'group': 'b+3',
+        }
+        content = [
+            'def myfilter(x):'
+            '    return x*6'
+        ]
+        charts = charter.run_directive('My title', options, content)
+        ch = charts[0]
+        assert ch.filter(7) == 42

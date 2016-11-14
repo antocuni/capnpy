@@ -159,3 +159,26 @@ class Charter(object):
             group_name = group(b)
             chart.add(series_name, group_name, self.get_point(b))
         return chart.build()
+
+    def run_directive(self, title, options, content):
+        namespace = {'charter': self}
+        if content:
+            src = py.code.Source('\n'.join(content))
+            exec src.compile() in namespace
+        #
+        def get_function(name):
+            src = 'lambda b: ' + options[name]
+            return eval(src, namespace)
+        #
+        res = []
+        for impl in 'CPython', 'PyPy':
+            chart = self.get_chart(
+                impl = impl,
+                title = '%s [%s]' % (title, impl),
+                filter = get_function('filter'),
+                series = get_function('series'),
+                group = get_function('group'))
+            res.append(chart)
+        return res
+
+    
