@@ -90,9 +90,12 @@ class PyQuery(list):
 
 class ChartGenerator(object):
 
-    def __init__(self, dir, display_filter=None):
+    def __init__(self, dir):
         self.dir = dir
-        self.display_filter = display_filter
+        self.all_benchmarks = self.load_many(self.find_latest())
+        # XXX
+        self.all_benchmarks = self.all_benchmarks.filter(
+            lambda b: b.info.machine_info.python_implementation == 'CPython')
 
     def find_latest(self):
         latest = []
@@ -150,6 +153,15 @@ class ChartGenerator(object):
         m = re.match(r'test_([^\[]+)(\[.*\])?', name)
         assert m
         return m.group(1)
+
+    def get_chart(self, title, filter, series, group):
+        benchmarks = self.all_benchmarks.filter(filter)
+        chart = GroupedBarChart(title)
+        for b in benchmarks:
+            series_name = series(b)
+            group_name = group(b)
+            chart.add(series_name, group_name, self.get_point(b))
+        return chart.build()
 
     def generate_latest(self, impl):
         all_benchmarks = self.load_many(self.find_latest())

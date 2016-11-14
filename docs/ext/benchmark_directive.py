@@ -1,29 +1,40 @@
+import py
+import docutils.core
 from docutils.parsers.rst import Directive, directives
 from traceback import format_exc, print_exc
 from sphinx.directives.code import CodeBlock
-
-import docutils.core
 import pygal
+from generate_charts import ChartGenerator
 
+def function(src):
+    src = 'lambda b: ' + src
+    return eval(src)
 
 class BenchmarkDirective(Directive):
     required_arguments = 1
     final_argument_whitespace = True
     has_content = True
     option_spec = {
-        'a': directives.unchanged,
-        'b': directives.unchanged,
+        'filter': function,
+        'series': function,
+        'group': function,
     }
 
+    @classmethod
+    def setup(cls):
+        if cls.generator is not None:
+            return
+        benchdir = py.path.local('../.benchmarks')
+        cls.generator = ChartGenerator(benchdir)
+    generator = None
+
     def run(self):
-        width, height = 600, 400
-        chart = pygal.Bar()
-        chart.title = self.arguments[0]
-        chart.add('a', eval(self.options['a']))
-        chart.add('b', eval(self.options['b']))
-        chart.config.width = width
-        chart.config.height = height
-        chart.explicit_size = True
+        self.setup()
+        chart = self.generator.get_chart(
+            title = self.arguments[0],
+            filter = self.options['filter'],
+            series = self.options['series'],
+            group = self.options['group'])
 
         try:
             svg = '<embed src="%s" />' % chart.render_data_uri()
