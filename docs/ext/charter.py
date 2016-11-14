@@ -119,10 +119,13 @@ class Charter(object):
             self.all += self.load_one(f)
         #
         # filter a subset containing only the results for the current revision
+        self.latest_warning = None
         self.latest = self.all.filter(
             lambda b: b.info.commit_info.id == self.revision)
         if not self.latest:
-            print 'WARNING: rev %s not found, using latest data' % self.revision
+            self.latest_warning = ('WARNING: rev %s not found, using latest '
+                                   'data' % self.revision[:6])
+            print self.latest_warning
             # no benchmarks found for the current revision. This is likely to
             # happen on the development machine; in this case, we simply take
             # the newest benchmarks, regardless of the revision
@@ -178,7 +181,10 @@ class Charter(object):
             series_name = series(b)
             group_name = group(b)
             chart.add(series_name, group_name, self.get_point(b))
-        return chart.build()
+        chart = chart.build()
+        if self.latest_warning:
+            chart.x_title = self.latest_warning
+        return chart
 
     def run_directive(self, title, options, content):
         namespace = {'charter': self}
