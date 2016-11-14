@@ -2,6 +2,7 @@ import os
 import sys
 import re
 import operator
+from commands import getoutput
 import json
 import py
 from dotmap import DotMap
@@ -95,7 +96,17 @@ class Charter(object):
 
     def __init__(self, dir):
         self.dir = dir
+        self.clone_maybe()
         self.all_benchmarks = self.load_many(self.find_latest())
+
+    def clone_maybe(self):
+        # clone the .benchmarks repo, if it's needed
+        if self.dir.check(exists=False):
+            print 'Cloning the benchmarks repo'
+            url = getoutput('git config remote.origin.url')
+            cmd = 'git clone --depth=1 --branch=benchmarks {url} {dir}'
+            ret = os.system(cmd.format(url=url, dir=self.dir))
+            assert ret == 0
 
     def find_latest(self):
         latest = []

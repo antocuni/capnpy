@@ -1,6 +1,4 @@
 import py
-import os
-from commands import getoutput
 import docutils.core
 from docutils.parsers.rst import Directive, directives
 from traceback import format_exc, print_exc
@@ -22,16 +20,8 @@ class BenchmarkDirective(Directive):
     def setup(cls):
         if cls.charter is not None:
             return
-        # clone the .benchmarks repo, if it's needed
         root = py.path.local(__file__).dirpath('..', '..')
         benchdir = root.join('.benchmarks')
-        if benchdir.check(exists=False):
-            print 'Cloning the .benchmarks repo'
-            url = getoutput('git config remote.origin.url')
-            cmd = 'git clone --depth=1 --branch=benchmarks {url} {dst}'
-            ret = os.system(cmd.format(url=url, dst=benchdir))
-            assert ret == 0
-        #
         cls.charter = Charter(benchdir)
     charter = None
 
