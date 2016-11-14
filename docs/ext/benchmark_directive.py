@@ -8,19 +8,14 @@ from sphinx.directives.code import CodeBlock
 import pygal
 from generate_charts import ChartGenerator
 
-def function(src):
-    src = 'lambda b: ' + src
-    return eval(src)
-
 class BenchmarkDirective(Directive):
     required_arguments = 1
     final_argument_whitespace = True
     has_content = True
     option_spec = {
-        'impl': directives.unchanged,
-        'filter': function,
-        'series': function,
-        'group': function,
+        'filter': directives.unchanged,
+        'series': directives.unchanged,
+        'group': directives.unchanged,
     }
 
     @classmethod
@@ -50,16 +45,24 @@ class BenchmarkDirective(Directive):
                 ' \n %s' % format_exc(), type='ERROR', source='/',
                 level=3)]
 
+    def get_function(self, name):
+        src = 'lambda b: ' + self.options[name]
+        return eval(src, self.namespace)
 
     def _run(self):
+        self.namespace = {'generator': self.generator}
+        if self.content:
+            src = py.code.Source('\n'.join(self.content))
+            exec src.compile() in self.namespace
+        #
         nodes = []
         for impl in 'CPython', 'PyPy':
             chart = self.generator.get_chart(
                 impl = impl,
                 title = '%s: %s' % (impl, self.arguments[0]),
-                filter = self.options['filter'],
-                series = self.options['series'],
-                group = self.options['group'])
+                filter = self.get_function('filter'),
+                series = self.get_function('series'),
+                group = self.get_function('group'))
             svg = '<embed src="%s" />' % chart.render_data_uri()
             nodes.append(docutils.nodes.raw('', svg, format='html'))
         return nodes
