@@ -59,7 +59,7 @@ class BenchmarkDirective(Directive):
         for impl in 'CPython', 'PyPy':
             chart = self.generator.get_chart(
                 impl = impl,
-                title = '%s: %s' % (impl, self.arguments[0]),
+                title = '%s [%s]' % (self.arguments[0], impl),
                 filter = self.get_function('filter'),
                 series = self.get_function('series'),
                 group = self.get_function('group'))
