@@ -93,9 +93,6 @@ class ChartGenerator(object):
     def __init__(self, dir):
         self.dir = dir
         self.all_benchmarks = self.load_many(self.find_latest())
-        # XXX
-        self.all_benchmarks = self.all_benchmarks.filter(
-            lambda b: b.info.machine_info.python_implementation == 'CPython')
 
     def find_latest(self):
         latest = []
@@ -156,8 +153,12 @@ class ChartGenerator(object):
         assert m
         return m.group(1)
 
-    def get_chart(self, title, filter, series, group):
+    def get_chart(self, impl, title, filter, series, group):
         benchmarks = self.all_benchmarks.filter(filter)
+        if impl:
+            benchmarks = benchmarks.filter(
+                lambda b: b.info.machine_info.python_implementation == impl)
+        #
         chart = GroupedBarChart(title)
         for b in benchmarks:
             series_name = series(b)

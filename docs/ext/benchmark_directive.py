@@ -17,6 +17,7 @@ class BenchmarkDirective(Directive):
     final_argument_whitespace = True
     has_content = True
     option_spec = {
+        'impl': directives.unchanged,
         'filter': function,
         'series': function,
         'group': function,
@@ -41,22 +42,27 @@ class BenchmarkDirective(Directive):
 
     def run(self):
         self.setup()
-        chart = self.generator.get_chart(
-            title = self.arguments[0],
-            filter = self.options['filter'],
-            series = self.options['series'],
-            group = self.options['group'])
-
         try:
-            svg = '<embed src="%s" />' % chart.render_data_uri()
+            return self._run()
         except Exception:
             return [docutils.nodes.system_message(
                 'An exception as occured during graph generation:'
                 ' \n %s' % format_exc(), type='ERROR', source='/',
                 level=3)]
-        return [docutils.nodes.raw('', svg, format='html')]
 
 
+    def _run(self):
+        nodes = []
+        for impl in 'CPython', 'PyPy':
+            chart = self.generator.get_chart(
+                impl = impl,
+                title = '%s: %s' % (impl, self.arguments[0]),
+                filter = self.options['filter'],
+                series = self.options['series'],
+                group = self.options['group'])
+            svg = '<embed src="%s" />' % chart.render_data_uri()
+            nodes.append(docutils.nodes.raw('', svg, format='html'))
+        return nodes
 
 def setup(app):
     app.add_directive('benchmark', BenchmarkDirective)
