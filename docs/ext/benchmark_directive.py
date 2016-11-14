@@ -1,4 +1,5 @@
 import py
+import commands
 import docutils.core
 from docutils.parsers.rst import Directive, directives
 from traceback import format_exc, print_exc
@@ -21,8 +22,9 @@ class BenchmarkDirective(Directive):
         if cls.charter is not None:
             return
         root = py.path.local(__file__).dirpath('..', '..')
+        revision = commands.getoutput('git rev-parse HEAD')
         benchdir = root.join('.benchmarks')
-        cls.charter = Charter(benchdir)
+        cls.charter = Charter(benchdir, revision)
     charter = None
 
     def run(self):
@@ -30,6 +32,7 @@ class BenchmarkDirective(Directive):
         try:
             return self._run()
         except Exception:
+            #import pdb;pdb.xpm()
             return [docutils.nodes.system_message(
                 'An exception as occured during graph generation:'
                 ' \n %s' % format_exc(), type='ERROR', source='/',

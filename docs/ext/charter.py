@@ -29,6 +29,9 @@ class GroupedBarChart(object):
     def add(self, series_name, group, point):
         self.all_series.add(series_name)
         self.all_groups.add(group)
+        key = (series_name, group)
+        if key in self.data:
+            raise ValueError("Duplicate key: %s" % (key,))
         self.data[(series_name, group)] = point
 
     def build(self):
@@ -94,10 +97,11 @@ class Charter(object):
     Chart-maker --> Charter :)
     """
 
-    def __init__(self, dir):
+    def __init__(self, dir, revision):
         self.dir = dir
+        self.revision = revision
         self.clone_maybe()
-        self.all_benchmarks = self.load_many(self.find_latest())
+        self.load_all()
 
     def clone_maybe(self):
         # clone the .benchmarks repo, if it's needed
@@ -108,16 +112,28 @@ class Charter(object):
             ret = os.system(cmd.format(url=url, dir=self.dir))
             assert ret == 0
 
-    def find_latest(self):
-        latest = []
-        for subdir in self.dir.listdir():
-            if subdir.check(dir=False) or subdir.basename == '.git':
-                continue
-            allfiles = subdir.listdir('*.json')
-            allfiles.sort()
-            if allfiles:
-                latest.append(allfiles[-1])
-        return latest
+    def load_all(self):
+        # load all benchmarks
+        self.all = PyQuery()
+        for f in self.dir.visit('*.json'):
+            self.all += self.load_one(f)
+        #
+        # filter a subset containing only the results for the current revision
+        self.latest = self.all.filter(
+            lambda b: b.info.commit_info.id == self.revision)
+        if not self.latest:
+            print 'WARNING: rev %s not found, using latest data' % self.revision
+            # no benchmarks found for the current revision. This is likely to
+            # happen on the development machine; in this case, we simply take
+            # the newest benchmarks, regardless of the revision
+            self.latest = PyQuery()
+            all_impls = set(self.all.info.machine_info.python_implementation)
+            for impl in all_impls:
+                subset = self.all.filter(
+                    lambda b: b.info.machine_info.python_implementation == impl)
+                newest_datetime = max(subset.info.datetime)
+                self.latest += subset.filter(
+                    lambda b: b.info.datetime == newest_datetime)
 
     @classmethod
     def load_one(cls, f):
@@ -133,13 +149,6 @@ class Charter(object):
         for b in benchmarks:
             b.filename = str(f)
             b.info = info
-        return benchmarks
-
-    @classmethod
-    def load_many(cls, files):
-        benchmarks = PyQuery()
-        for f in files:
-            benchmarks += cls.load_one(f)
         return benchmarks
 
     def get_point(self, b):
@@ -159,7 +168,7 @@ class Charter(object):
         return m.group(1)
 
     def get_chart(self, impl, title, filter, series, group):
-        benchmarks = self.all_benchmarks.filter(filter)
+        benchmarks = self.latest.filter(filter)
         if impl:
             benchmarks = benchmarks.filter(
                 lambda b: b.info.machine_info.python_implementation == impl)

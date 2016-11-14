@@ -70,22 +70,6 @@ class TestPyQuery(object):
 
 class TestCharter(object):
 
-    def test_find_latest(self, tmpdir):
-        cpython = tmpdir.join('cpython').ensure(dir=True)
-        pypy = tmpdir.join('pypy').ensure(dir=True)
-        for name in ('01.json', '02.json', '03.json'):
-            cpython.join(name).write('')
-        for name in ('01.json', '02.json'):
-            pypy.join(name).write('')
-        #
-        gen = Charter(tmpdir)
-        latest = gen.find_latest()
-        latest.sort()
-        assert latest == [
-            cpython.join('03.json'),
-            pypy.join('02.json')
-        ]
-
     def test_load_one(self, tmpdir):
         data = {
             'machine_info': 'Intel',
