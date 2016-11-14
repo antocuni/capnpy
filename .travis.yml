@@ -36,11 +36,9 @@ install:
   - cd ../
   - pip install -U pip # so that we can use wheels
   - pip install tox-travis
-  - pip install pygal dotmap scipy
 
 script:
   - bash ./travis/clone-benchmarks-repo.sh
   - tox
   - py.test travis
-  - python travis/generate_charts.py .benchmarks
   - bash ./travis/commit-results.sh

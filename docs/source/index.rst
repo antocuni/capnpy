@@ -15,3 +15,4 @@ a pythonic API and feeling whenever possible.
    :maxdepth: 3
 
    usage
+   benchmarks
