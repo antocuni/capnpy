@@ -1,7 +1,7 @@
 import pytest
 import json
 from collections import namedtuple
-from generate_charts import GroupedBarChart, PyQuery, ChartGenerator
+from charter import GroupedBarChart, PyQuery, Charter
 
 Point = namedtuple('Point', ['x', 'y'])
 
@@ -54,7 +54,7 @@ class TestPyQuery(object):
         assert upper_list == ['HELLO', 'WORLD']
 
 
-class TestChartGenerator(object):
+class TestCharter(object):
 
     def test_find_latest(self, tmpdir):
         cpython = tmpdir.join('cpython').ensure(dir=True)
@@ -64,7 +64,7 @@ class TestChartGenerator(object):
         for name in ('01.json', '02.json'):
             pypy.join(name).write('')
         #
-        gen = ChartGenerator(tmpdir)
+        gen = Charter(tmpdir)
         latest = gen.find_latest()
         latest.sort()
         assert latest == [
@@ -84,7 +84,7 @@ class TestChartGenerator(object):
         myfile = tmpdir.join('myfile.json')
         myfile.write(json.dumps(data))
         #
-        benchmarks = ChartGenerator.load_one(myfile)
+        benchmarks = Charter.load_one(myfile)
         b1, b2 = benchmarks
         assert b1.name == 'foo'
         assert b1.time == 1
@@ -97,6 +97,6 @@ class TestChartGenerator(object):
         assert b2.info.datetime == 'today'
 
     def test_extract_test_name(self):
-        ex = ChartGenerator.extract_test_name
+        ex = Charter.extract_test_name
         assert ex('test___which__[Capnpy]') == '__which__'
         assert ex('test_BufferedSocket') == 'BufferedSocket'

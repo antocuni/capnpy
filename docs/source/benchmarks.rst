@@ -15,7 +15,7 @@ This is an example of benchmark
    :group:  get_group(b)
 
    def get_group(b):
-       name = generator.extract_test_name(b.name)
+       name = charter.extract_test_name(b.name)
        if name == 'numeric':
            return 'int16'
        return name
@@ -30,17 +30,17 @@ This is an example of benchmark
 .. benchmark:: Constructors
    :filter: b.group == 'ctor'
    :series: b.params.schema
-   :group:  generator.extract_test_name(b.name)
+   :group:  charter.extract_test_name(b.name)
 
 
 .. benchmark:: Loading messages
    :filter: b.group == 'load'
    :series: b.params.schema
-   :group:  generator.extract_test_name(b.name)
+   :group:  charter.extract_test_name(b.name)
 
 
 .. benchmark:: Buffered streams
    :filter: b.group == 'buffered'
    :series: None
-   :group:  generator.extract_test_name(b.name)
+   :group:  charter.extract_test_name(b.name)
 

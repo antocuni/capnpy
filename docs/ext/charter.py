@@ -88,7 +88,10 @@ class PyQuery(list):
                 pprint(item)
 
 
-class ChartGenerator(object):
+class Charter(object):
+    """
+    Chart-maker --> Charter :)
+    """
 
     def __init__(self, dir):
         self.dir = dir

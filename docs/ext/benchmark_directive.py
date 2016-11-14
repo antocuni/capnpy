@@ -6,7 +6,7 @@ from docutils.parsers.rst import Directive, directives
 from traceback import format_exc, print_exc
 from sphinx.directives.code import CodeBlock
 import pygal
-from generate_charts import ChartGenerator
+from charter import Charter
 
 class BenchmarkDirective(Directive):
     required_arguments = 1
@@ -20,7 +20,7 @@ class BenchmarkDirective(Directive):
 
     @classmethod
     def setup(cls):
-        if cls.generator is not None:
+        if cls.charter is not None:
             return
         # clone the .benchmarks repo, if it's needed
         root = py.path.local(__file__).dirpath('..', '..')
@@ -32,8 +32,8 @@ class BenchmarkDirective(Directive):
             ret = os.system(cmd.format(url=url, dst=benchdir))
             assert ret == 0
         #
-        cls.generator = ChartGenerator(benchdir)
-    generator = None
+        cls.charter = Charter(benchdir)
+    charter = None
 
     def run(self):
         self.setup()
@@ -50,14 +50,14 @@ class BenchmarkDirective(Directive):
         return eval(src, self.namespace)
 
     def _run(self):
-        self.namespace = {'generator': self.generator}
+        self.namespace = {'charter': self.charter}
         if self.content:
             src = py.code.Source('\n'.join(self.content))
             exec src.compile() in self.namespace
         #
         nodes = []
         for impl in 'CPython', 'PyPy':
-            chart = self.generator.get_chart(
+            chart = self.charter.get_chart(
                 impl = impl,
                 title = '%s [%s]' % (self.arguments[0], impl),
                 filter = self.get_function('filter'),
