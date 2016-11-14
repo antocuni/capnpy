@@ -43,3 +43,4 @@ script:
   - tox
   - py.test docs/ext
   - bash ./travis/commit-results.sh
+  - curl -X POST https://readthedocs.org/build/capnpy # trigger docs build
