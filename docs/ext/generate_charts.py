@@ -110,9 +110,11 @@ class ChartGenerator(object):
 
     @classmethod
     def load_one(cls, f):
-        with f.open() as fobj:
-            d = json.load(fobj)
-            info = DotMap(d, _dynamic=False)
+        s = f.read()
+        if s == '':
+            return []
+        d = json.loads(s)
+        info = DotMap(d, _dynamic=False)
         #
         # reverse the relationship between info and benchmarks: each benchmark
         # has a pointer to the info (which has no longer a list of benhmarks)
