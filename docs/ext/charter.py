@@ -8,6 +8,14 @@ import py
 from dotmap import DotMap
 import pygal
 
+class SecondsFormatter(pygal.formatters.HumanReadable):
+
+    def __call__(self, val):
+        val = super(SecondsFormatter, self).__call__(val)
+        if not val[-1].isdigit():
+            val = val[:-1] + ' ' + val[-1]
+        return val + 's'
+
 class GroupedBarChart(object):
     """
     Helper class to build a pygal Bar chart with groups.
@@ -36,6 +44,8 @@ class GroupedBarChart(object):
 
     def build(self):
         chart = pygal.Bar(pretty_print=True)
+        chart.config.value_formatter = SecondsFormatter()
+        chart.y_title = 'Time'
         chart.title = self.title
         series_names = sorted(self.all_series)
         groups = sorted(self.all_groups)
