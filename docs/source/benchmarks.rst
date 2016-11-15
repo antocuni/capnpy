@@ -8,7 +8,15 @@ This is an example of benchmark
 .. benchmark:: Get Attribute
    :timeline:
    :foreach: b.python_implementation
-   :filter: b.group == 'getattr' and b.params.schema == 'Capnpy' and b.extra_info.attribute_type != 'list'
+   :filter: b.group == 'getattr' and \
+            b.params.schema == 'Capnpy' and \
+            (b.name != 'test_list[Capnpy]' or \
+             b.python_implementation == 'PyPy')
+   :series: b.extra_info.attribute_type
+
+.. benchmark:: Get Attribute [CPython, list]
+   :timeline:
+   :filter: b.name == 'test_list[Capnpy]' and b.python_implementation != 'PyPy'
    :series: b.extra_info.attribute_type
 
 

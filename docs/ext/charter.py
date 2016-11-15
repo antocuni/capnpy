@@ -92,6 +92,8 @@ class TimelineChart(object):
     def build(self):
         chart = pygal.Line()
         chart.title = self.title
+        chart.config.value_formatter = SecondsFormatter()
+        chart.y_title = 'Time'
         for name, points in self.data.iteritems():
             chart.add(name, points)
         #
@@ -99,7 +101,8 @@ class TimelineChart(object):
         chart.min_scale = 10 # make sure to have 10 horizontal bands
         estimate_max = self.min*2 # min+10% will cross one horizontal band
         estimate_max = max(self.max, estimate_max)
-        chart.range = [0, estimate_max]
+        if estimate_max != float('inf'):
+            chart.range = [0, estimate_max]
         return chart
 
 def display(chart):
@@ -157,9 +160,6 @@ class Charter(object):
         self.revision = revision
         self.clone_maybe()
         self.load_all()
-        x = self.all.filter(
-            lambda b: b.name == 'test_numeric[Capnpy-int16]' and b.info.machine_info.python_implementation == 'CPython')
-        #import pdb;pdb.set_trace()
 
     def clone_maybe(self):
         # clone the .benchmarks repo, if it's needed
