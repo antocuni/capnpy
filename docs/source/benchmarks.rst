@@ -5,6 +5,12 @@ Benchmarks
 This is an example of benchmark
 
 .. benchmark:: Get Attribute
+   :timeline:
+   :filter: b.name in ('test_numeric[Capnpy-int16]', 'test_numeric[Capnpy-int64]') #b.group == 'getattr'
+   :series: b.extra_info.attribute_type
+
+
+.. benchmark:: Get Attribute
    :filter: b.group == 'getattr'
    :series: b.params.schema
    :group:  b.extra_info.attribute_type

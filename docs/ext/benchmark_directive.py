@@ -12,6 +12,7 @@ class BenchmarkDirective(Directive):
     final_argument_whitespace = True
     has_content = True
     option_spec = {
+        'timeline': directives.flag,
         'filter': directives.unchanged,
         'series': directives.unchanged,
         'group': directives.unchanged,

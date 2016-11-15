@@ -2,8 +2,10 @@ import os
 import sys
 import re
 import operator
-from commands import getoutput
 import json
+from commands import getoutput
+from collections import defaultdict
+
 import py
 from dotmap import DotMap
 import pygal
@@ -56,6 +58,21 @@ class GroupedBarChart(object):
             chart.add(name, series)
         return chart
 
+class TimelineChart(object):
+
+    def __init__(self, title):
+        self.title = title
+        self.data = defaultdict(list)
+
+    def add(self, series_name, point):
+        self.data[series_name].append(point)
+
+    def build(self):
+        chart = pygal.Line()
+        chart.title = self.title
+        for name, points in self.data.iteritems():
+            chart.add(name, points)
+        return chart
 
 def display(chart):
     # for development
@@ -112,6 +129,9 @@ class Charter(object):
         self.revision = revision
         self.clone_maybe()
         self.load_all()
+        x = self.all.filter(
+            lambda b: b.name == 'test_numeric[Capnpy-int16]' and b.info.machine_info.python_implementation == 'CPython')
+        #import pdb;pdb.set_trace()
 
     def clone_maybe(self):
         # clone the .benchmarks repo, if it's needed
@@ -196,6 +216,22 @@ class Charter(object):
             chart.x_title = self.latest_warning
         return chart
 
+    def get_timeline_chart(self, impl, title, filter, series):
+        # XXX: sort the values
+        # XXX: check that the CPU is always the same
+        benchmarks = self.all.filter(filter)
+        if impl:
+            benchmarks = benchmarks.filter(
+                lambda b: b.info.machine_info.python_implementation == impl)
+        #
+        chart = TimelineChart(title)
+        for b in benchmarks:
+            series_name = series(b)
+            chart.add(series_name, b.stats.mean)
+            chart.add(series_name+'-med', b.stats.median)
+        #
+        return chart.build()
+
     def run_directive(self, title, options, content):
         namespace = {'charter': self}
         if content:
@@ -206,14 +242,22 @@ class Charter(object):
             src = 'lambda b: ' + options[name]
             return eval(src, namespace)
         #
+        timeline = 'timeline' in options
         res = []
         for impl in 'CPython', 'PyPy':
-            chart = self.get_chart(
-                impl = impl,
-                title = '%s [%s]' % (title, impl),
-                filter = get_function('filter'),
-                series = get_function('series'),
-                group = get_function('group'))
+            if timeline:
+                chart = self.get_timeline_chart(
+                    impl = impl,
+                    title = '%s [%s]' % (title, impl),
+                    filter = get_function('filter'),
+                    series = get_function('series'))
+            else:
+                chart = self.get_chart(
+                    impl = impl,
+                    title = '%s [%s]' % (title, impl),
+                    filter = get_function('filter'),
+                    series = get_function('series'),
+                    group = get_function('group'))
             res.append(chart)
         return res
 
