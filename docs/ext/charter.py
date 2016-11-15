@@ -182,6 +182,8 @@ class Charter(object):
         for b in benchmarks:
             b.filename = str(f)
             b.info = info
+            # just a shortcut
+            b.python_implementation = b.info.machine_info.python_implementation
         return benchmarks
 
     def get_point(self, b):
@@ -200,12 +202,8 @@ class Charter(object):
         assert m
         return m.group(1)
 
-    def get_chart(self, impl, title, filter, series, group):
-        benchmarks = self.latest.filter(filter)
-        if impl:
-            benchmarks = benchmarks.filter(
-                lambda b: b.info.machine_info.python_implementation == impl)
-        #
+    def get_chart(self, benchmarks, title, filter, series, group):
+        benchmarks = benchmarks.filter(filter)
         chart = GroupedBarChart(title)
         for b in benchmarks:
             series_name = series(b)
@@ -217,6 +215,7 @@ class Charter(object):
         return chart
 
     def get_timeline_chart(self, impl, title, filter, series):
+        raise Exception('broken')
         # XXX: sort the values
         # XXX: check that the CPU is always the same
         benchmarks = self.all.filter(filter)
@@ -239,26 +238,33 @@ class Charter(object):
             exec src.compile() in namespace
         #
         def get_function(name):
-            src = 'lambda b: ' + options[name]
+            src = 'lambda b: ' + options.get(name, 'None')
             return eval(src, namespace)
         #
+        if 'foreach' in options:
+            foreach = get_function('foreach')
+        else:
+            foreach = lambda b: None
+        #
         timeline = 'timeline' in options
+        assert not timeline
+        d = defaultdict(PyQuery)
+        for b in self.latest:
+            key = foreach(b)
+            d[key].append(b)
+        #
         res = []
-        for impl in 'CPython', 'PyPy':
-            if timeline:
-                chart = self.get_timeline_chart(
-                    impl = impl,
-                    title = '%s [%s]' % (title, impl),
-                    filter = get_function('filter'),
-                    series = get_function('series'))
-            else:
-                chart = self.get_chart(
-                    impl = impl,
-                    title = '%s [%s]' % (title, impl),
-                    filter = get_function('filter'),
-                    series = get_function('series'),
-                    group = get_function('group'))
+        for key in sorted(d):
+            benchmarks = d[key]
+            newtitle = title
+            if key:
+                newtitle += ' [%s]' % key
+            chart = self.get_chart(
+                benchmarks = benchmarks,
+                title = newtitle,
+                filter = get_function('filter'),
+                series = get_function('series'),
+                group = get_function('group'))
             res.append(chart)
-        return res
 
-    
+        return res

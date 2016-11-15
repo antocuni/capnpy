@@ -16,9 +16,10 @@ class MyCharter(Charter):
     def get_point(self, b):
         return b.value
 
-def fake_get_chart(impl, title, filter, series, group):
+def fake_get_chart(benchmarks, title, filter, series, group):
     chart = Mock()
-    chart.impl = impl
+    chart.benchmarks = benchmarks
+    chart.b_values = [b.value for b in benchmarks]
     chart.title = title
     chart.filter = filter
     chart.series = series
@@ -78,7 +79,10 @@ class TestCharter(object):
 
     def test_load_one(self, tmpdir):
         data = {
-            'machine_info': 'Intel',
+            'machine_info': {
+                'cpu': 'Intel',
+                'python_implementation': 'CPython',
+            },
             'datetime': 'today',
             'benchmarks': [
                 {'name': 'foo', 'time': 1},
@@ -92,12 +96,14 @@ class TestCharter(object):
         b1, b2 = benchmarks
         assert b1.name == 'foo'
         assert b1.time == 1
-        assert b1.info.machine_info == 'Intel'
+        assert b1.info.machine_info.cpu == 'Intel'
+        assert b1.python_implementation == 'CPython'
         assert b1.info.datetime == 'today'
         #
         assert b2.name == 'bar'
         assert b2.time == 2
-        assert b2.info.machine_info == 'Intel'
+        assert b2.info.machine_info.cpu == 'Intel'
+        assert b2.python_implementation == 'CPython'
         assert b2.info.datetime == 'today'
 
     def test_extract_test_name(self):
@@ -106,7 +112,11 @@ class TestCharter(object):
         assert ex('test_BufferedSocket') == 'BufferedSocket'
 
     def test_run_directive_simple(self):
-        charter = MyCharter()
+        benchmarks = PyQuery([
+            DotMap(value=1),
+            DotMap(value=2),
+        ])
+        charter = MyCharter(benchmarks)
         charter.get_chart = fake_get_chart
         options = {
             'filter': 'b+1',
@@ -114,18 +124,39 @@ class TestCharter(object):
             'group': 'b+3',
         }
         charts = charter.run_directive('My title', options, [])
+        assert len(charts) == 1
+        chart = charts[0]
+        assert chart.title == 'My title'
+        assert chart.b_values == [1, 2]
+        assert chart.filter(0) == 1
+        assert chart.series(0) == 2
+        assert chart.group(0) == 3
+
+    def test_run_directive_foreach(self):
+        benchmarks = PyQuery([
+            DotMap(impl='CPython', value=1),
+            DotMap(impl='CPython', value=2),
+            DotMap(impl='PyPy',    value=3),
+            DotMap(impl='PyPy',    value=4),
+        ])
+        charter = MyCharter(benchmarks)
+        charter.get_chart = fake_get_chart
+        options = {
+            'foreach': 'b.impl',
+        }
+        charts = charter.run_directive('My title', options, [])
         ch1, ch2 = charts
-        assert ch1.impl == 'CPython'
         assert ch1.title == 'My title [CPython]'
-        assert ch2.impl == 'PyPy'
+        assert ch1.b_values == [1, 2]
         assert ch2.title == 'My title [PyPy]'
-        for ch in charts:
-            assert ch.filter(0) == 1
-            assert ch.series(0) == 2
-            assert ch.group(0) == 3
+        assert ch2.b_values == [3, 4]
 
     def test_run_directive_content(self):
-        charter = MyCharter()
+        benchmarks = PyQuery([
+            DotMap(value=1),
+            DotMap(value=2),
+        ])
+        charter = MyCharter(benchmarks)
         charter.get_chart = fake_get_chart
         options = {
             'filter': 'myfilter(b)',
@@ -140,6 +171,7 @@ class TestCharter(object):
         ch = charts[0]
         assert ch.filter(7) == 42
 
+
     def test_get_chart(self):
         benchmarks = PyQuery([
             DotMap(group='getattr', schema='capnpy', type='int16', value=1),
@@ -150,7 +182,7 @@ class TestCharter(object):
             ])
         charter = MyCharter(benchmarks)
         chart = charter.get_chart(
-            impl = None,
+            benchmarks = benchmarks,
             title = 'My title',
             filter = lambda b: b.group == 'getattr',
             series = lambda b: b.schema,

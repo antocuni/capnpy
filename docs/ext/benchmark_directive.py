@@ -13,6 +13,7 @@ class BenchmarkDirective(Directive):
     has_content = True
     option_spec = {
         'timeline': directives.flag,
+        'foreach': directives.unchanged,
         'filter': directives.unchanged,
         'series': directives.unchanged,
         'group': directives.unchanged,
