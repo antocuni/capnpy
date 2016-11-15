@@ -3,7 +3,7 @@ import json
 from mock import Mock
 from dotmap import DotMap
 from collections import namedtuple
-from charter import GroupedBarChart, PyQuery, Charter
+from charter import GroupedBarChart, TimelineChart, PyQuery, Charter
 
 Point = namedtuple('Point', ['x', 'y'])
 
@@ -16,8 +16,9 @@ class MyCharter(Charter):
     def get_point(self, b):
         return b.value
 
-def fake_get_chart(benchmarks, title, filter, series, group):
+def fake_get_chart(timeline, benchmarks, title, filter, series, group):
     chart = Mock()
+    chart.timeline = timeline
     chart.benchmarks = benchmarks
     chart.b_values = [b.value for b in benchmarks]
     chart.title = title
@@ -28,6 +29,7 @@ def fake_get_chart(benchmarks, title, filter, series, group):
 
 def test_GroupedBarChart():
     ch = GroupedBarChart('My Title')
+    ch.get_point = lambda b: b
     ch.add('capnpy', 'int64', 1)
     ch.add('capnpy', 'text', 2)
     ch.add('instance', 'text', 3)
@@ -126,6 +128,7 @@ class TestCharter(object):
         charts = charter.run_directive('My title', options, [])
         assert len(charts) == 1
         chart = charts[0]
+        assert not chart.timeline
         assert chart.title == 'My title'
         assert chart.b_values == [1, 2]
         assert chart.filter(0) == 1
@@ -172,7 +175,11 @@ class TestCharter(object):
         assert ch.filter(7) == 42
 
 
-    def test_get_chart(self):
+    def test_get_chart(self, monkeypatch):
+        def get_point(self, b):
+            return b.value
+        monkeypatch.setattr(GroupedBarChart, 'get_point', get_point)
+        #
         benchmarks = PyQuery([
             DotMap(group='getattr', schema='capnpy', type='int16', value=1),
             DotMap(group='getattr', schema='capnpy', type='text', value=2),
@@ -182,6 +189,7 @@ class TestCharter(object):
             ])
         charter = MyCharter(benchmarks)
         chart = charter.get_chart(
+            timeline = False,
             benchmarks = benchmarks,
             title = 'My title',
             filter = lambda b: b.group == 'getattr',
@@ -193,4 +201,31 @@ class TestCharter(object):
         assert chart.raw_series == [
             ([1, 2], {'title': 'capnpy'}),
             ([3, 4], {'title': 'instance'})
+        ]
+
+    def test_get_chart_timeline(self, monkeypatch):
+        def get_point(self, b):
+            return {'value': b.value}
+        monkeypatch.setattr(TimelineChart, 'get_point', get_point)
+        #
+        benchmarks = PyQuery([
+            DotMap(group='getattr', schema='capnpy', type='int16', value=1),
+            DotMap(group='getattr', schema='capnpy', type='text', value=2),
+            DotMap(group='getattr', schema='instance', type='int16', value=3),
+            DotMap(group='getattr', schema='instance', type='text', value=4),
+            DotMap(group='other'),
+            ])
+        charter = MyCharter(benchmarks)
+        chart = charter.get_chart(
+            timeline = True,
+            benchmarks = benchmarks,
+            title = 'My title',
+            filter = lambda b: b.group == 'getattr',
+            series = lambda b: b.schema,
+            group = lambda b: None)
+        #
+        assert chart.title == 'My title'
+        assert chart.raw_series == [
+            ([{'value': 1}, {'value': 2}], {'title': 'capnpy'}),
+            ([{'value': 3}, {'value': 4}], {'title': 'instance'})
         ]
