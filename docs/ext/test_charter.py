@@ -1,23 +1,29 @@
 import pytest
 import json
 from mock import Mock
+from dotmap import DotMap
 from collections import namedtuple
 from charter import GroupedBarChart, PyQuery, Charter
 
 Point = namedtuple('Point', ['x', 'y'])
 
 class MyCharter(Charter):
-    def __init__(self):
-        pass
+    def __init__(self, benchmarks=PyQuery()):
+        self.all = benchmarks
+        self.latest = benchmarks
+        self.latest_warning = None
 
-    def get_chart(self, impl, title, filter, series, group):
-        chart = Mock()
-        chart.impl = impl
-        chart.title = title
-        chart.filter = filter
-        chart.series = series
-        chart.group = group
-        return chart
+    def get_point(self, b):
+        return b.value
+
+def fake_get_chart(impl, title, filter, series, group):
+    chart = Mock()
+    chart.impl = impl
+    chart.title = title
+    chart.filter = filter
+    chart.series = series
+    chart.group = group
+    return chart
 
 def test_GroupedBarChart():
     ch = GroupedBarChart('My Title')
@@ -101,6 +107,7 @@ class TestCharter(object):
 
     def test_run_directive_simple(self):
         charter = MyCharter()
+        charter.get_chart = fake_get_chart
         options = {
             'filter': 'b+1',
             'series': 'b+2',
@@ -119,6 +126,7 @@ class TestCharter(object):
 
     def test_run_directive_content(self):
         charter = MyCharter()
+        charter.get_chart = fake_get_chart
         options = {
             'filter': 'myfilter(b)',
             'series': 'b+2',
@@ -131,3 +139,26 @@ class TestCharter(object):
         charts = charter.run_directive('My title', options, content)
         ch = charts[0]
         assert ch.filter(7) == 42
+
+    def test_get_chart(self):
+        benchmarks = PyQuery([
+            DotMap(group='getattr', schema='capnpy', type='int16', value=1),
+            DotMap(group='getattr', schema='capnpy', type='text', value=2),
+            DotMap(group='getattr', schema='instance', type='int16', value=3),
+            DotMap(group='getattr', schema='instance', type='text', value=4),
+            DotMap(group='other'),
+            ])
+        charter = MyCharter(benchmarks)
+        chart = charter.get_chart(
+            impl = None,
+            title = 'My title',
+            filter = lambda b: b.group == 'getattr',
+            series = lambda b: b.schema,
+            group = lambda b: b.type)
+        #
+        assert chart.title == 'My title'
+        assert chart.x_labels == ['int16', 'text']
+        assert chart.raw_series == [
+            ([1, 2], {'title': 'capnpy'}),
+            ([3, 4], {'title': 'instance'})
+        ]
