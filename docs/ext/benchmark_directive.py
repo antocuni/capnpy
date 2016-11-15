@@ -32,11 +32,12 @@ class BenchmarkDirective(Directive):
         try:
             return self._run()
         except Exception:
-            #import pdb;pdb.xpm()
-            return [docutils.nodes.system_message(
-                'An exception as occured during graph generation:'
-                ' \n %s' % format_exc(), type='ERROR', source='/',
-                level=3)]
+            ## import pdb;pdb.xpm()
+            raise
+            ## return [docutils.nodes.system_message(
+            ##     'An exception as occured during graph generation:'
+            ##     ' \n %s' % format_exc(), type='ERROR', source='/',
+            ##     level=3)]
 
     def get_function(self, name):
         src = 'lambda b: ' + self.options[name]
