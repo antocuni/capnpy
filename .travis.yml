@@ -1,8 +1,22 @@
 sudo: false
 language: python
-python:
-  - '2.7'
-  - 'pypy-5.4'
+
+matrix:
+  include:
+    - python: '2.7'
+      env: TOXENV=nopyx-test
+
+    - python: '2.7'
+      env: TOXENV=py27-test
+
+    - python: '2.7'
+      env: TOXENV=py27-bench
+
+    - python: 'pypy-5.4'
+      env: TOXENV=pypy-test
+
+    - python: 'pypy-5.4'
+      env: TOXENV=pypy-bench
 
 cache:
   pip: true
