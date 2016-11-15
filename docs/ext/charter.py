@@ -36,13 +36,23 @@ class GroupedBarChart(object):
         self.all_groups = set()
         self.data = {} # [(series_name, group)] -> point
 
-    def add(self, series_name, group, point):
+    def get_point(self, b):
+        return {
+            'value': b.stats.mean,
+            'ci': {
+                'type': 'continuous',
+                'sample_size': b.stats.rounds,
+                'stddev': b.stats.stddev
+            }
+        }
+
+    def add(self, series_name, group, b):
         self.all_series.add(series_name)
         self.all_groups.add(group)
         key = (series_name, group)
         if key in self.data:
             raise ValueError("Duplicate key: %s" % (key,))
-        self.data[(series_name, group)] = point
+        self.data[(series_name, group)] = self.get_point(b)
 
     def build(self):
         chart = pygal.Bar(pretty_print=True)
@@ -63,15 +73,33 @@ class TimelineChart(object):
     def __init__(self, title):
         self.title = title
         self.data = defaultdict(list)
+        self.min = float('inf')
+        self.max = float('-inf')
 
-    def add(self, series_name, point):
-        self.data[series_name].append(point)
+    def get_point(self, b):
+        return {
+            'value': b.stats.min,
+            'label': b.name
+        }
+
+    def add(self, series_name, group, b):
+        assert group is None
+        p = self.get_point(b)
+        self.data[series_name].append(p)
+        self.min = min(self.min, p['value'])
+        self.max = max(self.max, p['value'])
 
     def build(self):
         chart = pygal.Line()
         chart.title = self.title
         for name, points in self.data.iteritems():
             chart.add(name, points)
+        #
+        # try to compute a reasonable Y scale;
+        chart.min_scale = 10 # make sure to have 10 horizontal bands
+        estimate_max = self.min*2 # min+10% will cross one horizontal band
+        estimate_max = max(self.max, estimate_max)
+        chart.range = [0, estimate_max]
         return chart
 
 def display(chart):
@@ -186,50 +214,29 @@ class Charter(object):
             b.python_implementation = b.info.machine_info.python_implementation
         return benchmarks
 
-    def get_point(self, b):
-        return {
-            'value': b.stats.mean,
-            'ci': {
-                'type': 'continuous',
-                'sample_size': b.stats.rounds,
-                'stddev': b.stats.stddev
-            }
-        }
-
     @classmethod
     def extract_test_name(cls, name):
         m = re.match(r'test_([^\[]+)(\[.*\])?', name)
         assert m
         return m.group(1)
 
-    def get_chart(self, benchmarks, title, filter, series, group):
+    def get_chart(self, timeline, benchmarks, title, filter, series, group):
         benchmarks = benchmarks.filter(filter)
-        chart = GroupedBarChart(title)
+        if timeline:
+            # XXX: sort the values
+            # XXX: check that the CPU is always the same
+            chart = TimelineChart(title)
+        else:
+            chart = GroupedBarChart(title)
+        #
         for b in benchmarks:
             series_name = series(b)
             group_name = group(b)
-            chart.add(series_name, group_name, self.get_point(b))
+            chart.add(series_name, group_name, b)
         chart = chart.build()
-        if self.latest_warning:
+        if self.latest_warning and not timeline:
             chart.x_title = self.latest_warning
         return chart
-
-    def get_timeline_chart(self, impl, title, filter, series):
-        raise Exception('broken')
-        # XXX: sort the values
-        # XXX: check that the CPU is always the same
-        benchmarks = self.all.filter(filter)
-        if impl:
-            benchmarks = benchmarks.filter(
-                lambda b: b.info.machine_info.python_implementation == impl)
-        #
-        chart = TimelineChart(title)
-        for b in benchmarks:
-            series_name = series(b)
-            chart.add(series_name, b.stats.mean)
-            chart.add(series_name+'-med', b.stats.median)
-        #
-        return chart.build()
 
     def run_directive(self, title, options, content):
         namespace = {'charter': self}
@@ -241,18 +248,17 @@ class Charter(object):
             src = 'lambda b: ' + options.get(name, 'None')
             return eval(src, namespace)
         #
-        if 'foreach' in options:
-            foreach = get_function('foreach')
-        else:
-            foreach = lambda b: None
-        #
         timeline = 'timeline' in options
-        assert not timeline
+        benchmarks = self.all if timeline else self.latest
+        #
+        # split the benchmarks into various group by using the foreach key
+        foreach = get_function('foreach')
         d = defaultdict(PyQuery)
-        for b in self.latest:
+        for b in benchmarks:
             key = foreach(b)
             d[key].append(b)
         #
+        # generate a chart for each "foreach" group
         res = []
         for key in sorted(d):
             benchmarks = d[key]
@@ -260,11 +266,11 @@ class Charter(object):
             if key:
                 newtitle += ' [%s]' % key
             chart = self.get_chart(
+                timeline = timeline,
                 benchmarks = benchmarks,
                 title = newtitle,
                 filter = get_function('filter'),
                 series = get_function('series'),
                 group = get_function('group'))
             res.append(chart)
-
         return res
