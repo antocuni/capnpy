@@ -98,12 +98,30 @@ abstraction overhead.
 Hashing
 ========
 
+If you use ``$Py.key`` (see :ref:`Equality and hashing`), you can ``hash``
+your objects, and the return value is guaranteed to be the same as the
+corresponding tuple.
+
+The simplest implementation would be to create the tuple call ``hash()`` on
+it.  However, ``capnpy`` uses an ad-hoc implementation so that it can compute
+the hash value **without** creating the tuple. This is especially useful if
+you have ``text`` fields, as you completely avoid the expensive creation of
+the string.
+
 .. benchmark:: Hashing
    :foreach: b.python_implementation
    :filter: b.group.startswith('hash')
    :series: b.extra_info.schema
    :group:  b.extra_info.type
 
+
+Constructors
+============
+
+This benchmark measure the time needed to create new objects. Because of the
+Cap'n Proto specs, this **has** to be more expensive than creating e.g. a new
+instance, as we need to do extra checks and pack all the objects inside a
+buffer.  However, we believe there is still room for improvement.
 
 .. benchmark:: Constructors
    :foreach: b.python_implementation
@@ -112,12 +130,32 @@ Hashing
    :group:  charter.extract_test_name(b.name)
 
 
+Loading messages
+=================
+
+These benchmark measure the performance of reading a stream of Cap'n Proto
+messages, either from a file or from a TCP socket.
+
+.. note:: ``pycapnp`` delegates the reading to the underlying C++ library, so
+          you need to pass anything with a ``fileno()`` method: so, we pass a
+          ``socket`` object directly.  On the other hand, ``capnpy`` needs a
+          file-like object, so we pass a BufferedSocket__.
+
+__ usage.html#loading-from-sockets
+
 .. benchmark:: Loading messages
    :foreach: b.python_implementation
    :filter: b.group == 'load'
    :series: b.params.schema
    :group:  charter.extract_test_name(b.name)
 
+
+Buffered streams
+================
+
+As explained in the section :ref:`Loading from sockets`, ``capnpy`` provides
+its own buffered wrapper around ``socket``, which is immensely faster than
+``socket.makefile()``.
 
 .. benchmark:: Buffered streams
    :foreach: b.python_implementation

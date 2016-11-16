@@ -213,6 +213,27 @@ Alternatively, you can call ``load``/``loads`` directly on the class, and
     100 200
 
 
+Loading from sockets
+=====================
+
+In case you want to load your messages from a ``socket``, you can use
+``capnpy.buffered.BufferedSocket`` to wrap it into a file-like object::
+
+  >>> from capnpy.buffered import BufferedSocket
+  >>> sock = socket.create_connection(('localhost', 5000))
+  >>> buf = BufferedSocket(sock)
+  >>> example.Point.load(buf)
+  ...
+
+.. warning:: The obvious solution to wrap a socket into a file-like object
+             would be to use ``socket.makefile()``. However, because of `this
+             bug`__ it is horribly slow. **Don't use it**. See also the
+             benchmarks__.
+
+__ https://bitbucket.org/pypy/pypy/issues/2272/socket_fileobjectread-horribly-slow
+__ benchmarks.html#buffered-streams
+
+
 capnproto types
 ================
 
