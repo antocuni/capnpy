@@ -30,6 +30,7 @@ sys.path.append(os.path.abspath('../ext'))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.autosectionlabel',
     'benchmark_directive',
 ]
 
