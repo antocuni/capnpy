@@ -46,9 +46,12 @@ Loading schemas
 
 ``capnpy`` supports two different ways of loading schemas:
 
-:dynamic: to compile load capnproto schemas on the fly.
-:precompiled: to generate Python bindings for a schema, to be imported
-    later.
+Dynamic
+    to compile load capnproto schemas on the fly.
+
+Precompiled
+    to generate Python bindings for a schema, to be imported later.
+
 
 If you use `dynamic loading`_, you always need the ``capnp`` executable
 whenever you want to load a schema.
@@ -65,17 +68,21 @@ Compilation options
 
 The ``capnpy`` schema compiler has two modes of compilation:
 
-:py mode: Generate pure Python modules, which can be used either on CPython or
+py mode
+   Generate pure Python modules, which can be used either on CPython or
    PyPy: it is optimized to be super fast on PyPy. It produces slow code on
    CPython, but it has the advantage of not requiring ``cython``. This is the
    default on PyPy.
-:pyx mode: Generate pyx modules, which are then compiled into native extension
+
+pyx mode
+   Generate pyx modules, which are then compiled into native extension
    modules by ``cython`` and ``gcc``. It is optimized for speed on
    CPython. This is the default on CPython, if ``cython`` is available.
 
 Moreover, it supports the following options:
 
-:convert_case: If enabled, ``capnpy`` will automatically convert field names
+``convert_case``
+   If enabled, ``capnpy`` will automatically convert field names
    from camelCase to underscore_delimiter: i.e., ``fooBar`` will become
    ``foo_bar``. The default is **True**.
 
