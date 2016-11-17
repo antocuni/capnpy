@@ -20,7 +20,7 @@ Quick example
 Suppose to have a capnp schema called ``example.capnp``:
 
 .. literalinclude:: example.capnp
-   :language: capnproto
+   :language: capnp
 
 You can use ``capnpy`` to read and write messages of type ``Point``:
 
