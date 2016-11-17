@@ -2,6 +2,12 @@
 Usage
 ==================================
 
+.. testsetup::
+
+   # this is needed for capnpy.load_schema('example')
+   import sys
+   sys.path.append('source')
+
 Installation and requirements
 =============================
 
@@ -27,13 +33,10 @@ You can use ``capnpy`` to read and write messages of type ``Point``:
 .. testcode::
 
     import capnpy
-
     # load the schema using dynamic loading
-    example = capnpy.load_schema(filename='source/example.capnp')
-
+    example = capnpy.load_schema('example')
     # create a new Point object
     p = example.Point(x=1, y=2)
-
     # serialize the message and load it back
     message = p.dumps()
     p2 = example.Point.loads(message)
@@ -51,22 +54,21 @@ Loading schemas
 
 ``capnpy`` supports two different ways of loading schemas:
 
-Dynamic
-    to compile load capnproto schemas on the fly.
+Dynamic loading
+    to compile and load capnproto schemas on the fly.
 
-Precompiled
+Manual compilation
     to generate Python bindings for a schema, to be imported later.
 
 
 If you use `dynamic loading`_, you always need the ``capnp`` executable
 whenever you want to load a schema.
 
-If you use `precompiled mode`__, you need ``capnp`` to compile the schema, but
+If you use `manual compilation`_, you need ``capnp`` to compile the schema, but
 not to load it later; this means that you can distribute the precompiled
 schemas, and the client machines will be able to load it without having to
 install the official capnproto distribution.
 
-.. __: #manual-compilation
 
 Compilation options
 --------------------
@@ -198,7 +200,7 @@ by ``pickle`` and ``json``:
 
   - ``capnpy.dumps(obj)``: write a message to a string
 
-For example::
+For example:
 
     >>> import capnpy
     >>> example = capnpy.load_schema('example')
@@ -211,14 +213,10 @@ For example::
     100 200
 
 Alternatively, you can call ``load``/``loads`` directly on the class, and
-``dump``/``dumps`` directly on the objects::
+``dump``/``dumps`` directly on the objects:
 
-    >>> import capnpy
-    >>> example = capnpy.load_schema('example')
     >>> p = example.Point(x=100, y=200)
     >>> mybuf = p.dumps()
-    >>> mybuf
-    '\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00d\x00\x00\x00\x00\x00\x00\x00\xc8\x00\x00\x00\x00\x00\x00\x00'
     >>> p2 = example.Point.loads(mybuf)
     >>> print p2.x, p2.y
     100 200
@@ -234,7 +232,6 @@ In case you want to load your messages from a ``socket``, you can use
   >>> sock = socket.create_connection(('localhost', 5000))
   >>> buf = BufferedSocket(sock)
   >>> example.Point.load(buf)
-  ...
 
 .. warning:: The obvious solution to wrap a socket into a file-like object
              would be to use ``socket.makefile()``. However, because of `this
@@ -269,19 +266,15 @@ Enum
 -----
 
 capnproto enums are represented as subclasses of ``int``, so that we can
-easily use both the numeric and the symbolic values::
+easily use both the numeric and the symbolic values:
 
-    enum Color {
-        red @0;
-        green @1;
-        blue @2;
-        yellow @3;
-    }
+.. literalinclude:: example_enum.capnp
+   :language: capnp
 
-::
+.. doctest::
 
-    >>> example = capnpy.load_schema('example')
-    >>> Color = example.Color
+    >>> mod = capnpy.load_schema('example_enum')
+    >>> Color = mod.Color
     >>> Color.green
     <Color.green: 1>
     >>> int(Color.green)
@@ -301,39 +294,33 @@ Union
 
 capnproto uses a special enum value, called *tag*, to identify the field which
 is currently set inside an union; ``capnpy`` follows this semantics by
-automatically creating an enum whose members correspond to fields of the
-union::
+automatically creating an Enum_ whose members correspond to fields of the
+union.
 
-    struct Shape {
-      area @0 :Float64;
+.. literalinclude:: example_union.capnp
+   :language: capnp
 
-      union {
-        circle @1 :Float64;      # radius
-        square @2 :Float64;      # width
-      }
-    }
+.. doctest::
 
-::
-
-    >>> example = capnpy.load_schema('example')
-    >>> Shape = example.Shape
+    >>> mod = capnpy.load_schema('example_union')
+    >>> Shape = mod.Shape
     >>> Shape.__tag__
     <class 'capnpy.enum.Shape.__tag__'>
     >>> Shape.__tag__.__members__
     ('circle', 'square')
 
 You can query which field is set by calling ``which()``, or by calling one of
-the ``is_*()`` methods which are automatically generated::
+the ``is_*()`` methods which are automatically generated:
 
-    >>> s = capnpy.load(f, Shape)
+    >>> s = Shape(area=16, square=4)
     >>> s.which()
-    <Shape.__tag__.circle: 0>
+    <Shape.__tag__.square: 1>
     >>> s.__which__()
-    0
+    1
     >>> s.is_circle()
-    True
-    >>> s.is_square()
     False
+    >>> s.is_square()
+    True
 
 The difference between ``which()`` and ``__which__()`` is that the former
 return an ``Enum`` value, while the latter a raw integer: on CPython,
