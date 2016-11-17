@@ -93,8 +93,7 @@ Dynamic loading
 To dynamically load a capnproto schema, use ``capnpy.load_schema``; its full
 signature is::
 
-    def load_schema(self,
-                    modname=None, importname=None, filename=None,
+    def load_schema(modname=None, importname=None, filename=None,
                     convert_case=True, pyx='auto'):
         ...
 
