@@ -186,4 +186,32 @@ Evolution over time
    :filter: b.name == 'test_list[Capnpy]' and b.python_implementation != 'PyPy'
    :series: b.extra_info.attribute_type
 
+.. benchmark:: Special union attributes
+   :timeline:
+   :foreach: b.python_implementation
+   :filter: b.group == 'getattr_special' and b.params.schema == 'Capnpy'
+   :series: charter.extract_test_name(b.name)
 
+.. benchmark:: Hashing
+   :timeline:
+   :foreach: b.python_implementation
+   :filter: b.group.startswith('hash') and b.extra_info.schema == 'Capnpy'
+   :series: b.extra_info.type
+
+.. benchmark:: Constructors
+   :timeline:
+   :foreach: b.python_implementation
+   :filter: b.group == 'ctor' and b.params.schema == 'Capnpy'
+   :series: charter.extract_test_name(b.name)
+
+.. benchmark:: Loading messages
+   :timeline:
+   :foreach: b.python_implementation
+   :filter: b.group == 'load' and b.params.schema == 'Capnpy'
+   :series: charter.extract_test_name(b.name)
+
+.. benchmark:: Buffered streams
+   :timeline:
+   :foreach: b.python_implementation
+   :filter: b.group == 'buffered' and 'makefile' not in b.name
+   :series: charter.extract_test_name(b.name)
