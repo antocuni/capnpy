@@ -372,45 +372,47 @@ field:
 Groups
 ------
 
-Group fields are accessed using the usual dot notation::
+.. literalinclude:: example_group.capnp
+   :language: capnp
 
-    struct Point {
-        position :group {
-            x @0 :Int64;
-            y @1 :Int64;
-        }
-        color @2 :Text;
-    }
+Group fields are initialized using a tuple, and accessed using the usual dot
+notation:
 
-::
-
-    >>> p = capnpy.load(f, Point)
+    >>> mod = capnpy.load_schema('example_group')
+    >>> Point = mod.Point
+    >>> p = Point(position=(3, 4), color='red')
     >>> p.position.x
-    1
-    >>> p.position.y
-    2
-
-When creating new objects, group fields are initialized using a tuple::
-
-    >>> p2 = Point(position=(3, 4), 'red')
-    >>> p2.position.x
     3
-    >>> p2.position.y
+    >>> p.position.y
     4
 
-It is also possible to construct the tuple using keyword arguments, by using
-an helper::
+If you prefer to use keyword arguments, you can take advantage of the
+``Position`` ``staticmethod``, which helps to construct the desired tuple in
+the right order:
 
-    >>> p3 = Point(position=Point.Position(x=5, y=6), color='red')
-    >>> p3.position.x
+    >>> Point.Position(y=6, x=5)
+    (5, 6)
+    >>> p2 = Point(position=Point.Position(x=5, y=6), color='red')
+    >>> p2.position.x
     5
-    >>> p3.position.y
+    >>> p2.position.y
     6
 
-Note the difference between the lowercase ``Point.position`` which is used to
-access the field, and the capitalized ``Point.Position`` which is used to
-construct new objects.
+By using ``Position``, you can also **omit** some parameters; in this case,
+they will get the default value, as usual:
 
+    >>> Point.Position(y=7)
+    (0, 7)
+
+.. note:: Make sure to notice the difference between the lowercase
+          ``Point.position`` which is a property used to read the field, and
+          the capitalized ``Point.Position`` which is used to construct new
+          objects:
+
+          >>> Point.position
+          <property object at ...>
+          >>> Point.Position
+          <function Position at ...>
 
 Named unions
 -------------
