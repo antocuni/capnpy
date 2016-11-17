@@ -3,7 +3,10 @@ import capnpy
 from capnpy import ptr
 from capnpy.blob import Blob, Types
 
-undefined = object()
+class Undefined(object):
+    def __repr__(self):
+        return '<undefined>'
+undefined = Undefined()
 
 def check_tag(curtag, newtag):
     if curtag is not None:

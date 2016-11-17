@@ -1,6 +1,6 @@
 import py
 from capnpy.blob import Types, CapnpBufferWithSegments
-from capnpy.struct_ import Struct
+from capnpy.struct_ import Struct, undefined
 from capnpy.enum import enum
 from capnpy.printer import print_buffer
 
@@ -24,6 +24,9 @@ BUF = ('garbage0'
        '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
        '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
        '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
+
+def test_undefined():
+    assert repr(undefined) == '<undefined>'
 
 def test__read_data():
     buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1

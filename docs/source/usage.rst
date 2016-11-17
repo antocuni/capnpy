@@ -386,9 +386,9 @@ notation:
     >>> p.position.y
     4
 
-If you prefer to use keyword arguments, you can take advantage of the
-``Position`` ``staticmethod``, which helps to construct the desired tuple in
-the right order:
+``capnpy`` also generates a **group constructor**, which is a ``staticmethod``
+named as the capitalized group name. It is useful because you can use keyword
+arguments and get the desired tuple in the right order:
 
     >>> Point.Position(y=6, x=5)
     (5, 6)
@@ -398,16 +398,15 @@ the right order:
     >>> p2.position.y
     6
 
-By using ``Position``, you can also **omit** some parameters; in this case,
-they will get the default value, as usual:
+By using the group constructor, you can also **omit** some parameters; in this
+case, they will get the default value, as usual:
 
     >>> Point.Position(y=7)
     (0, 7)
 
 .. note:: Make sure to notice the difference between the lowercase
           ``Point.position`` which is a property used to read the field, and
-          the capitalized ``Point.Position`` which is used to construct new
-          objects:
+          the capitalized ``Point.Position`` which is the group constructor:
 
           >>> Point.position
           <property object at ...>
@@ -417,52 +416,67 @@ they will get the default value, as usual:
 Named unions
 -------------
 
-Named unions are a special case of groups. Suppose to have the following schema::
+Named unions are a special case of groups.
 
-    @0xbf5147cbbecf40c1;
-    struct Person {
-      name @0 :Text;
-      job :union {
-          unemployed @1 :Void;
-          retired @2 :Void;
-          worker @3 :Text;
-      }
-    }
+.. literalinclude:: example_union.capnp
+   :language: capnp
 
-You can instantiate new objects as you would do with a normal group. If you
-want to specify a ``void`` union field, you can use ``None``::
 
-    >>> example = capnpy.load_schema('example')
-    >>> p1 = example.Person(name='John', job=example.Person.Job(retired=None))
-    >>> p2 = example.Person(name='John', job=example.Person.Job(worker='capnpy'))
+You can instantiate new objects as you would do with a normal group, by using
+the group constructor. If you want to specify a ``Void`` union field, you can
+use ``None``:
 
-Reading named unions is the same as anonymous ones::
+    >>> mod = capnpy.load_schema('example_named_union')
+    >>> Person = mod.Person
+    >>> p1 = Person(name='Alice', job=Person.Job(unemployed=None))
+    >>> p2 = Person(name='Bob', job=Person.Job(employer='Capnpy corporation'))
+
+Reading named unions is the same as anonymous ones:
 
     >>> p1.job.which()
-    <job.__tag__.retired: 1>
-    >>> p1.job.is_retired()
+    <job.__tag__.unemployed: 0>
+    >>> p1.job.is_unemployed()
     True
-    >>> p2.job.worker
-    'capnpy'
+    >>> p2.job.employer
+    'Capnpy corporation'
+
+.. note:: The reason why you have to use the group constructor is that it
+          automatically insert the special ``undefined`` value in the right
+          positions:
+
+          >>> from capnpy.struct_ import undefined
+          >>> undefined
+          <undefined>
+          >>> Person.Job(unemployed=None)
+          (None, <undefined>, <undefined>)
+          >>> Person.Job(employer='Capnpy corporation')
+          (<undefined>, 'Capnpy corporation', <undefined>)
 
 
 Equality and hashing
 ====================
 
-By default, structs are not hashable and cannot be compared. To enable, you
-need to specify which fields to consider using the ``$Py.key`` annotation::
+By default, structs are not hashable and cannot be compared:
 
-    using Py = import "/capnpy/annotate.capnp";
+    >>> p1 = example.Point(x=1, y=2)
+    >>> p2 = example.Point(x=1, y=2)
+    >>> p1 == p2
+    Traceback (most recent call last):
+    ...
+    TypeError: Cannot hash or compare capnpy structs. Use the $Py.key annotation to enable it
 
-    # ignore the name when comparing
-    struct Point $Py.key("x, y") {
-        x @0 :Int64;
-        y @1 :Int64;
-        name @2 :Text;
-    }
+By specifying the ``$Py.key`` annotation, you explicitly tell ``capnpy`` which
+fields to consider when doing equality testing and hashing:
 
-::
+.. literalinclude:: example_key.capnp
+   :language: capnp
+   :emphasize-lines: 5
+   :lines: 3-12
 
+.. doctest::
+
+    >>> mod = capnpy.load_schema('example_key')
+    >>> Point = mod.Point
     >>> p1 = Point(1, 2, "p1")
     >>> p2 = Point(1, 2, "p2")
     >>> p3 = Point(3, 4, "p3")
@@ -472,60 +486,80 @@ need to specify which fields to consider using the ``$Py.key`` annotation::
     >>> p1 == p3
     False
 
-If you have many fields, you can use ``$Py.key("*")`` to include all of them
-in the comparison key: this is equivalent of explicitly listing all the fields
-which are present in the schema. In particular, be aware that if later get
-objects which come from a **newer** schema, the additional fields will **not**
-be considered in the comparisons.
+You can also use them as dictionary keys:
 
-Moreover, the structs are guaranteed to compare equal to the corresponding
-tuples::
+    >>> d = {}
+    >>> d[p1] = 'hello'
+    >>> d[p2]
+    'hello'
+
+.. tip:: If you have many fields, you can use ``$Py.key("*")`` to include all
+         of them in the comparison key: this is equivalent of explicitly
+         listing all the fields which are present in the schema **at the
+         moment of compilation**. In particular, be aware that if later get
+         objects which come from a *newer* schema, the additional fields will
+         **not** be considered in the comparisons.
+
+
+Moreover, the structs are guaranteed to hash and compare equal to the
+corresponding tuples:
 
     >>> p1 == (1, 2)
     True
     >>> p3 == (3, 4)
     True
-
-Finally, it is possible to use them as dicionary keys::
-
-    >>> d = {}
-    >>> d[p1] = 'foo'
-    >>> d[p2]
-    'foo'
     >>> d[(1, 2)]
-    'foo'
+    'hello'
 
 
-**Rationale**: you have to manually specify the fields to consider because it
-is not obvious what is the right thing to do in presence of schema
-evolution. For example, suppose you start with a ``struct Point`` which
-contains only ``x`` and ``y``::
+Rationale
+----------
 
-    >>> p1 = Point(1, 2) # there is no "name" yet
+Why are not structs comparable by defaults but you have to manually specify
+``$Py.key``?  Couldn't ``capnpy`` be smart enough to figure out by itself?
 
-Then, you receive some other object created with a newer schema, which
-contains also the ``name`` field::
+We choose to use ``$Py.key`` because it is not obvious what is the right thing
+to do in presence of schema evolution. For example, suppose you start with
+previous version of ``struct Point`` which contains only ``x`` and ``y``:
 
-    >>> p2 = Point.load(mysocket)
+.. literalinclude:: example_key.capnp
+   :language: capnp
+   :emphasize-lines: 5
+   :lines: 13-17
+
+.. doctest::
+
+    >>> OlderPoint = mod.OlderPoint
+    >>> p1 = OlderPoint(1, 2) # there is no "name" yet
+
+Then, you receive some other object created with a newer schema which contains
+an additional field, such as our ``Point``. Since ``Point`` is an evolution of
+``OlderPoint``, it is perfectly lecit to load it:
+
+    >>> p_with_name = Point(1, 2, 'this is my name')
+    >>> message_from_the_future = p_with_name.dumps()
+    >>> p2 = OlderPoint.loads(message_from_the_future)
     >>> p2.x, p2.y
     (1, 2)
+
+Now, note that the underyling data contains the name, although we don't have
+the ``name`` field (because we are using an older schema):
+
     >>> hasattr(p2, 'name')
     False
-    >>> p2._buf.s
-    '\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x82\x00\x00\x00this is my name\x00'
+    >>> 'this is my name' in p2._buf.s
+    True
 
-Note that the underyling data contains the name, although we don't have the
-``name`` field (because we used an older schema). So, what should ``p1 == p2``
-return? We might choose to simply ignore the name and return ``True``. Or
-choose to consider ``p1.name`` equal to the empty string, or to ``None``, and
-thus return ``False``. Or we could declare that two objects are equal when
-their canonical representation is the same, which introduces even more subtle
-consequences.
+So, what should ``p1 == p2`` return? We might choose to simply ignore the
+``name`` and return ``True``. Or choose to consider ``p1.name`` equal to the
+empty string, or to ``None``, and thus return ``False``. Or we could declare
+that two objects are equal when their canonical representation is the same,
+which introduces even more subtle consequences.
 
 According to the Zen of Python:
 
-    Explicit is better than implicit.
-    In the face of ambiguity, refuse the temptation to guess.
+    | *Explicit is better than implicit.*
+    | *In the face of ambiguity, refuse the temptation to guess.*
 
 Hence, we require you to explicity specify which fields to consider.
 
