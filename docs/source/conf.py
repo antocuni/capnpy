@@ -31,6 +31,7 @@ sys.path.append(os.path.abspath('../ext'))
 # ones.
 extensions = [
     'sphinx.ext.autosectionlabel',
+    'sphinx.ext.doctest',
     'benchmark_directive',
 ]
 

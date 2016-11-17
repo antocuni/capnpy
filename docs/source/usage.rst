@@ -17,28 +17,33 @@ schema.  It requires ``capnp 0.5.0`` or later.
 Quick example
 =============
 
-Suppose to have a capnp schema called ``example.capnp``::
+Suppose to have a capnp schema called ``example.capnp``:
 
-    @0xe62e66ea90a396da;
-    struct Point {
-        x @0 :Int64;
-        y @1 :Int64;
-    }
+.. literalinclude:: example.capnp
+   :language: capnproto
 
-You can use ``capnpy`` to read and write messages of type ``Point``::
+You can use ``capnpy`` to read and write messages of type ``Point``:
+
+.. testcode::
 
     import capnpy
 
     # load the schema using dynamic loading
-    example = capnpy.load_schema('example')
+    example = capnpy.load_schema(filename='source/example.capnp')
 
     # create a new Point object
     p = example.Point(x=1, y=2)
 
     # serialize the message and load it back
-    message = capnpy.dumps(p)
-    p2 = capnpy.loads(message)
-    print p2.x, p2.y
+    message = p.dumps()
+    p2 = example.Point.loads(message)
+    print 'p2.x ==', p2.x
+    print 'p2.y ==', p2.y
+
+.. testoutput::
+
+    p2.x == 1
+    p2.y == 2
 
 
 Loading schemas
@@ -494,7 +499,7 @@ objects which come from a **newer** schema, the additional fields will **not**
 be considered in the comparisons.
 
 Moreover, the structs are guaranteed to compare equal to the corresponding
-tuples:
+tuples::
 
     >>> p1 == (1, 2)
     True
