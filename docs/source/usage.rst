@@ -343,7 +343,7 @@ If you try to specify two conflicting fields, you get an error:
 
     >>> Shape(area=16, square=4, circle=42)
     Traceback (most recent call last):
-    ...
+      ...
     TypeError: got multiple values for the union tag: circle, square
 
 The second way is to use one of the special ``new_*()`` alternate
@@ -355,7 +355,7 @@ constructors:
 
     >>> s = Shape.new_square(area=16, square=4, circle=42)
     Traceback (most recent call last):
-      File "<stdin>", line 1, in <module>
+      ...
     TypeError: new_square() got an unexpected keyword argument 'circle'
 
 The alternate constructors are especially handy in case of ``Void`` union
@@ -462,7 +462,7 @@ By default, structs are not hashable and cannot be compared:
     >>> p2 = example.Point(x=1, y=2)
     >>> p1 == p2
     Traceback (most recent call last):
-    ...
+      ...
     TypeError: Cannot hash or compare capnpy structs. Use the $Py.key annotation to enable it
 
 By specifying the ``$Py.key`` annotation, you explicitly tell ``capnpy`` which
@@ -567,35 +567,28 @@ Hence, we require you to explicity specify which fields to consider.
 Extending ``capnpy`` structs
 =============================
 
-As described above, each capnproto Struct is converted into a Python class,
-whose attributes are specified by the capnproto schema. Moreover, with
-``capnpy`` you can easily add methods to such classes.
-
-To add methods, use the ``__extend__`` class decorator as shown here::
+As described above, each capnproto ``struct`` is converted into a Python
+class. With ``capnpy`` you can easily add methods by using the ``__extend__``
+class decorator:
 
     >>> import math
     >>> import capnpy
-    >>> example = capnpy.load_schema('example')
-    >>> p = example.Point(x=3, y=4)
-    >>> print p.distance()
-    Traceback (most recent call last):
-      File "<stdin>", line 1, in <module>
-    AttributeError: 'Point' object has no attribute 'distance'
+    >>> Point = example.Point
     >>>
-    >>> @example.Point.__extend__
+    >>> @Point.__extend__
     ... class Point:
     ...     def distance(self):
     ...         return math.sqrt(self.x**2 + self.y**2)
     ...
-    >>> print p.distance()
+    >>>
+    >>> p = Point(x=3, y=4)
+    >>> p.distance()
     5.0
 
 Although it seems magical, ``__extend__`` is much simpler than it looks: what
 it does is simply to copy the content of the new class body ``Point`` into the
 body of the automatically-generated ``example.Point``; the result is that
-``example.Point`` contains both the original fields and the new methods; as
-shown above, this affects also the objects created before the call to
-``__extend__``.
+``example.Point`` contains both the original fields and the new methods.
 
 When loading a schema, e.g. ``example.capnp``, ``capnpy`` also searches for a
 file named ``example_extended.py`` in the same directory. If it exists, the
@@ -606,13 +599,16 @@ following ``example_extended.py`` in the same directory as ``example.capnp``::
 
     # example_extended.py
     import math
+
+    # Note that the Point class is already available, as this code is executed
+    # inside the namespace of the module loaded from example.capnp
     @Point.__extend__
     class Point:
         def distance(self):
             return math.sqrt(self.x**2 + self.y**2)
 
 Then, the ``distance`` method will be immediately available as soon as we load
-the schema::
+the schema:
 
     >>> import capnpy
     >>> example = capnpy.load_schema('example')
@@ -624,4 +620,4 @@ the schema::
 ``capnpy`` vs ``pycapnp``
 ==========================
 
-XXX write me
+To be written
