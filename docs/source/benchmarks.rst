@@ -69,6 +69,8 @@ optimization in that area. With PyPy 5.6, ``uint64`` is as fast as ``int64``.
    :group:  b.extra_info.attribute_type
 
 
+.. _special-union-attributes:
+
 Special union attributes
 =========================
 

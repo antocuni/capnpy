@@ -4,8 +4,9 @@ Usage
 
 .. testsetup::
 
-   # this is needed for capnpy.load_schema('example')
    import sys
+   import math
+   # this is needed for capnpy.load_schema('example')
    sys.path.append('source')
 
 Installation and requirements
@@ -303,11 +304,13 @@ union.
 .. doctest::
 
     >>> mod = capnpy.load_schema('example_union')
-    >>> Shape = mod.Shape
+    >>> Shape, Type = mod.Shape, mod.Type
     >>> Shape.__tag__
     <class 'capnpy.enum.Shape.__tag__'>
     >>> Shape.__tag__.__members__
     ('circle', 'square')
+    >>> Type.__tag__.__members__
+    ('void', 'bool', 'int64', 'float64', 'text')
 
 You can query which field is set by calling ``which()``, or by calling one of
 the ``is_*()`` methods which are automatically generated:
@@ -324,52 +327,40 @@ the ``is_*()`` methods which are automatically generated:
 
 The difference between ``which()`` and ``__which__()`` is that the former
 return an ``Enum`` value, while the latter a raw integer: on CPython,
-``which()`` is approximately 2x slower, so you might consider to use the raw
-form in performance-critical parts of your code. On PyPy, the two forms have
-the very same performance.
+``which()`` is approximately :ref:`4x slower <special-union-attributes>`, so
+you might consider to use the raw form in performance-critical parts of your
+code. On PyPy, the two forms have the very same performance.
 
 Since ``capnpy`` objects are immutable, union fields must be set when
 instantiating the object. The first way is to call the default constructor and
-set the field as usual::
+set the field as usual:
 
-    >>> s = Shape(area=16, square=4)
-    >>> s.is_square()
+    >>> s = Shape(area=3*3*math.pi, circle=3)
+    >>> s.is_circle()
     True
 
-If you try to specify two conflicting fields, you get an error::
+If you try to specify two conflicting fields, you get an error:
 
-    >>> Shape(area=16, square=4, circle=5)
+    >>> Shape(area=16, square=4, circle=42)
     Traceback (most recent call last):
     ...
     TypeError: got multiple values for the union tag: circle, square
 
 The second way is to use one of the special ``new_*()`` alternate
-constructors::
+constructors:
 
     >>> s = Shape.new_square(area=16, square=4)
     >>> s.is_square()
     True
 
-    >>> s = Shape.new_square(area=16, square=4, circle=5)
+    >>> s = Shape.new_square(area=16, square=4, circle=42)
     Traceback (most recent call last):
       File "<stdin>", line 1, in <module>
     TypeError: new_square() got an unexpected keyword argument 'circle'
 
 The alternate constructors are especially handy in case of ``Void`` union
 fields, because in that case you don't need to specify the (void) value of the
-field::
-
-    struct Type {
-      union {
-        void @0 :Void;
-        bool @1 :Void;
-        int64 @2 :Void;
-        float64 @3 :Void;
-        text @4 :Void;
-      }
-    }
-
-::
+field:
 
     >>> t = Type.new_int64()
     >>> t.which()
