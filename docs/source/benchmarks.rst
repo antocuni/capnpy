@@ -150,6 +150,8 @@ __ usage.html#loading-from-sockets
    :group:  charter.extract_test_name(b.name)
 
 
+.. _buffered-streams:
+
 Buffered streams
 ================
 
