@@ -1,18 +1,28 @@
 from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
                           uint32_t, int32_t, int64_t, uint64_t, INT64_MAX)
-from cpython.string cimport PyString_GET_SIZE, PyString_AS_STRING, PyString_Check
+from cpython.string cimport (PyString_GET_SIZE, PyString_AS_STRING,
+                             PyString_CheckExact)
 
-cdef char* as_cbuf(object buf, Py_ssize_t* length):
+cdef extern from "Python.h":
+    int PyByteArray_CheckExact(object o)
+    char* PyByteArray_AS_STRING(object o)
+    Py_ssize_t PyByteArray_GET_SIZE(object o)
+
+cdef char* as_cbuf(object buf, Py_ssize_t* length) except NULL:
     # PyString_AS_STRING seems to be faster than relying of cython's own logic
     # to convert bytes to char*
     cdef bytes bytes_buf
-    if PyString_Check(buf):
+    cdef bytearray ba_buf
+    if PyString_CheckExact(buf):
         bytes_buf = buf
         length[0] = PyString_GET_SIZE(bytes_buf)
         return PyString_AS_STRING(bytes_buf)
+    elif PyByteArray_CheckExact(buf):
+        ba_buf = buf
+        length[0] = PyByteArray_GET_SIZE(ba_buf)
+        return PyByteArray_AS_STRING(ba_buf)
     else:
-        length[0] = len(buf)
-        return buf
+        raise TypeError
 
 cdef checkbound(int size, Py_ssize_t length, int offset):
     if offset + size > length:

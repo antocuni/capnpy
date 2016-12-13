@@ -45,7 +45,8 @@ def test_bytearray():
     buf = bytearray(struct.pack('q', 42))
     assert unpack_primitive(ord('q'), buf, 0) == 42
 
-def test_out_of_bounds():
+def test_errors():
     buf = '\xff' * 8
     pytest.raises(IndexError, "unpack_primitive(ord('q'), buf, -1)")
     pytest.raises(IndexError, "unpack_primitive(ord('q'), buf, 8)")
+    pytest.raises(TypeError, "unpack_primitive(ord('q'), 42, 0)")
