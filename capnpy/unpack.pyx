@@ -22,7 +22,7 @@ cdef char* as_cbuf(object buf, Py_ssize_t* length) except NULL:
         length[0] = PyByteArray_GET_SIZE(ba_buf)
         return PyByteArray_AS_STRING(ba_buf)
     else:
-        raise TypeError
+        raise TypeError("Expected str or bytearray")
 
 cdef checkbound(int size, Py_ssize_t length, int offset):
     if offset < 0 or offset + size > length:
