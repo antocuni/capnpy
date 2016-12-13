@@ -25,7 +25,7 @@ cdef char* as_cbuf(object buf, Py_ssize_t* length) except NULL:
         raise TypeError
 
 cdef checkbound(int size, Py_ssize_t length, int offset):
-    if offset + size > length:
+    if offset < 0 or offset + size > length:
         raise IndexError('Offset out of bounds: %d' % offset)
 
 cpdef unpack_primitive(char ifmt, object buf, int offset):
@@ -33,9 +33,6 @@ cpdef unpack_primitive(char ifmt, object buf, int offset):
     cdef void* valueaddr
     cdef uint64_t uint64_value
     cdef Py_ssize_t length = 0
-    #
-    if offset < 0:
-        raise IndexError('Offset out of bounds: %d' % offset)
     cbuf = as_cbuf(buf, &length)
     valueaddr = cbuf + offset
     if ifmt == 'q':
@@ -82,9 +79,6 @@ cpdef long unpack_int64(object buf, int offset):
     cdef char* cbuf
     cdef void* valueaddr
     cdef Py_ssize_t length = 0
-    #
-    if offset < 0:
-        raise IndexError('Offset out of bounds: %d' % offset)
     cbuf = as_cbuf(buf, &length)
     valueaddr = cbuf + offset
     checkbound(8, length, offset)
@@ -94,9 +88,6 @@ cpdef long unpack_int16(object buf, int offset):
     cdef char* cbuf
     cdef void* valueaddr
     cdef Py_ssize_t length = 0
-    #
-    if offset < 0:
-        raise IndexError('Offset out of bounds: %d' % offset)
     cbuf = as_cbuf(buf, &length)
     valueaddr = cbuf + offset
     checkbound(2, length, offset)
@@ -106,9 +97,6 @@ cpdef long unpack_uint32(object buf, int offset):
     cdef char* cbuf
     cdef void* valueaddr
     cdef Py_ssize_t length = 0
-    #
-    if offset < 0:
-        raise IndexError('Offset out of bounds: %d' % offset)
     cbuf = as_cbuf(buf, &length)
     valueaddr = cbuf + offset
     checkbound(4, length, offset)
