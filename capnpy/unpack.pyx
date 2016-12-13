@@ -1,11 +1,12 @@
 from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
                           uint32_t, int32_t, int64_t, uint64_t, INT64_MAX)
 
-cdef checkbound(int size, bytes buf, int offset):
+
+cdef checkbound(int size, object buf, int offset):
     if offset + size > len(buf):
         raise IndexError('Offset out of bounds: %d' % offset)
 
-cpdef unpack_primitive(char ifmt, bytes buf, int offset):
+cpdef unpack_primitive(char ifmt, object buf, int offset):
     cdef char* cbuf
     cdef void* valueaddr
     cdef uint64_t uint64_value
@@ -54,7 +55,7 @@ cpdef unpack_primitive(char ifmt, bytes buf, int offset):
     raise ValueError('unknown fmt %s' % chr(ifmt))
 
 
-cpdef long unpack_int64(bytes buf, int offset):
+cpdef long unpack_int64(object buf, int offset):
     cdef char* cbuf
     cdef void* valueaddr
     #
@@ -65,7 +66,7 @@ cpdef long unpack_int64(bytes buf, int offset):
     checkbound(8, buf, offset)
     return (<int64_t*>valueaddr)[0]
 
-cpdef long unpack_int16(bytes buf, int offset):
+cpdef long unpack_int16(object buf, int offset):
     cdef char* cbuf
     cdef void* valueaddr
     #
@@ -76,7 +77,7 @@ cpdef long unpack_int16(bytes buf, int offset):
     checkbound(2, buf, offset)
     return (<int16_t*>valueaddr)[0]
 
-cpdef long unpack_uint32(bytes buf, int offset):
+cpdef long unpack_uint32(object buf, int offset):
     cdef char* cbuf
     cdef void* valueaddr
     #

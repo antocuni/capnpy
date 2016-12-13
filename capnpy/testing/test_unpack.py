@@ -39,3 +39,7 @@ def test_uint64():
     val = unpack_primitive(ord('Q'), buf, 0)
     assert val == sys.maxint+1
     assert type(val) is long
+
+def test_bytearray():
+    buf = bytearray(struct.pack('q', 42))
+    assert unpack_primitive(ord('q'), buf, 0) == 42
