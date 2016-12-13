@@ -1,4 +1,5 @@
 import py
+import pytest
 import sys
 import struct
 import math
@@ -43,3 +44,8 @@ def test_uint64():
 def test_bytearray():
     buf = bytearray(struct.pack('q', 42))
     assert unpack_primitive(ord('q'), buf, 0) == 42
+
+def test_out_of_bounds():
+    buf = '\xff' * 8
+    pytest.raises(IndexError, "unpack_primitive(ord('q'), buf, -1)")
+    pytest.raises(IndexError, "unpack_primitive(ord('q'), buf, 8)")
