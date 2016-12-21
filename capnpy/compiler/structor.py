@@ -100,6 +100,7 @@ class Structor(object):
             code.w('builder = _MutableBuilder({l})', l=self.layout.total_length)
             if self.tag_value is not None:
                 code.w('__which__ = {tag_value}', tag_value=int(self.tag_value))
+                self.handle_primitive(code, self.layout.node_which)
             #
             for node in self.fieldtree.allnodes():
                 f = node.f
@@ -214,6 +215,7 @@ class Layout(object):
                                Type.new_int16(),
                                Value.new_int16(0))
             node = Node(m, f, prefix=None)
+            self.node_which = node
             self.slots.append(node)
 
     def add_tree(self, tree):
