@@ -48,7 +48,7 @@ class RequestedFile:
         m.w("from capnpy.struct_ import undefined as _undefined")
         m.w("from capnpy.enum import enum as _enum")
         m.w("from capnpy.blob import Types as _Types")
-        m.w("from capnpy.builder import StructBuilder as _StructBuilder")
+        m.w("from capnpy.builder import MutableBuilder as _MutableBuilder")
         m.w("from capnpy.list import PrimitiveList as _PrimitiveList")
         m.w("from capnpy.list import StructList as _StructList")
         m.w("from capnpy.list import StringList as _StringList")

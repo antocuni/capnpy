@@ -97,8 +97,7 @@ class Structor(object):
             raise ValueError("Duplicate field name(s): %s" % argnames)
         code.w('@staticmethod')
         with code.def_(self.private_name, self.params):
-            code.w('builder = _StructBuilder({fmt})',
-                   fmt=repr(self.layout.fmt))
+            code.w('builder = _MutableBuilder({l})', l=self.layout.total_length)
             if self.tag_value is not None:
                 code.w('__which__ = {tag_value}', tag_value=int(self.tag_value))
             #
@@ -124,10 +123,7 @@ class Structor(object):
                     code.w("raise NotImplementedError('Unsupported field type: {f}')",
                            f=node.f.shortrepr())
             #
-            buildnames = [n.varname for n in self.layout.slots
-                          if not n.f.is_void()]
-            code.w('buf =', code.call('builder.build', buildnames))
-            code.w('return buf')
+            code.w('return builder.build()')
 
     def handle_group(self, code, node):
         node.emit_unpack_group(code)
@@ -187,12 +183,15 @@ class Structor(object):
         ns.w('{fname} = builder.alloc_list({offset}, {listcls}, {itemtype}, {fname})')
 
     def handle_primitive(self, code, node):
+        ns = code.new_scope()
+        ns.arg = node.varname
         if node.f.slot.hadExplicitDefault:
-            ns = code.new_scope()
-            ns.arg = node.varname
             ns.default_ = node.f.slot.defaultValue.as_pyobj()
             ns.w('{arg} ^= {default_}')
-
+        #
+        ns.ifmt = "ord(%r)" % node.f.slot.get_fmt()
+        ns.offset = self.layout.slot_offset(node.f) # XXX
+        ns.w('builder.set({ifmt}, {offset}, {arg})')
 
 
 class Layout(object):
@@ -204,6 +203,7 @@ class Layout(object):
         self.m = m
         self.data_size = data_size
         self.ptrs_size = ptrs_size
+        self.total_length = (self.data_size + self.ptrs_size)*8
         self.fmt = None    # computed later
         self.slots = []
         #
