@@ -122,23 +122,22 @@ class Node__Struct:
         ns.data_size = self.struct.dataWordCount
         ns.ptrs_size = self.struct.pointerCount
         named_union = self.struct.get_unique_named_union(m)
-        self._emit_init_nounion(m, ns) # XXX
-        return # XXX
-        if self.struct.is_union():
-            tags = self._emit_ctors_union(m, ns)
-            self._emit_init_union(m, ns, tags)
-        elif named_union:
-            # Unfortunately, general support for named unions is not ready yet
-            # :(
-            # temporary(?) hack: special-case structs which have a single
-            # named union and provide constructors as if it were an anonymous
-            # union.
-            tags = self._emit_ctors_named_union(m, ns, named_union)
-            self._emit_init_union(m, ns, tags, named_union=named_union)
-        else:
-            self._emit_init_nounion(m, ns)
+        self._emit_init(m, ns)
+        ## if self.struct.is_union():
+        ##     tags = self._emit_ctors_union(m, ns)
+        ##     self._emit_init_union(m, ns, tags)
+        ## elif named_union:
+        ##     # Unfortunately, general support for named unions is not ready yet
+        ##     # :(
+        ##     # temporary(?) hack: special-case structs which have a single
+        ##     # named union and provide constructors as if it were an anonymous
+        ##     # union.
+        ##     tags = self._emit_ctors_named_union(m, ns, named_union)
+        ##     self._emit_init_union(m, ns, tags, named_union=named_union)
+        ## else:
+        ##     self._emit_init_nounion(m, ns)
 
-    def _emit_init_nounion(self, m, ns):
+    def _emit_init(self, m, ns):
         tag_offset = None
         if self.struct.is_union():
             tag_offset = self.struct.discriminantOffset * 2
@@ -149,57 +148,6 @@ class Node__Struct:
         with ns.def_('__init__', ['self'] + ctor.params):
             call = m.code.call('self.__new', ctor.argnames)
             ns.w('_buf = {call}', call=call)
-            ns.w('_Struct.__init__(self, _buf, 0, {data_size}, {ptrs_size})')
-        ns.w()
-
-    def _emit_init_union(self, m, ns, tags, named_union=None):
-        # def __init__(cls, x, y, square=undefined, circle=undefined):
-        #     _buf = None
-        #     _curtag = None
-        #     if square is not undefined:
-        #         _curtag = _check_tag(_curtag, 'square')
-        #         _buf = cls.__new_squadre(x=x, y=y)
-        #     if circle is not undefined:
-        #         _curtag = _check_tag(_curtag, 'circle')
-        #         _buf = cls.__new_circle(x=x, y=y)
-        #
-        #     if _buf is None:
-        #         raise TypeError("one of the following args is required: square, circle")
-        #     _Struct.__init__(self, buf, 0, None)
-        #
-        tree = FieldTree(m, self.struct.fields, union_default='_undefined')
-        _, params = tree.get_args_and_params()
-        ns.params = m.code.params(params)
-        with ns.block('def __init__(self, {params}):'):
-            ns.w('_buf = None')
-            ns.w('_curtag = None')
-            #
-            ns.prefix = ''
-            if named_union:
-                # hack hack support for named union; hopefully this will all go away
-                mynodes = [node for node in tree.children if node.f == named_union]
-                assert len(mynodes) == 1
-                mynodes[0].emit_unpack_group(m.code)
-                ns.prefix = named_union.name + '_'
-            #
-            for tag_field, ctor_args in tags:
-                ns.tagname = m._field_name(tag_field)
-                with ns.block('if {prefix}{tagname} is not _undefined:'):
-                    ns.w('_curtag = _check_tag(_curtag, {tagname!r})')
-                    if ns.prefix:
-                        # hack hack; moreover, this has a risk of a name clash
-                        # in case the fields inside and outside the union have
-                        # the same names
-                        ns.w('{tagname} = {prefix}{tagname}')
-                    ns.w('_buf = self.__new_{tagname}({args})',
-                         args=m.code.args(ctor_args))
-            #
-            with ns.block('if _buf is None:'):
-                ns.tags = [m._field_name(f) for f, _ in tags]
-                ns.tags = ', '.join(ns.tags)
-                ns.w('raise TypeError("one of the following args is required: '
-                     '{tags}")')
-            #
             ns.w('_Struct.__init__(self, _buf, 0, {data_size}, {ptrs_size})')
         ns.w()
 
