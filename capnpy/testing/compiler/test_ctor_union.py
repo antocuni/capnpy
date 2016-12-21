@@ -125,10 +125,10 @@ class TestGenericCtor(BaseTestUnionConstructors):
                                     'circle, square')
 
     def test_no_tags(self, mod):
-        einfo = py.test.raises(TypeError, "mod.Shape(area=0, perimeter=0)")
-        assert str(einfo.value) == ("one of the following args is required: "
-                                    "circle, square, empty")
-
+        s = mod.Shape(area=1, perimeter=2)
+        assert s.is_circle()
+        assert s.area == 1
+        assert s.perimeter == 2
 
     def test_default(self, mod):
         p = mod.Shape(circle=42)
