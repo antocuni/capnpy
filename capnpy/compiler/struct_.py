@@ -122,6 +122,8 @@ class Node__Struct:
         ns.data_size = self.struct.dataWordCount
         ns.ptrs_size = self.struct.pointerCount
         named_union = self.struct.get_unique_named_union(m)
+        self._emit_init_nounion(m, ns) # XXX
+        return # XXX
         if self.struct.is_union():
             tags = self._emit_ctors_union(m, ns)
             self._emit_init_union(m, ns, tags)
@@ -137,7 +139,11 @@ class Node__Struct:
             self._emit_init_nounion(m, ns)
 
     def _emit_init_nounion(self, m, ns):
-        ctor = Structor(m, '', ns.data_size, ns.ptrs_size, self.struct.fields)
+        tag_offset = None
+        if self.struct.is_union():
+            tag_offset = self.struct.discriminantOffset * 2
+        ctor = Structor(m, '', ns.data_size, ns.ptrs_size, self.struct.fields,
+                        tag_offset=tag_offset)
         ctor.emit_private(m.code)
         ns.w()
         with ns.def_('__init__', ['self'] + ctor.params):

@@ -34,15 +34,13 @@ class Structor(object):
             return cls.from_buffer(buf, ...)
     """
 
-    def __init__(self, m, suffix, data_size, ptrs_size, fields,
-                 tag_offset=None, tag_value=None):
+    def __init__(self, m, suffix, data_size, ptrs_size, fields, tag_offset=None):
         self.m = m
         self.name = 'new'
         if suffix:
             self.name += '_' + suffix
         self.private_name = '__' + self.name
-        self.fieldtree = FieldTree(m, fields)
-        self.tag_value = tag_value
+        self.fieldtree = FieldTree(m, fields, union_default='_undefined')
         self._init_layout(data_size, ptrs_size, tag_offset)
         self._init_args()
 
@@ -98,33 +96,52 @@ class Structor(object):
         code.w('@staticmethod')
         with code.def_(self.private_name, self.params):
             code.w('builder = _MutableBuilder({l})', l=self.layout.total_length)
-            if self.tag_value is not None:
-                code.w('__which__ = {tag_value}', tag_value=int(self.tag_value))
-                self.handle_primitive(code, self.layout.node_which)
+            allnodes = list(self.fieldtree.allnodes())
+            std_nodes = [node for node in allnodes if not node.f.is_part_of_union()]
+            union_nodes = [node for node in allnodes if node.f.is_part_of_union()]
             #
-            for node in self.fieldtree.allnodes():
-                f = node.f
-                if f.is_nullable(self.m):
-                    self.handle_nullable(code, node)
-                elif f.is_group():
-                    self.handle_group(code, node)
-                elif f.is_text():
-                    self.handle_text(code, node)
-                elif f.is_data():
-                    self.handle_data(code, node)
-                elif f.is_struct():
-                    self.handle_struct(code, node)
-                elif f.is_list():
-                    self.handle_list(code, node)
-                elif f.is_primitive() or f.is_enum():
-                    self.handle_primitive(code, node)
-                elif f.is_void():
-                    pass # nothing to do
-                else:
-                    code.w("raise NotImplementedError('Unsupported field type: {f}')",
-                           f=node.f.shortrepr())
+            # first, handle normal fields
+            for node in std_nodes:
+                self.handle_field(code, node)
+            #
+            # then, handle union fields (if any)
+            if union_nodes:
+                code.w('__which__ = 0')
+                code.w('_curtag = None')
+                for node in union_nodes:
+                    ns = code.new_scope()
+                    ns.varname = node.varname
+                    ns.tagval = node.f.discriminantValue
+                    ns.tagname = self.m._field_name(node.f)
+                    with ns.block('if {varname} is not _undefined:'):
+                        ns.w('__which__ = {tagval}')
+                        ns.w('_curtag = _check_tag(_curtag, {tagname!r})')
+                        self.handle_field(code, node)
+                self.handle_field(code, self.layout.node_which)
             #
             code.w('return builder.build()')
+
+    def handle_field(self, code, node):
+        f = node.f
+        if f.is_nullable(self.m):
+            self.handle_nullable(code, node)
+        elif f.is_group():
+            self.handle_group(code, node)
+        elif f.is_text():
+            self.handle_text(code, node)
+        elif f.is_data():
+            self.handle_data(code, node)
+        elif f.is_struct():
+            self.handle_struct(code, node)
+        elif f.is_list():
+            self.handle_list(code, node)
+        elif f.is_primitive() or f.is_enum():
+            self.handle_primitive(code, node)
+        elif f.is_void():
+            pass # nothing to do
+        else:
+            code.w("raise NotImplementedError('Unsupported field type: {f}')",
+                   f=node.f.shortrepr())
 
     def handle_group(self, code, node):
         node.emit_unpack_group(code)
