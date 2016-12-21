@@ -151,17 +151,17 @@ class Structor(object):
         """)
 
     def handle_text(self, code, node):
-        code.w('{arg} = builder.alloc_text({offset}, {arg})',
+        code.w('builder.alloc_text({offset}, {arg})',
                arg=node.varname, offset=self.layout.slot_offset(node.f))
 
     def handle_data(self, code, node):
-        code.w('{arg} = builder.alloc_data({offset}, {arg})',
+        code.w('builder.alloc_data({offset}, {arg})',
                arg=node.varname, offset=self.layout.slot_offset(node.f))
 
     def handle_struct(self, code, node):
         offset = self.layout.slot_offset(node.f)
         structname = node.f.slot.type.runtime_name(self.m)
-        code.w('{arg} = builder.alloc_struct({offset}, {structname}, {arg})',
+        code.w('builder.alloc_struct({offset}, {structname}, {arg})',
                arg=node.varname, offset=offset, structname=structname)
 
     def handle_list(self, code, node):
@@ -180,7 +180,7 @@ class Structor(object):
         else:
             raise ValueError('Unknown item type: %s' % item_type)
         #
-        ns.w('{fname} = builder.alloc_list({offset}, {listcls}, {itemtype}, {fname})')
+        ns.w('builder.alloc_list({offset}, {listcls}, {itemtype}, {fname})')
 
     def handle_primitive(self, code, node):
         ns = code.new_scope()
