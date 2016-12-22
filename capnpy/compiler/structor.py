@@ -14,31 +14,15 @@ class Structor(object):
     Some terminology:
       - argnames: the name of arguments taken by the ctor
       - params: [(argname, default)], for each argname in argnames
-
-    The **private** constructor is a static method which build and return a
-    buffer. The **public** constructor is a classmethod which return a fully
-    constructed object around the buffer returned by the private constructor::
-
-        # private constructor
-        @staticmethod
-        def __new(x, y):
-            ...
-            return builder.build(x, y)
-
-        # public constructor
-        @classmethod
-        def new(cls, x, y):
-            buf = cls.__new(x, y)
-            return cls.from_buffer(buf, ...)
     """
 
-    def __init__(self, m, data_size, ptrs_size, fields, tag_offset=None):
+    def __init__(self, m, struct):
         self.m = m
-        self.data_size = data_size
-        self.ptrs_size = ptrs_size
-        self.fieldtree = FieldTree(m, fields, union_default='_undefined')
-        self.tag_offset = tag_offset
-        self._init_args()
+        self.struct = struct
+        self.data_size = struct.dataWordCount
+        self.ptrs_size = struct.pointerCount
+        self.fieldtree = FieldTree(m, self.struct.fields, union_default='_undefined')
+        self.argnames, self.params = self.fieldtree.get_args_and_params()
 
     def slot_offset(self, f):
         offset = f.slot.offset * f.slot.get_size()
@@ -46,10 +30,7 @@ class Structor(object):
             offset += self.data_size*8
         return offset
 
-    def _init_args(self):
-        self.argnames, self.params = self.fieldtree.get_args_and_params()
-
-    def emit(self, code):
+    def emit(self):
         ## generate a constructor which looks like this
         ## @staticmethod
         ## def __new(x=0, y=0, z=None):
@@ -60,6 +41,7 @@ class Structor(object):
         ##     return builder.build()
         #
         # the parameters have the same order as fields
+        code = self.m.code
         argnames = self.argnames
         if len(argnames) != len(set(argnames)):
             raise ValueError("Duplicate field name(s): %s" % argnames)
@@ -70,12 +52,13 @@ class Structor(object):
             allnodes = list(self.fieldtree.allnodes())
             for node in self.fieldtree.allnodes():
                 if not node.f.is_part_of_union():
-                    self.handle_field(code, node)
-            if self.tag_offset:
-                self.handle_anonymous_union(code)
+                    self.handle_field(node)
+            if self.struct.is_union():
+                self.handle_anonymous_union()
             ns.w('return builder.build()')
 
-    def handle_anonymous_union(self, code):
+    def handle_anonymous_union(self):
+        code = self.m.code
         union_nodes = [node for node in self.fieldtree.allnodes()
                        if node.f.is_part_of_union()]
         code.w('__which__ = 0')
@@ -88,38 +71,38 @@ class Structor(object):
             with ns.block('if {varname} is not _undefined:'):
                 ns.w('__which__ = {tagval}')
                 ns.w('_curtag = _check_tag(_curtag, {tagname!r})')
-                self.handle_field(code, node)
+                self.handle_field(node)
         #
-        ns.offset = self.tag_offset
+        ns.offset = self.struct.discriminantOffset * 2
         ns.ifmt  = 'ord(%r)' % Types.int16.fmt
         ns.w('builder.set({ifmt}, {offset}, __which__)')
 
-    def handle_field(self, code, node):
+    def handle_field(self, node):
         f = node.f
         if f.is_nullable(self.m):
-            self.handle_nullable(code, node)
+            self.handle_nullable(node)
         elif f.is_group():
-            self.handle_group(code, node)
+            self.handle_group(node)
         elif f.is_text():
-            self.handle_text(code, node)
+            self.handle_text(node)
         elif f.is_data():
-            self.handle_data(code, node)
+            self.handle_data(node)
         elif f.is_struct():
-            self.handle_struct(code, node)
+            self.handle_struct(node)
         elif f.is_list():
-            self.handle_list(code, node)
+            self.handle_list(node)
         elif f.is_primitive() or f.is_enum():
-            self.handle_primitive(code, node)
+            self.handle_primitive(node)
         elif f.is_void():
             pass # nothing to do
         else:
             code.w("raise NotImplementedError('Unsupported field type: {f}')",
                    f=node.f.shortrepr())
 
-    def handle_group(self, code, node):
-        node.emit_unpack_group(code)
+    def handle_group(self, node):
+        node.emit_unpack_group(self.m.code)
 
-    def handle_nullable(self, code, node):
+    def handle_nullable(self, node):
         # def __init__(self, ..., x, ...):
         #     ...
         #     if x is None:
@@ -129,7 +112,7 @@ class Structor(object):
         #         x_is_null = 0
         #         x_value = x
         #
-        ns = code.new_scope()
+        ns = self.m.code.new_scope()
         ns.fname = node.varname
         ns.ww(
         """
@@ -141,22 +124,22 @@ class Structor(object):
                 {fname}_value = {fname}
         """)
 
-    def handle_text(self, code, node):
-        code.w('builder.alloc_text({offset}, {arg})',
-               arg=node.varname, offset=self.slot_offset(node.f))
+    def handle_text(self, node):
+        self.m.code.w('builder.alloc_text({offset}, {arg})',
+                      arg=node.varname, offset=self.slot_offset(node.f))
 
-    def handle_data(self, code, node):
-        code.w('builder.alloc_data({offset}, {arg})',
-               arg=node.varname, offset=self.slot_offset(node.f))
+    def handle_data(self, node):
+        self.m.code.w('builder.alloc_data({offset}, {arg})',
+                      arg=node.varname, offset=self.slot_offset(node.f))
 
-    def handle_struct(self, code, node):
+    def handle_struct(self, node):
         offset = self.slot_offset(node.f)
         structname = node.f.slot.type.runtime_name(self.m)
-        code.w('builder.alloc_struct({offset}, {structname}, {arg})',
-               arg=node.varname, offset=offset, structname=structname)
+        self.m.code.w('builder.alloc_struct({offset}, {structname}, {arg})',
+                      arg=node.varname, offset=offset, structname=structname)
 
-    def handle_list(self, code, node):
-        ns = code.new_scope()
+    def handle_list(self, node):
+        ns = self.m.code.new_scope()
         ns.fname = node.varname
         ns.offset = self.slot_offset(node.f)
         itemtype = node.f.slot.type.list.elementType
@@ -173,8 +156,8 @@ class Structor(object):
         #
         ns.w('builder.alloc_list({offset}, {listcls}, {itemtype}, {fname})')
 
-    def handle_primitive(self, code, node):
-        ns = code.new_scope()
+    def handle_primitive(self, node):
+        ns = self.m.code.new_scope()
         ns.arg = node.varname
         if node.f.slot.hadExplicitDefault:
             ns.default_ = node.f.slot.defaultValue.as_pyobj()

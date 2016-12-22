@@ -126,12 +126,8 @@ class Node__Struct:
         self._emit_ctors_union(m, ns)
 
     def _emit_init(self, m, ns):
-        tag_offset = None
-        if self.struct.is_union():
-            tag_offset = self.struct.discriminantOffset * 2
-        ctor = Structor(m, ns.data_size, ns.ptrs_size, self.struct.fields,
-                        tag_offset=tag_offset)
-        ctor.emit(m.code)
+        ctor = Structor(m, self.struct)
+        ctor.emit()
         ns.w()
         with ns.def_('__init__', ['self'] + ctor.params):
             call = m.code.call('self.__new', ctor.argnames)
