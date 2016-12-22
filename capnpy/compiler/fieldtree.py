@@ -25,14 +25,6 @@ class AbstractNode(object):
             if node.f.is_slot():
                 yield node
 
-    def emit_unpack_group(self, code):
-        assert self.f.is_group()
-        ns = code.new_scope()
-        ns.group = self.varname
-        argnames = [child.varname for child in self.children]
-        ns.args = code.args(argnames)
-        ns.w('{args}, = {group}')
-
     def _add_children(self, m, fields, prefix, union_default):
         for f in fields:
             # if this is a "generic union ctor" and the field is a

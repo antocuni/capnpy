@@ -49,10 +49,9 @@ class Structor(object):
         with code.def_('__new', self.params) as ns:
             ns.total_length = (self.data_size + self.ptrs_size)*8
             ns.w('builder = _MutableBuilder({total_length})')
-            allnodes = list(self.fieldtree.allnodes())
-            for node in self.fieldtree.allnodes():
+            for node in self.fieldtree.children:
                 if not node.f.is_part_of_union():
-                    self.handle_field(node)
+                    self.handle_node(node)
             if self.struct.is_union():
                 self.handle_anonymous_union()
             ns.w('return builder.build()')
@@ -71,13 +70,13 @@ class Structor(object):
             with ns.block('if {varname} is not _undefined:'):
                 ns.w('__which__ = {tagval}')
                 ns.w('_curtag = _check_tag(_curtag, {tagname!r})')
-                self.handle_field(node)
+                self.handle_node(node)
         #
         ns.offset = self.struct.discriminantOffset * 2
         ns.ifmt  = 'ord(%r)' % Types.int16.fmt
         ns.w('builder.set({ifmt}, {offset}, __which__)')
 
-    def handle_field(self, node):
+    def handle_node(self, node):
         f = node.f
         if f.is_nullable(self.m):
             self.handle_nullable(node)
@@ -100,7 +99,23 @@ class Structor(object):
                    f=node.f.shortrepr())
 
     def handle_group(self, node):
-        node.emit_unpack_group(self.m.code)
+        # def __init__(self, position, ...):
+        #     ...
+        #     position_x, position_y = position
+        #     builder.set(..., position_x)
+        #     builder.set(..., position_y)
+        #     ...
+        #
+        # 1. unpack the tuple into various indepented variables
+        ns = self.m.code.new_scope()
+        ns.group = node.varname
+        argnames = [child.varname for child in node.children]
+        ns.args = self.m.code.args(argnames)
+        ns.w('{args}, = {group}')
+        #
+        # 2. recursively handle all the children
+        for child in node.children:
+            self.handle_node(child)
 
     def handle_nullable(self, node):
         # def __init__(self, ..., x, ...):
@@ -123,6 +138,8 @@ class Structor(object):
                 {fname}_is_null = 0
                 {fname}_value = {fname}
         """)
+        for child in node.children:
+            self.handle_node(child)
 
     def handle_text(self, node):
         self.m.code.w('builder.alloc_text({offset}, {arg})',
