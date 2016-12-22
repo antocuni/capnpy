@@ -38,11 +38,13 @@ class Structor(object):
         self.ptrs_size = ptrs_size
         self.fieldtree = FieldTree(m, fields, union_default='_undefined')
         self.tag_offset = tag_offset
-        self._init_layout(data_size, ptrs_size, tag_offset)
         self._init_args()
 
-    def _init_layout(self, data_size, ptrs_size, tag_offset):
-        self.layout = Layout(self.m, data_size, ptrs_size, tag_offset)
+    def slot_offset(self, f):
+        offset = f.slot.offset * f.slot.get_size()
+        if f.slot.type.is_pointer():
+            offset += self.data_size*8
+        return offset
 
     def _init_args(self):
         self.argnames, self.params = self.fieldtree.get_args_and_params()
@@ -141,14 +143,14 @@ class Structor(object):
 
     def handle_text(self, code, node):
         code.w('builder.alloc_text({offset}, {arg})',
-               arg=node.varname, offset=self.layout.slot_offset(node.f))
+               arg=node.varname, offset=self.slot_offset(node.f))
 
     def handle_data(self, code, node):
         code.w('builder.alloc_data({offset}, {arg})',
-               arg=node.varname, offset=self.layout.slot_offset(node.f))
+               arg=node.varname, offset=self.slot_offset(node.f))
 
     def handle_struct(self, code, node):
-        offset = self.layout.slot_offset(node.f)
+        offset = self.slot_offset(node.f)
         structname = node.f.slot.type.runtime_name(self.m)
         code.w('builder.alloc_struct({offset}, {structname}, {arg})',
                arg=node.varname, offset=offset, structname=structname)
@@ -156,7 +158,7 @@ class Structor(object):
     def handle_list(self, code, node):
         ns = code.new_scope()
         ns.fname = node.varname
-        ns.offset = self.layout.slot_offset(node.f)
+        ns.offset = self.slot_offset(node.f)
         itemtype = node.f.slot.type.list.elementType
         ns.itemtype = itemtype.runtime_name(self.m)
         #
@@ -179,23 +181,5 @@ class Structor(object):
             ns.w('{arg} ^= {default_}')
         #
         ns.ifmt = "ord(%r)" % node.f.slot.get_fmt()
-        ns.offset = self.layout.slot_offset(node.f) # XXX
+        ns.offset = self.slot_offset(node.f)
         ns.w('builder.set({ifmt}, {offset}, {arg})')
-
-
-class Layout(object):
-    """
-    Low level layout of a struct
-    """
-
-    def __init__(self, m, data_size, ptrs_size, tag_offset):
-        self.m = m
-        self.data_size = data_size
-        self.ptrs_size = ptrs_size
-        self.total_length = (self.data_size + self.ptrs_size)*8
-
-    def slot_offset(self, f):
-        offset = f.slot.offset * f.slot.get_size()
-        if f.slot.type.is_pointer():
-            offset += self.data_size*8
-        return offset

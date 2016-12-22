@@ -1,7 +1,7 @@
 import py
 import pytest
 from capnpy.schema import Field, Type, Value
-from capnpy.compiler.structor import Structor, Layout, FieldTree
+from capnpy.compiler.structor import Structor, FieldTree
 from capnpy.testing.compiler.support import CompilerTest
 
 class TestConstructors(CompilerTest):
