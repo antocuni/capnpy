@@ -99,8 +99,8 @@ class Structor(object):
         elif f.is_void():
             pass # nothing to do
         else:
-            code.w("raise NotImplementedError('Unsupported field type: {f}')",
-                   f=node.f.shortrepr())
+            self.m.code.w("raise NotImplementedError('Unsupported field type: {f}')",
+                          f=node.f.shortrepr())
 
     def handle_group(self, node):
         # def __init__(self, position, ...):
