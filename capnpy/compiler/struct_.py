@@ -125,7 +125,7 @@ class Node__Struct:
         self._emit_ctors_union(m, ns)
 
     def _emit_init(self, m, ns):
-        ctor = Structor(m, self.struct)
+        ctor = Structor(m, self.struct, self.struct.fields)
         ctor.emit()
         ns.w()
         with ns.def_('__init__', ['self'] + ctor.params):

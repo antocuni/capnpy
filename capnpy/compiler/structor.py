@@ -16,12 +16,12 @@ class Structor(object):
       - params: [(argname, default)], for each argname in argnames
     """
 
-    def __init__(self, m, struct):
+    def __init__(self, m, struct, fields):
         self.m = m
         self.struct = struct
         self.data_size = struct.dataWordCount
         self.ptrs_size = struct.pointerCount
-        self.fieldtree = FieldTree(m, self.struct.fields, union_default='_undefined')
+        self.fieldtree = FieldTree(m, self.struct, union_default='_undefined')
         self.argnames, self.params = self.fieldtree.get_args_and_params()
 
     def slot_offset(self, f):
@@ -49,34 +49,32 @@ class Structor(object):
         with code.def_('__new', self.params) as ns:
             ns.total_length = (self.data_size + self.ptrs_size)*8
             ns.w('builder = _MutableBuilder({total_length})')
-            for node in self.fieldtree.children:
-                if not node.f.is_part_of_union():
-                    self.handle_node(node)
-            if self.struct.is_union():
-                self.handle_anonymous_union()
+            for node in self.fieldtree.iterfields(): #children:
+                self.handle_node(node)
             ns.w('return builder.build()')
 
-    def handle_anonymous_union(self):
+    def handle_anonymous_union(self, node):
         code = self.m.code
-        union_nodes = [node for node in self.fieldtree.allnodes()
-                       if node.f.is_part_of_union()]
         code.w('__which__ = 0')
         code.w('_curtag = None')
-        for node in union_nodes:
+        for child in node.fields:
             ns = code.new_scope()
-            ns.varname = node.varname
-            ns.tagval = node.f.discriminantValue
-            ns.tagname = self.m._field_name(node.f)
+            ns.varname = child.varname
+            ns.tagval = child.f.discriminantValue
+            ns.tagname = self.m._field_name(child.f)
             with ns.block('if {varname} is not _undefined:'):
                 ns.w('__which__ = {tagval}')
                 ns.w('_curtag = _check_tag(_curtag, {tagname!r})')
-                self.handle_node(node)
+                self.handle_node(child)
         #
-        ns.offset = self.struct.discriminantOffset * 2
+        ns.offset = node.struct.discriminantOffset * 2
         ns.ifmt  = 'ord(%r)' % Types.int16.fmt
         ns.w('builder.set({ifmt}, {offset}, __which__)')
 
     def handle_node(self, node):
+        if node.is_anonymous_union():
+            self.handle_anonymous_union(node)
+            return
         f = node.f
         if f.is_nullable(self.m):
             self.handle_nullable(node)

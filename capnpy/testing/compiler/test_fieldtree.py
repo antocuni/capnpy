@@ -32,7 +32,7 @@ class TestFieldTree(CompilerTest):
     def test_pprint(self, capsys):
         m = self.getm(self.schema)
         person = self.find_struct(m, 'Person')
-        tree = FieldTree(m, person.struct.fields)
+        tree = FieldTree(m, person.struct)
         tree.pprint()
         out, err = capsys.readouterr()
         out = out.strip()
@@ -51,7 +51,7 @@ class TestFieldTree(CompilerTest):
     def test_allnodes(self):
         m = self.getm(self.schema)
         person = self.find_struct(m, 'Person')
-        tree = FieldTree(m, person.struct.fields)
+        tree = FieldTree(m, person.struct)
         nodes = tree.allnodes()
         varnames = [node.varname for node in nodes]
         assert varnames == ['name',
@@ -66,7 +66,7 @@ class TestFieldTree(CompilerTest):
     def test_allslots(self):
         m = self.getm(self.schema)
         person = self.find_struct(m, 'Person')
-        tree = FieldTree(m, person.struct.fields)
+        tree = FieldTree(m, person.struct)
         nodes = tree.allslots()
         varnames = [node.varname for node in nodes]
         assert varnames == ['name_first',
@@ -78,7 +78,7 @@ class TestFieldTree(CompilerTest):
     def test_default(self):
         m = self.getm(self.schema)
         person = self.find_struct(m, 'Person')
-        tree = FieldTree(m, person.struct.fields)
+        tree = FieldTree(m, person.struct)
         items = [(node.varname, node.default) for node in tree.allnodes()]
         assert items == [
             ('name', '(None, None,)'),
@@ -94,7 +94,7 @@ class TestFieldTree(CompilerTest):
     def test_args_and_params(self):
         m = self.getm(self.schema)
         person = self.find_struct(m, 'Person')
-        tree = FieldTree(m, person.struct.fields)
+        tree = FieldTree(m, person.struct)
         args, params = tree.get_args_and_params()
         assert args == ['name', 'address']
         params = [(varname, eval(default)) for varname, default in params]
@@ -115,14 +115,14 @@ class TestFieldTree(CompilerTest):
         """
         m = self.getm(schema)
         baz = self.find_struct(m, 'Baz')
-        tree = FieldTree(m, baz.struct.fields)
+        tree = FieldTree(m, baz.struct)
         args, params = tree.get_args_and_params()
         assert params == [
             ('foo', '0'),
             ('bar', '0'),
             ]
         #
-        tree = FieldTree(m, baz.struct.fields, union_default='_undefined')
+        tree = FieldTree(m, baz.struct, union_default='_undefined')
         args, params = tree.get_args_and_params()
         assert params == [
             ('foo', '_undefined'),
@@ -148,10 +148,10 @@ class TestFieldTree(CompilerTest):
         """
         m = self.getm(schema)
         foo = self.find_struct(m, 'Foo')
-        tree = FieldTree(m, foo.struct.fields)
+        tree = FieldTree(m, foo.struct)
         varnames = [node.varname for node in tree.allslots()]
         assert varnames == ['a', 'bar_c', 'baz_e']
         #
-        tree = FieldTree(m, foo.struct.fields, union_default='_undefined')
+        tree = FieldTree(m, foo.struct, union_default='_undefined')
         varnames = [node.varname for node in tree.allslots()]
         assert varnames == ['a', 'bar_c', 'baz_e', 'baz_f']

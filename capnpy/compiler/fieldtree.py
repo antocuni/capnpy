@@ -25,6 +25,23 @@ class AbstractNode(object):
             if node.f.is_slot():
                 yield node
 
+    def iterfields(self):
+        """
+        Return all the children but collect anonymous unions into a group
+        """
+        anonymous_union_fields = []
+        for node in self.children:
+            if node.f.is_part_of_union():
+                anonymous_union_fields.append(node)
+            else:
+                yield node
+        #
+        if anonymous_union_fields:
+            yield AnonymousUnion(self.struct, anonymous_union_fields)
+
+    def is_anonymous_union(self):
+        return False
+
     def _add_children(self, m, fields, prefix, union_default):
         for f in fields:
             # if this is a "generic union ctor" and the field is a
@@ -44,7 +61,13 @@ class FieldTree(AbstractNode):
     Each node can be a group or a slot; all leaves are slots.
     """
 
-    def __init__(self, m, fields, union_default=None):
+    def __init__(self, m, struct_or_fields, union_default=None):
+        if isinstance(struct_or_fields, list):
+            self.struct = None
+            fields = struct_or_fields
+        else:
+            self.struct = struct_or_fields
+            fields = self.struct.fields
         self.children = []
         self._add_children(m, fields, prefix=None, union_default=union_default)
 
@@ -104,3 +127,13 @@ class Node(AbstractNode):
 
     def __repr__(self):
         return '<Node %s: %s>' % (self.varname, self.f.which())
+
+
+class AnonymousUnion(object):
+
+    def __init__(self, struct, fields):
+        self.struct = struct
+        self.fields = fields
+
+    def is_anonymous_union(self):
+        return True
