@@ -5,6 +5,7 @@ Union = namedtuple('Union', ['varname', 'offset'])
 class AbstractNode(object):
 
     parent = None
+    union = None
     children = ()
 
     def pprint(self, level=0):
@@ -52,8 +53,6 @@ class FieldTree(AbstractNode):
         #
         if self.struct and self.struct.is_union():
             self.union = Union('anonymous', self.struct.discriminantOffset*2)
-        else:
-            self.union = None
         #
         self.children = []
         self._add_children(m, fields, prefix=None, union_default=union_default)
@@ -64,6 +63,9 @@ class FieldTree(AbstractNode):
     def all_unions(self):
         if self.union:
             yield self.union
+        for node in self.allnodes():
+            if node.union:
+                yield node.union
 
     def get_args_and_params(self):
         """
@@ -94,8 +96,6 @@ class Node(AbstractNode):
         if prefix:
             self.varname = '%s_%s' % (prefix, self.varname)
         self._init_children(m)
-        # self.default is a *string* containing a Python repr of the default
-        # value
         self._init_default(m)
 
     def _init_children(self, m):
@@ -104,8 +104,12 @@ class Node(AbstractNode):
             group = m.allnodes[self.f.group.typeId]
             self._add_children(m, group.struct.fields, prefix=self.varname,
                                union_default=self.union_default)
+            if group.struct.is_union():
+                self.union = Union(self.varname, group.struct.discriminantOffset*2)
 
     def _init_default(self, m):
+        # self.default is a *string* containing a Python repr of the default
+        # value
         if self.f.is_slot():
             default_val = self.f.slot.defaultValue.as_pyobj()
             self.default = str(default_val)

@@ -117,7 +117,6 @@ class TestFieldTree(CompilerTest):
             ('bar', '_undefined'),
             ]
 
-    @pytest.mark.xxfail
     def test_void_args(self):
         schema = """
         @0xbf5147cbbecf40c1;
@@ -137,9 +136,9 @@ class TestFieldTree(CompilerTest):
         m = self.getm(schema)
         foo = self.find_struct(m, 'Foo')
         tree = FieldTree(m, foo.struct)
-        varnames = [node.varname for node in tree.allslots()]
-        assert varnames == ['a', 'bar_c', 'baz_e']
+        varnames = [node.varname for node in tree.allnodes()]
+        assert varnames == ['a', 'bar', 'bar_c', 'baz', 'baz_e']
         #
         tree = FieldTree(m, foo.struct, union_default='_undefined')
-        varnames = [node.varname for node in tree.allslots()]
-        assert varnames == ['a', 'bar_c', 'baz_e', 'baz_f']
+        varnames = [node.varname for node in tree.allnodes()]
+        assert varnames == ['a', 'bar', 'bar_c', 'baz', 'baz_e', 'baz_f']

@@ -143,7 +143,6 @@ class TestGenericCtor(BaseTestUnionConstructors):
         assert p.is_empty()
 
 
-@py.test.mark.xxfail
 class TestNamedUnion(CompilerTest):
 
     @py.test.fixture
@@ -173,8 +172,6 @@ class TestNamedUnion(CompilerTest):
         p = mod.Person(name='foo', job=mod.Person.Job(worker='capnpy'))
         assert p.name == 'foo'
         assert p.job.worker == 'capnpy'
-        #
-        pytest.raises(TypeError, "mod.Person(name='foo', job=mod.Person.Job())")
 
     @pytest.mark.xfail
     def test_group_inside_union(self):
