@@ -4,34 +4,6 @@ from capnpy.schema import Field, Type, Value
 from capnpy.compiler.structor import Structor, Layout, FieldTree
 from capnpy.testing.compiler.support import CompilerTest
 
-class TestLayout(object):
-
-    @pytest.fixture
-    def m(self):
-        class FakeModuleGenerator:
-            def _field_name(self, f):
-                return f.name
-        return FakeModuleGenerator()
-
-    def test_compute_format_simple(self, m):
-        val = Value.new_int64(0)
-        fields = [Field.new_slot('x', 0, Type.new_int64(), val),
-                  Field.new_slot('y', 1, Type.new_int64(), val)]
-        layout = Layout(m, data_size=2, ptrs_size=0, tag_offset=None)
-        tree = FieldTree(m, fields)
-        layout.add_tree(tree)
-        assert layout.fmt == 'qq'
-
-    def test_compute_format_holes(self, m):
-        val = Value.new_int64(0)
-        fields = [Field.new_slot('x', 0, Type.new_int32(), val),
-                  Field.new_slot('y', 1, Type.new_int64(), val)]
-        layout = Layout(m, data_size=2, ptrs_size=0, tag_offset=None)
-        tree = FieldTree(m, fields)
-        layout.add_tree(tree)
-        assert layout.fmt == 'ixxxxq'
-
-
 class TestConstructors(CompilerTest):
 
     def test_primitive(self):

@@ -6,9 +6,6 @@ import struct
 from capnpy.schema import Field, Type, Value
 from capnpy.compiler.fieldtree import FieldTree, Node
 
-class Unsupported(Exception):
-    pass
-
 class Structor(object):
     """
     Create a struct constructor.
@@ -42,32 +39,11 @@ class Structor(object):
 
     def _init_layout(self, data_size, ptrs_size, tag_offset):
         self.layout = Layout(self.m, data_size, ptrs_size, tag_offset)
-        try:
-            self.layout.add_tree(self.fieldtree)
-        except Unsupported as e:
-            self._unsupported = e.message
-        else:
-            self._unsupported = None
 
     def _init_args(self):
-        if self._unsupported:
-            self.argnames = []
-            self.params = []
-            return
         self.argnames, self.params = self.fieldtree.get_args_and_params()
 
     def emit(self, code):
-        if self._unsupported is not None:
-            return self._emit_unsupported(code)
-        else:
-            return self._emit(code)
-
-    def _emit_unsupported(self, code):
-        code.w('@staticmethod')
-        with code.def_('__new', self.argnames, '*args', '**kwargs'):
-            code.w('raise NotImplementedError({msg})', msg=repr(self._unsupported))
-
-    def _emit(self, code):
         ## generate a constructor which looks like this
         ## @staticmethod
         ## def __new(x=0, y=0, z=None):
@@ -211,8 +187,6 @@ class Layout(object):
         self.data_size = data_size
         self.ptrs_size = ptrs_size
         self.total_length = (self.data_size + self.ptrs_size)*8
-        self.fmt = None    # computed later
-        self.slots = []
         #
         if tag_offset is not None:
             # add a field to represent the tag
@@ -222,39 +196,6 @@ class Layout(object):
                                Value.new_int16(0))
             node = Node(m, f, prefix=None)
             self.node_which = node
-            self.slots.append(node)
-
-    def add_tree(self, tree):
-        self.slots += tree.allslots()
-        self._finish()
-
-    def _finish(self):
-        """
-        Compute the format string and sort the slots in order of offset
-        """
-        total_length = (self.data_size + self.ptrs_size)*8
-        fmt = ['x'] * total_length
-
-        def set(offset, t):
-            fmt[offset] = t
-            size = struct.calcsize(t)
-            for i in range(offset+1, offset+size):
-                fmt[i] = None
-
-        self.slots.sort(key=lambda node: self.slot_offset(node.f))
-        for node in self.slots:
-            f = node.f
-            if not f.is_slot() or f.slot.type.is_bool():
-                raise Unsupported('Unsupported field type: %s' % f.shortrepr())
-            elif f.is_void():
-                continue
-            set(self.slot_offset(f), f.slot.get_fmt())
-        #
-        # remove all the Nones
-        fmt = [ch for ch in fmt if ch is not None]
-        fmt = ''.join(fmt)
-        assert struct.calcsize(fmt) == total_length
-        self.fmt = fmt
 
     def slot_offset(self, f):
         offset = f.slot.offset * f.slot.get_size()
