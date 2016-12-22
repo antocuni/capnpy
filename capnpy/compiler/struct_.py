@@ -121,7 +121,6 @@ class Node__Struct:
         ns = m.code.new_scope()
         ns.data_size = self.struct.dataWordCount
         ns.ptrs_size = self.struct.pointerCount
-        named_union = self.struct.get_unique_named_union(m)
         self._emit_init(m, ns)
         self._emit_ctors_union(m, ns)
 
