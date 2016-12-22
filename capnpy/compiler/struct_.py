@@ -129,7 +129,7 @@ class Node__Struct:
         tag_offset = None
         if self.struct.is_union():
             tag_offset = self.struct.discriminantOffset * 2
-        ctor = Structor(m, '', ns.data_size, ns.ptrs_size, self.struct.fields,
+        ctor = Structor(m, ns.data_size, ns.ptrs_size, self.struct.fields,
                         tag_offset=tag_offset)
         ctor.emit(m.code)
         ns.w()

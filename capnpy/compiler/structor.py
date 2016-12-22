@@ -34,12 +34,8 @@ class Structor(object):
             return cls.from_buffer(buf, ...)
     """
 
-    def __init__(self, m, suffix, data_size, ptrs_size, fields, tag_offset=None):
+    def __init__(self, m, data_size, ptrs_size, fields, tag_offset=None):
         self.m = m
-        self.name = 'new'
-        if suffix:
-            self.name += '_' + suffix
-        self.private_name = '__' + self.name
         self.fieldtree = FieldTree(m, fields, union_default='_undefined')
         self._init_layout(data_size, ptrs_size, tag_offset)
         self._init_args()
@@ -68,17 +64,18 @@ class Structor(object):
 
     def _emit_unsupported(self, code):
         code.w('@staticmethod')
-        with code.def_(self.private_name, self.argnames, '*args', '**kwargs'):
+        with code.def_('__new', self.argnames, '*args', '**kwargs'):
             code.w('raise NotImplementedError({msg})', msg=repr(self._unsupported))
 
     def _emit(self, code):
         ## generate a constructor which looks like this
         ## @staticmethod
         ## def __new(x=0, y=0, z=None):
-        ##     builder = _StructBuilder('qqq')
-        ##     z = builder.alloc_text(16, z)
-        ##     buf = builder.build(x, y)
-        ##     return buf
+        ##     builder = _MutableBuilder(24)
+        ##     builder.set(ord('q', 0, x)
+        ##     builder.set(ord('q', 8, y)
+        ##     builder.alloc_text(16, z)
+        ##     return builder.build()
         #
         # the parameters have the same order as fields
         argnames = self.argnames
@@ -86,7 +83,7 @@ class Structor(object):
         if len(argnames) != len(set(argnames)):
             raise ValueError("Duplicate field name(s): %s" % argnames)
         code.w('@staticmethod')
-        with code.def_(self.private_name, self.params):
+        with code.def_('__new', self.params):
             code.w('builder = _MutableBuilder({l})', l=self.layout.total_length)
             allnodes = list(self.fieldtree.allnodes())
             std_nodes = [node for node in allnodes if not node.f.is_part_of_union()]
