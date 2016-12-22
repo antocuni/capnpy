@@ -60,26 +60,18 @@ class Structor(object):
             return
         self.argnames, self.params = self.fieldtree.get_args_and_params()
 
-    def emit_public(self, code, ns):
-        ns.w('@classmethod')
-        with ns.def_(self.name, ['cls'] + self.params):
-            call = code.call('cls.' + self.private_name, self.argnames)
-            ns.w('buf = {call}', call=call)
-            ns.w('return cls.from_buffer(buf, 0, {data_size}, {ptrs_size})')
-        ns.w()
-
-    def emit_private(self, code):
+    def emit(self, code):
         if self._unsupported is not None:
             return self._emit_unsupported(code)
         else:
-            return self._emit_private(code)
+            return self._emit(code)
 
     def _emit_unsupported(self, code):
         code.w('@staticmethod')
         with code.def_(self.private_name, self.argnames, '*args', '**kwargs'):
             code.w('raise NotImplementedError({msg})', msg=repr(self._unsupported))
 
-    def _emit_private(self, code):
+    def _emit(self, code):
         ## generate a constructor which looks like this
         ## @staticmethod
         ## def __new(x=0, y=0, z=None):

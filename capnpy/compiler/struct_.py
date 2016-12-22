@@ -131,7 +131,7 @@ class Node__Struct:
             tag_offset = self.struct.discriminantOffset * 2
         ctor = Structor(m, '', ns.data_size, ns.ptrs_size, self.struct.fields,
                         tag_offset=tag_offset)
-        ctor.emit_private(m.code)
+        ctor.emit(m.code)
         ns.w()
         with ns.def_('__init__', ['self'] + ctor.params):
             call = m.code.call('self.__new', ctor.argnames)
