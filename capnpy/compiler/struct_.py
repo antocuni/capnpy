@@ -123,19 +123,7 @@ class Node__Struct:
         ns.ptrs_size = self.struct.pointerCount
         named_union = self.struct.get_unique_named_union(m)
         self._emit_init(m, ns)
-        ## if self.struct.is_union():
-        ##     tags = self._emit_ctors_union(m, ns)
-        ##     self._emit_init_union(m, ns, tags)
-        ## elif named_union:
-        ##     # Unfortunately, general support for named unions is not ready yet
-        ##     # :(
-        ##     # temporary(?) hack: special-case structs which have a single
-        ##     # named union and provide constructors as if it were an anonymous
-        ##     # union.
-        ##     tags = self._emit_ctors_named_union(m, ns, named_union)
-        ##     self._emit_init_union(m, ns, tags, named_union=named_union)
-        ## else:
-        ##     self._emit_init_nounion(m, ns)
+        self._emit_ctors_union(m, ns)
 
     def _emit_init(self, m, ns):
         tag_offset = None
@@ -152,42 +140,33 @@ class Node__Struct:
         ns.w()
 
     def _emit_ctors_union(self, m, ns):
-        tags = [] # [(f, args)]
         for f in self.struct.fields:
             if f.is_part_of_union():
                 tag_field = f
                 fields = [f for f in self.struct.fields
                           if not f.is_part_of_union() or f == tag_field]
-                args = self._emit_one_ctor_union(m, ns, fields, tag_field)
-                tags.append((tag_field, args))
-        return tags
+                self._emit_one_ctor_union(m, ns, fields, tag_field)
 
-    def _emit_one_ctor_union(self, m, ns, fields, tag_field, emit_public=True):
-        tag_offset = self.struct.discriminantOffset * 2
-        tag_name  = m._field_name(tag_field)
-        ctor = Structor(m, tag_name, ns.data_size, ns.ptrs_size, fields,
-                        tag_offset, tag_field.discriminantValue)
-        ctor.emit_private(m.code)
-        if emit_public:
-            ctor.emit_public(m.code, ns)
-        return ctor.argnames
-
-    def _emit_ctors_named_union(self, m, ns, named_union):
-        # hack hack hack: try to generate the same code as if it were an
-        # anonymous union
+    def _emit_one_ctor_union(self, m, ns, fields, tag_field):
+        ## def new_foo(cls, x=0, y=0):
+        ##     buf = self.__new(x=x, y=y, foo=None)
+        ##     return cls.from_buffer(buf, 0, ..., ...)
+        tag_name = m._field_name(tag_field)
+        name = 'new_' + tag_name
+        fieldtree = FieldTree(m, fields)
+        argnames, params = fieldtree.get_args_and_params()
+        argnames = [(arg, arg) for arg in argnames]
+        if tag_field.is_void():
+            # in case of a void tag field, we need to explicitly pass it
+            # to the __init__, because it's not in argnames
+            argnames.append((tag_name, 'None'))
         #
-        # emit the private/public constructors
-        group = m.allnodes[named_union.group.typeId]
-        other_fields = list(self.struct.fields)
-        other_fields.remove(named_union)
-        #
-        tags = []
-        for tag_field in group.struct.fields:
-            fields = other_fields + [tag_field]
-            args = self._emit_one_ctor_union(m, ns, fields, tag_field,
-                                             emit_public=False)
-            tags.append((tag_field, args))
-        return tags
+        ns.w('@classmethod')
+        with ns.def_(name, ['cls'] + params):
+            call = m.code.call('cls.__new', argnames)
+            ns.w('buf = {call}', call=call)
+            ns.w('return cls.from_buffer(buf, 0, {data_size}, {ptrs_size})')
+        ns.w()
 
     def _emit_repr(self, m):
         # def shortrepr(self):
