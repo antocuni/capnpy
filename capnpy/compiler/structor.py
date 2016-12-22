@@ -45,36 +45,42 @@ class Structor(object):
         argnames = self.argnames
         if len(argnames) != len(set(argnames)):
             raise ValueError("Duplicate field name(s): %s" % argnames)
+        #
         code.w('@staticmethod')
         with code.def_('__new', self.params) as ns:
             ns.total_length = (self.data_size + self.ptrs_size)*8
             ns.w('builder = _MutableBuilder({total_length})')
-            for node in self.fieldtree.iterfields(): #children:
+            for union in self.fieldtree.all_unions():
+                ns.union = union.varname
+                ns.w('{union}__tagval = 0')
+                ns.w('{union}__curtag = None')
+            #
+            for node in self.fieldtree.children: #iterfields(): #children:
                 self.handle_node(node)
+            #
+            for union in self.fieldtree.all_unions():
+                ns.union = union.varname
+                ns.offset = union.offset
+                ns.ifmt  = 'ord(%r)' % Types.int16.fmt
+                ns.w('builder.set({ifmt}, {offset}, {union}__tagval)')
+            #
             ns.w('return builder.build()')
 
-    def handle_anonymous_union(self, node):
-        code = self.m.code
-        code.w('__which__ = 0')
-        code.w('_curtag = None')
-        for child in node.fields:
-            ns = code.new_scope()
-            ns.varname = child.varname
-            ns.tagval = child.f.discriminantValue
-            ns.tagname = self.m._field_name(child.f)
-            with ns.block('if {varname} is not _undefined:'):
-                ns.w('__which__ = {tagval}')
-                ns.w('_curtag = _check_tag(_curtag, {tagname!r})')
-                self.handle_node(child)
-        #
-        ns.offset = node.struct.discriminantOffset * 2
-        ns.ifmt  = 'ord(%r)' % Types.int16.fmt
-        ns.w('builder.set({ifmt}, {offset}, __which__)')
-
     def handle_node(self, node):
-        if node.is_anonymous_union():
-            self.handle_anonymous_union(node)
-            return
+        if node.f.is_part_of_union():
+            ns = self.m.code.new_scope()
+            ns.varname = node.varname
+            ns.union = node.parent.union.varname
+            ns.tagval = node.f.discriminantValue
+            ns.tagname = self.m._field_name(node.f)
+            with ns.block('if {varname} is not _undefined:'):
+                ns.w('{union}__tagval = {tagval}')
+                ns.w('{union}__curtag = _check_tag({union}__curtag, {tagname!r})')
+                self._handle_node(node)
+        else:
+            self._handle_node(node)
+
+    def _handle_node(self, node):
         f = node.f
         if f.is_nullable(self.m):
             self.handle_nullable(node)

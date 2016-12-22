@@ -1,5 +1,10 @@
+from collections import namedtuple
+
+Union = namedtuple('Union', ['varname', 'offset'])
+
 class AbstractNode(object):
 
+    parent = None
     children = ()
 
     def pprint(self, level=0):
@@ -17,31 +22,6 @@ class AbstractNode(object):
             for node in child.allnodes():
                 yield node
 
-    def allslots(self):
-        """
-        Iterates over all leaves of the tree.
-        """
-        for node in self.allnodes():
-            if node.f.is_slot():
-                yield node
-
-    def iterfields(self):
-        """
-        Return all the children but collect anonymous unions into a group
-        """
-        anonymous_union_fields = []
-        for node in self.children:
-            if node.f.is_part_of_union():
-                anonymous_union_fields.append(node)
-            else:
-                yield node
-        #
-        if anonymous_union_fields:
-            yield AnonymousUnion(self.struct, anonymous_union_fields)
-
-    def is_anonymous_union(self):
-        return False
-
     def _add_children(self, m, fields, prefix, union_default):
         for f in fields:
             # if this is a "generic union ctor" and the field is a
@@ -51,6 +31,7 @@ class AbstractNode(object):
             if f.is_void() and not force_void:
                 continue
             node = Node(m, f, prefix, union_default)
+            node.parent = self
             self.children.append(node)
 
 
@@ -68,11 +49,21 @@ class FieldTree(AbstractNode):
         else:
             self.struct = struct_or_fields
             fields = self.struct.fields
+        #
+        if self.struct and self.struct.is_union():
+            self.union = Union('anonymous', self.struct.discriminantOffset*2)
+        else:
+            self.union = None
+        #
         self.children = []
         self._add_children(m, fields, prefix=None, union_default=union_default)
 
     def __repr__(self):
         return '<FieldTree>'
+
+    def all_unions(self):
+        if self.union:
+            yield self.union
 
     def get_args_and_params(self):
         """
@@ -127,13 +118,3 @@ class Node(AbstractNode):
 
     def __repr__(self):
         return '<Node %s: %s>' % (self.varname, self.f.which())
-
-
-class AnonymousUnion(object):
-
-    def __init__(self, struct, fields):
-        self.struct = struct
-        self.fields = fields
-
-    def is_anonymous_union(self):
-        return True

@@ -63,18 +63,6 @@ class TestFieldTree(CompilerTest):
                             'address_position_x',
                             'address_position_y']
 
-    def test_allslots(self):
-        m = self.getm(self.schema)
-        person = self.find_struct(m, 'Person')
-        tree = FieldTree(m, person.struct)
-        nodes = tree.allslots()
-        varnames = [node.varname for node in nodes]
-        assert varnames == ['name_first',
-                            'name_last',
-                            'address_street',
-                            'address_position_x',
-                            'address_position_y']
-
     def test_default(self):
         m = self.getm(self.schema)
         person = self.find_struct(m, 'Person')
