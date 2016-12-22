@@ -3,6 +3,7 @@ Structor -> struct ctor -> struct construtor :)
 """
 
 import struct
+from capnpy.type import Types
 from capnpy.schema import Field, Type, Value
 from capnpy.compiler.fieldtree import FieldTree, Node
 
@@ -33,7 +34,10 @@ class Structor(object):
 
     def __init__(self, m, data_size, ptrs_size, fields, tag_offset=None):
         self.m = m
+        self.data_size = data_size
+        self.ptrs_size = ptrs_size
         self.fieldtree = FieldTree(m, fields, union_default='_undefined')
+        self.tag_offset = tag_offset
         self._init_layout(data_size, ptrs_size, tag_offset)
         self._init_args()
 
@@ -55,36 +59,38 @@ class Structor(object):
         #
         # the parameters have the same order as fields
         argnames = self.argnames
-
         if len(argnames) != len(set(argnames)):
             raise ValueError("Duplicate field name(s): %s" % argnames)
         code.w('@staticmethod')
-        with code.def_('__new', self.params):
-            code.w('builder = _MutableBuilder({l})', l=self.layout.total_length)
+        with code.def_('__new', self.params) as ns:
+            ns.total_length = (self.data_size + self.ptrs_size)*8
+            ns.w('builder = _MutableBuilder({total_length})')
             allnodes = list(self.fieldtree.allnodes())
-            std_nodes = [node for node in allnodes if not node.f.is_part_of_union()]
-            union_nodes = [node for node in allnodes if node.f.is_part_of_union()]
-            #
-            # first, handle normal fields
-            for node in std_nodes:
+            for node in self.fieldtree.allnodes():
+                if not node.f.is_part_of_union():
+                    self.handle_field(code, node)
+            if self.tag_offset:
+                self.handle_anonymous_union(code)
+            ns.w('return builder.build()')
+
+    def handle_anonymous_union(self, code):
+        union_nodes = [node for node in self.fieldtree.allnodes()
+                       if node.f.is_part_of_union()]
+        code.w('__which__ = 0')
+        code.w('_curtag = None')
+        for node in union_nodes:
+            ns = code.new_scope()
+            ns.varname = node.varname
+            ns.tagval = node.f.discriminantValue
+            ns.tagname = self.m._field_name(node.f)
+            with ns.block('if {varname} is not _undefined:'):
+                ns.w('__which__ = {tagval}')
+                ns.w('_curtag = _check_tag(_curtag, {tagname!r})')
                 self.handle_field(code, node)
-            #
-            # then, handle union fields (if any)
-            if union_nodes:
-                code.w('__which__ = 0')
-                code.w('_curtag = None')
-                for node in union_nodes:
-                    ns = code.new_scope()
-                    ns.varname = node.varname
-                    ns.tagval = node.f.discriminantValue
-                    ns.tagname = self.m._field_name(node.f)
-                    with ns.block('if {varname} is not _undefined:'):
-                        ns.w('__which__ = {tagval}')
-                        ns.w('_curtag = _check_tag(_curtag, {tagname!r})')
-                        self.handle_field(code, node)
-                self.handle_field(code, self.layout.node_which)
-            #
-            code.w('return builder.build()')
+        #
+        ns.offset = self.tag_offset
+        ns.ifmt  = 'ord(%r)' % Types.int16.fmt
+        ns.w('builder.set({ifmt}, {offset}, __which__)')
 
     def handle_field(self, code, node):
         f = node.f
@@ -187,15 +193,6 @@ class Layout(object):
         self.data_size = data_size
         self.ptrs_size = ptrs_size
         self.total_length = (self.data_size + self.ptrs_size)*8
-        #
-        if tag_offset is not None:
-            # add a field to represent the tag
-            tag_offset /= 2 # from bytes to multiple of int16
-            f = Field.new_slot('__which__', tag_offset,
-                               Type.new_int16(),
-                               Value.new_int16(0))
-            node = Node(m, f, prefix=None)
-            self.node_which = node
 
     def slot_offset(self, f):
         offset = f.slot.offset * f.slot.get_size()
