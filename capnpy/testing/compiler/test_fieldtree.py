@@ -129,6 +129,7 @@ class TestFieldTree(CompilerTest):
             ('bar', '_undefined'),
             ]
 
+    @pytest.mark.xxfail
     def test_void_args(self):
         schema = """
         @0xbf5147cbbecf40c1;

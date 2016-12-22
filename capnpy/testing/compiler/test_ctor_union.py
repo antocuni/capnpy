@@ -143,6 +143,7 @@ class TestGenericCtor(BaseTestUnionConstructors):
         assert p.is_empty()
 
 
+@py.test.mark.xxfail
 class TestNamedUnion(CompilerTest):
 
     @py.test.fixture
