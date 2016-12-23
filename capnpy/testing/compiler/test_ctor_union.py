@@ -144,8 +144,8 @@ class TestGenericCtor(BaseTestUnionConstructors):
 
 class TestNamedUnion(CompilerTest):
 
-    @py.test.fixture
-    def mod(self):
+
+    def test_generic(self, mod):
         schema = """
         @0xbf5147cbbecf40c1;
         struct Person {
@@ -157,9 +157,7 @@ class TestNamedUnion(CompilerTest):
           }
         }
         """
-        return self.compile(schema)
-
-    def test_generic(self, mod):
+        mod = self.compile(schema)
         p = mod.Person(name='foo', job=mod.Person.Job(unemployed=None))
         assert p.name == 'foo'
         assert p.job.is_unemployed()
@@ -221,3 +219,42 @@ class TestNamedUnion(CompilerTest):
         assert p.job.is_worker()
         assert p.job.worker == 'capnpy'
 
+    def test_nested_unions(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Person {
+          name @0 :Text;
+          job :union {
+              unemployed @1 :Void;
+              retired @2 :Void;
+              employed :group {
+                  companyName @3 :Text;
+                  union {
+                      finance @4 :Void;
+                      it @5 :Void;
+                      other @6 :Void;
+                  }
+                  position :union {
+                      manager @7 :Void;
+                      worker @8 :Void;
+                  }
+              }
+          }
+        }
+        """
+        mod = self.compile(schema)
+        p = mod.Person(
+            name='foo',
+            job=mod.Person.Job(
+                employed=mod.Person_job.Employed(
+                    company_name='capnpy',
+                    it=None,
+                    position=mod.Person_job_employed.Position(worker=None)
+                )
+            )
+        )
+        assert p.name == 'foo'
+        assert p.job.is_employed()
+        assert p.job.employed.company_name == 'capnpy'
+        assert p.job.employed.is_it()
+        assert p.job.employed.position.is_worker()
