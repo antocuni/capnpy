@@ -148,14 +148,9 @@ class Node__Struct:
         ##     return cls.from_buffer(buf, 0, ..., ...)
         tag_name = m._field_name(tag_field)
         name = 'new_' + tag_name
-        fieldtree = FieldTree(m, fields)
+        fieldtree = FieldTree(m, fields, field_force_default=tag_field)
         argnames, params = fieldtree.get_args_and_params()
         argnames = [(arg, arg) for arg in argnames]
-        if tag_field.is_void():
-            # in case of a void tag field, we need to explicitly pass it
-            # to the __init__, because it's not in argnames
-            argnames.append((tag_name, 'None'))
-        #
         ns.w('@classmethod')
         with ns.def_(name, ['cls'] + params):
             call = m.code.call('cls.__new', argnames)

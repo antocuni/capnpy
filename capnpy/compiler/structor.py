@@ -21,7 +21,7 @@ class Structor(object):
         self.struct = struct
         self.data_size = struct.dataWordCount
         self.ptrs_size = struct.pointerCount
-        self.fieldtree = FieldTree(m, self.struct, union_default='_undefined')
+        self.fieldtree = FieldTree(m, self.struct)
         self.argnames, self.params = self.fieldtree.get_args_and_params()
 
     def slot_offset(self, f):

@@ -23,15 +23,12 @@ class AbstractNode(object):
             for node in child.allnodes():
                 yield node
 
-    def _add_children(self, m, fields, prefix, union_default):
+    def _add_children(self, m, fields, prefix, field_force_default):
         for f in fields:
-            # if this is a "generic union ctor" and the field is a
-            # discriminant, we force the inclusion even if it's a void
-            is_generic_ctor = union_default is not None
-            force_void = f.is_part_of_union() and is_generic_ctor
-            if f.is_void() and not force_void:
+            # union fields are always included, even if they are void
+            if f.is_void() and not f.is_part_of_union():
                 continue
-            node = Node(m, f, prefix, union_default)
+            node = Node(m, f, prefix, field_force_default)
             node.parent = self
             self.children.append(node)
 
@@ -43,7 +40,7 @@ class FieldTree(AbstractNode):
     Each node can be a group or a slot; all leaves are slots.
     """
 
-    def __init__(self, m, struct_or_fields, union_default=None):
+    def __init__(self, m, struct_or_fields, field_force_default=None):
         if isinstance(struct_or_fields, list):
             self.struct = None
             fields = struct_or_fields
@@ -55,7 +52,8 @@ class FieldTree(AbstractNode):
             self.union = Union('anonymous', self.struct.discriminantOffset*2)
         #
         self.children = []
-        self._add_children(m, fields, prefix=None, union_default=union_default)
+        prefix = None
+        self._add_children(m, fields, prefix, field_force_default)
 
     def __repr__(self):
         return '<FieldTree>'
@@ -89,32 +87,32 @@ class FieldTree(AbstractNode):
 
 class Node(AbstractNode):
 
-    def __init__(self, m, f, prefix, union_default=None):
+    def __init__(self, m, f, prefix, field_force_default):
         self.f = f
-        self.union_default = union_default
+        self.force_default = (field_force_default and f == field_force_default)
         self.varname = m._field_name(f)
         if prefix:
             self.varname = '%s_%s' % (prefix, self.varname)
-        self._init_children(m)
+        self._init_children(m, field_force_default)
         self._init_default(m)
 
-    def _init_children(self, m):
+    def _init_children(self, m, field_force_default):
         self.children = []
         if self.f.is_group():
             group = m.allnodes[self.f.group.typeId]
             self._add_children(m, group.struct.fields, prefix=self.varname,
-                               union_default=self.union_default)
+                               field_force_default=field_force_default)
             if group.struct.is_union():
                 self.union = Union(self.varname, group.struct.discriminantOffset*2)
 
     def _init_default(self, m):
         # self.default is a *string* containing a Python repr of the default
         # value
-        if self.f.is_slot():
+        if self.f.is_part_of_union() and not self.force_default:
+            self.default = '_undefined'
+        elif self.f.is_slot():
             default_val = self.f.slot.defaultValue.as_pyobj()
             self.default = str(default_val)
-            if self.f.is_part_of_union() and self.union_default is not None:
-                self.default = self.union_default
         else:
             assert self.f.is_group()
             items = [child.default for child in self.children]

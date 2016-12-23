@@ -106,15 +106,16 @@ class TestFieldTree(CompilerTest):
         tree = FieldTree(m, baz.struct)
         args, params = tree.get_args_and_params()
         assert params == [
-            ('foo', '0'),
-            ('bar', '0'),
+            ('foo', '_undefined'),
+            ('bar', '_undefined'),
             ]
         #
-        tree = FieldTree(m, baz.struct, union_default='_undefined')
+        f_bar = baz.struct.fields[1]
+        tree = FieldTree(m, baz.struct, field_force_default=f_bar)
         args, params = tree.get_args_and_params()
         assert params == [
             ('foo', '_undefined'),
-            ('bar', '_undefined'),
+            ('bar', '0'),
             ]
 
     def test_void_args(self):
@@ -136,9 +137,5 @@ class TestFieldTree(CompilerTest):
         m = self.getm(schema)
         foo = self.find_struct(m, 'Foo')
         tree = FieldTree(m, foo.struct)
-        varnames = [node.varname for node in tree.allnodes()]
-        assert varnames == ['a', 'bar', 'bar_c', 'baz', 'baz_e']
-        #
-        tree = FieldTree(m, foo.struct, union_default='_undefined')
         varnames = [node.varname for node in tree.allnodes()]
         assert varnames == ['a', 'bar', 'bar_c', 'baz', 'baz_e', 'baz_f']

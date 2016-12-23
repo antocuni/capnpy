@@ -66,7 +66,6 @@ class TestSpecificCtors(BaseTestUnionConstructors):
         assert p.is_empty()
 
     def test_no_void_args(self, mod):
-        py.test.raises(TypeError, "mod.Shape.new_empty(empty=None)")
         p = mod.Shape.new_empty(1, 2)
         assert p.is_empty()
         assert p.empty is None
@@ -89,12 +88,12 @@ class TestSpecificCtors(BaseTestUnionConstructors):
         """
         mod = self.compile(schema)
         # the order is: area, perimeter, [circle/square], color
-        p = mod.Shape.new_empty(1, 2, 'red')
+        p = mod.Shape.new_empty(1, 2, color='red')
         assert p.area == 1
         assert p.perimeter == 2
         assert p.color == 'red'
         #
-        p = mod.Shape.new_square(1, 2, 3, 'red')
+        p = mod.Shape.new_square(1, 2, 3, color='red')
         assert p.area == 1
         assert p.perimeter == 2
         assert p.square == 3
@@ -173,7 +172,6 @@ class TestNamedUnion(CompilerTest):
         assert p.name == 'foo'
         assert p.job.worker == 'capnpy'
 
-    @pytest.mark.xfail
     def test_group_inside_union(self):
         schema = """
         @0xbf5147cbbecf40c1;
