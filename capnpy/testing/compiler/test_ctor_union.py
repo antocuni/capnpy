@@ -191,3 +191,33 @@ class TestNamedUnion(CompilerTest):
         mod = self.compile(schema)
         p = mod.Person(name='foo', job=mod.Person.Job(unemployed=None))
         assert p.job.is_unemployed()
+
+    def test_many_unions_arbitrary_order(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Person {
+          name @0 :Text;
+          union {
+              male @1 :Void;
+              female @4 :Void;
+          }
+          location :union {
+              home @2 :Void;
+              work @7 :Void;
+          }
+          job :union {
+              unemployed @3 :Void;
+              retired @5 :Void;
+              worker @6 :Text;
+          }
+        }
+        """
+        mod = self.compile(schema)
+        p = mod.Person.new_male(name='foo',
+                                location=mod.Person.Location(work=None),
+                                job=mod.Person.Job(worker='capnpy'))
+        assert p.is_male()
+        assert p.location.is_work()
+        assert p.job.is_worker()
+        assert p.job.worker == 'capnpy'
+
