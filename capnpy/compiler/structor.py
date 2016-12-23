@@ -51,19 +51,9 @@ class Structor(object):
             ns.total_length = (self.data_size + self.ptrs_size)*8
             ns.w('builder = _MutableBuilder({total_length})')
             for union in self.fieldtree.all_unions():
-                ns.union = union.varname
-                ns.w('{union}__tagval = 0')
-                ns.w('{union}__curtag = None')
-            #
-            for node in self.fieldtree.children: #iterfields(): #children:
+                ns.w('{union}__curtag = None', union=union.varname)
+            for node in self.fieldtree.children:
                 self.handle_node(node)
-            #
-            for union in self.fieldtree.all_unions():
-                ns.union = union.varname
-                ns.offset = union.offset
-                ns.ifmt  = 'ord(%r)' % Types.int16.fmt
-                ns.w('builder.set({ifmt}, {offset}, {union}__tagval)')
-            #
             ns.w('return builder.build()')
 
     def handle_node(self, node):
@@ -71,11 +61,13 @@ class Structor(object):
             ns = self.m.code.new_scope()
             ns.varname = node.varname
             ns.union = node.parent.union.varname
+            ns.offset = node.parent.union.offset
             ns.tagval = node.f.discriminantValue
             ns.tagname = self.m._field_name(node.f)
+            ns.ifmt  = 'ord(%r)' % Types.int16.fmt
             with ns.block('if {varname} is not _undefined:'):
-                ns.w('{union}__tagval = {tagval}')
                 ns.w('{union}__curtag = _check_tag({union}__curtag, {tagname!r})')
+                ns.w('builder.set({ifmt}, {offset}, {tagval})')
                 self._handle_node(node)
         else:
             self._handle_node(node)

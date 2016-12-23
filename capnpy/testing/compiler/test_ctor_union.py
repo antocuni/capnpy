@@ -144,8 +144,7 @@ class TestGenericCtor(BaseTestUnionConstructors):
 
 class TestNamedUnion(CompilerTest):
 
-
-    def test_generic(self, mod):
+    def test_generic(self):
         schema = """
         @0xbf5147cbbecf40c1;
         struct Person {
@@ -258,3 +257,24 @@ class TestNamedUnion(CompilerTest):
         assert p.job.employed.company_name == 'capnpy'
         assert p.job.employed.is_it()
         assert p.job.employed.position.is_worker()
+
+    def test_dont_overwrite_tags(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            union {
+                a :union {
+                    f0 @0 :Void;
+                    f1 @1 :Void;
+                }
+                b :union {
+                    f2 @2 :Void;
+                    f3 @3 :Void;
+                }
+            }
+        }
+        """
+        mod = self.compile(schema)
+        foo = mod.Foo(a=mod.Foo.A(f1=None))
+        assert foo.is_a()
+        assert foo.a.is_f1()
