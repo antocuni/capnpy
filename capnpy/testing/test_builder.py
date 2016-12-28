@@ -75,9 +75,9 @@ def test_alloc_data():
 
 
 def test_alloc_list_int64():
-    builder = StructBuilder('q')
-    ptr = builder.alloc_list(0, PrimitiveList, Types.int64, [1, 2, 3, 4])
-    buf = builder.build(ptr)
+    builder = Builder(0, 1)
+    builder.alloc_list(0, PrimitiveList, Types.int64, [1, 2, 3, 4])
+    buf = builder.build()
     assert buf == ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
                    '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
                    '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
@@ -85,18 +85,18 @@ def test_alloc_list_int64():
                    '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
 
 def test_alloc_list_int8():
-    builder = StructBuilder('q')
-    ptr = builder.alloc_list(0, PrimitiveList, Types.int8, [1, 2, 3, 4])
-    buf = builder.build(ptr)
+    builder = Builder(0, 1)
+    builder.alloc_list(0, PrimitiveList, Types.int8, [1, 2, 3, 4])
+    buf = builder.build()
     assert buf == ('\x01\x00\x00\x00\x22\x00\x00\x00'   # ptrlist
                    '\x01\x02\x03\x04\x00\x00\x00\x00')  # 1,2,3,4 + padding
 
 
 def test_alloc_list_float64():
-    builder = StructBuilder('q')
-    ptr = builder.alloc_list(0, PrimitiveList, Types.float64,
-                             [1.234, 2.345, 3.456, 4.567])
-    buf = builder.build(ptr)
+    builder = Builder(0, 1)
+    builder.alloc_list(0, PrimitiveList, Types.float64,
+                       [1.234, 2.345, 3.456, 4.567])
+    buf = builder.build()
     assert buf == ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
                    '\x58\x39\xb4\xc8\x76\xbe\xf3\x3f'   # 1.234
                    '\xc3\xf5\x28\x5c\x8f\xc2\x02\x40'   # 2.345
@@ -121,9 +121,9 @@ def test_alloc_list_of_structs():
     p3 = Point.from_buffer(buf3, 0, 2, 0)
     p4 = Point.from_buffer(buf4, 0, 2, 0)
     #
-    builder = StructBuilder('q')
-    ptr = builder.alloc_list(0, StructList, Point, [p1, p2, p3, p4])
-    buf = builder.build(ptr)
+    builder = Builder(0, 1)
+    builder.alloc_list(0, StructList, Point, [p1, p2, p3, p4])
+    buf = builder.build()
     expected_buf = ('\x01\x00\x00\x00\x47\x00\x00\x00'    # ptrlist
                     '\x10\x00\x00\x00\x02\x00\x00\x00'    # list tag
                     '\x0a\x00\x00\x00\x00\x00\x00\x00'    # 10
