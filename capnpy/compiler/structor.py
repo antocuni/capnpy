@@ -88,6 +88,8 @@ class Structor(object):
             self.handle_list(node)
         elif f.is_primitive() or f.is_enum():
             self.handle_primitive(node)
+        elif f.is_bool():
+            self.handle_bool(node)
         elif f.is_void():
             pass # nothing to do
         else:
@@ -179,3 +181,12 @@ class Structor(object):
         ns.ifmt = "ord(%r)" % node.f.slot.get_fmt()
         ns.offset = self.slot_offset(node.f)
         ns.w('builder.set({ifmt}, {offset}, {arg})')
+
+    def handle_bool(self, node):
+        ns = self.m.code.new_scope()
+        ns.arg = node.varname
+        ns.byteoffset, ns.bitoffset = divmod(node.f.slot.offset, 8)
+        if node.f.slot.hadExplicitDefault:
+            ns.default_ = node.f.slot.defaultValue.as_pyobj()
+            ns.w('{arg} ^= {default_}')
+        ns.w('builder.setbool({byteoffset}, {bitoffset}, {arg})')

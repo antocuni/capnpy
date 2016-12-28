@@ -1,6 +1,7 @@
 import struct
 from capnpy import ptr
 from capnpy.type import Types
+from capnpy.unpack import unpack_primitive, mychr
 
 class AbstractBuilder(object):
 
@@ -117,9 +118,14 @@ class MutableBuilder(AbstractBuilder):
         self.set(Types.int64.ifmt, offset, p)
 
     def set(self, ifmt, offset, value):
-        # XXX: in unpack.py we use mychr, which is faster than chr on pypy
-        fmt = '<' + chr(ifmt)
+        fmt = '<' + mychr(ifmt)
         struct.pack_into(fmt, self._buf, offset, value)
+
+    def setbool(self, byteoffset, bitoffset, value):
+        ifmt = Types.uint8.ifmt
+        current = unpack_primitive(ifmt, self._buf, byteoffset)
+        current |= (value << bitoffset)
+        self.set(ifmt, byteoffset, current)
 
     def build(self):
         return str(self._buf) + ''.join(self._extra)

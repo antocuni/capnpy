@@ -3,6 +3,8 @@ from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
 from cpython.string cimport (PyString_GET_SIZE, PyString_AS_STRING,
                              PyString_CheckExact)
 
+mychr = chr
+
 cdef extern from "Python.h":
     int PyByteArray_CheckExact(object o)
     char* PyByteArray_AS_STRING(object o)

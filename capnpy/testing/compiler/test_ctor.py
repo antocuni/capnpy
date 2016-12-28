@@ -350,3 +350,42 @@ class TestDefaults(CompilerTest):
         assert p.position.y == 2
         assert p.color.alpha == 255
         assert p.color.name == 'red'
+
+    def test_bool(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            padding @0 :Int64;
+            a @1 :Bool;
+            b @2 :Bool;
+            c @3 :Bool;
+        }
+        """
+        mod = self.compile(schema)
+        f = mod.Foo(42, True, False, True)
+        assert f.a
+        assert not f.b
+        assert f.c
+        assert f.padding == 42
+        #
+        f = mod.Foo(42, False, True, False)
+        assert not f.a
+        assert f.b
+        assert not f.c
+
+    def test_bool_default(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            padding @0 :Int64;
+            a @1 :Bool = true;
+            b @2 :Bool = false;
+            c @3 :Bool = true;
+        }
+        """
+        mod = self.compile(schema)
+        f = mod.Foo()
+        assert f.a
+        assert not f.b
+        assert f.c
+
