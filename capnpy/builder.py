@@ -94,19 +94,6 @@ class AbstractBuilder(object):
         self._record_allocation(offset, ptr)
         return ptr
 
-class StructBuilder(AbstractBuilder):
-
-    def __init__(self, fmt):
-        # the size of the main struct
-        self._fmt = '<' + fmt # force little endian
-        length = struct.calcsize(self._fmt)
-        assert length % 8 == 0 # fmt must contains padding bytes, if needed
-        AbstractBuilder.__init__(self, length)
-
-    def build(self, *items):
-        s = struct.pack(self._fmt, *items)
-        return s + ''.join(self._extra)
-
 
 class Builder(AbstractBuilder):
 
