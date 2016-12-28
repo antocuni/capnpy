@@ -41,18 +41,18 @@ def test_alloc_struct_with_offset():
              '\x02\x00\x00\x00\x00\x00\x00\x00')
     mystruct = MyStruct.from_buffer(mybuf, 8, 2, 0)
     #
-    builder = StructBuilder('q')
-    ptr = builder.alloc_struct(0, MyStruct, mystruct)
-    buf = builder.build(ptr)
+    builder = Builder(0, 1)
+    builder.alloc_struct(0, MyStruct, mystruct)
+    buf = builder.build()
     assert buf == ('\x00\x00\x00\x00\x02\x00\x00\x00'  # ptr to mystruct
                    + mybuf[8:])
 
 
 def test_alloc_text():
-    builder = StructBuilder('qq')
-    ptr1 = builder.alloc_text(0, 'hello capnp')
-    ptr2 = builder.alloc_text(8, 'hi world')
-    buf = builder.build(ptr1, ptr2)
+    builder = Builder(0, 2)
+    builder.alloc_text(0, 'hello capnp')
+    builder.alloc_text(8, 'hi world')
+    buf = builder.build()
     expected_buf = ('\x05\x00\x00\x00\x62\x00\x00\x00'
                     '\x09\x00\x00\x00\x4a\x00\x00\x00'
                     'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
@@ -62,10 +62,10 @@ def test_alloc_text():
     assert buf == expected_buf
 
 def test_alloc_data():
-    builder = StructBuilder('qq')
-    ptr1 = builder.alloc_data(0, 'hello capnp')
-    ptr2 = builder.alloc_data(8, 'hi world')
-    buf = builder.build(ptr1, ptr2)
+    builder = Builder(0, 2)
+    builder.alloc_data(0, 'hello capnp')
+    builder.alloc_data(8, 'hi world')
+    buf = builder.build()
     expected_buf = ('\x05\x00\x00\x00\x5a\x00\x00\x00'
                     '\x09\x00\x00\x00\x42\x00\x00\x00'
                     'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
