@@ -1,5 +1,5 @@
 import py
-from capnpy.builder import StructBuilder, Builder
+from capnpy.builder import Builder
 from capnpy.blob import Types
 from capnpy.list import PrimitiveList, StructList, StringList
 from capnpy.struct_ import Struct
@@ -138,17 +138,17 @@ def test_alloc_list_of_structs():
 
 def test_null_pointers():
     NULL = '\x00\x00\x00\x00\x00\x00\x00\x00' # NULL pointer
-    builder = StructBuilder('qqq')
-    ptr1 = builder.alloc_struct(0, Struct, None)
-    ptr2 = builder.alloc_text(8, None)
-    ptr3 = builder.alloc_list(16, PrimitiveList, Types.int64, None)
-    buf = builder.build(ptr1, ptr2, ptr3)
+    builder = Builder(0, 3)
+    builder.alloc_struct(0, Struct, None)
+    builder.alloc_text(8, None)
+    builder.alloc_list(16, PrimitiveList, Types.int64, None)
+    buf = builder.build()
     assert buf == NULL*3
 
 def test_alloc_list_of_strings():
-    builder = StructBuilder('q')
-    ptr = builder.alloc_list(0, StringList, None, ['A', 'BC', 'DEF', 'GHIJ'])
-    buf = builder.build(ptr)
+    builder = Builder(0, 1)
+    builder.alloc_list(0, StringList, None, ['A', 'BC', 'DEF', 'GHIJ'])
+    buf = builder.build()
     expected_buf = ('\x01\x00\x00\x00\x26\x00\x00\x00'   # ptrlist
                     '\x0d\x00\x00\x00\x12\x00\x00\x00'   # ptr item 1
                     '\x0d\x00\x00\x00\x1a\x00\x00\x00'   # ptr item 2
@@ -182,9 +182,9 @@ def test_alloc_list_of_structs_with_pointers():
     john = Person.from_buffer(john, 0, 1, 1)
     emily = Person.from_buffer(emily, 8, 1, 1)
     #
-    builder = StructBuilder('q')
-    ptr = builder.alloc_list(0, StructList, Person, [john, emily])
-    buf = builder.build(ptr)
+    builder = Builder(0, 1)
+    builder.alloc_list(0, StructList, Person, [john, emily])
+    buf = builder.build()
 
     expected_buf = ('\x01\x00\x00\x00\x27\x00\x00\x00'    # ptrlist
                     '\x08\x00\x00\x00\x01\x00\x01\x00'    # list tag
@@ -194,21 +194,4 @@ def test_alloc_list_of_structs_with_pointers():
                     '\x05\x00\x00\x00\x32\x00\x00\x00'    # name=ptr
                     'J' 'o' 'h' 'n' '\x00\x00\x00\x00'    # John
                     'E' 'm' 'i' 'l' 'y' '\x00\x00\x00')   # Emily
-    assert buf == expected_buf
-
-
-def test_Builder():
-    builder = Builder(3, 0)
-    builder.alloc_text(0, 'hello capnp')
-    builder.set(Types.int16.ifmt, 8, 0xAA)
-    builder.set(Types.int32.ifmt, 12, 0xBBCC)
-    builder.alloc_text(16, 'hi world')
-    buf = builder.build()
-    expected_buf = ('\x09\x00\x00\x00\x62\x00\x00\x00'
-                    '\xAA\x00\x00\x00\xCC\xBB\x00\x00'
-                    '\x09\x00\x00\x00\x4a\x00\x00\x00'
-                    'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
-                    'p' 'n' 'p' '\x00\x00\x00\x00\x00'
-                    'h' 'i' ' ' 'w' 'o' 'r' 'l' 'd'
-                    '\x00\x00\x00\x00\x00\x00\x00\x00')
     assert buf == expected_buf
