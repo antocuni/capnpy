@@ -195,7 +195,7 @@ def test_alloc_list_of_structs_with_pointers():
 
 
 def test_Builder():
-    builder = Builder(24)
+    builder = Builder(3, 0)
     builder.alloc_text(0, 'hello capnp')
     builder.set(Types.int16.ifmt, 8, 0xAA)
     builder.set(Types.int32.ifmt, 12, 0xBBCC)

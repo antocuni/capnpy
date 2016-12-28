@@ -110,7 +110,8 @@ class StructBuilder(AbstractBuilder):
 
 class Builder(AbstractBuilder):
 
-    def __init__(self, length):
+    def __init__(self, data_size, ptrs_size):
+        length = (data_size + ptrs_size) * 8
         AbstractBuilder.__init__(self, length)
         self._buf = bytearray(length)
 

@@ -48,8 +48,9 @@ class Structor(object):
         #
         code.w('@staticmethod')
         with code.def_('__new', self.params) as ns:
-            ns.total_length = (self.data_size + self.ptrs_size)*8
-            ns.w('builder = _Builder({total_length})')
+            ns.data_size = self.data_size
+            ns.ptrs_size = self.ptrs_size
+            ns.w('builder = _Builder({data_size}, {ptrs_size})')
             for union in self.fieldtree.all_unions():
                 ns.w('{union}__curtag = None', union=union.varname)
             for node in self.fieldtree.children:
