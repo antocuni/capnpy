@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2016-10-06 18:10
+# generated on 2016-12-28 16:42
 
 from capnpy.ptr import E_IS_FAR_POINTER as _E_IS_FAR_POINTER
 from capnpy.struct_ import Struct as _Struct
@@ -8,7 +8,7 @@ from capnpy.struct_ import check_tag as _check_tag
 from capnpy.struct_ import undefined as _undefined
 from capnpy.enum import enum as _enum
 from capnpy.blob import Types as _Types
-from capnpy.builder import StructBuilder as _StructBuilder
+from capnpy.builder import Builder as _Builder
 from capnpy.list import PrimitiveList as _PrimitiveList
 from capnpy.list import StructList as _StructList
 from capnpy.list import StringList as _StringList

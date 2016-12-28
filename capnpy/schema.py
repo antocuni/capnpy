@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2016-10-20 17:03
+# generated on 2016-12-28 16:42
 
 from capnpy.ptr import E_IS_FAR_POINTER as _E_IS_FAR_POINTER
 from capnpy.struct_ import Struct as _Struct
@@ -8,7 +8,7 @@ from capnpy.struct_ import check_tag as _check_tag
 from capnpy.struct_ import undefined as _undefined
 from capnpy.enum import enum as _enum
 from capnpy.blob import Types as _Types
-from capnpy.builder import StructBuilder as _StructBuilder
+from capnpy.builder import Builder as _Builder
 from capnpy.list import PrimitiveList as _PrimitiveList
 from capnpy.list import StructList as _StructList
 from capnpy.list import StringList as _StringList
@@ -145,10 +145,10 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
     
     @staticmethod
     def __new(id=0, name=None):
-        builder = _StructBuilder('Qq')
-        name = builder.alloc_text(8, name)
-        buf = builder.build(id, name)
-        return buf
+        builder = _Builder(1, 1)
+        builder.set(ord('Q'), 0, id)
+        builder.alloc_text(8, name)
+        return builder.build()
     
     def __init__(self, id=0, name=None):
         _buf = self.__new(id, name)
@@ -205,11 +205,11 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
     
     @staticmethod
     def __new(id=0, filename=None, imports=None):
-        builder = _StructBuilder('Qqq')
-        filename = builder.alloc_text(8, filename)
-        imports = builder.alloc_list(16, _StructList, CodeGeneratorRequest.RequestedFile.Import, imports)
-        buf = builder.build(id, filename, imports)
-        return buf
+        builder = _Builder(1, 2)
+        builder.set(ord('Q'), 0, id)
+        builder.alloc_text(8, filename)
+        builder.alloc_list(16, _StructList, CodeGeneratorRequest.RequestedFile.Import, imports)
+        return builder.build()
     
     def __init__(self, id=0, filename=None, imports=None):
         _buf = self.__new(id, filename, imports)
@@ -262,11 +262,10 @@ class CodeGeneratorRequest(_Struct):
     
     @staticmethod
     def __new(nodes=None, requestedFiles=None):
-        builder = _StructBuilder('qq')
-        nodes = builder.alloc_list(0, _StructList, Node, nodes)
-        requestedFiles = builder.alloc_list(8, _StructList, CodeGeneratorRequest.RequestedFile, requestedFiles)
-        buf = builder.build(nodes, requestedFiles)
-        return buf
+        builder = _Builder(0, 2)
+        builder.alloc_list(0, _StructList, Node, nodes)
+        builder.alloc_list(8, _StructList, CodeGeneratorRequest.RequestedFile, requestedFiles)
+        return builder.build()
     
     def __init__(self, nodes=None, requestedFiles=None):
         _buf = self.__new(nodes, requestedFiles)
@@ -403,14 +402,16 @@ class Method(_Struct):
     
     @staticmethod
     def __new(name=None, codeOrder=0, paramStructType=0, resultStructType=0, annotations=None, paramBrand=None, resultBrand=None, implicitParameters=None):
-        builder = _StructBuilder('HxxxxxxQQqqqqq')
-        name = builder.alloc_text(24, name)
-        annotations = builder.alloc_list(32, _StructList, Annotation, annotations)
-        paramBrand = builder.alloc_struct(40, Brand, paramBrand)
-        resultBrand = builder.alloc_struct(48, Brand, resultBrand)
-        implicitParameters = builder.alloc_list(56, _StructList, Node.Parameter, implicitParameters)
-        buf = builder.build(codeOrder, paramStructType, resultStructType, name, annotations, paramBrand, resultBrand, implicitParameters)
-        return buf
+        builder = _Builder(3, 5)
+        builder.alloc_text(24, name)
+        builder.set(ord('H'), 0, codeOrder)
+        builder.set(ord('Q'), 8, paramStructType)
+        builder.set(ord('Q'), 16, resultStructType)
+        builder.alloc_list(32, _StructList, Annotation, annotations)
+        builder.alloc_struct(40, Brand, paramBrand)
+        builder.alloc_struct(48, Brand, resultBrand)
+        builder.alloc_list(56, _StructList, Node.Parameter, implicitParameters)
+        return builder.build()
     
     def __init__(self, name=None, codeOrder=0, paramStructType=0, resultStructType=0, annotations=None, paramBrand=None, resultBrand=None, implicitParameters=None):
         _buf = self.__new(name, codeOrder, paramStructType, resultStructType, annotations, paramBrand, resultBrand, implicitParameters)
@@ -472,11 +473,11 @@ class Enumerant(_Struct):
     
     @staticmethod
     def __new(name=None, codeOrder=0, annotations=None):
-        builder = _StructBuilder('Hxxxxxxqq')
-        name = builder.alloc_text(8, name)
-        annotations = builder.alloc_list(16, _StructList, Annotation, annotations)
-        buf = builder.build(codeOrder, name, annotations)
-        return buf
+        builder = _Builder(1, 2)
+        builder.alloc_text(8, name)
+        builder.set(ord('H'), 0, codeOrder)
+        builder.alloc_list(16, _StructList, Annotation, annotations)
+        return builder.build()
     
     def __init__(self, name=None, codeOrder=0, annotations=None):
         _buf = self.__new(name, codeOrder, annotations)
@@ -942,292 +943,197 @@ class Type(_Struct):
         return obj
     
     @staticmethod
-    def Anypointer(unconstrained=_undefined, parameter=(0, 0,), implicitMethodParameter=(0,)):
+    def Anypointer(unconstrained=_undefined, parameter=_undefined, implicitMethodParameter=_undefined):
         return unconstrained, parameter, implicitMethodParameter,
     
     @staticmethod
-    def __new_void():
-        builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 0
-        buf = builder.build(__which__)
-        return buf
+    def __new(void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined):
+        builder = _Builder(3, 1)
+        anonymous__curtag = None
+        anyPointer__curtag = None
+        if void is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'void')
+            builder.set(ord('h'), 0, 0)
+        if bool is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'bool')
+            builder.set(ord('h'), 0, 1)
+        if int8 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'int8')
+            builder.set(ord('h'), 0, 2)
+        if int16 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'int16')
+            builder.set(ord('h'), 0, 3)
+        if int32 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'int32')
+            builder.set(ord('h'), 0, 4)
+        if int64 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'int64')
+            builder.set(ord('h'), 0, 5)
+        if uint8 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'uint8')
+            builder.set(ord('h'), 0, 6)
+        if uint16 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'uint16')
+            builder.set(ord('h'), 0, 7)
+        if uint32 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'uint32')
+            builder.set(ord('h'), 0, 8)
+        if uint64 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'uint64')
+            builder.set(ord('h'), 0, 9)
+        if float32 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'float32')
+            builder.set(ord('h'), 0, 10)
+        if float64 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'float64')
+            builder.set(ord('h'), 0, 11)
+        if text is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'text')
+            builder.set(ord('h'), 0, 12)
+        if data is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'data')
+            builder.set(ord('h'), 0, 13)
+        if list is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'list')
+            builder.set(ord('h'), 0, 14)
+            list_elementType, = list
+            builder.alloc_struct(24, Type, list_elementType)
+        if enum is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'enum')
+            builder.set(ord('h'), 0, 15)
+            enum_typeId, enum_brand, = enum
+            builder.set(ord('Q'), 8, enum_typeId)
+            builder.alloc_struct(24, Brand, enum_brand)
+        if struct is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'struct')
+            builder.set(ord('h'), 0, 16)
+            struct_typeId, struct_brand, = struct
+            builder.set(ord('Q'), 8, struct_typeId)
+            builder.alloc_struct(24, Brand, struct_brand)
+        if interface is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'interface')
+            builder.set(ord('h'), 0, 17)
+            interface_typeId, interface_brand, = interface
+            builder.set(ord('Q'), 8, interface_typeId)
+            builder.alloc_struct(24, Brand, interface_brand)
+        if anyPointer is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'anyPointer')
+            builder.set(ord('h'), 0, 18)
+            anyPointer_unconstrained, anyPointer_parameter, anyPointer_implicitMethodParameter, = anyPointer
+            if anyPointer_unconstrained is not _undefined:
+                anyPointer__curtag = _check_tag(anyPointer__curtag, 'unconstrained')
+                builder.set(ord('h'), 8, 0)
+            if anyPointer_parameter is not _undefined:
+                anyPointer__curtag = _check_tag(anyPointer__curtag, 'parameter')
+                builder.set(ord('h'), 8, 1)
+                anyPointer_parameter_scopeId, anyPointer_parameter_parameterIndex, = anyPointer_parameter
+                builder.set(ord('Q'), 16, anyPointer_parameter_scopeId)
+                builder.set(ord('H'), 10, anyPointer_parameter_parameterIndex)
+            if anyPointer_implicitMethodParameter is not _undefined:
+                anyPointer__curtag = _check_tag(anyPointer__curtag, 'implicitMethodParameter')
+                builder.set(ord('h'), 8, 2)
+                anyPointer_implicitMethodParameter_parameterIndex, = anyPointer_implicitMethodParameter
+                builder.set(ord('H'), 10, anyPointer_implicitMethodParameter_parameterIndex)
+        return builder.build()
+    
+    def __init__(self, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined):
+        _buf = self.__new(void, bool, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, text, data, list, enum, struct, interface, anyPointer)
+        _Struct.__init__(self, _buf, 0, 3, 1)
+    
     @classmethod
-    def new_void(cls):
-        buf = cls.__new_void()
+    def new_void(cls, void=None):
+        buf = cls.__new(void=void)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    @staticmethod
-    def __new_bool():
-        builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 1
-        buf = builder.build(__which__)
-        return buf
     @classmethod
-    def new_bool(cls):
-        buf = cls.__new_bool()
+    def new_bool(cls, bool=None):
+        buf = cls.__new(bool=bool)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    @staticmethod
-    def __new_int8():
-        builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 2
-        buf = builder.build(__which__)
-        return buf
     @classmethod
-    def new_int8(cls):
-        buf = cls.__new_int8()
+    def new_int8(cls, int8=None):
+        buf = cls.__new(int8=int8)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    @staticmethod
-    def __new_int16():
-        builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 3
-        buf = builder.build(__which__)
-        return buf
     @classmethod
-    def new_int16(cls):
-        buf = cls.__new_int16()
+    def new_int16(cls, int16=None):
+        buf = cls.__new(int16=int16)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    @staticmethod
-    def __new_int32():
-        builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 4
-        buf = builder.build(__which__)
-        return buf
     @classmethod
-    def new_int32(cls):
-        buf = cls.__new_int32()
+    def new_int32(cls, int32=None):
+        buf = cls.__new(int32=int32)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    @staticmethod
-    def __new_int64():
-        builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 5
-        buf = builder.build(__which__)
-        return buf
     @classmethod
-    def new_int64(cls):
-        buf = cls.__new_int64()
+    def new_int64(cls, int64=None):
+        buf = cls.__new(int64=int64)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    @staticmethod
-    def __new_uint8():
-        builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 6
-        buf = builder.build(__which__)
-        return buf
     @classmethod
-    def new_uint8(cls):
-        buf = cls.__new_uint8()
+    def new_uint8(cls, uint8=None):
+        buf = cls.__new(uint8=uint8)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    @staticmethod
-    def __new_uint16():
-        builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 7
-        buf = builder.build(__which__)
-        return buf
     @classmethod
-    def new_uint16(cls):
-        buf = cls.__new_uint16()
+    def new_uint16(cls, uint16=None):
+        buf = cls.__new(uint16=uint16)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    @staticmethod
-    def __new_uint32():
-        builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 8
-        buf = builder.build(__which__)
-        return buf
     @classmethod
-    def new_uint32(cls):
-        buf = cls.__new_uint32()
+    def new_uint32(cls, uint32=None):
+        buf = cls.__new(uint32=uint32)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    @staticmethod
-    def __new_uint64():
-        builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 9
-        buf = builder.build(__which__)
-        return buf
     @classmethod
-    def new_uint64(cls):
-        buf = cls.__new_uint64()
+    def new_uint64(cls, uint64=None):
+        buf = cls.__new(uint64=uint64)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    @staticmethod
-    def __new_float32():
-        builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 10
-        buf = builder.build(__which__)
-        return buf
     @classmethod
-    def new_float32(cls):
-        buf = cls.__new_float32()
+    def new_float32(cls, float32=None):
+        buf = cls.__new(float32=float32)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    @staticmethod
-    def __new_float64():
-        builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 11
-        buf = builder.build(__which__)
-        return buf
     @classmethod
-    def new_float64(cls):
-        buf = cls.__new_float64()
+    def new_float64(cls, float64=None):
+        buf = cls.__new(float64=float64)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    @staticmethod
-    def __new_text():
-        builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 12
-        buf = builder.build(__which__)
-        return buf
     @classmethod
-    def new_text(cls):
-        buf = cls.__new_text()
+    def new_text(cls, text=None):
+        buf = cls.__new(text=text)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    @staticmethod
-    def __new_data():
-        builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 13
-        buf = builder.build(__which__)
-        return buf
     @classmethod
-    def new_data(cls):
-        buf = cls.__new_data()
+    def new_data(cls, data=None):
+        buf = cls.__new(data=data)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    @staticmethod
-    def __new_list(list=(None,)):
-        builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxxq')
-        __which__ = 14
-        list_elementType, = list
-        list_elementType = builder.alloc_struct(24, Type, list_elementType)
-        buf = builder.build(__which__, list_elementType)
-        return buf
     @classmethod
     def new_list(cls, list=(None,)):
-        buf = cls.__new_list(list)
+        buf = cls.__new(list=list)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    @staticmethod
-    def __new_enum(enum=(0, None,)):
-        builder = _StructBuilder('hxxxxxxQxxxxxxxxq')
-        __which__ = 15
-        enum_typeId, enum_brand, = enum
-        enum_brand = builder.alloc_struct(24, Brand, enum_brand)
-        buf = builder.build(__which__, enum_typeId, enum_brand)
-        return buf
     @classmethod
     def new_enum(cls, enum=(0, None,)):
-        buf = cls.__new_enum(enum)
+        buf = cls.__new(enum=enum)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    @staticmethod
-    def __new_struct(struct=(0, None,)):
-        builder = _StructBuilder('hxxxxxxQxxxxxxxxq')
-        __which__ = 16
-        struct_typeId, struct_brand, = struct
-        struct_brand = builder.alloc_struct(24, Brand, struct_brand)
-        buf = builder.build(__which__, struct_typeId, struct_brand)
-        return buf
     @classmethod
     def new_struct(cls, struct=(0, None,)):
-        buf = cls.__new_struct(struct)
+        buf = cls.__new(struct=struct)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    @staticmethod
-    def __new_interface(interface=(0, None,)):
-        builder = _StructBuilder('hxxxxxxQxxxxxxxxq')
-        __which__ = 17
-        interface_typeId, interface_brand, = interface
-        interface_brand = builder.alloc_struct(24, Brand, interface_brand)
-        buf = builder.build(__which__, interface_typeId, interface_brand)
-        return buf
     @classmethod
     def new_interface(cls, interface=(0, None,)):
-        buf = cls.__new_interface(interface)
+        buf = cls.__new(interface=interface)
         return cls.from_buffer(buf, 0, 3, 1)
     
-    @staticmethod
-    def __new_anyPointer(anyPointer=((0, 0,), (0,),)):
-        builder = _StructBuilder('hxxxxxxxxHxxxxQxxxxxxxx')
-        __which__ = 18
-        anyPointer_parameter, anyPointer_implicitMethodParameter, = anyPointer
-        anyPointer_parameter_scopeId, anyPointer_parameter_parameterIndex, = anyPointer_parameter
-        anyPointer_implicitMethodParameter_parameterIndex, = anyPointer_implicitMethodParameter
-        buf = builder.build(__which__, anyPointer_parameter_parameterIndex, anyPointer_implicitMethodParameter_parameterIndex, anyPointer_parameter_scopeId)
-        return buf
     @classmethod
-    def new_anyPointer(cls, anyPointer=((0, 0,), (0,),)):
-        buf = cls.__new_anyPointer(anyPointer)
+    def new_anyPointer(cls, anyPointer=(_undefined, _undefined, _undefined,)):
+        buf = cls.__new(anyPointer=anyPointer)
         return cls.from_buffer(buf, 0, 3, 1)
-    
-    def __init__(self, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=(None,), enum=(0, None,), struct=(0, None,), interface=(0, None,), anyPointer=(_undefined, (0, 0,), (0,),)):
-        _buf = None
-        _curtag = None
-        if void is not _undefined:
-            _curtag = _check_tag(_curtag, 'void')
-            _buf = self.__new_void()
-        if bool is not _undefined:
-            _curtag = _check_tag(_curtag, 'bool')
-            _buf = self.__new_bool()
-        if int8 is not _undefined:
-            _curtag = _check_tag(_curtag, 'int8')
-            _buf = self.__new_int8()
-        if int16 is not _undefined:
-            _curtag = _check_tag(_curtag, 'int16')
-            _buf = self.__new_int16()
-        if int32 is not _undefined:
-            _curtag = _check_tag(_curtag, 'int32')
-            _buf = self.__new_int32()
-        if int64 is not _undefined:
-            _curtag = _check_tag(_curtag, 'int64')
-            _buf = self.__new_int64()
-        if uint8 is not _undefined:
-            _curtag = _check_tag(_curtag, 'uint8')
-            _buf = self.__new_uint8()
-        if uint16 is not _undefined:
-            _curtag = _check_tag(_curtag, 'uint16')
-            _buf = self.__new_uint16()
-        if uint32 is not _undefined:
-            _curtag = _check_tag(_curtag, 'uint32')
-            _buf = self.__new_uint32()
-        if uint64 is not _undefined:
-            _curtag = _check_tag(_curtag, 'uint64')
-            _buf = self.__new_uint64()
-        if float32 is not _undefined:
-            _curtag = _check_tag(_curtag, 'float32')
-            _buf = self.__new_float32()
-        if float64 is not _undefined:
-            _curtag = _check_tag(_curtag, 'float64')
-            _buf = self.__new_float64()
-        if text is not _undefined:
-            _curtag = _check_tag(_curtag, 'text')
-            _buf = self.__new_text()
-        if data is not _undefined:
-            _curtag = _check_tag(_curtag, 'data')
-            _buf = self.__new_data()
-        if list is not _undefined:
-            _curtag = _check_tag(_curtag, 'list')
-            _buf = self.__new_list(list)
-        if enum is not _undefined:
-            _curtag = _check_tag(_curtag, 'enum')
-            _buf = self.__new_enum(enum)
-        if struct is not _undefined:
-            _curtag = _check_tag(_curtag, 'struct')
-            _buf = self.__new_struct(struct)
-        if interface is not _undefined:
-            _curtag = _check_tag(_curtag, 'interface')
-            _buf = self.__new_interface(interface)
-        if anyPointer is not _undefined:
-            _curtag = _check_tag(_curtag, 'anyPointer')
-            _buf = self.__new_anyPointer(anyPointer)
-        if _buf is None:
-            raise TypeError("one of the following args is required: void, bool, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, text, data, list, enum, struct, interface, anyPointer")
-        _Struct.__init__(self, _buf, 0, 3, 1)
     
     def shortrepr(self):
         parts = []
@@ -1483,41 +1389,51 @@ class Field(_Struct):
         return implicit, explicit,
     
     @staticmethod
-    def __new_slot(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: (name = "hadExplicitDefault", codeOrder = 3, discriminantValue = 65535, slot = (offset = 128, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 10))')
-    @classmethod
-    def new_slot(cls):
-        buf = cls.__new_slot()
-        return cls.from_buffer(buf, 0, 3, 4)
-    
-    @staticmethod
-    def __new_group(name=None, codeOrder=0, annotations=None, discriminantValue=65535, group=(0,), ordinal=(0,)):
-        builder = _StructBuilder('HHxxxxhxxHxxQqqxxxxxxxxxxxxxxxx')
-        __which__ = 1
-        name = builder.alloc_text(24, name)
-        annotations = builder.alloc_list(32, _StructList, Annotation, annotations)
+    def __new(name=None, codeOrder=0, annotations=None, discriminantValue=65535, slot=_undefined, group=_undefined, ordinal=(_undefined, _undefined,)):
+        builder = _Builder(3, 4)
+        anonymous__curtag = None
+        ordinal__curtag = None
+        builder.alloc_text(24, name)
+        builder.set(ord('H'), 0, codeOrder)
+        builder.alloc_list(32, _StructList, Annotation, annotations)
         discriminantValue ^= 65535
-        group_typeId, = group
-        ordinal_explicit, = ordinal
-        buf = builder.build(codeOrder, discriminantValue, __which__, ordinal_explicit, group_typeId, name, annotations)
-        return buf
+        builder.set(ord('H'), 2, discriminantValue)
+        if slot is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'slot')
+            builder.set(ord('h'), 8, 0)
+            slot_offset, slot_type, slot_defaultValue, slot_hadExplicitDefault, = slot
+            builder.set(ord('I'), 4, slot_offset)
+            builder.alloc_struct(40, Type, slot_type)
+            builder.alloc_struct(48, Value, slot_defaultValue)
+            builder.setbool(16, 0, slot_hadExplicitDefault)
+        if group is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'group')
+            builder.set(ord('h'), 8, 1)
+            group_typeId, = group
+            builder.set(ord('Q'), 16, group_typeId)
+        ordinal_implicit, ordinal_explicit, = ordinal
+        if ordinal_implicit is not _undefined:
+            ordinal__curtag = _check_tag(ordinal__curtag, 'implicit')
+            builder.set(ord('h'), 10, 0)
+        if ordinal_explicit is not _undefined:
+            ordinal__curtag = _check_tag(ordinal__curtag, 'explicit')
+            builder.set(ord('h'), 10, 1)
+            builder.set(ord('H'), 12, ordinal_explicit)
+        return builder.build()
+    
+    def __init__(self, name=None, codeOrder=0, annotations=None, discriminantValue=65535, slot=_undefined, group=_undefined, ordinal=(_undefined, _undefined,)):
+        _buf = self.__new(name, codeOrder, annotations, discriminantValue, slot, group, ordinal)
+        _Struct.__init__(self, _buf, 0, 3, 4)
+    
     @classmethod
-    def new_group(cls, name=None, codeOrder=0, annotations=None, discriminantValue=65535, group=(0,), ordinal=(0,)):
-        buf = cls.__new_group(name, codeOrder, annotations, discriminantValue, group, ordinal)
+    def new_slot(cls, name=None, codeOrder=0, annotations=None, discriminantValue=65535, slot=(0, None, None, False,), ordinal=(_undefined, _undefined,)):
+        buf = cls.__new(name=name, codeOrder=codeOrder, annotations=annotations, discriminantValue=discriminantValue, slot=slot, ordinal=ordinal)
         return cls.from_buffer(buf, 0, 3, 4)
     
-    def __init__(self, name=None, codeOrder=0, annotations=None, discriminantValue=65535, slot=(0, None, None, False,), group=(0,), ordinal=(_undefined, _undefined,)):
-        _buf = None
-        _curtag = None
-        if slot is not _undefined:
-            _curtag = _check_tag(_curtag, 'slot')
-            _buf = self.__new_slot()
-        if group is not _undefined:
-            _curtag = _check_tag(_curtag, 'group')
-            _buf = self.__new_group(name, codeOrder, annotations, discriminantValue, group, ordinal)
-        if _buf is None:
-            raise TypeError("one of the following args is required: slot, group")
-        _Struct.__init__(self, _buf, 0, 3, 4)
+    @classmethod
+    def new_group(cls, name=None, codeOrder=0, annotations=None, discriminantValue=65535, group=(0,), ordinal=(_undefined, _undefined,)):
+        buf = cls.__new(name=name, codeOrder=codeOrder, annotations=annotations, discriminantValue=discriminantValue, group=group, ordinal=ordinal)
+        return cls.from_buffer(buf, 0, 3, 4)
     
     def shortrepr(self):
         parts = []
@@ -1572,10 +1488,10 @@ class Superclass(_Struct):
     
     @staticmethod
     def __new(id=0, brand=None):
-        builder = _StructBuilder('Qq')
-        brand = builder.alloc_struct(8, Brand, brand)
-        buf = builder.build(id, brand)
-        return buf
+        builder = _Builder(1, 1)
+        builder.set(ord('Q'), 0, id)
+        builder.alloc_struct(8, Brand, brand)
+        return builder.build()
     
     def __init__(self, id=0, brand=None):
         _buf = self.__new(id, brand)
@@ -1800,279 +1716,183 @@ class Value(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new_void():
-        builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 0
-        buf = builder.build(__which__)
-        return buf
-    @classmethod
-    def new_void(cls):
-        buf = cls.__new_void()
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_bool(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: (name = "bool", codeOrder = 1, discriminantValue = 1, slot = (offset = 16, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 1))')
-    @classmethod
-    def new_bool(cls):
-        buf = cls.__new_bool()
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_int8(int8=0):
-        builder = _StructBuilder('hbxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 2
-        buf = builder.build(__which__, int8)
-        return buf
-    @classmethod
-    def new_int8(cls, int8=0):
-        buf = cls.__new_int8(int8)
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_int16(int16=0):
-        builder = _StructBuilder('hhxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 3
-        buf = builder.build(__which__, int16)
-        return buf
-    @classmethod
-    def new_int16(cls, int16=0):
-        buf = cls.__new_int16(int16)
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_int32(int32=0):
-        builder = _StructBuilder('hxxixxxxxxxxxxxxxxxx')
-        __which__ = 4
-        buf = builder.build(__which__, int32)
-        return buf
-    @classmethod
-    def new_int32(cls, int32=0):
-        buf = cls.__new_int32(int32)
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_int64(int64=0):
-        builder = _StructBuilder('hxxxxxxqxxxxxxxx')
-        __which__ = 5
-        buf = builder.build(__which__, int64)
-        return buf
-    @classmethod
-    def new_int64(cls, int64=0):
-        buf = cls.__new_int64(int64)
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_uint8(uint8=0):
-        builder = _StructBuilder('hBxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 6
-        buf = builder.build(__which__, uint8)
-        return buf
-    @classmethod
-    def new_uint8(cls, uint8=0):
-        buf = cls.__new_uint8(uint8)
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_uint16(uint16=0):
-        builder = _StructBuilder('hHxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 7
-        buf = builder.build(__which__, uint16)
-        return buf
-    @classmethod
-    def new_uint16(cls, uint16=0):
-        buf = cls.__new_uint16(uint16)
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_uint32(uint32=0):
-        builder = _StructBuilder('hxxIxxxxxxxxxxxxxxxx')
-        __which__ = 8
-        buf = builder.build(__which__, uint32)
-        return buf
-    @classmethod
-    def new_uint32(cls, uint32=0):
-        buf = cls.__new_uint32(uint32)
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_uint64(uint64=0):
-        builder = _StructBuilder('hxxxxxxQxxxxxxxx')
-        __which__ = 9
-        buf = builder.build(__which__, uint64)
-        return buf
-    @classmethod
-    def new_uint64(cls, uint64=0):
-        buf = cls.__new_uint64(uint64)
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_float32(float32=0.0):
-        builder = _StructBuilder('hxxfxxxxxxxxxxxxxxxx')
-        __which__ = 10
-        buf = builder.build(__which__, float32)
-        return buf
-    @classmethod
-    def new_float32(cls, float32=0.0):
-        buf = cls.__new_float32(float32)
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_float64(float64=0.0):
-        builder = _StructBuilder('hxxxxxxdxxxxxxxx')
-        __which__ = 11
-        buf = builder.build(__which__, float64)
-        return buf
-    @classmethod
-    def new_float64(cls, float64=0.0):
-        buf = cls.__new_float64(float64)
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_text(text=None):
-        builder = _StructBuilder('hxxxxxxxxxxxxxxq')
-        __which__ = 12
-        text = builder.alloc_text(16, text)
-        buf = builder.build(__which__, text)
-        return buf
-    @classmethod
-    def new_text(cls, text=None):
-        buf = cls.__new_text(text)
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_data(data=None):
-        builder = _StructBuilder('hxxxxxxxxxxxxxxq')
-        __which__ = 13
-        data = builder.alloc_data(16, data)
-        buf = builder.build(__which__, data)
-        return buf
-    @classmethod
-    def new_data(cls, data=None):
-        buf = cls.__new_data(data)
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_list(list=None):
-        builder = _StructBuilder('hxxxxxxxxxxxxxxq')
-        __which__ = 14
-        raise NotImplementedError('Unsupported field type: (name = "list", codeOrder = 14, discriminantValue = 14, slot = (offset = 0, type = (anyPointer = (unconstrained = void)), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 14))')
-        buf = builder.build(__which__, list)
-        return buf
-    @classmethod
-    def new_list(cls, list=None):
-        buf = cls.__new_list(list)
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_enum(enum=0):
-        builder = _StructBuilder('hHxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 15
-        buf = builder.build(__which__, enum)
-        return buf
-    @classmethod
-    def new_enum(cls, enum=0):
-        buf = cls.__new_enum(enum)
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_struct(struct=None):
-        builder = _StructBuilder('hxxxxxxxxxxxxxxq')
-        __which__ = 16
-        raise NotImplementedError('Unsupported field type: (name = "struct", codeOrder = 16, discriminantValue = 16, slot = (offset = 0, type = (anyPointer = (unconstrained = void)), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 16))')
-        buf = builder.build(__which__, struct)
-        return buf
-    @classmethod
-    def new_struct(cls, struct=None):
-        buf = cls.__new_struct(struct)
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_interface():
-        builder = _StructBuilder('hxxxxxxxxxxxxxxxxxxxxxx')
-        __which__ = 17
-        buf = builder.build(__which__)
-        return buf
-    @classmethod
-    def new_interface(cls):
-        buf = cls.__new_interface()
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_anyPointer(anyPointer=None):
-        builder = _StructBuilder('hxxxxxxxxxxxxxxq')
-        __which__ = 18
-        raise NotImplementedError('Unsupported field type: (name = "anyPointer", codeOrder = 18, discriminantValue = 18, slot = (offset = 0, type = (anyPointer = (unconstrained = void)), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 18))')
-        buf = builder.build(__which__, anyPointer)
-        return buf
-    @classmethod
-    def new_anyPointer(cls, anyPointer=None):
-        buf = cls.__new_anyPointer(anyPointer)
-        return cls.from_buffer(buf, 0, 2, 1)
+    def __new(void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined):
+        builder = _Builder(2, 1)
+        anonymous__curtag = None
+        if void is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'void')
+            builder.set(ord('h'), 0, 0)
+        if bool is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'bool')
+            builder.set(ord('h'), 0, 1)
+            builder.setbool(2, 0, bool)
+        if int8 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'int8')
+            builder.set(ord('h'), 0, 2)
+            builder.set(ord('b'), 2, int8)
+        if int16 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'int16')
+            builder.set(ord('h'), 0, 3)
+            builder.set(ord('h'), 2, int16)
+        if int32 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'int32')
+            builder.set(ord('h'), 0, 4)
+            builder.set(ord('i'), 4, int32)
+        if int64 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'int64')
+            builder.set(ord('h'), 0, 5)
+            builder.set(ord('q'), 8, int64)
+        if uint8 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'uint8')
+            builder.set(ord('h'), 0, 6)
+            builder.set(ord('B'), 2, uint8)
+        if uint16 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'uint16')
+            builder.set(ord('h'), 0, 7)
+            builder.set(ord('H'), 2, uint16)
+        if uint32 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'uint32')
+            builder.set(ord('h'), 0, 8)
+            builder.set(ord('I'), 4, uint32)
+        if uint64 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'uint64')
+            builder.set(ord('h'), 0, 9)
+            builder.set(ord('Q'), 8, uint64)
+        if float32 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'float32')
+            builder.set(ord('h'), 0, 10)
+            builder.set(ord('f'), 4, float32)
+        if float64 is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'float64')
+            builder.set(ord('h'), 0, 11)
+            builder.set(ord('d'), 8, float64)
+        if text is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'text')
+            builder.set(ord('h'), 0, 12)
+            builder.alloc_text(16, text)
+        if data is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'data')
+            builder.set(ord('h'), 0, 13)
+            builder.alloc_data(16, data)
+        if list is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'list')
+            builder.set(ord('h'), 0, 14)
+            raise NotImplementedError('Unsupported field type: (name = "list", codeOrder = 14, discriminantValue = 14, slot = (offset = 0, type = (anyPointer = (unconstrained = void)), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 14))')
+        if enum is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'enum')
+            builder.set(ord('h'), 0, 15)
+            builder.set(ord('H'), 2, enum)
+        if struct is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'struct')
+            builder.set(ord('h'), 0, 16)
+            raise NotImplementedError('Unsupported field type: (name = "struct", codeOrder = 16, discriminantValue = 16, slot = (offset = 0, type = (anyPointer = (unconstrained = void)), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 16))')
+        if interface is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'interface')
+            builder.set(ord('h'), 0, 17)
+        if anyPointer is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'anyPointer')
+            builder.set(ord('h'), 0, 18)
+            raise NotImplementedError('Unsupported field type: (name = "anyPointer", codeOrder = 18, discriminantValue = 18, slot = (offset = 0, type = (anyPointer = (unconstrained = void)), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 18))')
+        return builder.build()
     
     def __init__(self, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined):
-        _buf = None
-        _curtag = None
-        if void is not _undefined:
-            _curtag = _check_tag(_curtag, 'void')
-            _buf = self.__new_void()
-        if bool is not _undefined:
-            _curtag = _check_tag(_curtag, 'bool')
-            _buf = self.__new_bool()
-        if int8 is not _undefined:
-            _curtag = _check_tag(_curtag, 'int8')
-            _buf = self.__new_int8(int8)
-        if int16 is not _undefined:
-            _curtag = _check_tag(_curtag, 'int16')
-            _buf = self.__new_int16(int16)
-        if int32 is not _undefined:
-            _curtag = _check_tag(_curtag, 'int32')
-            _buf = self.__new_int32(int32)
-        if int64 is not _undefined:
-            _curtag = _check_tag(_curtag, 'int64')
-            _buf = self.__new_int64(int64)
-        if uint8 is not _undefined:
-            _curtag = _check_tag(_curtag, 'uint8')
-            _buf = self.__new_uint8(uint8)
-        if uint16 is not _undefined:
-            _curtag = _check_tag(_curtag, 'uint16')
-            _buf = self.__new_uint16(uint16)
-        if uint32 is not _undefined:
-            _curtag = _check_tag(_curtag, 'uint32')
-            _buf = self.__new_uint32(uint32)
-        if uint64 is not _undefined:
-            _curtag = _check_tag(_curtag, 'uint64')
-            _buf = self.__new_uint64(uint64)
-        if float32 is not _undefined:
-            _curtag = _check_tag(_curtag, 'float32')
-            _buf = self.__new_float32(float32)
-        if float64 is not _undefined:
-            _curtag = _check_tag(_curtag, 'float64')
-            _buf = self.__new_float64(float64)
-        if text is not _undefined:
-            _curtag = _check_tag(_curtag, 'text')
-            _buf = self.__new_text(text)
-        if data is not _undefined:
-            _curtag = _check_tag(_curtag, 'data')
-            _buf = self.__new_data(data)
-        if list is not _undefined:
-            _curtag = _check_tag(_curtag, 'list')
-            _buf = self.__new_list(list)
-        if enum is not _undefined:
-            _curtag = _check_tag(_curtag, 'enum')
-            _buf = self.__new_enum(enum)
-        if struct is not _undefined:
-            _curtag = _check_tag(_curtag, 'struct')
-            _buf = self.__new_struct(struct)
-        if interface is not _undefined:
-            _curtag = _check_tag(_curtag, 'interface')
-            _buf = self.__new_interface()
-        if anyPointer is not _undefined:
-            _curtag = _check_tag(_curtag, 'anyPointer')
-            _buf = self.__new_anyPointer(anyPointer)
-        if _buf is None:
-            raise TypeError("one of the following args is required: void, bool, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, text, data, list, enum, struct, interface, anyPointer")
+        _buf = self.__new(void, bool, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, text, data, list, enum, struct, interface, anyPointer)
         _Struct.__init__(self, _buf, 0, 2, 1)
+    
+    @classmethod
+    def new_void(cls, void=None):
+        buf = cls.__new(void=void)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_bool(cls, bool=False):
+        buf = cls.__new(bool=bool)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_int8(cls, int8=0):
+        buf = cls.__new(int8=int8)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_int16(cls, int16=0):
+        buf = cls.__new(int16=int16)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_int32(cls, int32=0):
+        buf = cls.__new(int32=int32)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_int64(cls, int64=0):
+        buf = cls.__new(int64=int64)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_uint8(cls, uint8=0):
+        buf = cls.__new(uint8=uint8)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_uint16(cls, uint16=0):
+        buf = cls.__new(uint16=uint16)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_uint32(cls, uint32=0):
+        buf = cls.__new(uint32=uint32)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_uint64(cls, uint64=0):
+        buf = cls.__new(uint64=uint64)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_float32(cls, float32=0.0):
+        buf = cls.__new(float32=float32)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_float64(cls, float64=0.0):
+        buf = cls.__new(float64=float64)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_text(cls, text=None):
+        buf = cls.__new(text=text)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_data(cls, data=None):
+        buf = cls.__new(data=data)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_list(cls, list=None):
+        buf = cls.__new(list=list)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_enum(cls, enum=0):
+        buf = cls.__new(enum=enum)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_struct(cls, struct=None):
+        buf = cls.__new(struct=struct)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_interface(cls, interface=None):
+        buf = cls.__new(interface=interface)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_anyPointer(cls, anyPointer=None):
+        buf = cls.__new(anyPointer=anyPointer)
+        return cls.from_buffer(buf, 0, 2, 1)
     
     def shortrepr(self):
         parts = []
@@ -2153,40 +1973,31 @@ class Brand_Binding(_Struct):
         return ptr != 0
     
     @staticmethod
-    def __new_unbound():
-        builder = _StructBuilder('hxxxxxxxxxxxxxx')
-        __which__ = 0
-        buf = builder.build(__which__)
-        return buf
-    @classmethod
-    def new_unbound(cls):
-        buf = cls.__new_unbound()
-        return cls.from_buffer(buf, 0, 1, 1)
-    
-    @staticmethod
-    def __new_type(type=None):
-        builder = _StructBuilder('hxxxxxxq')
-        __which__ = 1
-        type = builder.alloc_struct(8, Type, type)
-        buf = builder.build(__which__, type)
-        return buf
-    @classmethod
-    def new_type(cls, type=None):
-        buf = cls.__new_type(type)
-        return cls.from_buffer(buf, 0, 1, 1)
+    def __new(unbound=_undefined, type=_undefined):
+        builder = _Builder(1, 1)
+        anonymous__curtag = None
+        if unbound is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'unbound')
+            builder.set(ord('h'), 0, 0)
+        if type is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'type')
+            builder.set(ord('h'), 0, 1)
+            builder.alloc_struct(8, Type, type)
+        return builder.build()
     
     def __init__(self, unbound=_undefined, type=_undefined):
-        _buf = None
-        _curtag = None
-        if unbound is not _undefined:
-            _curtag = _check_tag(_curtag, 'unbound')
-            _buf = self.__new_unbound()
-        if type is not _undefined:
-            _curtag = _check_tag(_curtag, 'type')
-            _buf = self.__new_type(type)
-        if _buf is None:
-            raise TypeError("one of the following args is required: unbound, type")
+        _buf = self.__new(unbound, type)
         _Struct.__init__(self, _buf, 0, 1, 1)
+    
+    @classmethod
+    def new_unbound(cls, unbound=None):
+        buf = cls.__new(unbound=unbound)
+        return cls.from_buffer(buf, 0, 1, 1)
+    
+    @classmethod
+    def new_type(cls, type=None):
+        buf = cls.__new(type=type)
+        return cls.from_buffer(buf, 0, 1, 1)
     
     def shortrepr(self):
         parts = []
@@ -2240,40 +2051,32 @@ class Brand_Scope(_Struct):
         return None
     
     @staticmethod
-    def __new_bind(scopeId=0, bind=None):
-        builder = _StructBuilder('Qhxxxxxxq')
-        __which__ = 0
-        bind = builder.alloc_list(16, _StructList, Brand.Binding, bind)
-        buf = builder.build(scopeId, __which__, bind)
-        return buf
-    @classmethod
-    def new_bind(cls, scopeId=0, bind=None):
-        buf = cls.__new_bind(scopeId, bind)
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @staticmethod
-    def __new_inherit(scopeId=0):
-        builder = _StructBuilder('Qhxxxxxxxxxxxxxx')
-        __which__ = 1
-        buf = builder.build(scopeId, __which__)
-        return buf
-    @classmethod
-    def new_inherit(cls, scopeId=0):
-        buf = cls.__new_inherit(scopeId)
-        return cls.from_buffer(buf, 0, 2, 1)
+    def __new(scopeId=0, bind=_undefined, inherit=_undefined):
+        builder = _Builder(2, 1)
+        anonymous__curtag = None
+        builder.set(ord('Q'), 0, scopeId)
+        if bind is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'bind')
+            builder.set(ord('h'), 8, 0)
+            builder.alloc_list(16, _StructList, Brand.Binding, bind)
+        if inherit is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'inherit')
+            builder.set(ord('h'), 8, 1)
+        return builder.build()
     
     def __init__(self, scopeId=0, bind=_undefined, inherit=_undefined):
-        _buf = None
-        _curtag = None
-        if bind is not _undefined:
-            _curtag = _check_tag(_curtag, 'bind')
-            _buf = self.__new_bind(scopeId, bind)
-        if inherit is not _undefined:
-            _curtag = _check_tag(_curtag, 'inherit')
-            _buf = self.__new_inherit(scopeId)
-        if _buf is None:
-            raise TypeError("one of the following args is required: bind, inherit")
+        _buf = self.__new(scopeId, bind, inherit)
         _Struct.__init__(self, _buf, 0, 2, 1)
+    
+    @classmethod
+    def new_bind(cls, scopeId=0, bind=None):
+        buf = cls.__new(scopeId=scopeId, bind=bind)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_inherit(cls, scopeId=0, inherit=None):
+        buf = cls.__new(scopeId=scopeId, inherit=inherit)
+        return cls.from_buffer(buf, 0, 2, 1)
     
     def shortrepr(self):
         parts = []
@@ -2310,10 +2113,9 @@ class Brand(_Struct):
     
     @staticmethod
     def __new(scopes=None):
-        builder = _StructBuilder('q')
-        scopes = builder.alloc_list(0, _StructList, Brand.Scope, scopes)
-        buf = builder.build(scopes)
-        return buf
+        builder = _Builder(0, 1)
+        builder.alloc_list(0, _StructList, Brand.Scope, scopes)
+        return builder.build()
     
     def __init__(self, scopes=None):
         _buf = self.__new(scopes)
@@ -2391,11 +2193,11 @@ class Annotation(_Struct):
     
     @staticmethod
     def __new(id=0, value=None, brand=None):
-        builder = _StructBuilder('Qqq')
-        value = builder.alloc_struct(8, Value, value)
-        brand = builder.alloc_struct(16, Brand, brand)
-        buf = builder.build(id, value, brand)
-        return buf
+        builder = _Builder(1, 2)
+        builder.set(ord('Q'), 0, id)
+        builder.alloc_struct(8, Value, value)
+        builder.alloc_struct(16, Brand, brand)
+        return builder.build()
     
     def __init__(self, id=0, value=None, brand=None):
         _buf = self.__new(id, value, brand)
@@ -2796,10 +2598,10 @@ class Node_NestedNode(_Struct):
     
     @staticmethod
     def __new(name=None, id=0):
-        builder = _StructBuilder('Qq')
-        name = builder.alloc_text(8, name)
-        buf = builder.build(id, name)
-        return buf
+        builder = _Builder(1, 1)
+        builder.alloc_text(8, name)
+        builder.set(ord('Q'), 0, id)
+        return builder.build()
     
     def __init__(self, name=None, id=0):
         _buf = self.__new(name, id)
@@ -2832,10 +2634,9 @@ class Node_Parameter(_Struct):
     
     @staticmethod
     def __new(name=None):
-        builder = _StructBuilder('q')
-        name = builder.alloc_text(0, name)
-        buf = builder.build(name)
-        return buf
+        builder = _Builder(0, 1)
+        builder.alloc_text(0, name)
+        return builder.build()
     
     def __init__(self, name=None):
         _buf = self.__new(name)
@@ -3026,77 +2827,100 @@ class Node(_Struct):
         return value
     
     @staticmethod
-    def __new_file(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: (name = "isGeneric", codeOrder = 5, discriminantValue = 65535, slot = (offset = 288, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 33))')
-    @classmethod
-    def new_file(cls):
-        buf = cls.__new_file()
-        return cls.from_buffer(buf, 0, 5, 6)
-    
-    @staticmethod
-    def __new_struct(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: (name = "isGroup", codeOrder = 3, discriminantValue = 65535, slot = (offset = 224, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 10))')
-    @classmethod
-    def new_struct(cls):
-        buf = cls.__new_struct()
-        return cls.from_buffer(buf, 0, 5, 6)
-    
-    @staticmethod
-    def __new_enum(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: (name = "isGeneric", codeOrder = 5, discriminantValue = 65535, slot = (offset = 288, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 33))')
-    @classmethod
-    def new_enum(cls):
-        buf = cls.__new_enum()
-        return cls.from_buffer(buf, 0, 5, 6)
-    
-    @staticmethod
-    def __new_interface(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: (name = "isGeneric", codeOrder = 5, discriminantValue = 65535, slot = (offset = 288, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 33))')
-    @classmethod
-    def new_interface(cls):
-        buf = cls.__new_interface()
-        return cls.from_buffer(buf, 0, 5, 6)
-    
-    @staticmethod
-    def __new_const(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: (name = "isGeneric", codeOrder = 5, discriminantValue = 65535, slot = (offset = 288, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 33))')
-    @classmethod
-    def new_const(cls):
-        buf = cls.__new_const()
-        return cls.from_buffer(buf, 0, 5, 6)
-    
-    @staticmethod
-    def __new_annotation(*args, **kwargs):
-        raise NotImplementedError('Unsupported field type: (name = "targetsFile", codeOrder = 1, discriminantValue = 65535, slot = (offset = 112, type = (bool = void), defaultValue = (bool = false), hadExplicitDefault = false), ordinal = (explicit = 19))')
-    @classmethod
-    def new_annotation(cls):
-        buf = cls.__new_annotation()
-        return cls.from_buffer(buf, 0, 5, 6)
-    
-    def __init__(self, id=0, displayName=None, displayNamePrefixLength=0, scopeId=0, nestedNodes=None, annotations=None, file=_undefined, struct=(0, 0, 0, False, 0, 0, None,), enum=(None,), interface=(None, None,), const=(None, None,), annotation=(None, False, False, False, False, False, False, False, False, False, False, False, False,), parameters=None, isGeneric=False):
-        _buf = None
-        _curtag = None
+    def __new(id=0, displayName=None, displayNamePrefixLength=0, scopeId=0, nestedNodes=None, annotations=None, file=_undefined, struct=_undefined, enum=_undefined, interface=_undefined, const=_undefined, annotation=_undefined, parameters=None, isGeneric=False):
+        builder = _Builder(5, 6)
+        anonymous__curtag = None
+        builder.set(ord('Q'), 0, id)
+        builder.alloc_text(40, displayName)
+        builder.set(ord('I'), 8, displayNamePrefixLength)
+        builder.set(ord('Q'), 16, scopeId)
+        builder.alloc_list(48, _StructList, Node.NestedNode, nestedNodes)
+        builder.alloc_list(56, _StructList, Annotation, annotations)
         if file is not _undefined:
-            _curtag = _check_tag(_curtag, 'file')
-            _buf = self.__new_file()
+            anonymous__curtag = _check_tag(anonymous__curtag, 'file')
+            builder.set(ord('h'), 12, 0)
         if struct is not _undefined:
-            _curtag = _check_tag(_curtag, 'struct')
-            _buf = self.__new_struct()
+            anonymous__curtag = _check_tag(anonymous__curtag, 'struct')
+            builder.set(ord('h'), 12, 1)
+            struct_dataWordCount, struct_pointerCount, struct_preferredListEncoding, struct_isGroup, struct_discriminantCount, struct_discriminantOffset, struct_fields, = struct
+            builder.set(ord('H'), 14, struct_dataWordCount)
+            builder.set(ord('H'), 24, struct_pointerCount)
+            builder.set(ord('h'), 26, struct_preferredListEncoding)
+            builder.setbool(28, 0, struct_isGroup)
+            builder.set(ord('H'), 30, struct_discriminantCount)
+            builder.set(ord('I'), 32, struct_discriminantOffset)
+            builder.alloc_list(64, _StructList, Field, struct_fields)
         if enum is not _undefined:
-            _curtag = _check_tag(_curtag, 'enum')
-            _buf = self.__new_enum()
+            anonymous__curtag = _check_tag(anonymous__curtag, 'enum')
+            builder.set(ord('h'), 12, 2)
+            enum_enumerants, = enum
+            builder.alloc_list(64, _StructList, Enumerant, enum_enumerants)
         if interface is not _undefined:
-            _curtag = _check_tag(_curtag, 'interface')
-            _buf = self.__new_interface()
+            anonymous__curtag = _check_tag(anonymous__curtag, 'interface')
+            builder.set(ord('h'), 12, 3)
+            interface_methods, interface_superclasses, = interface
+            builder.alloc_list(64, _StructList, Method, interface_methods)
+            builder.alloc_list(72, _StructList, Superclass, interface_superclasses)
         if const is not _undefined:
-            _curtag = _check_tag(_curtag, 'const')
-            _buf = self.__new_const()
+            anonymous__curtag = _check_tag(anonymous__curtag, 'const')
+            builder.set(ord('h'), 12, 4)
+            const_type, const_value, = const
+            builder.alloc_struct(64, Type, const_type)
+            builder.alloc_struct(72, Value, const_value)
         if annotation is not _undefined:
-            _curtag = _check_tag(_curtag, 'annotation')
-            _buf = self.__new_annotation()
-        if _buf is None:
-            raise TypeError("one of the following args is required: file, struct, enum, interface, const, annotation")
+            anonymous__curtag = _check_tag(anonymous__curtag, 'annotation')
+            builder.set(ord('h'), 12, 5)
+            annotation_type, annotation_targetsFile, annotation_targetsConst, annotation_targetsEnum, annotation_targetsEnumerant, annotation_targetsStruct, annotation_targetsField, annotation_targetsUnion, annotation_targetsGroup, annotation_targetsInterface, annotation_targetsMethod, annotation_targetsParam, annotation_targetsAnnotation, = annotation
+            builder.alloc_struct(64, Type, annotation_type)
+            builder.setbool(14, 0, annotation_targetsFile)
+            builder.setbool(14, 1, annotation_targetsConst)
+            builder.setbool(14, 2, annotation_targetsEnum)
+            builder.setbool(14, 3, annotation_targetsEnumerant)
+            builder.setbool(14, 4, annotation_targetsStruct)
+            builder.setbool(14, 5, annotation_targetsField)
+            builder.setbool(14, 6, annotation_targetsUnion)
+            builder.setbool(14, 7, annotation_targetsGroup)
+            builder.setbool(15, 0, annotation_targetsInterface)
+            builder.setbool(15, 1, annotation_targetsMethod)
+            builder.setbool(15, 2, annotation_targetsParam)
+            builder.setbool(15, 3, annotation_targetsAnnotation)
+        builder.alloc_list(80, _StructList, Node.Parameter, parameters)
+        builder.setbool(36, 0, isGeneric)
+        return builder.build()
+    
+    def __init__(self, id=0, displayName=None, displayNamePrefixLength=0, scopeId=0, nestedNodes=None, annotations=None, file=_undefined, struct=_undefined, enum=_undefined, interface=_undefined, const=_undefined, annotation=_undefined, parameters=None, isGeneric=False):
+        _buf = self.__new(id, displayName, displayNamePrefixLength, scopeId, nestedNodes, annotations, file, struct, enum, interface, const, annotation, parameters, isGeneric)
         _Struct.__init__(self, _buf, 0, 5, 6)
+    
+    @classmethod
+    def new_file(cls, id=0, displayName=None, displayNamePrefixLength=0, scopeId=0, nestedNodes=None, annotations=None, file=None, parameters=None, isGeneric=False):
+        buf = cls.__new(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, file=file, parameters=parameters, isGeneric=isGeneric)
+        return cls.from_buffer(buf, 0, 5, 6)
+    
+    @classmethod
+    def new_struct(cls, id=0, displayName=None, displayNamePrefixLength=0, scopeId=0, nestedNodes=None, annotations=None, struct=(0, 0, 0, False, 0, 0, None,), parameters=None, isGeneric=False):
+        buf = cls.__new(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, struct=struct, parameters=parameters, isGeneric=isGeneric)
+        return cls.from_buffer(buf, 0, 5, 6)
+    
+    @classmethod
+    def new_enum(cls, id=0, displayName=None, displayNamePrefixLength=0, scopeId=0, nestedNodes=None, annotations=None, enum=(None,), parameters=None, isGeneric=False):
+        buf = cls.__new(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, enum=enum, parameters=parameters, isGeneric=isGeneric)
+        return cls.from_buffer(buf, 0, 5, 6)
+    
+    @classmethod
+    def new_interface(cls, id=0, displayName=None, displayNamePrefixLength=0, scopeId=0, nestedNodes=None, annotations=None, interface=(None, None,), parameters=None, isGeneric=False):
+        buf = cls.__new(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, interface=interface, parameters=parameters, isGeneric=isGeneric)
+        return cls.from_buffer(buf, 0, 5, 6)
+    
+    @classmethod
+    def new_const(cls, id=0, displayName=None, displayNamePrefixLength=0, scopeId=0, nestedNodes=None, annotations=None, const=(None, None,), parameters=None, isGeneric=False):
+        buf = cls.__new(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, const=const, parameters=parameters, isGeneric=isGeneric)
+        return cls.from_buffer(buf, 0, 5, 6)
+    
+    @classmethod
+    def new_annotation(cls, id=0, displayName=None, displayNamePrefixLength=0, scopeId=0, nestedNodes=None, annotations=None, annotation=(None, False, False, False, False, False, False, False, False, False, False, False, False,), parameters=None, isGeneric=False):
+        buf = cls.__new(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, annotation=annotation, parameters=parameters, isGeneric=isGeneric)
+        return cls.from_buffer(buf, 0, 5, 6)
     
     def shortrepr(self):
         parts = []
