@@ -108,7 +108,7 @@ class StructBuilder(AbstractBuilder):
         return s + ''.join(self._extra)
 
 
-class MutableBuilder(AbstractBuilder):
+class Builder(AbstractBuilder):
 
     def __init__(self, length):
         AbstractBuilder.__init__(self, length)

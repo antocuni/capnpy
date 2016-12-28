@@ -34,7 +34,7 @@ class Structor(object):
         ## generate a constructor which looks like this
         ## @staticmethod
         ## def __new(x=0, y=0, z=None):
-        ##     builder = _MutableBuilder(24)
+        ##     builder = _Builder(24)
         ##     builder.set(ord('q', 0, x)
         ##     builder.set(ord('q', 8, y)
         ##     builder.alloc_text(16, z)
@@ -49,7 +49,7 @@ class Structor(object):
         code.w('@staticmethod')
         with code.def_('__new', self.params) as ns:
             ns.total_length = (self.data_size + self.ptrs_size)*8
-            ns.w('builder = _MutableBuilder({total_length})')
+            ns.w('builder = _Builder({total_length})')
             for union in self.fieldtree.all_unions():
                 ns.w('{union}__curtag = None', union=union.varname)
             for node in self.fieldtree.children:

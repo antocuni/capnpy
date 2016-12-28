@@ -1,5 +1,5 @@
 import py
-from capnpy.builder import StructBuilder, MutableBuilder
+from capnpy.builder import StructBuilder, Builder
 from capnpy.blob import Types
 from capnpy.list import PrimitiveList, StructList, StringList
 from capnpy.struct_ import Struct
@@ -194,8 +194,8 @@ def test_alloc_list_of_structs_with_pointers():
     assert buf == expected_buf
 
 
-def test_MutableBuilder():
-    builder = MutableBuilder(24)
+def test_Builder():
+    builder = Builder(24)
     builder.alloc_text(0, 'hello capnp')
     builder.set(Types.int16.ifmt, 8, 0xAA)
     builder.set(Types.int32.ifmt, 12, 0xBBCC)
