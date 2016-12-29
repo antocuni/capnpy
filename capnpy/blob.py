@@ -184,6 +184,67 @@ class Blob(object):
         p.printbuf(start=start, end=end, **kwds)
 
 
+    # ------------------------------------------------------
+    # Comparisons methods
+    # ------------------------------------------------------
+    #
+    # this class can be used in two ways:
+    #
+    #   1. Pure Python mode (either on CPython or PyPy)
+    #   2. compiled by Cython
+    #
+    # Cython does not support __eq__, __lt__ etc: instead, to enable
+    # comparisons you need to define __richcmp__ (which Cython maps to the
+    # CPython's tp_richcmp slot).  On the other hand, when in Pure Python
+    # mode, we *need* __eq__, __lt__ etc:
+    #
+    #   1. we write the actual logic inside _cmp_*
+    #
+    #   2. we implement a __richcmp__ which will be used by Cython but ignored
+    #      by Pure Python
+    #
+    #   3. we add __eq__, __lt__, etc. OUTSIDE the class definition. The
+    #      assignments will fail when Struct is compiled by Cython, because
+    #      you cannot modify the class dict of an extension type: this means
+    #      that we will have the special methods only when in Pure Python
+    #      mode, as wished
+
+    def _equals(self, other):
+        raise NotImplementedError
+
+    def _cmp_eq(self, other):
+        return self._equals(other)
+
+    def _cmp_ne(self, other):
+        return not self._equals(other)
+
+    def _cmp_error(self, other):
+        raise TypeError, "capnpy structs can be compared only for equality"
+
+    def _richcmp(self, other, op):
+        if op == 2:
+            return self._cmp_eq(other)
+        elif op == 3:
+            return self._cmp_ne(other)
+        else:
+            return self._cmp_error(other)
+
+    def __richcmp__(self, other, op):
+        return self._richcmp(other, op)
+
+# add the special methods only when Struct has NOT been compiled by
+# Cython. See the comment above for more explanation
+try:
+    Blob.__eq__ = Blob.__dict__['_cmp_eq']
+    Blob.__ne__ = Blob.__dict__['_cmp_ne']
+    Blob.__lt__ = Blob.__dict__['_cmp_error']
+    Blob.__le__ = Blob.__dict__['_cmp_error']
+    Blob.__gt__ = Blob.__dict__['_cmp_error']
+    Blob.__ge__ = Blob.__dict__['_cmp_error']
+except TypeError:
+    pass
+
+
 # that these two modules are used by _read_list_or_struct. We need to put them
 # at the end because of circular references
 import capnpy.struct_

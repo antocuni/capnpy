@@ -147,22 +147,12 @@ class List(Blob):
         body = self._buf.s[start:end]
         return (self._item_count, self._item_type, body)
 
-    def __eq__(self, other):
+    def _equals(self, other):
         if isinstance(other, list):
             return list(self) == other
         if self.__class__ is not other.__class__:
             return False
         return self._get_key() == other._get_key()
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
-    def __lt__(self, other):
-        raise TypeError, "capnpy lists can be compared only for equality"
-
-    __le__ = __lt__
-    __gt__ = __lt__
-    __ge__ = __lt__
 
     def shortrepr(self):
         parts = [self._item_repr(item) for item in self]
