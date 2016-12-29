@@ -21,7 +21,7 @@ LIST_SIZE_32 = 4
 LIST_SIZE_64 = 5
 LIST_SIZE_PTR = 6
 LIST_SIZE_COMPOSITE = 7
-LIST_SIZE_LENGTH = (None, None, 1, 2, 4, 8, 8)
+LIST_SIZE_LENGTH = (-1, -1, 1, 2, 4, 8, 8)
 
 # error code to indicate that the fast path to get a pointer failed because
 # it's a FAR pointer, and you should use the slower API to access it.  From

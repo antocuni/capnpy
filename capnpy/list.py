@@ -48,7 +48,7 @@ class List(Blob):
         elif size_tag == ptr.LIST_SIZE_BIT:
             raise ValueError('Lists of bits are not supported')
         else:
-            self._tag = None
+            self._tag = -1
             self._item_count = item_count
             self._item_length = ptr.LIST_SIZE_LENGTH[size_tag]
             self._item_offset = 0
@@ -175,7 +175,7 @@ class PrimitiveList(List):
 class StructList(List):
     ItemBuilder = listbuilder.StructItemBuilder
 
-    def __eq__(self, other):
+    def _equals(self, other):
         raise TypeError("Cannot compare lists of structs.")
 
     def _read_list_item(self, offset):
