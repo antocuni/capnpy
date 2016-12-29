@@ -25,6 +25,7 @@ def get_cython_extensions():
     from Cython.Build import cythonize
     files = ["capnpy/blob.py",
              "capnpy/struct_.py",
+             "capnpy/list.py",
              "capnpy/type.py",
              "capnpy/message.py",
              "capnpy/buffered.py",
