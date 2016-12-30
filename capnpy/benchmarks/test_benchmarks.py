@@ -85,6 +85,7 @@ class TestGetAttr(object):
 
     @pytest.mark.benchmark(group="getattr")
     def test_list(self, schema, benchmark):
+        # mesaure the time to get the list field *AND* to read an item
         benchmark.extra_info['attribute_type'] = 'list'
         def sum_attr(obj):
             myobjs = (obj, obj)
@@ -92,6 +93,22 @@ class TestGetAttr(object):
             for i in range(self.N):
                 obj = myobjs[i%2]
                 res += obj.intlist[2]
+            return res
+        #
+        obj = get_obj(schema)
+        res = benchmark(sum_attr, obj)
+        assert res == 3*self.N
+
+    @pytest.mark.benchmark(group="getattr")
+    def test_list_indexing(self, schema, benchmark):
+        # mesaure ONLY the time to read an item in a list
+        benchmark.extra_info['attribute_type'] = 'list_indexing'
+        def sum_attr(obj):
+            mylists = (obj.intlist, obj.intlist)
+            res = 0
+            for i in range(self.N):
+                l = mylists[i%2]
+                res += l[2]
             return res
         #
         obj = get_obj(schema)
