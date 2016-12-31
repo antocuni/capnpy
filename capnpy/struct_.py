@@ -2,6 +2,7 @@ import struct
 import capnpy
 from capnpy import ptr
 from capnpy.blob import Blob, Types
+from capnpy.list import List
 
 class Undefined(object):
     def __repr__(self):
@@ -154,7 +155,7 @@ class Struct(Blob):
         obj._init_from_pointer(self._buf, offset, p)
         return obj
 
-    def _read_list(self, offset, listcls, item_type, default_=None):
+    def _read_list(self, offset, item_type, default_=None):
         p = self._read_fast_ptr(offset)
         if p == ptr.E_IS_FAR_POINTER:
             offset, p = self._read_far_ptr(offset)
@@ -164,11 +165,11 @@ class Struct(Blob):
             return default_
         assert ptr.kind(p) == ptr.LIST
         list_offset = ptr.deref(p, offset)
-        return listcls.from_buffer(self._buf,
-                                   list_offset,
-                                   ptr.list_size_tag(p),
-                                   ptr.list_item_count(p),
-                                   item_type)
+        return List.from_buffer(self._buf,
+                                list_offset,
+                                ptr.list_size_tag(p),
+                                ptr.list_item_count(p),
+                                item_type)
 
     def _read_str_text(self, offset, default_=None):
         return self._read_str_data(offset, default_, additional_size=-1)

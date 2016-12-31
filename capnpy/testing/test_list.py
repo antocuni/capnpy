@@ -1,7 +1,7 @@
 import py
 from capnpy.blob import CapnpBufferWithSegments, Blob, Types
 from capnpy import ptr
-from capnpy.list import PrimitiveList, StructList, StringList
+from capnpy.list import List, PrimitiveItemType, StructItemType, StringItemType
 from capnpy.struct_ import Struct
 
 def test_read_list():
@@ -11,16 +11,16 @@ def test_read_list():
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
-    lst = blob._read_list(0, PrimitiveList, Types.int64)
+    lst = blob._read_list(0, PrimitiveItemType(Types.int64))
     assert lst._buf is blob._buf
     assert lst._offset == 8
     assert lst._item_offset == 0
     assert lst._item_count == 4
     assert lst._item_length == 8
-    assert lst._read_list_item(0) == 1
-    assert lst._read_list_item(8) == 2
-    assert lst._read_list_item(16) == 3
-    assert lst._read_list_item(24) == 4
+    assert lst._getitem_fast(0) == 1
+    assert lst._getitem_fast(1) == 2
+    assert lst._getitem_fast(2) == 3
+    assert lst._getitem_fast(3) == 4
 
 def test_read_list_offset():
     buf = ('abcd'                               # random garbage

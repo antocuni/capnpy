@@ -56,9 +56,6 @@ class List(Blob):
     def __repr__(self):
         return '<capnpy list [%d items]>' % (len(self),)
 
-    def _read_list_item(self, offset):
-        raise NotImplementedError
-
     def _get_offset_for_item(self, i):
         return self._item_offset + (i*self._item_length)
             
@@ -80,7 +77,7 @@ class List(Blob):
         WARNING: no bound checks!
         """
         offset = self._get_offset_for_item(i)
-        return self._read_list_item(offset)
+        return self._item_type.read_item(self, offset)
 
     def _get_body_range(self):
         return self._get_body_start(), self._get_body_end()
@@ -148,6 +145,8 @@ class List(Blob):
         return (self._item_count, self._item_type, body)
 
     def _equals(self, other):
+        if not self._item_type.can_compare():
+            raise TypeError("Cannot compare lists of structs.")
         if isinstance(other, list):
             return list(self) == other
         if self.__class__ is not other.__class__:
@@ -158,44 +157,78 @@ class List(Blob):
         parts = [self._item_repr(item) for item in self]
         return '[%s]' % (', '.join(parts))
 
-class PrimitiveList(List):
-    ItemBuilder = listbuilder.PrimitiveItemBuilder
-    
-    def _read_list_item(self, offset):
-        return self._buf.read_primitive(self._offset+offset, self._item_type.ifmt)
 
-    def _item_repr(self, item):
-        if self._item_type is Types.float32:
+class ItemType(object):
+
+    def read_item(self, lst, offset):
+        raise NotImplementedError
+
+    def item_repr(self, item):
+        raise NotImplementedError
+
+    def can_compare(self):
+        return True
+
+
+class PrimitiveItemType(ItemType):
+    ItemBuilder = listbuilder.PrimitiveItemBuilder
+
+    def __init__(self, t):
+        self.t = t
+        self.ifmt = t.ifmt
+
+    def read_item(self, lst, offset):
+        return lst._buf.read_primitive(lst._offset+offset, self.ifmt)
+
+    def item_repr(self, item):
+        if self.t is Types.float32:
             return float32_repr(item)
-        elif self._item_type is Types.float64:
+        elif self.t is Types.float64:
             return float64_repr(item)
         else:
             return repr(item)
 
-class StructList(List):
+
+class StructItemType(ItemType):
     ItemBuilder = listbuilder.StructItemBuilder
 
-    def _equals(self, other):
-        raise TypeError("Cannot compare lists of structs.")
+    def __init__(self, structcls):
+        self.structcls = structcls
 
-    def _read_list_item(self, offset):
-        return self._item_type.from_buffer(self._buf,
-                                           self._offset+offset,
-                                           ptr.struct_data_size(self._tag),
-                                           ptr.struct_ptrs_size(self._tag))
+    def can_compare(self):
+        return False
 
-    def _item_repr(self, item):
+    def read_item(self, lst, offset):
+        return self.structcls.from_buffer(lst._buf,
+                                          lst._offset+offset,
+                                          ptr.struct_data_size(lst._tag),
+                                          ptr.struct_ptrs_size(lst._tag))
+
+    def item_repr(self, item):
         return item.shortrepr()
 
-class StringList(List):
+
+class StringItemType(ItemType):
     ItemBuilder = listbuilder.StringItemBuilder
 
-    def _read_list_item(self, offset):
-        offset += self._offset
-        p = self._buf.read_ptr(offset)
+    def read_item(self, lst, offset):
+        offset += lst._offset
+        p = lst._buf.read_ptr(offset)
         if p == ptr.E_IS_FAR_POINTER:
             raise NotImplementedError('FAR pointers not supported here')
-        return self._buf.read_str(p, offset, None, -1)
+        return lst._buf.read_str(p, offset, None, -1)
 
-    def _item_repr(self, item):
+    def item_repr(self, item):
         return text_repr(item)
+
+
+
+# temporary compatibility with the old schema.py
+def PrimitiveList():
+    raise NotImplementedError
+
+def StructList():
+    raise NotImplementedError
+
+def StringList():
+    raise NotImplementedError
