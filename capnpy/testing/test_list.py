@@ -30,15 +30,15 @@ def test_read_list_offset():
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     blob = Struct.from_buffer(buf, 4, data_size=0, ptrs_size=1)
-    lst = blob._read_list(0, PrimitiveList, Types.int64)
+    lst = blob._read_list(0, PrimitiveItemType(Types.int64))
     assert lst._buf is blob._buf
     assert lst._offset == 12
     assert lst._item_count == 4
     assert lst._item_length == 8
-    assert lst._read_list_item(0) == 1
-    assert lst._read_list_item(8) == 2
-    assert lst._read_list_item(16) == 3
-    assert lst._read_list_item(24) == 4
+    assert lst._getitem_fast(0) == 1
+    assert lst._getitem_fast(1) == 2
+    assert lst._getitem_fast(2) == 3
+    assert lst._getitem_fast(3) == 4
 
 def test_list_of_structs():
     # list of Point {x: Int64, y: Int64}
