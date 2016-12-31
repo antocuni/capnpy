@@ -15,8 +15,7 @@ class List(Blob):
         item_length: the length of each list item, in BYTES. Note: this is NOT the
         value of the ListPtr.SIZE_* tag, although it's obviously based on it
 
-        item_type: the type of each list item. Either a Blob/Struct subclass,
-        or a Types.*
+        item_type: an instance of a subclass of ItemType
         """
         self = cls.__new__(cls)
         self._init_from_buffer(buf, offset, size_tag, item_count, item_type)
@@ -221,6 +220,15 @@ class StringItemType(ItemType):
     def item_repr(self, item):
         return text_repr(item)
 
+
+
+# set the list_item_type attribute of Types.*
+def fill_types_item_type():
+    for t in Types.__all__:
+        if t.is_primitive():
+            t.list_item_type = PrimitiveItemType(t)
+fill_types_item_type()
+del fill_types_item_type
 
 
 # temporary compatibility with the old schema.py

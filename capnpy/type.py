@@ -8,6 +8,7 @@ class BuiltinType(object):
             self.ifmt = ord(fmt)
         else:
             self.ifmt = -1
+        self.list_item_type = None # this is filled by list.py
 
     def __repr__(self):
         return '<capnp type %s>' % self.name
@@ -21,10 +22,13 @@ class BuiltinType(object):
 
 class Types(object):
 
+    __all__ = []
+
     @classmethod
     def _make(cls, name, fmt=None):
         t = BuiltinType(name, fmt)
         setattr(cls, name, t)
+        cls.__all__.append(t)
 
 
 Types._make('void')
