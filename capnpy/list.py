@@ -207,7 +207,7 @@ class StructItemType(ItemType):
         return item.shortrepr()
 
 
-class StringItemType(ItemType):
+class TextItemType(ItemType):
     ItemBuilder = listbuilder.StringItemBuilder
 
     def read_item(self, lst, offset):
@@ -224,6 +224,7 @@ class StringItemType(ItemType):
 
 # set the list_item_type attribute of Types.*
 def fill_types_item_type():
+    Types.text.list_item_type = TextItemType()
     for t in Types.__all__:
         if t.is_primitive():
             t.list_item_type = PrimitiveItemType(t)
