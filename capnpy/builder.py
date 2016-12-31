@@ -67,8 +67,8 @@ class AbstractBuilder(object):
         #
         # if size is composite, ptr contains the total size in words, and
         # we also need to emit a "list tag"
-        data_size = item_type.__static_data_size__  # in words
-        ptrs_size = item_type.__static_ptrs_size__  # in words
+        data_size = item_type.structcls.__static_data_size__  # in words
+        ptrs_size = item_type.structcls.__static_ptrs_size__  # in words
         total_words = (data_size+ptrs_size) * item_count
         #
         # emit the tag
@@ -76,15 +76,15 @@ class AbstractBuilder(object):
         self._alloc(struct.pack('<q', tag))
         return ptr.new_list(ptr_offset, ptr.LIST_SIZE_COMPOSITE, total_words)
 
-    def alloc_list(self, offset, listcls, item_type, lst):
+    def alloc_list(self, offset, item_type, lst):
         from capnpy.listbuilder import ListBuilder
         if lst is None:
             return 0 # NULL
         # build the list, using a separate listbuilder
         item_count = len(lst)
-        listbuilder = ListBuilder(listcls.ItemBuilder, item_type, item_count)
+        listbuilder = ListBuilder(item_type, item_count)
         for i, item in enumerate(lst):
-            s = listcls.ItemBuilder.pack_item(listbuilder, i, item)
+            s = item_type.pack_item(listbuilder, i, item)
             listbuilder.append(s)
         #
         # create the ptrlist, and allocate the list body itself
