@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2016-12-28 16:42
+# generated on 2017-01-02 16:43
 
 from capnpy.ptr import E_IS_FAR_POINTER as _E_IS_FAR_POINTER
 from capnpy.struct_ import Struct as _Struct
@@ -9,9 +9,8 @@ from capnpy.struct_ import undefined as _undefined
 from capnpy.enum import enum as _enum
 from capnpy.blob import Types as _Types
 from capnpy.builder import Builder as _Builder
-from capnpy.list import PrimitiveList as _PrimitiveList
-from capnpy.list import StructList as _StructList
-from capnpy.list import StringList as _StringList
+from capnpy.list import List as _List
+from capnpy.list import StructItemType as _StructItemType
 from capnpy.util import text_repr as _text_repr
 from capnpy.util import float32_repr as _float32_repr
 from capnpy.util import float64_repr as _float64_repr
@@ -21,98 +20,129 @@ from capnpy.util import extend_module_maybe as _extend_module_maybe
 
 class CodeGeneratorRequest_RequestedFile_Import(_Struct): pass
 CodeGeneratorRequest_RequestedFile_Import.__name__ = 'CodeGeneratorRequest.RequestedFile.Import'
+_CodeGeneratorRequest_RequestedFile_Import_list_item_type = _StructItemType(CodeGeneratorRequest_RequestedFile_Import)
 
 class CodeGeneratorRequest_RequestedFile(_Struct): pass
 CodeGeneratorRequest_RequestedFile.__name__ = 'CodeGeneratorRequest.RequestedFile'
+_CodeGeneratorRequest_RequestedFile_list_item_type = _StructItemType(CodeGeneratorRequest_RequestedFile)
 
 class CodeGeneratorRequest(_Struct): pass
 CodeGeneratorRequest.__name__ = 'CodeGeneratorRequest'
+_CodeGeneratorRequest_list_item_type = _StructItemType(CodeGeneratorRequest)
 
 class Method(_Struct): pass
 Method.__name__ = 'Method'
+_Method_list_item_type = _StructItemType(Method)
 
 class Enumerant(_Struct): pass
 Enumerant.__name__ = 'Enumerant'
+_Enumerant_list_item_type = _StructItemType(Enumerant)
 
 ElementSize = _enum('ElementSize', ['empty', 'bit', 'byte', 'twoBytes', 'fourBytes', 'eightBytes', 'pointer', 'inlineComposite'])
 
 class Type_anyPointer_parameter(_Struct): pass
 Type_anyPointer_parameter.__name__ = 'Type.anyPointer.parameter'
+_Type_anyPointer_parameter_list_item_type = _StructItemType(Type_anyPointer_parameter)
 
 class Type_anyPointer_implicitMethodParameter(_Struct): pass
 Type_anyPointer_implicitMethodParameter.__name__ = 'Type.anyPointer.implicitMethodParameter'
+_Type_anyPointer_implicitMethodParameter_list_item_type = _StructItemType(Type_anyPointer_implicitMethodParameter)
 
 class Type_anyPointer(_Struct): pass
 Type_anyPointer.__name__ = 'Type.anyPointer'
+_Type_anyPointer_list_item_type = _StructItemType(Type_anyPointer)
 
 class Type_struct(_Struct): pass
 Type_struct.__name__ = 'Type.struct'
+_Type_struct_list_item_type = _StructItemType(Type_struct)
 
 class Type_enum(_Struct): pass
 Type_enum.__name__ = 'Type.enum'
+_Type_enum_list_item_type = _StructItemType(Type_enum)
 
 class Type_interface(_Struct): pass
 Type_interface.__name__ = 'Type.interface'
+_Type_interface_list_item_type = _StructItemType(Type_interface)
 
 class Type_list(_Struct): pass
 Type_list.__name__ = 'Type.list'
+_Type_list_list_item_type = _StructItemType(Type_list)
 
 class Type(_Struct): pass
 Type.__name__ = 'Type'
+_Type_list_item_type = _StructItemType(Type)
 
 class Field_group(_Struct): pass
 Field_group.__name__ = 'Field.group'
+_Field_group_list_item_type = _StructItemType(Field_group)
 
 class Field_ordinal(_Struct): pass
 Field_ordinal.__name__ = 'Field.ordinal'
+_Field_ordinal_list_item_type = _StructItemType(Field_ordinal)
 
 class Field_slot(_Struct): pass
 Field_slot.__name__ = 'Field.slot'
+_Field_slot_list_item_type = _StructItemType(Field_slot)
 
 class Field(_Struct): pass
 Field.__name__ = 'Field'
+_Field_list_item_type = _StructItemType(Field)
 
 class Superclass(_Struct): pass
 Superclass.__name__ = 'Superclass'
+_Superclass_list_item_type = _StructItemType(Superclass)
 
 class Value(_Struct): pass
 Value.__name__ = 'Value'
+_Value_list_item_type = _StructItemType(Value)
 
 class Brand_Binding(_Struct): pass
 Brand_Binding.__name__ = 'Brand.Binding'
+_Brand_Binding_list_item_type = _StructItemType(Brand_Binding)
 
 class Brand_Scope(_Struct): pass
 Brand_Scope.__name__ = 'Brand.Scope'
+_Brand_Scope_list_item_type = _StructItemType(Brand_Scope)
 
 class Brand(_Struct): pass
 Brand.__name__ = 'Brand'
+_Brand_list_item_type = _StructItemType(Brand)
 
 class Annotation(_Struct): pass
 Annotation.__name__ = 'Annotation'
+_Annotation_list_item_type = _StructItemType(Annotation)
 
 class Node_interface(_Struct): pass
 Node_interface.__name__ = 'Node.interface'
+_Node_interface_list_item_type = _StructItemType(Node_interface)
 
 class Node_const(_Struct): pass
 Node_const.__name__ = 'Node.const'
+_Node_const_list_item_type = _StructItemType(Node_const)
 
 class Node_struct(_Struct): pass
 Node_struct.__name__ = 'Node.struct'
+_Node_struct_list_item_type = _StructItemType(Node_struct)
 
 class Node_annotation(_Struct): pass
 Node_annotation.__name__ = 'Node.annotation'
+_Node_annotation_list_item_type = _StructItemType(Node_annotation)
 
 class Node_enum(_Struct): pass
 Node_enum.__name__ = 'Node.enum'
+_Node_enum_list_item_type = _StructItemType(Node_enum)
 
 class Node_NestedNode(_Struct): pass
 Node_NestedNode.__name__ = 'Node.NestedNode'
+_Node_NestedNode_list_item_type = _StructItemType(Node_NestedNode)
 
 class Node_Parameter(_Struct): pass
 Node_Parameter.__name__ = 'Node.Parameter'
+_Node_Parameter_list_item_type = _StructItemType(Node_Parameter)
 
 class Node(_Struct): pass
 Node.__name__ = 'Node'
+_Node_list_item_type = _StructItemType(Node)
 
 
 #### DEFINITIONS ####
@@ -191,12 +221,12 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
     @property
     def imports(self):
         # no union check
-        return self._read_list(8, _StructList, CodeGeneratorRequest.RequestedFile.Import)
+        return self._read_list(8, _CodeGeneratorRequest_RequestedFile_Import_list_item_type)
     
     def get_imports(self):
         res = self.imports
         if res is None:
-            return _StructList.from_buffer('', 0, 0, 0, CodeGeneratorRequest.RequestedFile.Import)
+            return _List.from_buffer('', 0, 0, 0, _CodeGeneratorRequest_RequestedFile_Import_list_item_type)
         return res
     
     def has_imports(self):
@@ -208,7 +238,7 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
         builder = _Builder(1, 2)
         builder.set(ord('Q'), 0, id)
         builder.alloc_text(8, filename)
-        builder.alloc_list(16, _StructList, CodeGeneratorRequest.RequestedFile.Import, imports)
+        builder.alloc_list(16, _CodeGeneratorRequest_RequestedFile_Import_list_item_type, imports)
         return builder.build()
     
     def __init__(self, id=0, filename=None, imports=None):
@@ -233,12 +263,12 @@ class CodeGeneratorRequest(_Struct):
     @property
     def nodes(self):
         # no union check
-        return self._read_list(0, _StructList, Node)
+        return self._read_list(0, _Node_list_item_type)
     
     def get_nodes(self):
         res = self.nodes
         if res is None:
-            return _StructList.from_buffer('', 0, 0, 0, Node)
+            return _List.from_buffer('', 0, 0, 0, _Node_list_item_type)
         return res
     
     def has_nodes(self):
@@ -248,12 +278,12 @@ class CodeGeneratorRequest(_Struct):
     @property
     def requestedFiles(self):
         # no union check
-        return self._read_list(8, _StructList, CodeGeneratorRequest.RequestedFile)
+        return self._read_list(8, _CodeGeneratorRequest_RequestedFile_list_item_type)
     
     def get_requestedFiles(self):
         res = self.requestedFiles
         if res is None:
-            return _StructList.from_buffer('', 0, 0, 0, CodeGeneratorRequest.RequestedFile)
+            return _List.from_buffer('', 0, 0, 0, _CodeGeneratorRequest_RequestedFile_list_item_type)
         return res
     
     def has_requestedFiles(self):
@@ -263,8 +293,8 @@ class CodeGeneratorRequest(_Struct):
     @staticmethod
     def __new(nodes=None, requestedFiles=None):
         builder = _Builder(0, 2)
-        builder.alloc_list(0, _StructList, Node, nodes)
-        builder.alloc_list(8, _StructList, CodeGeneratorRequest.RequestedFile, requestedFiles)
+        builder.alloc_list(0, _Node_list_item_type, nodes)
+        builder.alloc_list(8, _CodeGeneratorRequest_RequestedFile_list_item_type, requestedFiles)
         return builder.build()
     
     def __init__(self, nodes=None, requestedFiles=None):
@@ -323,12 +353,12 @@ class Method(_Struct):
     @property
     def annotations(self):
         # no union check
-        return self._read_list(8, _StructList, Annotation)
+        return self._read_list(8, _Annotation_list_item_type)
     
     def get_annotations(self):
         res = self.annotations
         if res is None:
-            return _StructList.from_buffer('', 0, 0, 0, Annotation)
+            return _List.from_buffer('', 0, 0, 0, _Annotation_list_item_type)
         return res
     
     def has_annotations(self):
@@ -388,12 +418,12 @@ class Method(_Struct):
     @property
     def implicitParameters(self):
         # no union check
-        return self._read_list(32, _StructList, Node.Parameter)
+        return self._read_list(32, _Node_Parameter_list_item_type)
     
     def get_implicitParameters(self):
         res = self.implicitParameters
         if res is None:
-            return _StructList.from_buffer('', 0, 0, 0, Node.Parameter)
+            return _List.from_buffer('', 0, 0, 0, _Node_Parameter_list_item_type)
         return res
     
     def has_implicitParameters(self):
@@ -407,10 +437,10 @@ class Method(_Struct):
         builder.set(ord('H'), 0, codeOrder)
         builder.set(ord('Q'), 8, paramStructType)
         builder.set(ord('Q'), 16, resultStructType)
-        builder.alloc_list(32, _StructList, Annotation, annotations)
+        builder.alloc_list(32, _Annotation_list_item_type, annotations)
         builder.alloc_struct(40, Brand, paramBrand)
         builder.alloc_struct(48, Brand, resultBrand)
-        builder.alloc_list(56, _StructList, Node.Parameter, implicitParameters)
+        builder.alloc_list(56, _Node_Parameter_list_item_type, implicitParameters)
         return builder.build()
     
     def __init__(self, name=None, codeOrder=0, paramStructType=0, resultStructType=0, annotations=None, paramBrand=None, resultBrand=None, implicitParameters=None):
@@ -459,12 +489,12 @@ class Enumerant(_Struct):
     @property
     def annotations(self):
         # no union check
-        return self._read_list(8, _StructList, Annotation)
+        return self._read_list(8, _Annotation_list_item_type)
     
     def get_annotations(self):
         res = self.annotations
         if res is None:
-            return _StructList.from_buffer('', 0, 0, 0, Annotation)
+            return _List.from_buffer('', 0, 0, 0, _Annotation_list_item_type)
         return res
     
     def has_annotations(self):
@@ -476,7 +506,7 @@ class Enumerant(_Struct):
         builder = _Builder(1, 2)
         builder.alloc_text(8, name)
         builder.set(ord('H'), 0, codeOrder)
-        builder.alloc_list(16, _StructList, Annotation, annotations)
+        builder.alloc_list(16, _Annotation_list_item_type, annotations)
         return builder.build()
     
     def __init__(self, name=None, codeOrder=0, annotations=None):
@@ -1332,12 +1362,12 @@ class Field(_Struct):
     @property
     def annotations(self):
         # no union check
-        return self._read_list(8, _StructList, Annotation)
+        return self._read_list(8, _Annotation_list_item_type)
     
     def get_annotations(self):
         res = self.annotations
         if res is None:
-            return _StructList.from_buffer('', 0, 0, 0, Annotation)
+            return _List.from_buffer('', 0, 0, 0, _Annotation_list_item_type)
         return res
     
     def has_annotations(self):
@@ -1395,7 +1425,7 @@ class Field(_Struct):
         ordinal__curtag = None
         builder.alloc_text(24, name)
         builder.set(ord('H'), 0, codeOrder)
-        builder.alloc_list(32, _StructList, Annotation, annotations)
+        builder.alloc_list(32, _Annotation_list_item_type, annotations)
         discriminantValue ^= 65535
         builder.set(ord('H'), 2, discriminantValue)
         if slot is not _undefined:
@@ -2033,12 +2063,12 @@ class Brand_Scope(_Struct):
     @property
     def bind(self):
         self._ensure_union(0)
-        return self._read_list(0, _StructList, Brand.Binding)
+        return self._read_list(0, _Brand_Binding_list_item_type)
     
     def get_bind(self):
         res = self.bind
         if res is None:
-            return _StructList.from_buffer('', 0, 0, 0, Brand.Binding)
+            return _List.from_buffer('', 0, 0, 0, _Brand_Binding_list_item_type)
         return res
     
     def has_bind(self):
@@ -2058,7 +2088,7 @@ class Brand_Scope(_Struct):
         if bind is not _undefined:
             anonymous__curtag = _check_tag(anonymous__curtag, 'bind')
             builder.set(ord('h'), 8, 0)
-            builder.alloc_list(16, _StructList, Brand.Binding, bind)
+            builder.alloc_list(16, _Brand_Binding_list_item_type, bind)
         if inherit is not _undefined:
             anonymous__curtag = _check_tag(anonymous__curtag, 'inherit')
             builder.set(ord('h'), 8, 1)
@@ -2099,12 +2129,12 @@ class Brand(_Struct):
     @property
     def scopes(self):
         # no union check
-        return self._read_list(0, _StructList, Brand.Scope)
+        return self._read_list(0, _Brand_Scope_list_item_type)
     
     def get_scopes(self):
         res = self.scopes
         if res is None:
-            return _StructList.from_buffer('', 0, 0, 0, Brand.Scope)
+            return _List.from_buffer('', 0, 0, 0, _Brand_Scope_list_item_type)
         return res
     
     def has_scopes(self):
@@ -2114,7 +2144,7 @@ class Brand(_Struct):
     @staticmethod
     def __new(scopes=None):
         builder = _Builder(0, 1)
-        builder.alloc_list(0, _StructList, Brand.Scope, scopes)
+        builder.alloc_list(0, _Brand_Scope_list_item_type, scopes)
         return builder.build()
     
     def __init__(self, scopes=None):
@@ -2220,12 +2250,12 @@ class Node_interface(_Struct):
     @property
     def methods(self):
         # no union check
-        return self._read_list(24, _StructList, Method)
+        return self._read_list(24, _Method_list_item_type)
     
     def get_methods(self):
         res = self.methods
         if res is None:
-            return _StructList.from_buffer('', 0, 0, 0, Method)
+            return _List.from_buffer('', 0, 0, 0, _Method_list_item_type)
         return res
     
     def has_methods(self):
@@ -2235,12 +2265,12 @@ class Node_interface(_Struct):
     @property
     def superclasses(self):
         # no union check
-        return self._read_list(32, _StructList, Superclass)
+        return self._read_list(32, _Superclass_list_item_type)
     
     def get_superclasses(self):
         res = self.superclasses
         if res is None:
-            return _StructList.from_buffer('', 0, 0, 0, Superclass)
+            return _List.from_buffer('', 0, 0, 0, _Superclass_list_item_type)
         return res
     
     def has_superclasses(self):
@@ -2374,12 +2404,12 @@ class Node_struct(_Struct):
     @property
     def fields(self):
         # no union check
-        return self._read_list(24, _StructList, Field)
+        return self._read_list(24, _Field_list_item_type)
     
     def get_fields(self):
         res = self.fields
         if res is None:
-            return _StructList.from_buffer('', 0, 0, 0, Field)
+            return _List.from_buffer('', 0, 0, 0, _Field_list_item_type)
         return res
     
     def has_fields(self):
@@ -2552,12 +2582,12 @@ class Node_enum(_Struct):
     @property
     def enumerants(self):
         # no union check
-        return self._read_list(24, _StructList, Enumerant)
+        return self._read_list(24, _Enumerant_list_item_type)
     
     def get_enumerants(self):
         res = self.enumerants
         if res is None:
-            return _StructList.from_buffer('', 0, 0, 0, Enumerant)
+            return _List.from_buffer('', 0, 0, 0, _Enumerant_list_item_type)
         return res
     
     def has_enumerants(self):
@@ -2711,12 +2741,12 @@ class Node(_Struct):
     @property
     def nestedNodes(self):
         # no union check
-        return self._read_list(8, _StructList, Node.NestedNode)
+        return self._read_list(8, _Node_NestedNode_list_item_type)
     
     def get_nestedNodes(self):
         res = self.nestedNodes
         if res is None:
-            return _StructList.from_buffer('', 0, 0, 0, Node.NestedNode)
+            return _List.from_buffer('', 0, 0, 0, _Node_NestedNode_list_item_type)
         return res
     
     def has_nestedNodes(self):
@@ -2726,12 +2756,12 @@ class Node(_Struct):
     @property
     def annotations(self):
         # no union check
-        return self._read_list(16, _StructList, Annotation)
+        return self._read_list(16, _Annotation_list_item_type)
     
     def get_annotations(self):
         res = self.annotations
         if res is None:
-            return _StructList.from_buffer('', 0, 0, 0, Annotation)
+            return _List.from_buffer('', 0, 0, 0, _Annotation_list_item_type)
         return res
     
     def has_annotations(self):
@@ -2806,12 +2836,12 @@ class Node(_Struct):
     @property
     def parameters(self):
         # no union check
-        return self._read_list(40, _StructList, Node.Parameter)
+        return self._read_list(40, _Node_Parameter_list_item_type)
     
     def get_parameters(self):
         res = self.parameters
         if res is None:
-            return _StructList.from_buffer('', 0, 0, 0, Node.Parameter)
+            return _List.from_buffer('', 0, 0, 0, _Node_Parameter_list_item_type)
         return res
     
     def has_parameters(self):
@@ -2834,8 +2864,8 @@ class Node(_Struct):
         builder.alloc_text(40, displayName)
         builder.set(ord('I'), 8, displayNamePrefixLength)
         builder.set(ord('Q'), 16, scopeId)
-        builder.alloc_list(48, _StructList, Node.NestedNode, nestedNodes)
-        builder.alloc_list(56, _StructList, Annotation, annotations)
+        builder.alloc_list(48, _Node_NestedNode_list_item_type, nestedNodes)
+        builder.alloc_list(56, _Annotation_list_item_type, annotations)
         if file is not _undefined:
             anonymous__curtag = _check_tag(anonymous__curtag, 'file')
             builder.set(ord('h'), 12, 0)
@@ -2849,18 +2879,18 @@ class Node(_Struct):
             builder.setbool(28, 0, struct_isGroup)
             builder.set(ord('H'), 30, struct_discriminantCount)
             builder.set(ord('I'), 32, struct_discriminantOffset)
-            builder.alloc_list(64, _StructList, Field, struct_fields)
+            builder.alloc_list(64, _Field_list_item_type, struct_fields)
         if enum is not _undefined:
             anonymous__curtag = _check_tag(anonymous__curtag, 'enum')
             builder.set(ord('h'), 12, 2)
             enum_enumerants, = enum
-            builder.alloc_list(64, _StructList, Enumerant, enum_enumerants)
+            builder.alloc_list(64, _Enumerant_list_item_type, enum_enumerants)
         if interface is not _undefined:
             anonymous__curtag = _check_tag(anonymous__curtag, 'interface')
             builder.set(ord('h'), 12, 3)
             interface_methods, interface_superclasses, = interface
-            builder.alloc_list(64, _StructList, Method, interface_methods)
-            builder.alloc_list(72, _StructList, Superclass, interface_superclasses)
+            builder.alloc_list(64, _Method_list_item_type, interface_methods)
+            builder.alloc_list(72, _Superclass_list_item_type, interface_superclasses)
         if const is not _undefined:
             anonymous__curtag = _check_tag(anonymous__curtag, 'const')
             builder.set(ord('h'), 12, 4)
@@ -2884,7 +2914,7 @@ class Node(_Struct):
             builder.setbool(15, 1, annotation_targetsMethod)
             builder.setbool(15, 2, annotation_targetsParam)
             builder.setbool(15, 3, annotation_targetsAnnotation)
-        builder.alloc_list(80, _StructList, Node.Parameter, parameters)
+        builder.alloc_list(80, _Node_Parameter_list_item_type, parameters)
         builder.setbool(36, 0, isGeneric)
         return builder.build()
     

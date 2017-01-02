@@ -293,9 +293,3 @@ def fill_types_item_type():
             t.list_item_type = PrimitiveItemType(t)
 fill_types_item_type()
 del fill_types_item_type
-
-
-# temporary compatibility with the old schema.py
-PrimitiveList = 'PrimitiveList'
-StructList = 'StructList'
-StringList = 'StringList'
