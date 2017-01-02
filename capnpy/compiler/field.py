@@ -157,21 +157,17 @@ class Field__Slot:
 
     def _emit_list(self, m, ns, name):
         ns.name = name
-        element_type = self.slot.type.list.elementType
-        n = element_type.compile_name(m)
-        if element_type.is_struct():
-            ns.itemtype = '_%s_list_item_type' % n
-        else:
-            ns.itemtype = '%s.list_item_type' % n
+        t = self.slot.type.list.elementType
+        ns.list_item_type = t.list_item_type(m)
         m.def_property(ns, name, """
             {ensure_union}
-            return self._read_list({offset}, {itemtype})
+            return self._read_list({offset}, {list_item_type})
         """)
         ns.ww("""
             {cpdef} get_{name}(self):
                 res = self.{name}
                 if res is None:
-                    return _List.from_buffer('', 0, 0, 0, {itemtype})
+                    return _List.from_buffer('', 0, 0, 0, {list_item_type})
                 return res
         """)
         ns.w()

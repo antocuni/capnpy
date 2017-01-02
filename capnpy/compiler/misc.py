@@ -27,6 +27,18 @@ class Type:
         else:
             raise NotImplementedError
 
+    def list_item_type(self, m):
+        compile_name = self.compile_name(m)
+        if self.is_builtin():
+            return '%s.list_item_type' % compile_name
+        elif self.is_struct():
+            return '_%s_list_item_type' % compile_name
+        elif self.is_enum():
+            XXX
+        else:
+            raise NotImplementedError
+
+
 @Value.__extend__
 class Value:
 
