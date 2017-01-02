@@ -202,6 +202,17 @@ class PrimitiveItemType(ItemType):
         return struct.pack('<'+self.t.fmt, item)
 
 
+class EnumItemType(PrimitiveItemType):
+
+    def __init__(self, enumcls):
+        PrimitiveItemType.__init__(self, Types.int16)
+        self.enumcls = enumcls
+
+    def read_item(self, lst, offset):
+        value = PrimitiveItemType.read_item(self, lst, offset)
+        return self.enumcls(value)
+
+
 class StructItemType(ItemType):
 
     def __init__(self, structcls):

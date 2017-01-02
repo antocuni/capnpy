@@ -31,10 +31,8 @@ class Type:
         compile_name = self.compile_name(m)
         if self.is_builtin():
             return '%s.list_item_type' % compile_name
-        elif self.is_struct():
+        elif self.is_struct() or self.is_enum():
             return '_%s_list_item_type' % compile_name
-        elif self.is_enum():
-            XXX
         else:
             raise NotImplementedError
 

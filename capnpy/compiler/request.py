@@ -51,6 +51,7 @@ class RequestedFile:
         m.w("from capnpy.builder import Builder as _Builder")
         m.w("from capnpy.list import List as _List")
         m.w("from capnpy.list import StructItemType as _StructItemType")
+        m.w("from capnpy.list import EnumItemType as _EnumItemType")
         m.w("from capnpy.util import text_repr as _text_repr")
         m.w("from capnpy.util import float32_repr as _float32_repr")
         m.w("from capnpy.util import float64_repr as _float64_repr")

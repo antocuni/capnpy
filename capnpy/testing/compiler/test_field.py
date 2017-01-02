@@ -387,6 +387,28 @@ class TestField(CompilerTest):
         assert poly.points[0].x == 10
         assert poly.points[0].y == 100
 
+    def test_list_of_enum(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        enum Color {
+           red @0;
+           green @1;
+           blue @2;
+           yellow @3;
+        }
+        struct Flag {
+            stripes @0 :List(Color);
+        }
+        """
+        mod = self.compile(schema)
+        buf = ('\x01\x00\x00\x00\x23\x00\x00\x00'    # ptrlist
+               '\x00\x00\x01\x00\x02\x00\x03\x00')   # [0, 1, 2, 3]
+        flag = mod.Flag.from_buffer(buf, 0, data_size=0, ptrs_size=1)
+        assert len(flag.stripes) == 4
+        assert list(flag.stripes) == [0, 1, 2, 3]
+        colors = [str(x) for x in flag.stripes]
+        assert colors == ['red', 'green', 'blue', 'yellow']
+
     def test_bool(self):
         schema = """
         @0xbf5147cbbecf40c1;
