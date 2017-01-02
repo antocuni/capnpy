@@ -162,14 +162,15 @@ class Blob(object):
         blob_offet = ptr.deref(p, ptr_offset)
         if ptr.kind(p) == ptr.STRUCT:
             Struct = capnpy.struct_.Struct
-            return Struct.from_buffer(self._buf,
-                                      blob_offet,
-                                      ptr.struct_data_size(p), ptr.struct_ptrs_size(p))
+            return Struct.from_buffer(self._buf, blob_offet,
+                                      ptr.struct_data_size(p),
+                                      ptr.struct_ptrs_size(p))
         elif ptr.kind(p) == ptr.LIST:
             List = capnpy.list.List
-            return List.from_buffer(self._buf,
-                                    blob_offet,
-                                    ptr.list_size_tag(p), ptr.list_item_count(p), Blob)
+            return List.from_buffer(self._buf, blob_offet,
+                                    ptr.list_size_tag(p),
+                                    ptr.list_item_count(p),
+                                    capnpy.list.StructItemType(Blob))
         else:
             assert False, 'Unkwown pointer kind: %s' % ptr.kind(p)
 

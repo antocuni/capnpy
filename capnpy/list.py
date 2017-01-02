@@ -244,7 +244,7 @@ class StructItemType(ItemType):
         structcls = self.structcls
         if not isinstance(item, structcls):
             raise TypeError("Expected an object of type %s, got %s instead" %
-                            (item_type.__name__, item.__class__.__name__))
+                            (self.structcls.__name__, item.__class__.__name__))
         #
         # This is the layout of the list:
         #

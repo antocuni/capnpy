@@ -1,6 +1,7 @@
 import cython
 from capnpy.blob cimport Blob
 from capnpy cimport ptr
+from capnpy.list cimport ItemType
 
 cpdef str check_tag(str curtag, str newtag)
 
@@ -35,7 +36,7 @@ cdef class Struct(Blob):
     cpdef _read_str_data(self, long offset, str default_=*, int additional_size=*)
 
     @cython.locals(p=long, offset=long)
-    cpdef _read_list(self, long offset, listcls, item_type, default_=*)
+    cpdef _read_list(self, long offset, ItemType item_type, default_=*)
 
     @cython.locals(p=long, offset=long)
     cpdef long _hash_str_text(self, long offset, long default_=*)
