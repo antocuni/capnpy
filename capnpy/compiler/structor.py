@@ -160,17 +160,7 @@ class Structor(object):
         ns.offset = self.slot_offset(node.f)
         itemtype = node.f.slot.type.list.elementType
         ns.itemtype = itemtype.runtime_name(self.m)
-        #
-        if itemtype.is_primitive():
-            ns.listcls = '_PrimitiveList'
-        elif itemtype.is_text():
-            ns.listcls = '_StringList'
-        elif itemtype.is_struct():
-            ns.listcls = '_StructList'
-        else:
-            raise ValueError('Unknown item type: %s' % item_type)
-        #
-        ns.w('builder.alloc_list({offset}, {listcls}, {itemtype}, {fname})')
+        ns.w('builder.alloc_list({offset}, {itemtype}.list_item_type, {fname})')
 
     def handle_primitive(self, node):
         ns = self.m.code.new_scope()
