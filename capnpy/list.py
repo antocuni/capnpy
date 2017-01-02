@@ -296,11 +296,6 @@ del fill_types_item_type
 
 
 # temporary compatibility with the old schema.py
-def PrimitiveList():
-    raise NotImplementedError
-
-def StructList():
-    raise NotImplementedError
-
-def StringList():
-    raise NotImplementedError
+PrimitiveList = 'PrimitiveList'
+StructList = 'StructList'
+StringList = 'StringList'

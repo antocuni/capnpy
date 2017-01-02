@@ -156,6 +156,20 @@ class Struct(Blob):
         return obj
 
     def _read_list(self, offset, item_type, default_=None):
+        # <XXX> temporary compatibility with the old schema.py, will go away
+        # once we regenerate it
+        from capnpy.list import PrimitiveItemType, StructItemType, TextItemType
+        if item_type == 'PrimitiveList':
+            item_type = PrimitiveItemType(default_)
+            default_ = None
+        elif item_type == 'StructList':
+            item_type = StructItemType(default_)
+            default_ = None
+        elif item_type == 'StringList':
+            item_type = TextItemType()
+            default_ = None
+        # </XXX>
+        
         p = self._read_fast_ptr(offset)
         if p == ptr.E_IS_FAR_POINTER:
             offset, p = self._read_far_ptr(offset)
