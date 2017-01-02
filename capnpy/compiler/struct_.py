@@ -35,6 +35,8 @@ class Node__Struct:
         else:
             ns.w("class {name}(_Struct): pass")
             ns.w("{name}.__name__ = '{dotname}'")
+        #
+        ns.w("_{name}_list_item_type = _StructItemType({name})")
         ns.w()
 
     def emit_definition(self, m):

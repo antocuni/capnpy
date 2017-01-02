@@ -158,25 +158,20 @@ class Field__Slot:
     def _emit_list(self, m, ns, name):
         ns.name = name
         element_type = self.slot.type.list.elementType
-        ns.itemtype = element_type.runtime_name(m)
-        if element_type.is_primitive():
-            ns.listcls = '_PrimitiveList'
-        elif element_type.is_text():
-            ns.listcls = '_StringList'
-        elif element_type.is_struct():
-            ns.listcls = '_StructList'
+        n = element_type.compile_name(m)
+        if element_type.is_struct():
+            ns.itemtype = '_%s_list_item_type' % n
         else:
-            raise ValueError('Unsupported: list of %s', ns.itemtype)
-        #
+            ns.itemtype = '%s.list_item_type' % n
         m.def_property(ns, name, """
             {ensure_union}
-            return self._read_list({offset}, {listcls}, {itemtype})
+            return self._read_list({offset}, {itemtype})
         """)
         ns.ww("""
             {cpdef} get_{name}(self):
                 res = self.{name}
                 if res is None:
-                    return {listcls}.from_buffer('', 0, 0, 0, {itemtype})
+                    return _List.from_buffer('', 0, 0, 0, {itemtype})
                 return res
         """)
         ns.w()
