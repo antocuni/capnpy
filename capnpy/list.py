@@ -152,7 +152,7 @@ class List(Blob):
         return self._get_key() == other._get_key()
 
     def shortrepr(self):
-        parts = [self._item_repr(item) for item in self]
+        parts = [self._item_type.item_repr(item) for item in self]
         return '[%s]' % (', '.join(parts))
 
 
