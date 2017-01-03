@@ -1,7 +1,7 @@
 import py
 from capnpy.blob import CapnpBufferWithSegments, Blob, Types
 from capnpy import ptr
-from capnpy.list import List, StructItemType
+from capnpy.list import List, StructItemType, PrimitiveItemType, TextItemType
 from capnpy.struct_ import Struct
 
 def test_read_list():
@@ -11,7 +11,7 @@ def test_read_list():
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
-    lst = blob._read_list(0, Types.int64.list_item_type)
+    lst = blob._read_list(0, PrimitiveItemType(Types.int64))
     assert lst._buf is blob._buf
     assert lst._offset == 8
     assert lst._item_offset == 0
@@ -30,7 +30,7 @@ def test_read_list_offset():
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     blob = Struct.from_buffer(buf, 4, data_size=0, ptrs_size=1)
-    lst = blob._read_list(0, Types.int64.list_item_type)
+    lst = blob._read_list(0, PrimitiveItemType(Types.int64))
     assert lst._buf is blob._buf
     assert lst._offset == 12
     assert lst._item_count == 4
@@ -106,7 +106,7 @@ def test_Float64List():
            '\xd9\xce\xf7\x53\xe3\xa5\x0b\x40'   # 3.456
            '\xf8\x53\xe3\xa5\x9b\x44\x12\x40')  # 4.567
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
-    lst = blob._read_list(0, Types.float64.list_item_type)
+    lst = blob._read_list(0, PrimitiveItemType(Types.float64))
     assert list(lst) == [1.234, 2.345, 3.456, 4.567]
 
 
@@ -114,7 +114,7 @@ def test_Int8List():
     buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
            'hello capnproto\0')                 # string
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
-    lst = blob._read_list(0, Types.int8.list_item_type)
+    lst = blob._read_list(0, PrimitiveItemType(Types.int8))
     assert len(lst) == 16
     assert list(lst) == map(ord, 'hello capnproto\0')
 
@@ -130,7 +130,7 @@ def test_list_of_strings():
            'D' 'E' 'F' '\x00\x00\x00\x00\x00'   # DEF
            'G' 'H' 'I' 'J' '\x00\x00\x00\x00')  # GHIJ
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
-    lst = blob._read_list(0, Types.text.list_item_type)
+    lst = blob._read_list(0, TextItemType())
     assert list(lst) == ['A', 'BC', 'DEF', 'GHIJ']
 
 
@@ -139,7 +139,7 @@ def test_list_primitive_body_range():
            'hello capnproto\0'                  # string
            'garbage1')
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
-    lst = blob._read_list(0, Types.int8.list_item_type)
+    lst = blob._read_list(0, PrimitiveItemType(Types.int8))
     body_start, body_end = lst._get_body_range()
     assert body_start == 8
     assert body_end == 24
@@ -295,7 +295,7 @@ def test_list_of_pointers():
            't' 'r' 'i' 'n' 'g' '\x00\x00\x00')
     
     blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
-    points = blob._read_list(0, Types.text.list_item_type)
+    points = blob._read_list(0, TextItemType())
     start, end = points._get_body_range()
     assert start == 16
     # note that the end if 88, not 86: the last two \x00\x00 are not counted,
@@ -311,9 +311,9 @@ def test_list_comparisons():
             '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     buf2 = 'garbage0' + buf1
     #
-    lst1 = List.from_buffer(buf1, 0, ptr.LIST_SIZE_64, 4, Types.int64.list_item_type)
-    lst2 = List.from_buffer(buf2, 8, ptr.LIST_SIZE_64, 4, Types.int64.list_item_type)
-    lst3 = List.from_buffer(buf1, 0, ptr.LIST_SIZE_64, 3, Types.int64.list_item_type)
+    lst1 = List.from_buffer(buf1, 0, ptr.LIST_SIZE_64, 4, PrimitiveItemType(Types.int64))
+    lst2 = List.from_buffer(buf2, 8, ptr.LIST_SIZE_64, 4, PrimitiveItemType(Types.int64))
+    lst3 = List.from_buffer(buf1, 0, ptr.LIST_SIZE_64, 3, PrimitiveItemType(Types.int64))
     #
     assert lst1 == lst2
     assert not lst1 != lst2
@@ -333,7 +333,7 @@ def test_compare_with_py_list():
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
-    lst = blob._read_list(0, Types.int64.list_item_type)
+    lst = blob._read_list(0, PrimitiveItemType(Types.int64))
     assert lst == [1, 2, 3, 4]
 
 def test_far_pointer():
@@ -348,7 +348,7 @@ def test_far_pointer():
             '\x04\x00\x00\x00\x00\x00\x00\x00')   # 4
     buf = CapnpBufferWithSegments(seg0+seg1, segment_offsets=(0, 16))
     blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
-    lst = blob._read_list(0, Types.int64.list_item_type)
+    lst = blob._read_list(0, PrimitiveItemType(Types.int64))
     assert lst == [1, 2, 3, 4]
 
 
@@ -363,7 +363,7 @@ class TestPythonicInterface(object):
                '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
                '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
         blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
-        lst = blob._read_list(0, Types.int64.list_item_type)
+        lst = blob._read_list(0, PrimitiveItemType(Types.int64))
         return lst
 
     def test_len(self, mylist):

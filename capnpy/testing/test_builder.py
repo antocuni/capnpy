@@ -1,7 +1,7 @@
 import py
 from capnpy.builder import Builder
 from capnpy.blob import Types
-from capnpy.list import List, StructItemType
+from capnpy.list import List, StructItemType, PrimitiveItemType, TextItemType
 from capnpy.struct_ import Struct
 from capnpy.printer import print_buffer
 
@@ -76,7 +76,7 @@ def test_alloc_data():
 
 def test_alloc_list_int64():
     builder = Builder(0, 1)
-    builder.alloc_list(0, Types.int64.list_item_type, [1, 2, 3, 4])
+    builder.alloc_list(0, PrimitiveItemType(Types.int64), [1, 2, 3, 4])
     buf = builder.build()
     assert buf == ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
                    '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
@@ -86,7 +86,7 @@ def test_alloc_list_int64():
 
 def test_alloc_list_int8():
     builder = Builder(0, 1)
-    builder.alloc_list(0, Types.int8.list_item_type, [1, 2, 3, 4])
+    builder.alloc_list(0, PrimitiveItemType(Types.int8), [1, 2, 3, 4])
     buf = builder.build()
     assert buf == ('\x01\x00\x00\x00\x22\x00\x00\x00'   # ptrlist
                    '\x01\x02\x03\x04\x00\x00\x00\x00')  # 1,2,3,4 + padding
@@ -94,7 +94,7 @@ def test_alloc_list_int8():
 
 def test_alloc_list_float64():
     builder = Builder(0, 1)
-    builder.alloc_list(0, Types.float64.list_item_type,
+    builder.alloc_list(0, PrimitiveItemType(Types.float64),
                        [1.234, 2.345, 3.456, 4.567])
     buf = builder.build()
     assert buf == ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
@@ -141,13 +141,13 @@ def test_null_pointers():
     builder = Builder(0, 3)
     builder.alloc_struct(0, Struct, None)
     builder.alloc_text(8, None)
-    builder.alloc_list(16, Types.int64.list_item_type, None)
+    builder.alloc_list(16, PrimitiveItemType(Types.int64), None)
     buf = builder.build()
     assert buf == NULL*3
 
 def test_alloc_list_of_strings():
     builder = Builder(0, 1)
-    builder.alloc_list(0, Types.text.list_item_type, ['A', 'BC', 'DEF', 'GHIJ'])
+    builder.alloc_list(0, TextItemType(), ['A', 'BC', 'DEF', 'GHIJ'])
     buf = builder.build()
     expected_buf = ('\x01\x00\x00\x00\x26\x00\x00\x00'   # ptrlist
                     '\x0d\x00\x00\x00\x12\x00\x00\x00'   # ptr item 1
