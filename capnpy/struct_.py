@@ -165,11 +165,15 @@ class Struct(Blob):
             return default_
         assert ptr.kind(p) == ptr.LIST
         list_offset = ptr.deref(p, offset)
-        return List.from_buffer(self._buf,
-                                list_offset,
-                                ptr.list_size_tag(p),
-                                ptr.list_item_count(p),
-                                item_type)
+        # in theory we could simply use List.from_buffer; however, Cython is
+        # not able to compile classmethods, so we create it manually
+        obj = List.__new__(List)
+        obj._init_from_buffer(self._buf,
+                              list_offset,
+                              ptr.list_size_tag(p),
+                              ptr.list_item_count(p),
+                              item_type)
+        return obj
 
     def _read_str_text(self, offset, default_=None):
         return self._read_str_data(offset, default_, additional_size=-1)
