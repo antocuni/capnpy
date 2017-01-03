@@ -1,6 +1,7 @@
 import py
 from datetime import datetime
 from capnpy import schema
+from capnpy.type import Types
 
 @schema.CodeGeneratorRequest.__extend__
 class CodeGeneratorRequest:
@@ -61,7 +62,9 @@ class RequestedFile:
         #
         if m.pyx:
             m.w("from capnpy cimport _hash")
-            m.w("from capnpy.list {cimport} int64_list_item_type as _int64_list_item_type")
+            for t in Types.__all__:
+                name = '%s_list_item_type' % t.name
+                m.w("from capnpy.list {cimport} {name} as _{name}", name=name)
         if m.pyx and not m.standalone:
             # load the compiler from the outside. See the comment in
             # _compile_pyx for a detailed explanation

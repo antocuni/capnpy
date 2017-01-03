@@ -318,6 +318,8 @@ if PYX:
     #
     # Moreover, we need to explicitly create each one, because if we use
     # metaprogramming Cython cannot assign them a static type :(
+    void_list_item_type = None
+    bool_list_item_type = None
     int8_list_item_type = PrimitiveItemType(Types.int8)
     uint8_list_item_type = PrimitiveItemType(Types.uint8)
     int16_list_item_type = PrimitiveItemType(Types.int16)
@@ -329,3 +331,4 @@ if PYX:
     float32_list_item_type = PrimitiveItemType(Types.float32)
     float64_list_item_type = PrimitiveItemType(Types.float64)
     text_list_item_type = TextItemType()
+    data_list_item_type = None
