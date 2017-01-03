@@ -7,7 +7,7 @@ cdef class ItemType(object)
 
 cdef class List(Blob):
     cdef readonly long _offset
-    cdef readonly object _item_type
+    cdef readonly ItemType _item_type
     cdef readonly long _ptrs_size
     cdef readonly long _size_tag
     cdef readonly long _tag
