@@ -29,12 +29,23 @@ class Type:
 
     def list_item_type(self, m):
         compile_name = self.compile_name(m)
-        if self.is_builtin():
-            return '%s.list_item_type' % compile_name
-        elif self.is_struct() or self.is_enum():
-            return '_%s_list_item_type' % compile_name
+        if m.pyx:
+            # on CPython, try to use the prebuilt ItemType when possible
+            if self.is_builtin():
+                return '_%s_list_item_type' % self.which()
+            elif self.is_struct() or self.is_enum():
+                return '_%s_list_item_type' % compile_name
+            else:
+                raise NotImplementedError
         else:
-            raise NotImplementedError
+            if self.is_primitive():
+                return '_PrimitiveItemType(_Types.%s)' % self.which()
+            elif self.is_text():
+                return '_TextItemType()'
+            elif self.is_struct() or self.is_enum():
+                return '_%s_list_item_type' % compile_name
+            else:
+                raise NotImplementedError
 
 
 @Value.__extend__

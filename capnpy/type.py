@@ -8,7 +8,6 @@ class BuiltinType(object):
             self.ifmt = ord(fmt)
         else:
             self.ifmt = -1
-        self.list_item_type = None # this is filled by list.py
 
     def __repr__(self):
         return '<capnp type %s>' % self.name

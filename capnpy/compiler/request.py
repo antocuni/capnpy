@@ -49,9 +49,11 @@ class RequestedFile:
         m.w("from capnpy.enum import enum as _enum")
         m.w("from capnpy.blob import Types as _Types")
         m.w("from capnpy.builder import Builder as _Builder")
-        m.w("from capnpy.list import List as _List")
-        m.w("from capnpy.list import StructItemType as _StructItemType")
-        m.w("from capnpy.list import EnumItemType as _EnumItemType")
+        m.w("from capnpy.list {cimport} List as _List")
+        m.w("from capnpy.list {cimport} PrimitiveItemType as _PrimitiveItemType")
+        m.w("from capnpy.list {cimport} TextItemType as _TextItemType")
+        m.w("from capnpy.list {cimport} StructItemType as _StructItemType")
+        m.w("from capnpy.list {cimport} EnumItemType as _EnumItemType")
         m.w("from capnpy.util import text_repr as _text_repr")
         m.w("from capnpy.util import float32_repr as _float32_repr")
         m.w("from capnpy.util import float64_repr as _float64_repr")
@@ -59,6 +61,7 @@ class RequestedFile:
         #
         if m.pyx:
             m.w("from capnpy cimport _hash")
+            m.w("from capnpy.list {cimport} int64_list_item_type as _int64_list_item_type")
         if m.pyx and not m.standalone:
             # load the compiler from the outside. See the comment in
             # _compile_pyx for a detailed explanation

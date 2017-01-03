@@ -37,3 +37,16 @@ cdef class StructItemType(ItemType):
 
 cdef class TextItemType(ItemType):
     pass
+
+
+cpdef ItemType int8_list_item_type
+cpdef ItemType uint8_list_item_type
+cpdef ItemType int16_list_item_type
+cpdef ItemType uint16_list_item_type
+cpdef ItemType int32_list_item_type
+cpdef ItemType uint32_list_item_type
+cpdef ItemType int64_list_item_type
+cpdef ItemType uint64_list_item_type
+cpdef ItemType float32_list_item_type
+cpdef ItemType float64_list_item_type
+cpdef ItemType text_list_item_type

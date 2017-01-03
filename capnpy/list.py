@@ -1,6 +1,6 @@
 import struct
 import capnpy
-from capnpy.blob import Blob, Types
+from capnpy.blob import Blob, Types, PYX
 from capnpy import ptr
 from capnpy.util import text_repr, float32_repr, float64_repr
 
@@ -296,11 +296,21 @@ class TextItemType(ItemType):
 
 
 
-# set the list_item_type attribute of Types.*
-def fill_types_item_type():
-    Types.text.list_item_type = TextItemType()
-    for t in Types.__all__:
-        if t.is_primitive():
-            t.list_item_type = PrimitiveItemType(t)
-fill_types_item_type()
-del fill_types_item_type
+if PYX:
+    # on CPython, we use prebuilt ItemType instances, as it is costly to
+    # allocate a new one every time we create a List object. See also
+    # misc.py:Type.list_item_type()
+    #
+    # Moreover, we need to explicitly create each one, because if we use
+    # metaprogramming Cython cannot assign them a static type :(
+    int8_list_item_type = PrimitiveItemType(Types.int8)
+    uint8_list_item_type = PrimitiveItemType(Types.uint8)
+    int16_list_item_type = PrimitiveItemType(Types.int16)
+    uint16_list_item_type = PrimitiveItemType(Types.uint16)
+    int32_list_item_type = PrimitiveItemType(Types.int32)
+    uint32_list_item_type = PrimitiveItemType(Types.uint32)
+    int64_list_item_type = PrimitiveItemType(Types.int64)
+    uint64_list_item_type = PrimitiveItemType(Types.uint64)
+    float32_list_item_type = PrimitiveItemType(Types.float32)
+    float64_list_item_type = PrimitiveItemType(Types.float64)
+    text_list_item_type = TextItemType()

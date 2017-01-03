@@ -104,7 +104,6 @@ class TestField(CompilerTest):
         }
         """
         mod = self.compile(schema)
-
         buf = ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
                '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
                '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
