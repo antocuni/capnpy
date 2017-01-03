@@ -140,7 +140,7 @@ class List(Blob):
     def _get_key(self):
         start, end = self._get_body_range()
         body = self._buf.s[start:end]
-        return (self._item_count, self._item_type, body)
+        return (self._item_count, self._item_type.get_type(), body)
 
     def _equals(self, other):
         if not self._item_type.can_compare():
@@ -158,6 +158,9 @@ class List(Blob):
 
 class ItemType(object):
 
+    def get_type(self):
+        raise NotImplementedError
+
     def read_item(self, lst, offset):
         raise NotImplementedError
 
@@ -173,6 +176,9 @@ class PrimitiveItemType(ItemType):
     def __init__(self, t):
         self.t = t
         self.ifmt = t.ifmt
+
+    def get_type(self):
+        return self.t
 
     def read_item(self, lst, offset):
         return lst._buf.read_primitive(lst._offset+offset, self.ifmt)
@@ -208,6 +214,9 @@ class EnumItemType(PrimitiveItemType):
         PrimitiveItemType.__init__(self, Types.int16)
         self.enumcls = enumcls
 
+    def get_type(self):
+        return self.enumcls
+
     def read_item(self, lst, offset):
         value = PrimitiveItemType.read_item(self, lst, offset)
         return self.enumcls(value)
@@ -217,6 +226,9 @@ class StructItemType(ItemType):
 
     def __init__(self, structcls):
         self.structcls = structcls
+
+    def get_type(self):
+        return self.structcls
 
     def can_compare(self):
         return False
@@ -274,6 +286,9 @@ class StructItemType(ItemType):
 
 
 class TextItemType(ItemType):
+
+    def get_type(self):
+        return Types.text
 
     def read_item(self, lst, offset):
         offset += lst._offset
