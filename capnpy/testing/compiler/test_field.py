@@ -96,23 +96,6 @@ class TestField(CompilerTest):
         assert f.data == 'ABCDEFGH'
 
 
-    def test_list(self):
-        schema = """
-        @0xbf5147cbbecf40c1;
-        struct Foo {
-            items @0 :List(Int64);
-        }
-        """
-        mod = self.compile(schema)
-        buf = ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
-               '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
-               '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
-               '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
-        f = mod.Foo.from_buffer(buf, 0, 0, 1)
-        assert f.items == [1, 2, 3, 4]
-
-
     def test_struct(self):
         schema = """
         @0xbf5147cbbecf40c1;
@@ -359,6 +342,65 @@ class TestField(CompilerTest):
         assert shape.rectangle.height == 5
         py.test.raises(ValueError, "shape.circle.radius")
 
+    def test_bool(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            padding @0 :Int64;
+            a @1 :Bool;
+            b @2 :Bool;
+            c @3 :Bool;
+        }
+        """
+        mod = self.compile(schema)
+        buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'   # padding
+               '\x05\x00\x00\x00\x00\x00\x00\x00')  # True, False, True, padding
+        p = mod.Foo.from_buffer(buf, 0, 2, 0)
+        assert p.a == True
+        assert p.b == False
+        assert p.c == True
+
+    def test_anyPointer(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            x @0 :AnyPointer;
+        }
+        """
+        mod = self.compile(schema)
+        f = mod.Foo.from_buffer('somedata', 0, 0, 1)
+        py.test.raises(ValueError, "f.x")
+
+    def test_anyPointer_null(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            x @0 :AnyPointer;
+        }
+        """
+        mod = self.compile(schema)
+        f = mod.Foo.from_buffer('', 0, data_size=0, ptrs_size=0)
+        assert f.x is None
+
+
+class TestList(CompilerTest):
+
+    def test_list_of_primitive(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            items @0 :List(Int64);
+        }
+        """
+        mod = self.compile(schema)
+        buf = ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
+               '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
+               '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
+               '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
+        f = mod.Foo.from_buffer(buf, 0, 0, 1)
+        assert f.items == [1, 2, 3, 4]
+
     def test_list_of_structs(self):
         schema = """
         @0xbf5147cbbecf40c1;
@@ -408,42 +450,3 @@ class TestField(CompilerTest):
         colors = [str(x) for x in flag.stripes]
         assert colors == ['red', 'green', 'blue', 'yellow']
 
-    def test_bool(self):
-        schema = """
-        @0xbf5147cbbecf40c1;
-        struct Foo {
-            padding @0 :Int64;
-            a @1 :Bool;
-            b @2 :Bool;
-            c @3 :Bool;
-        }
-        """
-        mod = self.compile(schema)
-        buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'   # padding
-               '\x05\x00\x00\x00\x00\x00\x00\x00')  # True, False, True, padding
-        p = mod.Foo.from_buffer(buf, 0, 2, 0)
-        assert p.a == True
-        assert p.b == False
-        assert p.c == True
-
-    def test_anyPointer(self):
-        schema = """
-        @0xbf5147cbbecf40c1;
-        struct Foo {
-            x @0 :AnyPointer;
-        }
-        """
-        mod = self.compile(schema)
-        f = mod.Foo.from_buffer('somedata', 0, 0, 1)
-        py.test.raises(ValueError, "f.x")
-
-    def test_anyPointer_null(self):
-        schema = """
-        @0xbf5147cbbecf40c1;
-        struct Foo {
-            x @0 :AnyPointer;
-        }
-        """
-        mod = self.compile(schema)
-        f = mod.Foo.from_buffer('', 0, data_size=0, ptrs_size=0)
-        assert f.x is None
