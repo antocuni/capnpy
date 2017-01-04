@@ -18,6 +18,18 @@ class SecondsFormatter(pygal.formatters.HumanReadable):
             val = val[:-1] + ' ' + val[-1]
         return val + 's'
 
+def format_point(b, point):
+    rev = b.info.commit_info.id
+    url = 'https://github.com/antocuni/capnpy/commit/%s' % rev
+    point.update({
+        'label': '%s %s' % (b.name, rev[:7]),
+        'xlink': {
+            'href': url,
+            'target': '_blank'
+        }
+    })
+    return point
+
 class GroupedBarChart(object):
     """
     Helper class to build a pygal Bar chart with groups.
@@ -37,7 +49,7 @@ class GroupedBarChart(object):
         self.data = {} # [(series_name, group)] -> point
 
     def get_point(self, b):
-        return {
+        point = {
             'value': b.stats.mean,
             'ci': {
                 'type': 'continuous',
@@ -45,6 +57,7 @@ class GroupedBarChart(object):
                 'stddev': b.stats.stddev
             }
         }
+        return format_point(b, point)
 
     def add(self, series_name, group, b):
         self.all_series.add(series_name)
@@ -77,10 +90,8 @@ class TimelineChart(object):
         self.max = float('-inf')
 
     def get_point(self, b):
-        return {
-            'value': b.stats.min,
-            'label': b.name
-        }
+        point = {'value': b.stats.min}
+        return format_point(b, point)
 
     def add(self, series_name, group, b):
         assert group is None
