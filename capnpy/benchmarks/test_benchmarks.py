@@ -86,6 +86,7 @@ class TestGetAttr(object):
     @pytest.mark.benchmark(group="getattr")
     def test_list(self, schema, benchmark):
         # mesaure the time to get the list field *AND* to compute the len
+        benchmark.extra_info['attribute_type'] = 'list'
         def sum_attr(obj):
             myobjs = (obj, obj)
             res = 0
