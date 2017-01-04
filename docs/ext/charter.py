@@ -85,9 +85,10 @@ class TimelineChart(object):
 
     def __init__(self, title):
         self.title = title
-        self.data = defaultdict(list)
+        self.data = defaultdict(dict)
         self.min = float('inf')
         self.max = float('-inf')
+        self.all_revisions = []
 
     def get_point(self, b):
         point = {'value': b.stats.min}
@@ -95,8 +96,17 @@ class TimelineChart(object):
 
     def add(self, series_name, group, b):
         assert group is None
+        rev = b.info.commit_info.id
+        if rev not in self.all_revisions:
+            # XXX: to get correct results, we need that all_revisions contains
+            # the commits in the correct order. Here, we are relying on the
+            # fact that we sort() the json files before loading them, so .add
+            # will see the revisions in chronological order. Probably, it
+            # would be better to do a proper topological sort of revisions
+            # without relying on the order of json loading
+            self.all_revisions.append(rev)
         p = self.get_point(b)
-        self.data[series_name].append(p)
+        self.data[series_name][rev] = p
         self.min = min(self.min, p['value'])
         self.max = max(self.max, p['value'])
 
@@ -105,7 +115,8 @@ class TimelineChart(object):
         chart.title = self.title
         chart.config.value_formatter = SecondsFormatter()
         chart.y_title = 'Time'
-        for name, points in self.data.iteritems():
+        for name, rev2point in self.data.iteritems():
+            points = [rev2point.get(rev) for rev in self.all_revisions]
             chart.add(name, points)
         #
         # try to compute a reasonable Y scale;
@@ -184,7 +195,7 @@ class Charter(object):
     def load_all(self):
         # load all benchmarks
         self.all = PyQuery()
-        for f in self.dir.visit('*.json'):
+        for f in sorted(self.dir.visit('*.json')):
             self.all += self.load_one(f)
         #
         # filter a subset containing only the results for the current revision

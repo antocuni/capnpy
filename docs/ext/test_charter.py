@@ -207,13 +207,15 @@ class TestCharter(object):
         def get_point(self, b):
             return {'value': b.value}
         monkeypatch.setattr(TimelineChart, 'get_point', get_point)
+        def commit(rev):
+            return DotMap(commit_info=DotMap(id=rev))
         #
         benchmarks = PyQuery([
-            DotMap(group='getattr', schema='capnpy', type='int16', value=1),
-            DotMap(group='getattr', schema='capnpy', type='text', value=2),
-            DotMap(group='getattr', schema='instance', type='int16', value=3),
-            DotMap(group='getattr', schema='instance', type='text', value=4),
-            DotMap(group='other'),
+            DotMap(info=commit('a'), group='getattr', schema='capnpy', value=1),
+            DotMap(info=commit('b'), group='getattr', schema='capnpy', value=2),
+            DotMap(info=commit('a'), group='getattr', schema='instance', value=3),
+            DotMap(info=commit('b'), group='getattr', schema='instance', value=4),
+            DotMap(info=commit('a'), group='other'),
             ])
         charter = MyCharter(benchmarks)
         chart = charter.get_chart(
@@ -228,4 +230,34 @@ class TestCharter(object):
         assert chart.raw_series == [
             ([{'value': 1}, {'value': 2}], {'title': 'capnpy'}),
             ([{'value': 3}, {'value': 4}], {'title': 'instance'})
+        ]
+
+    def test_timeline_sorted(self, monkeypatch):
+        def get_point(self, b):
+            return {'value': b.value}
+        monkeypatch.setattr(TimelineChart, 'get_point', get_point)
+        def commit(rev):
+            return DotMap(commit_info=DotMap(id=rev))
+        #
+        benchmarks = PyQuery([
+            DotMap(info=commit('aaa'), schema='capnpy',   value=1),
+            DotMap(info=commit('bbb'), schema='capnpy',   value=2),
+            DotMap(info=commit('bbb'), schema='instance', value=2),
+            DotMap(info=commit('ccc'), schema='instance', value=3),
+            DotMap(info=commit('ddd'), schema='capnpy',   value=4),
+            DotMap(info=commit('ddd'), schema='instance', value=4),
+            ])
+        charter = MyCharter(benchmarks)
+        chart = charter.get_chart(
+            timeline = True,
+            benchmarks = benchmarks,
+            title = 'My title',
+            filter = lambda b: True,
+            series = lambda b: b.schema,
+            group = lambda b: None)
+        #
+        assert chart.title == 'My title'
+        assert chart.raw_series == [
+            ([{'value': 1}, {'value': 2}, None, {'value': 4}], {'title': 'capnpy'}),
+            ([None, {'value': 2}, {'value': 3}, {'value': 4}], {'title': 'instance'})
         ]
