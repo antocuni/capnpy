@@ -85,35 +85,18 @@ class TestGetAttr(object):
 
     @pytest.mark.benchmark(group="getattr")
     def test_list(self, schema, benchmark):
-        # mesaure the time to get the list field *AND* to read an item
-        benchmark.extra_info['attribute_type'] = 'list'
+        # mesaure the time to get the list field *AND* to compute the len
         def sum_attr(obj):
             myobjs = (obj, obj)
             res = 0
             for i in range(self.N):
                 obj = myobjs[i%2]
-                res += obj.intlist[2]
+                res += len(obj.intlist)
             return res
         #
         obj = get_obj(schema)
         res = benchmark(sum_attr, obj)
-        assert res == 3*self.N
-
-    @pytest.mark.benchmark(group="getattr")
-    def test_list_indexing(self, schema, benchmark):
-        # mesaure ONLY the time to read an item in a list
-        benchmark.extra_info['attribute_type'] = 'list_indexing'
-        def sum_attr(obj):
-            mylists = (obj.intlist, obj.intlist)
-            res = 0
-            for i in range(self.N):
-                l = mylists[i%2]
-                res += l[2]
-            return res
-        #
-        obj = get_obj(schema)
-        res = benchmark(sum_attr, obj)
-        assert res == 3*self.N
+        assert res == 4*self.N
 
 
 class TestGetAttrSpecial(object):
@@ -223,3 +206,57 @@ class TestHash(object):
         obj = ('hello world', 'this is a string', 'this is another string')
         res = benchmark(self.hash_many, obj)
         assert res == 0
+
+
+class TestList(object):
+    """
+    Contrarily to TestGetAttr.test_list, these tests do NOT measure the time
+    taken to read a list field, but the time taken to do something with the
+    list *after* we read it
+    """
+
+    N = 2000
+
+    @pytest.mark.benchmark(group="list")
+    def test_len(self, schema, benchmark):
+        def mybench(obj):
+            mylists = (obj.intlist, obj.intlist)
+            res = 0
+            for i in range(self.N):
+                lst = mylists[i%2]
+                res += len(lst)
+            return res
+        #
+        obj = get_obj(schema)
+        res = benchmark(mybench, obj)
+        assert res == 4*self.N
+
+    @pytest.mark.benchmark(group="list")
+    def test_getitem(self, schema, benchmark):
+        def mybench(obj):
+            mylists = (obj.intlist, obj.intlist)
+            res = 0
+            for i in range(self.N):
+                lst = mylists[i%2]
+                res += lst[2]
+            return res
+        #
+        obj = get_obj(schema)
+        res = benchmark(mybench, obj)
+        assert res == 3*self.N
+
+    @pytest.mark.benchmark(group="list")
+    def test_iter(self, schema, benchmark):
+        # mesaure ONLY the time to iterate over a list
+        def mybench(obj):
+            mylists = (obj.intlist, obj.intlist)
+            res = 0
+            for i in range(self.N):
+                lst = mylists[i%2]
+                for item in lst:
+                    res += item
+            return res
+        #
+        obj = get_obj(schema)
+        res = benchmark(mybench, obj)
+        assert res == (4+3+2+1)*self.N
