@@ -50,7 +50,8 @@ class BenchmarkDirective(Directive):
         charts = self.charter.run_directive(title, self.options, self.content)
         nodes = []
         for chart in charts:
-            svg = '<embed src="%s" />' % chart.render_data_uri()
+            chart_id = docutils.nodes.make_id(chart.title)
+            svg = '<embed id="%s" src="%s" />' % (chart_id, chart.render_data_uri())
             nodes.append(docutils.nodes.raw('', svg, format='html'))
         return nodes
 
