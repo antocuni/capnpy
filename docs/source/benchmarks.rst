@@ -52,10 +52,7 @@ different types of attribute.
 The benchmarks for ``group``, ``struct`` and ``list`` are expected to take a
 bit longer than the others, because after getting the attribute, they "do
 something" with the result, i.e. reading another attribute in case of
-``group`` and ``struct``, and getting an item in case of ``list``.
-
-At the time of writing, ``capnpy`` lists are terribly slow on CPython:
-this is a known issue and will be fixed hopefully soon.
+``group`` and ``struct``, and getting the length of a ``list``.
 
 The PyPy charts shows that ``uint64`` fields are much slower than the others:
 this is because the benchmarks are run on PyPy 5.4, which misses an
