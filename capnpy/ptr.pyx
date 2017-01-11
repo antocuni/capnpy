@@ -10,6 +10,7 @@
 globals()['STRUCT'] = STRUCT
 globals()['LIST'] = LIST
 globals()['FAR'] = FAR
+globals()['LIST_SIZE_VOID'] = LIST_SIZE_VOID
 globals()['LIST_SIZE_BIT'] = LIST_SIZE_BIT
 globals()['LIST_SIZE_8'] = LIST_SIZE_8
 globals()['LIST_SIZE_16'] = LIST_SIZE_16

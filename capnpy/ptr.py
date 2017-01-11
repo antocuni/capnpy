@@ -14,6 +14,7 @@ from pypytools.cast import as_signed
 STRUCT = 0
 LIST = 1
 FAR = 2
+LIST_SIZE_VOID = 0
 LIST_SIZE_BIT = 1
 LIST_SIZE_8 = 2
 LIST_SIZE_16 = 3

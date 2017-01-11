@@ -170,6 +170,12 @@ class ItemType(object):
     def can_compare(self):
         return True
 
+    def get_item_length(self):
+        raise NotImplementedError
+
+    def pack_item(self, listbuilder, i, item):
+        raise NotImplementedError
+
 
 class VoidItemType(ItemType):
 
@@ -181,6 +187,12 @@ class VoidItemType(ItemType):
 
     def item_repr(self, item):
         return 'void'
+
+    def get_item_length(self):
+        return 0, ptr.LIST_SIZE_VOID
+
+    def pack_item(self, listbuilder, i, item):
+        return ''
 
 
 class PrimitiveItemType(ItemType):

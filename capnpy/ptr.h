@@ -15,6 +15,7 @@ enum _PTR_KIND {
 };
 
 enum _PTR_LIST_SIZE {
+    PTR_LIST_SIZE_VOID = 0,
     PTR_LIST_SIZE_BIT = 1,
     PTR_LIST_SIZE_8 = 2,
     PTR_LIST_SIZE_16 = 3,

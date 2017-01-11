@@ -2,6 +2,7 @@ cdef extern from "ptr.h":
     cdef int STRUCT "PTR_STRUCT"
     cdef int LIST "PTR_LIST"
     cdef int FAR "PTR_FAR"
+    cdef int LIST_SIZE_VOID "PTR_LIST_SIZE_VOID"
     cdef int LIST_SIZE_BIT "PTR_LIST_SIZE_BIT"
     cdef int LIST_SIZE_8 "PTR_LIST_SIZE_8"
     cdef int LIST_SIZE_16 "PTR_LIST_SIZE_16"

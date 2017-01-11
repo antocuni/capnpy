@@ -152,6 +152,16 @@ class TestConstructors(CompilerTest):
         assert foo._buf.s == ('\x01\x00\x00\x00\x22\x00\x00\x00'   # ptrlist
                               '\x01\x02\x03\x04\x00\x00\x00\x00')  # 1,2,3,4 + padding
 
+    def test_list_of_void(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            x @0 :List(Void);
+        }
+        """
+        mod = self.compile(schema)
+        foo = mod.Foo([None]*4)
+        assert foo._buf.s == ('\x01\x00\x00\x00\x20\x00\x00\x00')  # ptrlist
 
 
     def test_list_of_structs(self):
