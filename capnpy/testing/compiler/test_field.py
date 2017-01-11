@@ -401,6 +401,20 @@ class TestList(CompilerTest):
         f = mod.Foo.from_buffer(buf, 0, 0, 1)
         assert f.items == [1, 2, 3, 4]
 
+    def test_list_of_void(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            items @0 :List(Void);
+        }
+        """
+        mod = self.compile(schema)
+        buf = ('\x01\x00\x00\x00\x20\x00\x00\x00')   # ptrlist
+        f = mod.Foo.from_buffer(buf, 0, 0, 1)
+        assert len(f.items) == 4
+        assert list(f.items) == [None]*4
+
+
     def test_list_of_structs(self):
         schema = """
         @0xbf5147cbbecf40c1;

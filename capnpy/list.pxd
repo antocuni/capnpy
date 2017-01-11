@@ -25,6 +25,9 @@ cdef class ItemType(object):
     cpdef read_item(self, List lst, long offset)
     cpdef bint can_compare(self)
 
+cdef class VoidItemType(ItemType):
+    pass
+
 cdef class PrimitiveItemType(ItemType):
     cdef readonly BuiltinType t
     cdef readonly char ifmt

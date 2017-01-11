@@ -44,6 +44,8 @@ class Type:
                 return '_TextItemType()'
             elif self.is_struct() or self.is_enum():
                 return '_%s_list_item_type' % compile_name
+            elif self.is_void():
+                return '_VoidItemType()'
             else:
                 raise NotImplementedError
 

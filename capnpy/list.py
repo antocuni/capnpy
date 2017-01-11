@@ -171,6 +171,18 @@ class ItemType(object):
         return True
 
 
+class VoidItemType(ItemType):
+
+    def get_type(self):
+        return Types.Void
+
+    def read_item(self, lst, offset):
+        return None
+
+    def item_repr(self, item):
+        return 'void'
+
+
 class PrimitiveItemType(ItemType):
 
     def __init__(self, t):
@@ -318,7 +330,7 @@ if PYX:
     #
     # Moreover, we need to explicitly create each one, because if we use
     # metaprogramming Cython cannot assign them a static type :(
-    void_list_item_type = None
+    void_list_item_type = VoidItemType()
     bool_list_item_type = None
     int8_list_item_type = PrimitiveItemType(Types.int8)
     uint8_list_item_type = PrimitiveItemType(Types.uint8)

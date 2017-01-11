@@ -160,6 +160,6 @@ if __name__ == '__main__':
     else:
         out = sys.stdout
     p = BufferPrinter(buf, stream=out)
-    p.printbuf()
+    p.printbuf(human=False)
     if pipe:
         sys.stdout.write(buf)
