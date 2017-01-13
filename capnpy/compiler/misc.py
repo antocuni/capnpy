@@ -40,6 +40,8 @@ class Type:
         else:
             if self.is_primitive():
                 return '_PrimitiveItemType(_Types.%s)' % self.which()
+            elif self.is_bool():
+                return '_BoolItemType()'
             elif self.is_text():
                 return '_TextItemType()'
             elif self.is_struct() or self.is_enum():

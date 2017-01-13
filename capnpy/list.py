@@ -43,8 +43,6 @@ class List(Blob):
             self._item_count = ptr.offset(tag)
             self._item_length = (ptr.struct_data_size(tag)+ptr.struct_ptrs_size(tag))*8
             self._item_offset = 8
-        elif size_tag == ptr.LIST_SIZE_BIT:
-            raise ValueError('Lists of bits are not supported')
         else:
             self._tag = -1
             self._item_count = item_count
@@ -197,6 +195,30 @@ class VoidItemType(ItemType):
         return ''
 
 
+class BoolItemType(ItemType):
+
+    def get_type(self):
+        return Types.Bool
+
+    def offset_for_item(self, lst, i):
+        raise NotImplementedError
+
+    def read_item(self, lst, i):
+        byteoffset, bitoffset = divmod(i, 8)
+        bitmask = 1 << bitoffset
+        value = lst._buf.read_primitive(lst._offset+byteoffset, ord('b'))
+        return bool(value & bitmask)
+
+    def item_repr(self, item):
+        xxxx
+
+    def get_item_length(self):
+        raise NotImplementedError
+
+    def pack_item(self, listbuilder, i, item):
+        raise NotImplementedError
+
+
 class PrimitiveItemType(ItemType):
 
     def __init__(self, t):
@@ -346,7 +368,7 @@ if PYX:
     # Moreover, we need to explicitly create each one, because if we use
     # metaprogramming Cython cannot assign them a static type :(
     void_list_item_type = VoidItemType()
-    bool_list_item_type = None
+    bool_list_item_type = BoolItemType()
     int8_list_item_type = PrimitiveItemType(Types.int8)
     uint8_list_item_type = PrimitiveItemType(Types.uint8)
     int16_list_item_type = PrimitiveItemType(Types.int16)

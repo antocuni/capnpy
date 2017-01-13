@@ -28,6 +28,9 @@ cdef class ItemType(object):
 cdef class VoidItemType(ItemType):
     pass
 
+cdef class BoolItemType(ItemType):
+    pass
+
 cdef class PrimitiveItemType(ItemType):
     cdef readonly BuiltinType t
     cdef readonly char ifmt

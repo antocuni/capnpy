@@ -464,12 +464,11 @@ class TestList(CompilerTest):
         colors = [str(x) for x in flag.stripes]
         assert colors == ['red', 'green', 'blue', 'yellow']
 
-    @py.test.mark.xfail
     def test_list_of_bool(self):
         schema = """
         @0xbf5147cbbecf40c1;
         struct Foo {
-            items @0 :List(Void);
+            items @0 :List(Bool);
         }
         """
         mod = self.compile(schema)
