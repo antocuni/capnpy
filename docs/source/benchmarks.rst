@@ -94,6 +94,25 @@ abstraction overhead.
        return name
 
 
+Lists
+======
+
+These benchmark measure the time taken to perform various operations on
+lists. The difference with the ``list`` benchmark of the previous section is
+that here we do not take into account the time taken to **read** the list
+itself out of its containing struct, but only the time taken to perform the
+operations after we got it.
+
+The ``iter`` benchmark iterates over a list of 4 elements.
+
+.. benchmark:: List
+   :foreach: b.python_implementation
+   :filter: b.group == 'list'
+   :series: b.params.schema
+   :group:  charter.extract_test_name(b.name)
+
+
+
 Hashing
 ========
 
@@ -187,6 +206,12 @@ Evolution over time
    :timeline:
    :foreach: b.python_implementation
    :filter: b.group == 'getattr_special' and b.params.schema == 'Capnpy'
+   :series: charter.extract_test_name(b.name)
+
+.. benchmark:: List
+   :timeline:
+   :foreach: b.python_implementation
+   :filter: b.group == 'list' and b.params.schema == 'Capnpy'
    :series: charter.extract_test_name(b.name)
 
 .. benchmark:: Hashing
