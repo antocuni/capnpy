@@ -126,7 +126,14 @@ class List(Blob):
         return blob._get_end()
 
     def _get_body_end_scalar(self):
-        return self._offset + self._item_length*self._item_count
+        if self._item_length == -1:
+            # it's a list of Bool: we use 1 byte each 8 items
+            bytes_length, extra_bits = divmod(self._item_count, 8)
+            if extra_bits:
+                bytes_length += 1
+            return self._offset + bytes_length
+        else:
+            return self._offset + self._item_length*self._item_count
 
     def _get_end(self):
         return self._get_body_end()
@@ -210,7 +217,7 @@ class BoolItemType(ItemType):
         return bool(value & bitmask)
 
     def item_repr(self, item):
-        xxxx
+        return ('false', 'true')[item]
 
     def get_item_length(self):
         raise NotImplementedError

@@ -477,3 +477,4 @@ class TestList(CompilerTest):
         f = mod.Foo.from_buffer(buf, 0, 0, 1)
         assert list(f.items) == [True, True, False, True, False, True, False, False,
                                  False, True]
+

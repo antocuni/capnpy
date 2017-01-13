@@ -94,3 +94,17 @@ class TestIntegration(CompilerTest):
         assert t.people[0].surname == 'Mouse'
         assert t.people[1].name == 'Donald'
         assert t.people[1].surname == 'Duck'
+
+    def test_dump_list_of_bool(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            items @0 :List(Bool);
+        }
+        """
+        mod = self.compile(schema)
+        buf = ('\x01\x00\x00\x00\x19\x00\x00\x00'    # ptrlist
+               '\x03\x00\x00\x00\x00\x00\x00\x00')
+        f1 = mod.Foo.from_buffer(buf, 0, 0, 1)
+        f2 = mod.Foo.loads(f1.dumps())
+        assert list(f1.items) == list(f2.items) == [True, True, False]

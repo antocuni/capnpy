@@ -187,6 +187,21 @@ class TestShortRepr(CompilerTest):
         p = self.mod.P(ints=None, structs=None, texts=['foo', 'bar', 'baz'])
         self.check(p, '(texts = ["foo", "bar", "baz"])')
 
+    def test_list_of_bool(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            items @0 :List(Bool);
+        }
+        """
+        self.mod = self.compile(schema)
+        # at the moment of writing, List(Bool) is not supported by ctors, so
+        # we create one from the buffer
+        buf = ('\x01\x00\x00\x00\x19\x00\x00\x00'    # ptrlist
+               '\x03\x00\x00\x00\x00\x00\x00\x00')
+        f = self.mod.Foo.from_buffer(buf, 0, 0, 1)
+        self.check(f, "(items = [true, true, false])")
+
     def test_group(self):
         schema = """
         @0xbf5147cbbecf40c1;
