@@ -252,6 +252,7 @@ class Charter(object):
             chart = GroupedBarChart(title)
         #
         for b in benchmarks:
+            b.__displayed__ = True
             series_name = series(b)
             group_name = group(b)
             chart.add(series_name, group_name, b)

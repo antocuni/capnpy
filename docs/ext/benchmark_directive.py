@@ -57,4 +57,21 @@ class BenchmarkDirective(Directive):
 
 def setup(app):
     app.add_directive('benchmark', BenchmarkDirective)
+    app.connect('build-finished', on_build_finished)
     return {'version': '0.1'}
+
+def on_build_finished(app, exception):
+    def check_displayed(cat, benchmarks):
+        not_displayed = []
+        for b in benchmarks:
+            if not b.get('__displayed__', False):
+                not_displayed.append(b)
+        #
+        if not_displayed:
+            print 'WARNING: the following [%s] benchmarks were not displayed' % cat
+            for b in not_displayed:
+                print '    %10s %s' % (b.group, b.name)
+            print
+    #
+    check_displayed('latest', BenchmarkDirective.charter.latest)
+    #check_displayed('all', BenchmarkDirective.charter.all)
