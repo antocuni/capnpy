@@ -18,11 +18,12 @@ cdef class List(Blob):
     cpdef _init_from_buffer(self, object buf, long offset, long size_tag,
                             long item_count, ItemType item_type)
     cpdef _set_list_tag(self, long size_tag, long item_count)
-    cpdef long _get_offset_for_item(self, long i)
     cpdef _getitem_fast(self, long i)
 
 cdef class ItemType(object):
+    cpdef get_type(self)
     cpdef read_item(self, List lst, long offset)
+    cpdef long offset_for_item(self, List lst, long i)
     cpdef bint can_compare(self)
 
 cdef class VoidItemType(ItemType):
