@@ -54,10 +54,6 @@ class List(Blob):
     def __repr__(self):
         return '<capnpy list [%d items]>' % (len(self),)
 
-    def _get_offset_for_item(self, i):
-        # XXX remove me
-        return self._item_offset + (i*self._item_length)
-            
     def __len__(self):
         return self._item_count
 
@@ -111,7 +107,7 @@ class List(Blob):
 
         i = self._item_count-1
         while i >= 0:
-            struct_offset = self._get_offset_for_item(i)
+            struct_offset = self._item_type.offset_for_item(self, i)
             struct_offset += self._offset
             mystruct = Struct.from_buffer(self._buf,
                                           struct_offset,
@@ -127,7 +123,7 @@ class List(Blob):
         return self._get_body_end_scalar()+8 # +8 is for the tag
 
     def _get_body_end_ptr(self):
-        ptr_offset = self._get_offset_for_item(self._item_count-1)
+        ptr_offset = self._item_type.offset_for_item(self, self._item_count-1)
         blob = self._read_list_or_struct(ptr_offset)
         return blob._get_end()
 
@@ -161,6 +157,9 @@ class ItemType(object):
     def get_type(self):
         raise NotImplementedError
 
+    def offset_for_item(self, lst, i):
+        return lst._item_offset + (i * lst._item_length)
+
     def read_item(self, lst, i):
         raise NotImplementedError
 
@@ -181,6 +180,9 @@ class VoidItemType(ItemType):
 
     def get_type(self):
         return Types.Void
+
+    def offset_for_item(self, lst, i):
+        return 0
 
     def read_item(self, lst, i):
         return None
@@ -205,7 +207,7 @@ class PrimitiveItemType(ItemType):
         return self.t
 
     def read_item(self, lst, i):
-        offset = lst._offset + (lst._item_length*i)
+        offset = lst._offset + (i * lst._item_length)
         return lst._buf.read_primitive(offset, self.ifmt)
 
     def item_repr(self, item):
@@ -259,8 +261,7 @@ class StructItemType(ItemType):
         return False
 
     def read_item(self, lst, i):
-        assert lst._item_offset == 8
-        offset = lst._item_offset + (i*lst._item_length)
+        offset = self.offset_for_item(lst, i)
         return self.structcls.from_buffer(lst._buf,
                                           lst._offset+offset,
                                           ptr.struct_data_size(lst._tag),
@@ -268,7 +269,6 @@ class StructItemType(ItemType):
 
     def item_repr(self, item):
         return item.shortrepr()
-
 
     def get_item_length(self):
         structcls = self.structcls
