@@ -472,7 +472,8 @@ class TestList(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x01\x00\x00\x00\x39\x00\x00\x00'    # ptrlist
-               '\x2b\x00\x00\x00\x00\x00\x00\x00')
+        buf = ('\x01\x00\x00\x00\x51\x00\x00\x00'    # ptrlist
+               '\x2b\x02\x00\x00\x00\x00\x00\x00')
         f = mod.Foo.from_buffer(buf, 0, 0, 1)
-        assert list(f.items) == [True, True, False, True, False, True, False]
+        assert list(f.items) == [True, True, False, True, False, True, False, False,
+                                 False, True]
