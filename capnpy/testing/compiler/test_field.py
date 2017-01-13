@@ -464,3 +464,16 @@ class TestList(CompilerTest):
         colors = [str(x) for x in flag.stripes]
         assert colors == ['red', 'green', 'blue', 'yellow']
 
+    @py.test.mark.xfail
+    def test_list_of_bool(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            items @0 :List(Void);
+        }
+        """
+        mod = self.compile(schema)
+        buf = ('\x01\x00\x00\x00\x39\x00\x00\x00'    # ptrlist
+               '\x2b\x00\x00\x00\x00\x00\x00\x00')
+        f = mod.Foo.from_buffer(buf, 0, 0, 1)
+        assert list(f.items) == [True, True, False, True, False, True, False]

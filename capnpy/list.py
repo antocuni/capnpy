@@ -55,6 +55,7 @@ class List(Blob):
         return '<capnpy list [%d items]>' % (len(self),)
 
     def _get_offset_for_item(self, i):
+        # XXX remove me
         return self._item_offset + (i*self._item_length)
             
     def __len__(self):
@@ -74,8 +75,7 @@ class List(Blob):
         """
         WARNING: no bound checks!
         """
-        offset = self._get_offset_for_item(i)
-        return self._item_type.read_item(self, offset)
+        return self._item_type.read_item(self, i)
 
     def _get_body_range(self):
         return self._get_body_start(), self._get_body_end()
@@ -161,7 +161,7 @@ class ItemType(object):
     def get_type(self):
         raise NotImplementedError
 
-    def read_item(self, lst, offset):
+    def read_item(self, lst, i):
         raise NotImplementedError
 
     def item_repr(self, item):
@@ -182,7 +182,7 @@ class VoidItemType(ItemType):
     def get_type(self):
         return Types.Void
 
-    def read_item(self, lst, offset):
+    def read_item(self, lst, i):
         return None
 
     def item_repr(self, item):
@@ -204,8 +204,9 @@ class PrimitiveItemType(ItemType):
     def get_type(self):
         return self.t
 
-    def read_item(self, lst, offset):
-        return lst._buf.read_primitive(lst._offset+offset, self.ifmt)
+    def read_item(self, lst, i):
+        offset = lst._offset + (lst._item_length*i)
+        return lst._buf.read_primitive(offset, self.ifmt)
 
     def item_repr(self, item):
         if self.t is Types.float32:
@@ -241,8 +242,8 @@ class EnumItemType(PrimitiveItemType):
     def get_type(self):
         return self.enumcls
 
-    def read_item(self, lst, offset):
-        value = PrimitiveItemType.read_item(self, lst, offset)
+    def read_item(self, lst, i):
+        value = PrimitiveItemType.read_item(self, lst, i)
         return self.enumcls(value)
 
 
@@ -257,7 +258,9 @@ class StructItemType(ItemType):
     def can_compare(self):
         return False
 
-    def read_item(self, lst, offset):
+    def read_item(self, lst, i):
+        assert lst._item_offset == 8
+        offset = lst._item_offset + (i*lst._item_length)
         return self.structcls.from_buffer(lst._buf,
                                           lst._offset+offset,
                                           ptr.struct_data_size(lst._tag),
@@ -314,8 +317,8 @@ class TextItemType(ItemType):
     def get_type(self):
         return Types.text
 
-    def read_item(self, lst, offset):
-        offset += lst._offset
+    def read_item(self, lst, i):
+        offset = lst._offset + (i*8)
         p = lst._buf.read_ptr(offset)
         if p == ptr.E_IS_FAR_POINTER:
             raise NotImplementedError('FAR pointers not supported here')
