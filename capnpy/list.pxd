@@ -43,8 +43,10 @@ cdef class StructItemType(ItemType):
     cdef readonly object structcls
 
 cdef class TextItemType(ItemType):
-    pass
+    cdef readonly int additional_size
 
+cdef class ListItemType(ItemType):
+    cdef readonly ItemType inner_item_type
 
 cpdef ItemType void_list_item_type
 cpdef ItemType bool_list_item_type
