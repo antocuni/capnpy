@@ -28,6 +28,12 @@ class Type:
             raise NotImplementedError
 
     def list_item_type(self, m):
+        # first of all check for nested lists, for which we do NOT support the
+        # prebuilt ItemType optimization which is implemented below
+        if self.is_list():
+            inner_item_type = self.list.elementType.list_item_type(m)
+            return '_ListItemType(%s)' % inner_item_type
+        #
         compile_name = self.compile_name(m)
         if m.pyx:
             # on CPython, try to use the prebuilt ItemType when possible

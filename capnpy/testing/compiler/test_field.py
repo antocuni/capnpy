@@ -514,3 +514,25 @@ class TestList(CompilerTest):
         f = mod.Foo.from_buffer(buf, 0, 0, 1)
         assert list(f.items) == ['foo', 'bar', 'baz']
 
+    def test_list_of_list(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            items @0 :List(List(Int8));
+        }
+        """
+        mod = self.compile(schema)
+        buf = ('\x01\x00\x00\x00\x1e\x00\x00\x00'   # list<ptr> (3 items)
+               '\x09\x00\x00\x00\x1a\x00\x00\x00'   # list<8> (3 items)
+               '\x09\x00\x00\x00\x12\x00\x00\x00'   # list<8> (2 items)
+               '\x09\x00\x00\x00\x22\x00\x00\x00'   # list<8> (4 items)
+               '\x01\x02\x03\x00\x00\x00\x00\x00'
+               '\x04\x05\x00\x00\x00\x00\x00\x00'
+               '\x06\x07\x08\x09\x00\x00\x00\x00')
+
+        f = mod.Foo.from_buffer(buf, 0, 0, 1)
+        lst = [list(item) for item in f.items]
+        assert lst == [[1, 2, 3],
+                       [4, 5],
+                       [6, 7, 8, 9]]
+

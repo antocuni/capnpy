@@ -375,6 +375,43 @@ class TextItemType(ItemType):
         return packed
 
 
+class ListItemType(ItemType):
+
+    def __init__(self, inner_item_type):
+        self.inner_item_type = inner_item_type
+
+    def get_type(self):
+        return ('list', self.inner_item_type)
+
+    def read_item(self, lst, i):
+        offset = lst._offset + (i*8)
+        p = lst._buf.read_ptr(offset)
+        if p == ptr.E_IS_FAR_POINTER:
+            raise NotImplementedError('FAR pointers not supported here')
+        obj = List.__new__(List)
+        obj._init_from_buffer(lst._buf,
+                              ptr.deref(p, offset),
+                              ptr.list_size_tag(p),
+                              ptr.list_item_count(p),
+                              self.inner_item_type)
+        return obj
+
+    def item_repr(self, item):
+        xxx
+
+    def get_item_length(self):
+        return 8, ptr.LIST_SIZE_PTR
+
+    def pack_item(self, listbuilder, i, item):
+        offset = i * listbuilder.item_length
+        if self.additional_size == 0:
+            ptr = listbuilder.alloc_data(offset, item)
+        else:
+            ptr = listbuilder.alloc_text(offset, item)
+        packed = struct.pack('q', ptr)
+        return packed
+
+
 
 if PYX:
     # on CPython, we use prebuilt ItemType instances, as it is costly to
