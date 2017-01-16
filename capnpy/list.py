@@ -343,15 +343,21 @@ class StructItemType(ItemType):
 
 class TextItemType(ItemType):
 
+    def __init__(self, t):
+        assert t in (Types.text, Types.data)
+        self.additional_size = 0
+        if t == Types.text:
+            self.additional_size = -1
+
     def get_type(self):
-        return Types.text
+        return self.t
 
     def read_item(self, lst, i):
         offset = lst._offset + (i*8)
         p = lst._buf.read_ptr(offset)
         if p == ptr.E_IS_FAR_POINTER:
             raise NotImplementedError('FAR pointers not supported here')
-        return lst._buf.read_str(p, offset, None, -1)
+        return lst._buf.read_str(p, offset, None, self.additional_size)
 
     def item_repr(self, item):
         return text_repr(item)
@@ -386,5 +392,5 @@ if PYX:
     uint64_list_item_type = PrimitiveItemType(Types.uint64)
     float32_list_item_type = PrimitiveItemType(Types.float32)
     float64_list_item_type = PrimitiveItemType(Types.float64)
-    text_list_item_type = TextItemType()
-    data_list_item_type = None
+    text_list_item_type = TextItemType(Types.text)
+    data_list_item_type = TextItemType(Types.data)

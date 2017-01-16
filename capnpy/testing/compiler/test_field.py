@@ -496,3 +496,21 @@ class TestList(CompilerTest):
         f = mod.Foo.from_buffer(buf, 0, 0, 1)
         assert list(f.items) == ['foo', 'bar', 'baz']
 
+    def test_list_of_data(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            items @0 :List(Data);
+        }
+        """
+        mod = self.compile(schema)
+        buf = ('\x01\x00\x00\x00\x1e\x00\x00\x00'  # ptrlist
+               '\x09\x00\x00\x00\x1a\x00\x00\x00'
+               '\x09\x00\x00\x00\x1a\x00\x00\x00'
+               '\x09\x00\x00\x00\x1a\x00\x00\x00'
+               'foo\x00\x00\x00\x00\x00'
+               'bar\x00\x00\x00\x00\x00'
+               'baz\x00\x00\x00\x00\x00')
+        f = mod.Foo.from_buffer(buf, 0, 0, 1)
+        assert list(f.items) == ['foo', 'bar', 'baz']
+

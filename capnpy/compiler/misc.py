@@ -43,7 +43,9 @@ class Type:
             elif self.is_bool():
                 return '_BoolItemType()'
             elif self.is_text():
-                return '_TextItemType()'
+                return '_TextItemType(_Types.text)'
+            elif self.is_data():
+                return '_TextItemType(_Types.data)'
             elif self.is_struct() or self.is_enum():
                 return '_%s_list_item_type' % compile_name
             elif self.is_void():
