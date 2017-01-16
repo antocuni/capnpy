@@ -397,17 +397,14 @@ class ListItemType(ItemType):
         return obj
 
     def item_repr(self, item):
-        xxx
+        return item.shortrepr()
 
     def get_item_length(self):
         return 8, ptr.LIST_SIZE_PTR
 
     def pack_item(self, listbuilder, i, item):
         offset = i * listbuilder.item_length
-        if self.additional_size == 0:
-            ptr = listbuilder.alloc_data(offset, item)
-        else:
-            ptr = listbuilder.alloc_text(offset, item)
+        ptr = listbuilder.alloc_list(offset, self.inner_item_type, item)
         packed = struct.pack('q', ptr)
         return packed
 
