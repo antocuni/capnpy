@@ -367,7 +367,10 @@ class TextItemType(ItemType):
 
     def pack_item(self, listbuilder, i, item):
         offset = i * listbuilder.item_length
-        ptr = listbuilder.alloc_text(offset, item)
+        if self.additional_size == 0:
+            ptr = listbuilder.alloc_data(offset, item)
+        else:
+            ptr = listbuilder.alloc_text(offset, item)
         packed = struct.pack('q', ptr)
         return packed
 

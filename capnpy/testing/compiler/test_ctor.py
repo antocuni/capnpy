@@ -181,6 +181,24 @@ class TestConstructors(CompilerTest):
                     'baz\x00\x00\x00\x00\x00')
         assert foo._buf.s == expected
 
+    def test_list_of_data(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            x @0 :List(Data);
+        }
+        """
+        mod = self.compile(schema)
+        foo = mod.Foo(['foo', 'bar', 'baz'])
+        expected = ('\x01\x00\x00\x00\x1e\x00\x00\x00'    # ptrlist
+                    '\x09\x00\x00\x00\x1a\x00\x00\x00'
+                    '\x09\x00\x00\x00\x1a\x00\x00\x00'
+                    '\x09\x00\x00\x00\x1a\x00\x00\x00'
+                    'foo\x00\x00\x00\x00\x00'
+                    'bar\x00\x00\x00\x00\x00'
+                    'baz\x00\x00\x00\x00\x00')
+        assert foo._buf.s == expected
+
     def test_list_of_structs(self):
         schema = """
         @0xbf5147cbbecf40c1;
