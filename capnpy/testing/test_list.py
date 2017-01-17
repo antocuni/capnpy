@@ -130,7 +130,7 @@ def test_list_of_strings():
            'D' 'E' 'F' '\x00\x00\x00\x00\x00'   # DEF
            'G' 'H' 'I' 'J' '\x00\x00\x00\x00')  # GHIJ
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
-    lst = blob._read_list(0, TextItemType())
+    lst = blob._read_list(0, TextItemType(Types.text))
     assert list(lst) == ['A', 'BC', 'DEF', 'GHIJ']
 
 
@@ -295,7 +295,7 @@ def test_list_of_pointers():
            't' 'r' 'i' 'n' 'g' '\x00\x00\x00')
     
     blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
-    points = blob._read_list(0, TextItemType())
+    points = blob._read_list(0, TextItemType(Types.text))
     start, end = points._get_body_range()
     assert start == 16
     # note that the end if 88, not 86: the last two \x00\x00 are not counted,

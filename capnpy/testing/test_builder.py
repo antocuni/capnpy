@@ -147,7 +147,7 @@ def test_null_pointers():
 
 def test_alloc_list_of_strings():
     builder = Builder(0, 1)
-    builder.alloc_list(0, TextItemType(), ['A', 'BC', 'DEF', 'GHIJ'])
+    builder.alloc_list(0, TextItemType(Types.text), ['A', 'BC', 'DEF', 'GHIJ'])
     buf = builder.build()
     expected_buf = ('\x01\x00\x00\x00\x26\x00\x00\x00'   # ptrlist
                     '\x0d\x00\x00\x00\x12\x00\x00\x00'   # ptr item 1
