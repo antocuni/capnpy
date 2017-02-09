@@ -7,7 +7,7 @@ from capnpy.benchmarks.test_benchmarks import get_obj, schema
 from capnpy.benchmarks.test_buffered import TcpServer
 
 
-class TestMessage(object):
+class TestLoad(object):
 
     # we need a huge N because pytest_benchmark because else the time is
     # dominated by open_connection() in test_load_from_socket
@@ -54,3 +54,25 @@ class TestMessage(object):
         with TcpServer(capnpfile) as server:
             res = benchmark(self.load_N, schema, open_connection)
         assert res.int64 == 100
+
+
+class TestDump(object):
+
+    N = 2000
+
+    @pytest.mark.benchmark(group="dumps")
+    def test_dumps(self, schema, benchmark):
+        if schema.__name__ != 'Capnpy':
+            pytest.skip('N/A')
+        #
+        def dumps_N(obj):
+            myobjs = (obj, obj)
+            res = 0
+            for i in range(self.N):
+                obj = myobjs[i%2]
+                res = obj.dumps()
+            return res
+        #
+        obj = get_obj(schema)
+        res = benchmark(dumps_N, obj)
+        assert type(res) is str
