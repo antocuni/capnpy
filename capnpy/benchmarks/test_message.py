@@ -61,6 +61,25 @@ class TestDump(object):
     N = 2000
 
     @pytest.mark.benchmark(group="dumps")
+    def test_copy_buffer(self, schema, benchmark):
+        # this is not really a dumps, but it is used as a baseline to compare
+        # the performance
+        if schema.__name__ != 'Capnpy':
+            pytest.skip('N/A')
+        #
+        def dumps_N(obj):
+            myobjs = (obj, obj)
+            res = 0
+            for i in range(self.N):
+                obj = myobjs[i%2]
+                res = obj._buf.s[:]
+            return res
+        #
+        obj = get_obj(schema)
+        res = benchmark(dumps_N, obj)
+        assert type(res) is str
+
+    @pytest.mark.benchmark(group="dumps")
     def test_dumps(self, schema, benchmark):
         if schema.__name__ != 'Capnpy':
             pytest.skip('N/A')
@@ -76,3 +95,4 @@ class TestDump(object):
         obj = get_obj(schema)
         res = benchmark(dumps_N, obj)
         assert type(res) is str
+
