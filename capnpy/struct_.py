@@ -2,6 +2,7 @@ import struct
 import capnpy
 from capnpy import ptr
 from capnpy.blob import Blob, Types
+from capnpy.visit import end_of
 from capnpy.list import List
 
 class Undefined(object):
@@ -256,6 +257,11 @@ class Struct(Blob):
 
     def _get_end(self):
         return self._get_extra_end()
+
+    def _get_end_fast(self):
+        p = ptr.new_struct(self._data_offset, self._data_size, self._ptrs_size)
+        return end_of(self._buf, self._data_offset-8, p)
+
 
     def _split(self, extra_offset):
         """
