@@ -10,4 +10,4 @@ Read the `online docs`_.
 
 .. _`Cap’n Proto`: https://capnproto.org/
 
-.. _`online docs`_: http://capnpy.readthedocs.io/
+.. _`online docs`: http://capnpy.readthedocs.io/
