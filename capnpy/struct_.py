@@ -259,8 +259,9 @@ class Struct(Blob):
         return self._get_extra_end()
 
     def _get_end_fast(self):
-        p = ptr.new_struct(self._data_offset, self._data_size, self._ptrs_size)
-        return end_of(self._buf, self._data_offset-8, p)
+        offset = self._data_offset/8
+        p = ptr.new_struct(0, self._data_size, self._ptrs_size)
+        return end_of(self._buf, p, offset-1)
 
 
     def _split(self, extra_offset):

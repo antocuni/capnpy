@@ -1,29 +1,29 @@
 from capnpy import ptr
 
-def end_of(buf, offset, p):
+def end_of(buf, p, offset):
     """
     Find the end boundary of the object pointed by p.
     This assumes that the buffer is in pre-order.
     """
     kind = ptr.kind(p)
     if kind == ptr.STRUCT:
-        return end_of_struct(buf, offset, p)
+        return end_of_struct(buf, p, offset)
     elif kind == ptr.LIST:
         item_size = ptr.list_size_tag(p)
         if item_size == ptr.LIST_SIZE_COMPOSITE:
-            return end_of_list_composite(buf, offset, p)
+            return end_of_list_composite(buf, p, offset)
         elif item_size == ptr.LIST_SIZE_PTR:
-            return end_of_list_ptr(buf, offset, p)
+            return end_of_list_ptr(buf, p, offset)
         elif item_size == ptr.LIST_SIZE_BIT:
             raise NotImplementedError
         else:
-            return end_of_list_primitive(buf, offset, p)
+            return end_of_list_primitive(buf, p, offset)
     elif kind == ptr.FAR:
         raise NotImplementedError('Far pointer not supported')
     else:
         assert False, 'unknown ptr kind'
 
-def end_of_struct(buf, offset, p):
+def end_of_struct(buf, p, offset):
     offset = ptr.deref(p, offset)
     data_size = ptr.struct_data_size(p)
     ptrs_size = ptr.struct_ptrs_size(p)
@@ -40,10 +40,10 @@ def end_of_ptrs(buf, offset, ptrs_size):
         p2_offset = offset + i*8
         p2 = buf.read_raw_ptr(p2_offset)
         if p2:
-            return end_of(buf, p2_offset, p2)
+            return end_of(buf, p2, p2_offset)
     return -1
 
-def end_of_list_composite(buf, offset, p):
+def end_of_list_composite(buf, p, offset):
     offset = ptr.deref(p, offset)
     tag = buf.read_raw_ptr(offset)
     offset += 8
@@ -62,7 +62,7 @@ def end_of_list_composite(buf, offset, p):
     # no ptr found
     return offset + (item_size)*count
 
-def end_of_list_ptr(buf, offset, p):
+def end_of_list_ptr(buf, p, offset):
     offset = ptr.deref(p, offset)
     count = ptr.list_item_count(p)
     end = end_of_ptrs(buf, offset, count)
@@ -70,7 +70,7 @@ def end_of_list_ptr(buf, offset, p):
         return end
     return offset + 8*count
 
-def end_of_list_primitive(buf, offset, p):
+def end_of_list_primitive(buf, p, offset):
     offset = ptr.deref(p, offset)
     count = ptr.list_item_count(p)
     item_size = ptr.list_size_tag(p)
