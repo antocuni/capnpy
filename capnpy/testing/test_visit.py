@@ -63,11 +63,24 @@ class TestEndOf(object):
         assert end == 24
 
     def test_list_primitive(self):
-        buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
-               'hello capnproto\0'                  # string
-               'garbage1')
-        end = self.end_of(buf, 0, data_size=0, ptrs_size=1)
-        #assert body_start == 8 # XXX
-        assert end == 24
-        assert buf[end:] == 'garbage1'
+        buf = ('\x0d\x00\x00\x00\x1a\x00\x00\x00'   #  0: ptr list<8>  to a
+               '\x0d\x00\x00\x00\x1b\x00\x00\x00'   #  8: ptr list<16> to b
+               '\x0d\x00\x00\x00\x1c\x00\x00\x00'   # 16: ptr list<32> to c
+               '\x11\x00\x00\x00\x1d\x00\x00\x00'   # 24: ptr list<64> to d
+               '\x01\x02\x03\x00\x00\x00\x00\x00'   # 32: a = [1, 2, 3]
+               '\x04\x00\x05\x00\x06\x00\x00\x00'   # 40: b = [4, 5, 6]
+               '\x07\x00\x00\x00\x08\x00\x00\x00'   # 48: c = [7, 8, 9]
+               '\x09\x00\x00\x00\x00\x00\x00\x00'   # 56:
+               '\x0a\x00\x00\x00\x00\x00\x00\x00'   # 64: d = [10, 11, 12]
+               '\x0b\x00\x00\x00\x00\x00\x00\x00'   # 72
+               '\x0c\x00\x00\x00\x00\x00\x00\x00')  # 80
 
+        end_a = self.end_of(buf, 0, data_size=0, ptrs_size=1)
+        end_b = self.end_of(buf, 8, data_size=0, ptrs_size=1)
+        end_c = self.end_of(buf, 16, data_size=0, ptrs_size=1)
+        end_d = self.end_of(buf, 24, data_size=0, ptrs_size=1)
+        #assert body_start == ??? # XXX
+        assert end_a == 32 + 3
+        assert end_b == 40 + (3*2)
+        assert end_c == 48 + (3*4)
+        assert end_d == 64 + (3*8)
