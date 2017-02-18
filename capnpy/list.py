@@ -72,20 +72,16 @@ class List(Blob):
         """
         return self._item_type.read_item(self, i)
 
-    def _get_body_range(self):
-        return self._get_body_start(), self._get_body_end()
-
-    def _get_body_start(self):
-        return self._offset
-
-    def _get_body_end(self):
+    def _get_end(self):
         p = ptr.new_list(0, self._size_tag, self._item_count)
         return end_of(self._buf, p, self._offset-8)
 
-    def _get_key(self):
-        start, end = self._get_body_range()
-        body = self._buf.s[start:end]
-        return (self._item_count, self._item_type.get_type(), body)
+    def _get_slice(self):
+        # XXX: investigate whether it is faster to user memoryview for
+        # comparing the memory without doing a full copy
+        start = self._offset
+        end = self._get_end()
+        return self._buf.s[start:end]
 
     def _equals(self, other):
         if not self._item_type.can_compare():
@@ -94,7 +90,9 @@ class List(Blob):
             return list(self) == other
         if self.__class__ is not other.__class__:
             return False
-        return self._get_key() == other._get_key()
+        return (self._item_count == other._item_count and
+                self._item_type.get_type() == other._item_type.get_type() and
+                self._get_slice() == other._get_slice())
 
     def shortrepr(self):
         parts = [self._item_type.item_repr(item) for item in self]
