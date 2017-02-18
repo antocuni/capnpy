@@ -209,7 +209,7 @@ class Struct(Blob):
         return self._get_body_start(), self._get_body_end()
 
     def _get_extra_range(self):
-        return self._get_extra_start(), self._get_extra_end()
+        return self._get_extra_start(), self._get_end()
 
     def _get_body_start(self):
         return self._data_offset
@@ -256,12 +256,8 @@ class Struct(Blob):
         return end
 
     def _get_end(self):
-        return self._get_extra_end()
-
-    def _get_end_fast(self):
         p = ptr.new_struct(0, self._data_size, self._ptrs_size)
         return end_of(self._buf, p, self._data_offset-8)
-
 
     def _split(self, extra_offset):
         """
