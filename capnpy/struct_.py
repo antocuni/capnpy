@@ -205,12 +205,6 @@ class Struct(Blob):
                              "initialized. Expected %s, got %s" % (expected_tag, tag))
 
 
-    def _get_body_range(self):
-        return self._get_body_start(), self._get_body_end()
-
-    def _get_extra_range(self):
-        return self._get_extra_start(), self._get_end()
-
     def _get_body_start(self):
         return self._data_offset
 
@@ -239,10 +233,11 @@ class Struct(Blob):
         specified offset, in words. The ptrs in the body will be adjusted
         accordingly.
         """
+        body_start = self._get_body_start()
+        body_end = self._get_body_end()
         if self._ptrs_size == 0:
             # easy case, just copy the body
-            start, end = self._get_body_range()
-            return self._buf.s[start:end], ''
+            return self._buf.s[body_start:body_end], ''
         #
         # hard case. The layout of self._buf is like this:
         # +----------+------+------+----------+-------------+
@@ -259,8 +254,8 @@ class Struct(Blob):
         # 2) the offset of pointers in ptrs are adjusted
         # 3) extra is copied verbatim
         #
-        body_start, body_end = self._get_body_range()
-        extra_start, extra_end = self._get_extra_range()
+        extra_start = self._get_extra_start()
+        extra_end = self._get_end()
         #
         # 1) data section
         data_size = self._data_size
