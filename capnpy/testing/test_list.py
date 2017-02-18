@@ -133,50 +133,6 @@ def test_list_of_strings():
     lst = blob._read_list(0, TextItemType(Types.text))
     assert list(lst) == ['A', 'BC', 'DEF', 'GHIJ']
 
-def test_list_composite_all_nullptr_body_range():
-    ## struct Point {
-    ##   x @0 :Int64;
-    ##   y @1 :Int64;
-    ##   name @2 :Text;
-    ## }
-    buf = ('garbage0'
-           '\x01\x00\x00\x00\x4f\x00\x00\x00'   # ptr to list
-           '\x0c\x00\x00\x00\x02\x00\x01\x00'   # list tag
-           '\x01\x00\x00\x00\x00\x00\x00\x00'   # points[0].x == 1
-           '\x02\x00\x00\x00\x00\x00\x00\x00'   # points[0].y == 2
-           '\x00\x00\x00\x00\x00\x00\x00\x00'   # points[0].name == NULL
-           '\x03\x00\x00\x00\x00\x00\x00\x00'   # points[1].x == 3
-           '\x04\x00\x00\x00\x00\x00\x00\x00'   # points[1].y == 4     
-           '\x00\x00\x00\x00\x00\x00\x00\x00'   # points[1].name == NULL
-           '\x05\x00\x00\x00\x00\x00\x00\x00'   # points[2].x == 5
-           '\x06\x00\x00\x00\x00\x00\x00\x00'   # points[2].y == 6
-           '\x00\x00\x00\x00\x00\x00\x00\x00'   # points[2].name == NULL
-           'garbage1')
-
-    blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
-    points = blob._read_list(0, StructItemType(Blob))
-    start, end = points._get_body_range()
-    assert start == 16
-    assert end == 96
-    assert buf[end:] == 'garbage1'
-
-def test_list_composite_noptr_body_range():
-    buf = ('garbage0'
-           '\x01\x00\x00\x00\x27\x00\x00\x00'   # ptr to list
-           '\x08\x00\x00\x00\x02\x00\x00\x00'   # list tag
-           '\x01\x00\x00\x00\x00\x00\x00\x00'   # p[0].x == 1
-           '\x02\x00\x00\x00\x00\x00\x00\x00'   # p[0].y == 2
-           '\x03\x00\x00\x00\x00\x00\x00\x00'   # p[1].x == 3
-           '\x04\x00\x00\x00\x00\x00\x00\x00'   # p[1].y == 4
-           'garbage1'
-           'garbage2')
-    blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
-    points = blob._read_list(0, StructItemType(Blob))
-    start, end = points._get_body_range()
-    assert start == 16
-    assert end == 56
-    assert buf[end:] == 'garbage1garbage2'
-
 def test_list_of_pointers():
     buf = ('garbage0'
            '\x01\x00\x00\x00\x1e\x00\x00\x00'   # ptr to list

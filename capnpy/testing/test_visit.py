@@ -42,7 +42,7 @@ class TestEndOf(object):
         #assert start == 48
         assert end == 80
 
-    def test_struct_null_ptr(self):
+    def test_struct_one_null_ptr(self):
         buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
                '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
                '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
@@ -111,7 +111,7 @@ class TestEndOf(object):
         assert end == 120
         assert buf[end:] == 'garbage1'
 
-    def test_list_composite_one_nullptr(self):
+    def test_list_composite_one_null_ptr(self):
         ## struct Point {
         ##   x @0 :Int64;
         ##   y @1 :Int64;
@@ -136,3 +136,42 @@ class TestEndOf(object):
         #assert start == 16  # XXX
         assert end == 112
         assert buf[end:] == 'garbage1'
+
+    def test_list_composite_all_null_ptrs(self):
+        ## struct Point {
+        ##   x @0 :Int64;
+        ##   y @1 :Int64;
+        ##   name @2 :Text;
+        ## }
+        buf = ('garbage0'
+               '\x01\x00\x00\x00\x4f\x00\x00\x00'   # ptr to list
+               '\x0c\x00\x00\x00\x02\x00\x01\x00'   # list tag
+               '\x01\x00\x00\x00\x00\x00\x00\x00'   # points[0].x == 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00'   # points[0].y == 2
+               '\x00\x00\x00\x00\x00\x00\x00\x00'   # points[0].name == NULL
+               '\x03\x00\x00\x00\x00\x00\x00\x00'   # points[1].x == 3
+               '\x04\x00\x00\x00\x00\x00\x00\x00'   # points[1].y == 4
+               '\x00\x00\x00\x00\x00\x00\x00\x00'   # points[1].name == NULL
+               '\x05\x00\x00\x00\x00\x00\x00\x00'   # points[2].x == 5
+               '\x06\x00\x00\x00\x00\x00\x00\x00'   # points[2].y == 6
+               '\x00\x00\x00\x00\x00\x00\x00\x00'   # points[2].name == NULL
+               'garbage1')
+        end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
+        #assert start == 16  # XXX
+        assert end == 96
+        assert buf[end:] == 'garbage1'
+
+    def test_list_composite_no_ptr(self):
+        buf = ('garbage0'
+               '\x01\x00\x00\x00\x27\x00\x00\x00'   # ptr to list
+               '\x08\x00\x00\x00\x02\x00\x00\x00'   # list tag
+               '\x01\x00\x00\x00\x00\x00\x00\x00'   # p[0].x == 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00'   # p[0].y == 2
+               '\x03\x00\x00\x00\x00\x00\x00\x00'   # p[1].x == 3
+               '\x04\x00\x00\x00\x00\x00\x00\x00'   # p[1].y == 4
+               'garbage1'
+               'garbage2')
+        end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
+        #assert start == 16  # XXX
+        assert end == 56
+        assert buf[end:] == 'garbage1garbage2'
