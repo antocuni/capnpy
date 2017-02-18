@@ -195,3 +195,17 @@ class TestEndOf(object):
         assert end == 86
         assert buf[end:] == '\x00\x00'
 
+    def test_list_of_pointers_all_null(self):
+        buf = ('garbage0'
+               '\x01\x00\x00\x00\x1e\x00\x00\x00'   # ptr to list
+               '\x00\x00\x00\x00\x00\x00\x00\x00'
+               '\x00\x00\x00\x00\x00\x00\x00\x00'
+               '\x00\x00\x00\x00\x00\x00\x00\x00'
+               'garbage1')
+        end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
+        #assert start == 16  # XXX
+        # note that the end if 88, not 86: the last two \x00\x00 are not counted,
+        # because they are padding, not actual data
+        assert end == 40
+        assert buf[end:] == 'garbage1'
+
