@@ -39,8 +39,8 @@ class TestEndOf(object):
                '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
                '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
         end = self.end_of(buf, 8, data_size=1, ptrs_size=2)
+        #assert start == 48
         assert end == 80
-        # XXX: test the equivalent of _get_extra_start, when we implement it
 
     def test_struct_null_ptr(self):
         buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
@@ -51,16 +51,16 @@ class TestEndOf(object):
                '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
                '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
         end = self.end_of(buf, 0, data_size=1, ptrs_size=2)
+        #assert start == 40  # XXX
         assert end == 56
-        # XXX: test _get_extra_start
 
     def test_struct_all_null_ptrs(self):
         buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
                '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to a, NULL
                '\x00\x00\x00\x00\x00\x00\x00\x00')   # ptr to b, NULL
         end = self.end_of(buf, 0, data_size=1, ptrs_size=2)
+        #assert start == 24 # XXX
         assert end == 24
-        # XXX: test _get_extra_start
 
     def test_list_primitive(self):
         buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
