@@ -120,16 +120,6 @@ def test_far_pointer():
     assert p._read_data(0, Types.int64.ifmt) == 1
     assert p._read_data(8, Types.int64.ifmt) == 2
 
-def test_rect_range():
-    rect = Struct.from_buffer(BUF, 8, data_size=1, ptrs_size=2)
-    body_start, body_end = rect._get_body_range()
-    assert body_start == 8
-    assert body_end == 32
-    #
-    extra_start, extra_end = rect._get_extra_range()
-    assert extra_start == 48
-    assert extra_end == 80
-
 def test_extra_range_one_null_ptrs():
     buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
            '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
