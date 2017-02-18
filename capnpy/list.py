@@ -3,6 +3,7 @@ import capnpy
 from capnpy.blob import Blob, Types, PYX
 from capnpy import ptr
 from capnpy.util import text_repr, float32_repr, float64_repr
+from capnpy.visit import end_of
 
 class List(Blob):
 
@@ -78,62 +79,8 @@ class List(Blob):
         return self._offset
 
     def _get_body_end(self):
-        if self._size_tag == ptr.LIST_SIZE_COMPOSITE:
-            return self._get_body_end_composite()
-        elif self._size_tag == ptr.LIST_SIZE_PTR:
-            return self._get_body_end_ptr()
-        else:
-            return self._get_body_end_scalar()
-
-    def _get_body_end_composite(self):
-        # lazy access to Struct to avoid circular imports
-        Struct = capnpy.struct_.Struct
-        #
-        # to calculate the end the of the list, there are three cases
-        #
-        # 1) if the items has no pointers, the end of the list correspond
-        #    to the end of the items
-        #
-        # 2) if they HAVE pointers but they are ALL null, it's the same as (1)
-        #
-        # 3) if they have pointers, the end of the list is at the end of
-        #    the extra of the latest item having a pointer field set
-
-        if ptr.struct_ptrs_size(self._tag) == 0:
-            # case 1
-            return self._get_body_end_scalar()+8 # +8 is for the tag
-
-        i = self._item_count-1
-        while i >= 0:
-            struct_offset = self._item_type.offset_for_item(self, i)
-            struct_offset += self._offset
-            mystruct = Struct.from_buffer(self._buf,
-                                          struct_offset,
-                                          ptr.struct_data_size(self._tag),
-                                          ptr.struct_ptrs_size(self._tag))
-            end = mystruct._get_extra_end_maybe()
-            if end is not None:
-                # case 3
-                return end
-            i -= 1
-
-        # case 2
-        return self._get_body_end_scalar()+8 # +8 is for the tag
-
-    def _get_body_end_ptr(self):
-        ptr_offset = self._item_type.offset_for_item(self, self._item_count-1)
-        blob = self._read_list_or_struct(ptr_offset)
-        return blob._get_end()
-
-    def _get_body_end_scalar(self):
-        if self._item_length == -1:
-            # it's a list of Bool: we use 1 byte each 8 items
-            bytes_length, extra_bits = divmod(self._item_count, 8)
-            if extra_bits:
-                bytes_length += 1
-            return self._offset + bytes_length
-        else:
-            return self._offset + self._item_length*self._item_count
+        p = ptr.new_list(0, self._size_tag, self._item_count)
+        return end_of(self._buf, p, self._offset-8)
 
     def _get_end(self):
         return self._get_body_end()
