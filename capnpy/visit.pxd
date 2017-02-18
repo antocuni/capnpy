@@ -19,4 +19,6 @@ cdef long end_of_list_ptr(CapnpBuffer buf, long p, long offset)
 @cython.locals(count=long, item_size=long)
 cdef long end_of_list_primitive(CapnpBuffer buf, long p, long offset) except -2
 
+@cython.locals(count=long, bytes_length=long, extra_bits=long)
+cdef long end_of_list_bit(CapnpBuffer buf, long p, long offset)
 

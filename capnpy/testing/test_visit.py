@@ -84,6 +84,13 @@ class TestEndOf(object):
         assert end_c == 48 + (3*4)
         assert end_d == 64 + (3*8)
 
+    def test_list_of_bool(self):
+        buf = ('garbage1'
+               '\x01\x00\x00\x00\x19\x00\x00\x00'    # ptrlist
+               '\x03\x00\x00\x00\x00\x00\x00\x00')   # [True, True, False]
+        end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
+        assert end == 17
+
     def test_list_composite(self):
         ## struct Point {
         ##   x @0 :Int64;

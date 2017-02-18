@@ -15,7 +15,7 @@ def end_of(buf, p, offset):
         elif item_size == ptr.LIST_SIZE_PTR:
             return end_of_list_ptr(buf, p, offset)
         elif item_size == ptr.LIST_SIZE_BIT:
-            raise NotImplementedError
+            return end_of_list_bit(buf, p, offset)
         else:
             return end_of_list_primitive(buf, p, offset)
     elif kind == ptr.FAR:
@@ -86,3 +86,10 @@ def end_of_list_primitive(buf, p, offset):
         assert False, 'Unknown item_size: %s' % item_size
     return offset + item_size*count
 
+def end_of_list_bit(buf, p, offset):
+    offset = ptr.deref(p, offset)
+    count = ptr.list_item_count(p)
+    bytes_length, extra_bits = divmod(count, 8)
+    if extra_bits:
+        bytes_length += 1
+    return offset + bytes_length
