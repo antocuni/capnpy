@@ -120,36 +120,6 @@ def test_far_pointer():
     assert p._read_data(0, Types.int64.ifmt) == 1
     assert p._read_data(8, Types.int64.ifmt) == 2
 
-def test_extra_range_one_null_ptrs():
-    buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
-           '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
-           '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
-           'garbage1'
-           'garbage2'
-           '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
-           '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
-    rect = Struct.from_buffer(buf, 0, data_size=1, ptrs_size=2)
-    body_start, body_end = rect._get_body_range()
-    assert body_start == 0
-    assert body_end == 24
-    #
-    extra_start, extra_end = rect._get_extra_range()
-    assert extra_start == 40
-    assert extra_end == 56
-
-def test_extra_range_all_null_ptrs():
-    buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
-           '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to a, NULL
-           '\x00\x00\x00\x00\x00\x00\x00\x00')   # ptr to b, NULL
-    rect = Struct.from_buffer(buf, 0, data_size=1, ptrs_size=2)
-    body_start, body_end = rect._get_body_range()
-    assert body_start == 0
-    assert body_end == 24
-    #
-    extra_start, extra_end = rect._get_extra_range()
-    assert extra_start == 24
-    assert extra_end == 24
-
 def test_union():
     ## struct Shape {
     ##   area @0 :Int64;

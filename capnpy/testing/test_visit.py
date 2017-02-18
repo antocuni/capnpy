@@ -40,5 +40,24 @@ class TestEndOf(object):
                '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
         end = self.end_of(buf, 8, data_size=1, ptrs_size=2)
         assert end == 80
-        #
         # XXX: test the equivalent of _get_extra_start, when we implement it
+
+    def test_struct_null_ptr(self):
+        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+               '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+               '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
+               'garbage1'
+               'garbage2'
+               '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
+        end = self.end_of(buf, 0, data_size=1, ptrs_size=2)
+        assert end == 56
+        # XXX: test _get_extra_start
+
+    def test_struct_all_null_ptrs(self):
+        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+               '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to a, NULL
+               '\x00\x00\x00\x00\x00\x00\x00\x00')   # ptr to b, NULL
+        end = self.end_of(buf, 0, data_size=1, ptrs_size=2)
+        assert end == 24
+        # XXX: test _get_extra_start
