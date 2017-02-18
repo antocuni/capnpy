@@ -130,7 +130,7 @@ def dumps(obj):
     messages over a stream. It always uses a single segment.
     """
     a = obj._get_body_start()
-    b = obj._get_extra_end()
+    b = obj._get_end()
     buf = obj._buf.s[a:b]
     p = ptr.new_struct(0, obj._data_size, obj._ptrs_size)
     #

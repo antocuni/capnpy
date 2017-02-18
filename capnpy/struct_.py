@@ -229,32 +229,6 @@ class Struct(Blob):
         # if we are here, it means that all ptrs are null
         return self._get_body_end()
 
-    def _get_extra_end_maybe(self):
-        if self._ptrs_size == 0:
-            return None # no extra
-        #
-        # the end of our extra correspond to the end of our last non-null
-        # pointer: see doc/normalize.rst for an explanation of why we can
-        # compute the extra range this way
-        #
-        # XXX: we should probably unroll this loop
-        i = self._ptrs_size - 1 # start from the last ptr
-        while i >= 0:
-            blob = self._read_list_or_struct(i*8)
-            if blob is not None:
-                return blob._get_end()
-            i -= 1
-        #
-        # if we are here, it means that ALL ptrs are NULL, so we don't have
-        # any extra section
-        return None
-
-    def _get_extra_end(self):
-        end = self._get_extra_end_maybe()
-        if end is None:
-            return self._get_body_end()
-        return end
-
     def _get_end(self):
         p = ptr.new_struct(0, self._data_size, self._ptrs_size)
         return end_of(self._buf, p, self._data_offset-8)

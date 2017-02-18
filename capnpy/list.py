@@ -82,9 +82,6 @@ class List(Blob):
         p = ptr.new_list(0, self._size_tag, self._item_count)
         return end_of(self._buf, p, self._offset-8)
 
-    def _get_end(self):
-        return self._get_body_end()
-
     def _get_key(self):
         start, end = self._get_body_range()
         body = self._buf.s[start:end]
