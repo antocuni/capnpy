@@ -120,18 +120,6 @@ def test_far_pointer():
     assert p._read_data(0, Types.int64.ifmt) == 1
     assert p._read_data(8, Types.int64.ifmt) == 2
 
-
-def test_point_range():
-    point = Struct.from_buffer(BUF, 48, data_size=2, ptrs_size=0)
-    body_start, body_end = point._get_body_range()
-    assert body_start == 48
-    assert body_end == 64
-    #
-    extra_start, extra_end = point._get_extra_range()
-    assert extra_start == 64
-    assert extra_end == 64
-    
-
 def test_rect_range():
     rect = Struct.from_buffer(BUF, 8, data_size=1, ptrs_size=2)
     body_start, body_end = rect._get_body_range()
