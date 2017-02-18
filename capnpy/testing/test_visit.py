@@ -61,3 +61,13 @@ class TestEndOf(object):
         end = self.end_of(buf, 0, data_size=1, ptrs_size=2)
         assert end == 24
         # XXX: test _get_extra_start
+
+    def test_list_primitive(self):
+        buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
+               'hello capnproto\0'                  # string
+               'garbage1')
+        end = self.end_of(buf, 0, data_size=0, ptrs_size=1)
+        #assert body_start == 8 # XXX
+        assert end == 24
+        assert buf[end:] == 'garbage1'
+

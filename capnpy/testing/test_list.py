@@ -133,19 +133,6 @@ def test_list_of_strings():
     lst = blob._read_list(0, TextItemType(Types.text))
     assert list(lst) == ['A', 'BC', 'DEF', 'GHIJ']
 
-
-def test_list_primitive_body_range():
-    buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
-           'hello capnproto\0'                  # string
-           'garbage1')
-    blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
-    lst = blob._read_list(0, PrimitiveItemType(Types.int8))
-    body_start, body_end = lst._get_body_range()
-    assert body_start == 8
-    assert body_end == 24
-    assert buf[body_end:] == 'garbage1'
-
-
 def test_list_composite_body_range():
     ## struct Point {
     ##   x @0 :Int64;
