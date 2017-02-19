@@ -34,3 +34,10 @@ def unpack_int16(buf, offset):
 
 def unpack_uint32(buf, offset):
     return unpack_primitive(ord('I'), buf, offset)
+
+def pack_message_header(segment_count, segment_size, p):
+    """
+    This assumes that segment_count == 1
+    """
+    assert segment_count == 1
+    return struct.pack('iiQ', segment_count-1, segment_size, p)

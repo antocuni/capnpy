@@ -4,7 +4,7 @@ import sys
 import struct
 import math
 from pypytools import IS_PYPY
-from capnpy.unpack import unpack_primitive
+from capnpy.unpack import unpack_primitive, pack_message_header
 
 def test_unpack_primitive_ints():
     buf = '\xff' * 8
@@ -50,3 +50,9 @@ def test_errors():
     pytest.raises(IndexError, "unpack_primitive(ord('q'), buf, -1)")
     pytest.raises(IndexError, "unpack_primitive(ord('q'), buf, 8)")
     pytest.raises(TypeError, "unpack_primitive(ord('q'), 42, 0)")
+
+def test_pack_message_header():
+    header = pack_message_header(1, 0xAA, 0xBBCCDD)
+    assert header == ('\x00\x00\x00\x00'
+                      '\xaa\x00\x00\x00'
+                      '\xdd\xcc\xbb\x00\x00\x00\x00\x00')

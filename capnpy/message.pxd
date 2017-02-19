@@ -1,5 +1,5 @@
 import cython
-from capnpy.unpack cimport unpack_uint32
+from capnpy.unpack cimport unpack_uint32, pack_message_header
 from capnpy.blob cimport CapnpBuffer
 from capnpy.struct_ cimport Struct, struct_from_buffer
 from capnpy cimport ptr

@@ -139,7 +139,7 @@ def dumps(obj):
         padding = 8 - (len(buf) % 8)
         buf += '\x00' * padding
     segment_size = len(buf)/8 + 1 # +1 is for the ptr
-    header = struct.pack('iiQ', segment_count-1, segment_size, p)
+    header = pack_message_header(segment_count, segment_size, p)
     return header + buf
 
 def dump(obj, f):
