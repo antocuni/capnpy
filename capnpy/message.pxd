@@ -22,5 +22,5 @@ cpdef _load_buffer_single_segment(FileLike f)
                 padding=int, message_lenght=int, offset=int, size=int)
 cpdef _load_buffer_multiple_segments(FileLike f, int n)
 
-@cython.locals(buf=bytes, padding=int)
+@cython.locals(buf=bytes, padding=int, a=long, b=long)
 cpdef dumps(Struct obj)

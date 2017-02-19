@@ -48,3 +48,5 @@ cdef class Struct(Blob):
     cpdef object _ensure_union(self, long expected_tag)
     cpdef long __which__(self) except -1
 
+    cpdef long _get_body_start(self)
+    cpdef long _get_end(self)
