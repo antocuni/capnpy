@@ -1,5 +1,5 @@
 import struct
-from capnpy.unpack import unpack_uint32
+from capnpy.unpack import unpack_uint32, pack_message_header
 from capnpy.blob import CapnpBuffer, CapnpBufferWithSegments
 from capnpy.struct_ import Struct, struct_from_buffer
 from capnpy import ptr
