@@ -10,7 +10,7 @@ import capnpy
 from capnpy.util import extend
 from capnpy import ptr
 from capnpy.type import Types
-from capnpy.printer import BufferPrinter
+from capnpy.printer import BufferPrinter, print_buffer
 from capnpy.unpack import unpack_primitive, unpack_int64, unpack_int16
 from capnpy import _hash
 
@@ -92,6 +92,11 @@ class CapnpBuffer(object):
         start = ptr.deref(p, offset)
         size = ptr.list_item_count(p) + additional_size
         return _hash.strhash(self.s, start, size)
+
+    def _print(self, **kwds):
+        p = BufferPrinter(self.s)
+        p.printbuf(start=0, end=None, **kwds)
+
 
 
 class CapnpBufferWithSegments(CapnpBuffer):
