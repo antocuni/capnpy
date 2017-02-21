@@ -100,16 +100,14 @@ def is_compact(buf, p, offset):
     if kind == ptr.STRUCT:
         return is_compact_struct(buf, p, offset)
     elif kind == ptr.LIST:
-        xxx
         item_size = ptr.list_size_tag(p)
         if item_size == ptr.LIST_SIZE_COMPOSITE:
             return end_of_list_composite(buf, p, offset)
         elif item_size == ptr.LIST_SIZE_PTR:
             return end_of_list_ptr(buf, p, offset)
-        elif item_size == ptr.LIST_SIZE_BIT:
-            return end_of_list_bit(buf, p, offset)
         else:
-            return end_of_list_primitive(buf, p, offset)
+            # primitive or bool
+            return True
     elif kind == ptr.FAR:
         raise NotImplementedError('Far pointer not supported')
     else:

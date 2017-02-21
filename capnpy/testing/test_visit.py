@@ -233,7 +233,7 @@ class TestIsCompact(object):
         is_compact = self.is_compact(buf, 16, data_size=2, ptrs_size=0)
         assert is_compact
 
-    def test_struct_ptrs(self):
+    def test_struct_ptrs_not_compact(self):
         ## struct Point {
         ##   x @0 :Int64;
         ##   y @1 :Int64;
@@ -256,7 +256,8 @@ class TestIsCompact(object):
                '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
         is_compact = self.is_compact(buf, 8, data_size=1, ptrs_size=2)
         assert not is_compact
-        #
+
+    def test_struct_ptrs_compact(self):
         buf = ('garbage0'
                '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
                '\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
@@ -267,3 +268,20 @@ class TestIsCompact(object):
                '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
         is_compact = self.is_compact(buf, 8, data_size=1, ptrs_size=2)
         assert is_compact
+
+    def test_struct_all_null_ptrs(self):
+        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+               '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to a, NULL
+               '\x00\x00\x00\x00\x00\x00\x00\x00')   # ptr to b, NULL
+        is_compact = self.is_compact(buf, 0, data_size=1, ptrs_size=2)
+        assert is_compact
+
+    def test_list_primitive(self):
+        buf = '\x01\x02\x03\x00\x00\x00\x00\x00'   # 32: list<8> [1, 2, 3]
+        p = ptr.new_list(0, ptr.LIST_SIZE_8, 3)
+        assert is_compact(buf, p, 0)
+
+    def test_list_of_bool(self):
+        buf = '\x03\x00\x00\x00\x00\x00\x00\x00'   # [True, True, False]
+        p = ptr.new_list(0, ptr.LIST_SIZE_BIT, 3)
+        assert is_compact(buf, p, 0)
