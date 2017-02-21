@@ -220,9 +220,14 @@ class TestEndOf(object):
 
 class TestIsCompact(object):
 
-    def is_compact(self, buf, offset, data_size, ptrs_size):
+    def is_compact(self, buf, offset, kind, **kwds):
         buf = CapnpBuffer(buf)
-        p = ptr.new_struct(0, data_size, ptrs_size)
+        if kind == ptr.STRUCT:
+            p = ptr.new_struct(0, **kwds)
+        elif kind == ptr.LIST:
+            p = ptr.new_list(0, **kwds)
+        else:
+            assert False
         return is_compact(buf, p, offset-8)
 
     def test_struct_data_only(self):
@@ -230,7 +235,7 @@ class TestIsCompact(object):
                'garbage1'
                '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
-        is_compact = self.is_compact(buf, 16, data_size=2, ptrs_size=0)
+        is_compact = self.is_compact(buf, 16, ptr.STRUCT, data_size=2, ptrs_size=0)
         assert is_compact
 
     def test_struct_ptrs_not_compact(self):
@@ -254,7 +259,7 @@ class TestIsCompact(object):
                '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
                '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
                '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
-        is_compact = self.is_compact(buf, 8, data_size=1, ptrs_size=2)
+        is_compact = self.is_compact(buf, 8, ptr.STRUCT, data_size=1, ptrs_size=2)
         assert not is_compact
 
     def test_struct_ptrs_compact(self):
@@ -266,22 +271,52 @@ class TestIsCompact(object):
                '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
                '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
                '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
-        is_compact = self.is_compact(buf, 8, data_size=1, ptrs_size=2)
+        is_compact = self.is_compact(buf, 8, ptr.STRUCT, data_size=1, ptrs_size=2)
         assert is_compact
 
     def test_struct_all_null_ptrs(self):
         buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
                '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to a, NULL
                '\x00\x00\x00\x00\x00\x00\x00\x00')   # ptr to b, NULL
-        is_compact = self.is_compact(buf, 0, data_size=1, ptrs_size=2)
+        is_compact = self.is_compact(buf, 0, ptr.STRUCT, data_size=1, ptrs_size=2)
         assert is_compact
 
     def test_list_primitive(self):
         buf = '\x01\x02\x03\x00\x00\x00\x00\x00'   # 32: list<8> [1, 2, 3]
-        p = ptr.new_list(0, ptr.LIST_SIZE_8, 3)
-        assert is_compact(buf, p, 0)
+        is_compact = self.is_compact(buf, 0, ptr.LIST,
+                                     size_tag=ptr.LIST_SIZE_8,
+                                     item_count=3)
+        assert is_compact
 
     def test_list_of_bool(self):
         buf = '\x03\x00\x00\x00\x00\x00\x00\x00'   # [True, True, False]
-        p = ptr.new_list(0, ptr.LIST_SIZE_BIT, 3)
-        assert is_compact(buf, p, 0)
+        is_compact = self.is_compact(buf, 0, ptr.LIST,
+                                     size_tag=ptr.LIST_SIZE_BIT,
+                                     item_count=3)
+        assert is_compact
+
+    def test_list_composite_compact(self):
+        ## struct Point {
+        ##   x @0 :Int64;
+        ##   y @1 :Int64;
+        ##   name @2 :Text;
+        ## }
+        buf = ('garbage0'
+               '\x0c\x00\x00\x00\x02\x00\x01\x00'   # list tag
+               '\x01\x00\x00\x00\x00\x00\x00\x00'   # points[0].x == 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00'   # points[0].y == 2
+               '\x19\x00\x00\x00\x42\x00\x00\x00'   # points[0].name == ptr
+               '\x03\x00\x00\x00\x00\x00\x00\x00'   # points[1].x == 3
+               '\x04\x00\x00\x00\x00\x00\x00\x00'   # points[1].y == 4
+               '\x11\x00\x00\x00\x42\x00\x00\x00'   # points[1].name == ptr
+               '\x05\x00\x00\x00\x00\x00\x00\x00'   # points[2].x == 5
+               '\x06\x00\x00\x00\x00\x00\x00\x00'   # points[2].y == 6
+               '\x09\x00\x00\x00\x42\x00\x00\x00'   # points[2].name == ptr
+               'P' 'o' 'i' 'n' 't' ' ' 'A' '\x00'
+               'P' 'o' 'i' 'n' 't' ' ' 'B' '\x00'
+               'P' 'o' 'i' 'n' 't' ' ' 'C' '\x00'
+               'garbage1')
+        is_compact = self.is_compact(buf, 8, ptr.LIST,
+                                     size_tag=ptr.LIST_SIZE_COMPOSITE,
+                                     item_count=3)
+        assert is_compact

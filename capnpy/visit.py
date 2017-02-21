@@ -43,6 +43,17 @@ def end_of_ptrs(buf, offset, ptrs_size):
             return end_of(buf, p2, p2_offset)
     return -1
 
+def start_of_ptrs(buf, offset, ptrs_size):
+    i = 0
+    while i < ptrs_size:
+        p2_offset = offset + i*8
+        p2 = buf.read_raw_ptr(p2_offset)
+        if p2:
+            return ptr.deref(p2, p2_offset)
+        i += 1
+    return -1
+
+
 def end_of_list_composite(buf, p, offset):
     offset = ptr.deref(p, offset)
     tag = buf.read_raw_ptr(offset)
@@ -98,11 +109,11 @@ def end_of_list_bit(buf, p, offset):
 def is_compact(buf, p, offset):
     kind = ptr.kind(p)
     if kind == ptr.STRUCT:
-        return is_compact_struct(buf, p, offset)
+        return _is_compact_struct(buf, p, offset)
     elif kind == ptr.LIST:
         item_size = ptr.list_size_tag(p)
         if item_size == ptr.LIST_SIZE_COMPOSITE:
-            return end_of_list_composite(buf, p, offset)
+            return _is_compact_list_composite(buf, p, offset)
         elif item_size == ptr.LIST_SIZE_PTR:
             return end_of_list_ptr(buf, p, offset)
         else:
@@ -114,7 +125,7 @@ def is_compact(buf, p, offset):
         assert False, 'unknown ptr kind'
 
 
-def is_compact_struct(buf, p, offset):
+def _is_compact_struct(buf, p, offset):
     """
     A struct is compact if its first non-null pointer points immediately after
     the end of its body.
@@ -124,11 +135,25 @@ def is_compact_struct(buf, p, offset):
     ptrs_size = ptr.struct_ptrs_size(p)
     end_of_body = offset + (data_size+ptrs_size)*8
     offset += data_size*8
-    i = 0
-    while i < ptrs_size:
-        p2_offset = offset + i*8
-        p2 = buf.read_raw_ptr(p2_offset)
-        if p2:
-            return ptr.deref(p2, p2_offset) == end_of_body
-        i += 1
+    start_of_children = start_of_ptrs(buf, offset, ptrs_size)
+    return start_of_children == -1 or start_of_children == end_of_body
+
+def _is_compact_list_composite(buf, p, offset):
+    offset = ptr.deref(p, offset)
+    tag = buf.read_raw_ptr(offset)
+    offset += 8
+    count = ptr.offset(tag)
+    data_size = ptr.struct_data_size(tag)
+    ptrs_size = ptr.struct_ptrs_size(tag)
+    item_size = (data_size+ptrs_size)*8
+    end_of_items = offset + item_size*count
+    if ptrs_size:
+        i = 0
+        while i < count:
+            item_offset = offset + (item_size)*i + (data_size*8)
+            start_of_children = start_of_ptrs(buf, item_offset, ptrs_size)
+            if start_of_children != -1:
+                return start_of_children == end_of_items
+            i += 1
+    # no ptr found
     return True
