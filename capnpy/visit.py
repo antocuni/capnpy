@@ -1,22 +1,18 @@
 from capnpy import ptr
 
 def end_of(buf, p, offset):
-    v = Visitor()
-    return v.end_of(buf, p, offset)
+    v = EndOf()
+    return v.visit(buf, p, offset)
 
 class Visitor(object):
 
-    def end_of(self, buf, p, offset):
-        """
-        Find the end boundary of the object pointed by p.
-        This assumes that the buffer is in pre-order.
-        """
+    def visit(self, buf, p, offset):
         kind = ptr.kind(p)
         offset = ptr.deref(p, offset)
         if kind == ptr.STRUCT:
             data_size = ptr.struct_data_size(p)
             ptrs_size = ptr.struct_ptrs_size(p)
-            return self.end_of_struct(buf, p, offset, data_size, ptrs_size)
+            return self.visit_struct(buf, p, offset, data_size, ptrs_size)
         elif kind == ptr.LIST:
             item_size = ptr.list_size_tag(p)
             count = ptr.list_item_count(p)
@@ -25,37 +21,44 @@ class Visitor(object):
                 count = ptr.offset(tag)
                 data_size = ptr.struct_data_size(tag)
                 ptrs_size = ptr.struct_ptrs_size(tag)
-                return self.end_of_list_composite(buf, p, offset,
+                return self.visit_list_composite(buf, p, offset,
                                                   count, data_size, ptrs_size)
             elif item_size == ptr.LIST_SIZE_PTR:
-                return self.end_of_list_ptr(buf, p, offset, count)
+                return self.visit_list_ptr(buf, p, offset, count)
             elif item_size == ptr.LIST_SIZE_BIT:
-                return self.end_of_list_bit(buf, p, offset, count)
+                return self.visit_list_bit(buf, p, offset, count)
             else:
-                return self.end_of_list_primitive(buf, p, offset, item_size, count)
+                return self.visit_list_primitive(buf, p, offset, item_size, count)
         elif kind == ptr.FAR:
             raise NotImplementedError('Far pointer not supported')
         else:
             assert False, 'unknown ptr kind'
 
-    def end_of_struct(self, buf, p, offset, data_size, ptrs_size):
+
+class EndOf(Visitor):
+    """
+    Find the end boundary of the object pointed by p.
+    This assumes that the buffer is in pre-order.
+    """
+
+    def visit_struct(self, buf, p, offset, data_size, ptrs_size):
         offset += data_size*8
-        end = self.end_of_ptrs(buf, offset, ptrs_size)
+        end = self.visit_ptrs(buf, offset, ptrs_size)
         if end != -1:
             return end
         return offset + (ptrs_size*8)
 
-    def end_of_ptrs(self, buf, offset, ptrs_size):
+    def visit_ptrs(self, buf, offset, ptrs_size):
         i = ptrs_size
         while i > 0:
             i -= 1
             p2_offset = offset + i*8
             p2 = buf.read_raw_ptr(p2_offset)
             if p2:
-                return self.end_of(buf, p2, p2_offset)
+                return self.visit(buf, p2, p2_offset)
         return -1
 
-    def end_of_list_composite(self, buf, p, offset, count, data_size, ptrs_size):
+    def visit_list_composite(self, buf, p, offset, count, data_size, ptrs_size):
         item_size = (data_size+ptrs_size)*8
         offset += 8
         if ptrs_size:
@@ -63,19 +66,19 @@ class Visitor(object):
             while i > 0:
                 i -= 1
                 item_offset = offset + (item_size)*i + (data_size*8)
-                end = self.end_of_ptrs(buf, item_offset, ptrs_size)
+                end = self.visit_ptrs(buf, item_offset, ptrs_size)
                 if end != -1:
                     return end
         # no ptr found
         return offset + (item_size)*count
 
-    def end_of_list_ptr(self, buf, p, offset, count):
-        end = self.end_of_ptrs(buf, offset, count)
+    def visit_list_ptr(self, buf, p, offset, count):
+        end = self.visit_ptrs(buf, offset, count)
         if end != -1:
             return end
         return offset + 8*count
 
-    def end_of_list_primitive(self, buf, p, offset, item_size, count):
+    def visit_list_primitive(self, buf, p, offset, item_size, count):
         if item_size == ptr.LIST_SIZE_8:
             item_size = 1
         elif item_size == ptr.LIST_SIZE_16:
@@ -88,7 +91,7 @@ class Visitor(object):
             assert False, 'Unknown item_size: %s' % item_size
         return offset + item_size*count
 
-    def end_of_list_bit(self, buf, p, offset, count):
+    def visit_list_bit(self, buf, p, offset, count):
         bytes_length, extra_bits = divmod(count, 8)
         if extra_bits:
             bytes_length += 1
