@@ -96,3 +96,23 @@ class TestDump(object):
         res = benchmark(dumps_N, obj)
         assert type(res) is str
 
+    @pytest.mark.benchmark(group="dumps")
+    def test_dumps_not_compact(self, schema, benchmark):
+        if schema.__name__ != 'Capnpy':
+            pytest.skip('N/A')
+        #
+        def dumps_N(obj):
+            myobjs = (obj, obj)
+            res = 0
+            for i in range(self.N):
+                obj = myobjs[i%2]
+                res = obj.dumps()
+            return res
+        #
+        obj = get_obj(schema)
+        container = schema.MyStructContainer(items=[obj, obj])
+        obj0 = container.items[0]
+        assert not obj0._is_compact()
+        res = benchmark(dumps_N, obj0)
+        assert type(res) is str
+
