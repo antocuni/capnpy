@@ -109,7 +109,8 @@ class EndOf(Visitor):
         return offset + item_size*count
 
     def visit_list_bit(self, buf, p, offset, count):
-        bytes_length, extra_bits = divmod(count, 8)
+        bytes_length = count / 8
+        extra_bits = count % 8
         if extra_bits:
             bytes_length += 1
         return offset + bytes_length
