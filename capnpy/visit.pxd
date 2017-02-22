@@ -46,6 +46,7 @@ cdef class EndOf(Visitor):
     cdef long visit_list_bit(self, CapnpBuffer buf, long p, long offset,
                              long count) except -2
 
+
 cdef class IsCompact(Visitor):
     @cython.locals(i=long, p2_offset=long, p2=long)
     cdef long start_of_ptrs(self, CapnpBuffer buf, long offset, long ptrs_size) except -2

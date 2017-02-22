@@ -1,12 +1,9 @@
 from capnpy import ptr
 
-def end_of(buf, p, offset):
-    return _end_of.visit(buf, p, offset)
-
-def is_compact(buf, p, offset):
-    return _is_compact.visit(buf, p, offset)
-
 class Visitor(object):
+    """
+    Generic logic for visiting an arbitrary capnp object.
+    """
 
     def visit(self, buf, p, offset):
         kind = ptr.kind(p)
@@ -168,6 +165,13 @@ class IsCompact(Visitor):
         end_of_items = offset + count*8
         start_of_children = self.start_of_ptrs(buf, offset, count)
         return start_of_children == -1 or start_of_children == end_of_items
+
+
+def end_of(buf, p, offset):
+    return _end_of.visit(buf, p, offset)
+
+def is_compact(buf, p, offset):
+    return _is_compact.visit(buf, p, offset)
 
 _end_of = EndOf()
 _is_compact = IsCompact()
