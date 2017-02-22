@@ -129,6 +129,8 @@ def dumps(obj):
     The message is encoded using the recommended capnp format for serializing
     messages over a stream. It always uses a single segment.
     """
+    if not obj._is_compact():
+        obj = obj.compact()
     a = obj._get_body_start()
     b = obj._get_end()
     buf = obj._buf.s[a:b]

@@ -1,6 +1,6 @@
 import cython
 from capnpy.blob cimport Blob
-from capnpy.visit cimport end_of
+from capnpy.visit cimport end_of, is_compact
 from capnpy cimport ptr
 from capnpy.list cimport List, ItemType
 
@@ -50,3 +50,4 @@ cdef class Struct(Blob):
 
     cpdef long _get_body_start(self)
     cpdef long _get_end(self)
+    cpdef long _is_compact(self)

@@ -2,7 +2,7 @@ import struct
 import capnpy
 from capnpy import ptr
 from capnpy.blob import Blob, Types
-from capnpy.visit import end_of
+from capnpy.visit import end_of, is_compact
 from capnpy.list import List
 
 class Undefined(object):
@@ -226,6 +226,10 @@ class Struct(Blob):
     def _get_end(self):
         p = ptr.new_struct(0, self._data_size, self._ptrs_size)
         return end_of(self._buf, p, self._data_offset-8)
+
+    def _is_compact(self):
+        p = ptr.new_struct(0, self._data_size, self._ptrs_size)
+        return is_compact(self._buf, p, self._data_offset-8)
 
     def _split(self, extra_offset):
         """
