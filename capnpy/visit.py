@@ -115,7 +115,7 @@ def is_compact(buf, p, offset):
         if item_size == ptr.LIST_SIZE_COMPOSITE:
             return _is_compact_list_composite(buf, p, offset)
         elif item_size == ptr.LIST_SIZE_PTR:
-            return end_of_list_ptr(buf, p, offset)
+            return _is_compact_list_ptr(buf, p, offset)
         else:
             # primitive or bool
             return True
@@ -157,3 +157,10 @@ def _is_compact_list_composite(buf, p, offset):
             i += 1
     # no ptr found
     return True
+
+def _is_compact_list_ptr(buf, p, offset):
+    offset = ptr.deref(p, offset)
+    count = ptr.list_item_count(p)
+    end_of_items = offset + count*8
+    start_of_children = start_of_ptrs(buf, offset, count)
+    return start_of_children == -1 or start_of_children == end_of_items

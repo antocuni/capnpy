@@ -371,3 +371,47 @@ class TestIsCompact(object):
                                      size_tag=ptr.LIST_SIZE_COMPOSITE,
                                      item_count=3)
         assert is_compact
+
+    def test_list_of_pointers_compact(self):
+        buf = ('garbage0'
+               '\x09\x00\x00\x00\x32\x00\x00\x00'   # strings[0] == ptr to #0
+               '\x09\x00\x00\x00\x52\x00\x00\x00'   # strings[1] == ptr to #1
+               '\x0d\x00\x00\x00\xb2\x00\x00\x00'   # strings[2] == ptr to #2
+               'h' 'e' 'l' 'l' 'o' '\x00\x00\x00'   # #0
+               'c' 'a' 'p' 'n' 'p' 'r' 'o' 't'      # #1...
+               'o' '\x00\x00\x00\x00\x00\x00\x00'
+               't' 'h' 'i' 's' ' ' 'i' 's' ' '      # #2...
+               'a' ' ' 'l' 'o' 'n' 'g' ' ' 's'
+               't' 'r' 'i' 'n' 'g' '\x00\x00\x00')
+        is_compact = self.is_compact(buf, 8, ptr.LIST,
+                                     size_tag=ptr.LIST_SIZE_PTR,
+                                     item_count=3)
+        assert is_compact
+
+    def test_list_of_pointers_not_compact(self):
+        buf = ('garbage0'
+               '\x0d\x00\x00\x00\x32\x00\x00\x00'   # strings[0] == ptr to #0
+               '\x0d\x00\x00\x00\x52\x00\x00\x00'   # strings[1] == ptr to #1
+               '\x11\x00\x00\x00\xb2\x00\x00\x00'   # strings[2] == ptr to #2
+               'garbage1'
+               'h' 'e' 'l' 'l' 'o' '\x00\x00\x00'   # #0
+               'c' 'a' 'p' 'n' 'p' 'r' 'o' 't'      # #1...
+               'o' '\x00\x00\x00\x00\x00\x00\x00'
+               't' 'h' 'i' 's' ' ' 'i' 's' ' '      # #2...
+               'a' ' ' 'l' 'o' 'n' 'g' ' ' 's'
+               't' 'r' 'i' 'n' 'g' '\x00\x00\x00')
+        is_compact = self.is_compact(buf, 8, ptr.LIST,
+                                     size_tag=ptr.LIST_SIZE_PTR,
+                                     item_count=3)
+        assert not is_compact
+
+    def test_list_of_pointers_all_null(self):
+        buf = ('garbage0'
+               '\x00\x00\x00\x00\x00\x00\x00\x00'
+               '\x00\x00\x00\x00\x00\x00\x00\x00'
+               '\x00\x00\x00\x00\x00\x00\x00\x00'
+               'garbage1')
+        is_compact = self.is_compact(buf, 8, ptr.LIST,
+                                     size_tag=ptr.LIST_SIZE_PTR,
+                                     item_count=3)
+        assert is_compact
