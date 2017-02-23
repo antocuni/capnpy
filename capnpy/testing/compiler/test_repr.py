@@ -38,6 +38,7 @@ class TestShortRepr(CompilerTest):
         self.mod = self.compile(schema)
         p = self.mod.Point(1, 1.23)
         self.check(p, '(x = 1, y = 1.23)')
+        assert repr(p) == '<Point: (x = 1, y = 1.23)>'
 
     def test_bool(self):
         schema = """

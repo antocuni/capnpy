@@ -88,6 +88,12 @@ class Struct(Blob):
     def dump(self, f):
         capnpy.message.dump(self, f)
 
+    def shortrepr(self):
+        return '(no shortrepr)'
+
+    def __repr__(self):
+        return '<%s: %s>' % (self.__class__.__name__, self.shortrepr())
+
     def which(self):
         """
         Return the value of the union tag, if the struct has an anonimous union or
