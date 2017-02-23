@@ -73,5 +73,6 @@ def on_build_finished(app, exception):
                 print '    %10s %s' % (b.group, b.name)
             print
     #
-    check_displayed('latest', BenchmarkDirective.charter.latest)
+    if BenchmarkDirective.charter:
+        check_displayed('latest', BenchmarkDirective.charter.latest)
     #check_displayed('all', BenchmarkDirective.charter.all)
