@@ -184,6 +184,32 @@ its own buffered wrapper around ``socket``, which is immensely faster than
    :group:  charter.extract_test_name(b.name)
 
 
+Dumping messages
+================
+
+These benchmark measure the performance of dumping an existing ``capnpy``
+object into a message to be sent over the wire. At mimimum, to dump a message
+you need to copy all the bytes which belongs to the object: this is measured
+by ``test_copy_buffer``, which blindly copy the entire buffer and it is used
+as a baseline.
+
+The actual implementation of ``dumps()`` needs to do more: in particular, it
+needs to compute the exact range of bytes to copy. Thus, the goal is that
+``dumps()`` should be as close as possible to ``copy_buffer``.
+
+If the structure was inside a ``capnpy`` list, it will be "non compact": in
+other words, it is not represented by a contiguous amount of bytes in
+memory. In that case, ``dumps()`` needs to do even more work to produce the
+message. At the moment of writing, the implementation of ``.compact()`` is
+known to be slow and non-optimized.
+
+.. benchmark:: Dumps
+   :foreach: b.python_implementation
+   :filter: b.group == 'dumps'
+   :series: None
+   :group:  charter.extract_test_name(b.name)
+
+
 Evolution over time
 ====================
 
@@ -237,3 +263,10 @@ Evolution over time
    :foreach: b.python_implementation
    :filter: b.group == 'buffered' and 'makefile' not in b.name
    :series: charter.extract_test_name(b.name)
+
+.. benchmark:: Dumping messages
+   :timeline:
+   :foreach: b.python_implementation
+   :filter: b.group == 'dumps'
+   :series: charter.extract_test_name(b.name)
+

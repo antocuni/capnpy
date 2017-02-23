@@ -1,5 +1,5 @@
 import struct
-from capnpy.unpack import unpack_uint32
+from capnpy.unpack import unpack_uint32, pack_message_header
 from capnpy.blob import CapnpBuffer, CapnpBufferWithSegments
 from capnpy.struct_ import Struct, struct_from_buffer
 from capnpy import ptr
@@ -129,8 +129,10 @@ def dumps(obj):
     The message is encoded using the recommended capnp format for serializing
     messages over a stream. It always uses a single segment.
     """
+    if not obj._is_compact():
+        obj = obj.compact()
     a = obj._get_body_start()
-    b = obj._get_extra_end()
+    b = obj._get_end()
     buf = obj._buf.s[a:b]
     p = ptr.new_struct(0, obj._data_size, obj._ptrs_size)
     #
@@ -139,7 +141,7 @@ def dumps(obj):
         padding = 8 - (len(buf) % 8)
         buf += '\x00' * padding
     segment_size = len(buf)/8 + 1 # +1 is for the ptr
-    header = struct.pack('iiQ', segment_count-1, segment_size, p)
+    header = pack_message_header(segment_count, segment_size, p)
     return header + buf
 
 def dump(obj, f):
@@ -148,4 +150,3 @@ def dump(obj, f):
     string
     """
     f.write(dumps(obj))
-

@@ -1,5 +1,6 @@
 import cython
 from capnpy.blob cimport Blob
+from capnpy.visit cimport end_of, is_compact
 from capnpy cimport ptr
 from capnpy.list cimport List, ItemType
 
@@ -47,3 +48,6 @@ cdef class Struct(Blob):
     cpdef object _ensure_union(self, long expected_tag)
     cpdef long __which__(self) except -1
 
+    cpdef long _get_body_start(self)
+    cpdef long _get_end(self)
+    cpdef long _is_compact(self)

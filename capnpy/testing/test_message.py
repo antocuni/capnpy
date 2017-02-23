@@ -4,6 +4,7 @@ from capnpy.message import load, loads, load_all, _load_message, dumps
 from capnpy.filelike import as_filelike
 from capnpy.blob import Types
 from capnpy.struct_ import Struct
+from capnpy.printer import print_buffer
 
 def test_load():
     buf = ('\x00\x00\x00\x00\x03\x00\x00\x00'   # message header: 1 segment, size 3 words
@@ -144,6 +145,25 @@ def test_dumps_alignment():
            '\x01\x00\x00\x00\x2a\x00\x00\x00'   # name=ptr
            'J' 'o' 'h' 'n' '\x00\x00\x00\x00')  # John
     assert msg == exp
+
+def test_dumps_compact():
+    class Person(Struct):
+        pass
+
+    buf = ('\x20\x00\x00\x00\x00\x00\x00\x00'   # age=32
+           '\x05\x00\x00\x00\x2a\x00\x00\x00'   # name=ptr
+           'garbage1'
+           'J' 'o' 'h' 'n' '\x00\x00\x00\x00')  # John
+
+    p = Person.from_buffer(buf, 0, data_size=1, ptrs_size=1)
+    msg = dumps(p)
+    exp = ('\x00\x00\x00\x00\x04\x00\x00\x00'   # message header: 1 segment, size 3 words
+           '\x00\x00\x00\x00\x01\x00\x01\x00'   # ptr to payload
+           '\x20\x00\x00\x00\x00\x00\x00\x00'   # age=32
+           '\x01\x00\x00\x00\x2a\x00\x00\x00'   # name=ptr
+           'J' 'o' 'h' 'n' '\x00\x00\x00\x00')  # John
+    assert msg == exp
+
 
 def test_Struct_loads():
     class Point(Struct):

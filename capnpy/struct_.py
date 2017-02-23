@@ -2,6 +2,7 @@ import struct
 import capnpy
 from capnpy import ptr
 from capnpy.blob import Blob, Types
+from capnpy.visit import end_of, is_compact
 from capnpy.list import List
 
 class Undefined(object):
@@ -204,12 +205,6 @@ class Struct(Blob):
                              "initialized. Expected %s, got %s" % (expected_tag, tag))
 
 
-    def _get_body_range(self):
-        return self._get_body_start(), self._get_body_end()
-
-    def _get_extra_range(self):
-        return self._get_extra_start(), self._get_extra_end()
-
     def _get_body_start(self):
         return self._data_offset
 
@@ -228,34 +223,13 @@ class Struct(Blob):
         # if we are here, it means that all ptrs are null
         return self._get_body_end()
 
-    def _get_extra_end_maybe(self):
-        if self._ptrs_size == 0:
-            return None # no extra
-        #
-        # the end of our extra correspond to the end of our last non-null
-        # pointer: see doc/normalize.rst for an explanation of why we can
-        # compute the extra range this way
-        #
-        # XXX: we should probably unroll this loop
-        i = self._ptrs_size - 1 # start from the last ptr
-        while i >= 0:
-            blob = self._read_list_or_struct(i*8)
-            if blob is not None:
-                return blob._get_end()
-            i -= 1
-        #
-        # if we are here, it means that ALL ptrs are NULL, so we don't have
-        # any extra section
-        return None
-
-    def _get_extra_end(self):
-        end = self._get_extra_end_maybe()
-        if end is None:
-            return self._get_body_end()
-        return end
-
     def _get_end(self):
-        return self._get_extra_end()
+        p = ptr.new_struct(0, self._data_size, self._ptrs_size)
+        return end_of(self._buf, p, self._data_offset-8)
+
+    def _is_compact(self):
+        p = ptr.new_struct(0, self._data_size, self._ptrs_size)
+        return is_compact(self._buf, p, self._data_offset-8)
 
     def _split(self, extra_offset):
         """
@@ -263,10 +237,11 @@ class Struct(Blob):
         specified offset, in words. The ptrs in the body will be adjusted
         accordingly.
         """
+        body_start = self._get_body_start()
+        body_end = self._get_body_end()
         if self._ptrs_size == 0:
             # easy case, just copy the body
-            start, end = self._get_body_range()
-            return self._buf.s[start:end], ''
+            return self._buf.s[body_start:body_end], ''
         #
         # hard case. The layout of self._buf is like this:
         # +----------+------+------+----------+-------------+
@@ -283,8 +258,8 @@ class Struct(Blob):
         # 2) the offset of pointers in ptrs are adjusted
         # 3) extra is copied verbatim
         #
-        body_start, body_end = self._get_body_range()
-        extra_start, extra_end = self._get_extra_range()
+        extra_start = self._get_extra_start()
+        extra_end = self._get_end()
         #
         # 1) data section
         data_size = self._data_size

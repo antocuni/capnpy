@@ -2,6 +2,7 @@ import cython
 from capnpy.blob cimport Blob
 from capnpy.type cimport BuiltinType
 from capnpy cimport ptr
+from capnpy.visit cimport end_of
 
 cdef class ItemType(object)
 

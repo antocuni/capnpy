@@ -1,7 +1,7 @@
 from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
                           uint32_t, int32_t, int64_t, uint64_t, INT64_MAX)
 from cpython.string cimport (PyString_GET_SIZE, PyString_AS_STRING,
-                             PyString_CheckExact)
+                             PyString_CheckExact, PyString_FromStringAndSize)
 
 mychr = chr
 
@@ -103,3 +103,14 @@ cpdef long unpack_uint32(object buf, int offset):
     valueaddr = cbuf + offset
     checkbound(4, length, offset)
     return (<uint32_t*>valueaddr)[0]
+
+cpdef bytes pack_message_header(int segment_count, int segment_size, long p):
+    cdef bytes buf
+    cdef char* cbuf
+    assert segment_count == 1
+    buf = PyString_FromStringAndSize(NULL, 16)
+    cbuf = PyString_AS_STRING(buf)
+    (<int32_t*>(cbuf+0))[0] = segment_count-1
+    (<int32_t*>(cbuf+4))[0] = segment_size
+    (<int64_t*>(cbuf+8))[0] = p
+    return buf
