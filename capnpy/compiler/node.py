@@ -133,15 +133,7 @@ class Node__Annotation:
 class Node__Enum:
 
     def emit_declaration(self, m):
-        ns = m.code.new_scope()
-        name = ns.name = self.compile_name(m)
-        ns.dotname = self.runtime_name(m)
-        if m.pyx:
-            ns.w("cdef class {name}(_Struct)")
-        else:
-            ns.w("class {name}(_Struct): pass")
-            ns.w("{name}.__name__ = '{dotname}'")
-
+        name =  self.compile_name(m)
         items = [m._field_name(item) for item in self.enum.enumerants]
         m.declare_enum(name, self.shortname(m), items)
         m.w('_{name}_list_item_type = _EnumItemType({name})', name=name)
