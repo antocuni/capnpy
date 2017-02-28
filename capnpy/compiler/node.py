@@ -134,7 +134,7 @@ class Node__Enum:
 
     def emit_declaration(self, m):
         ns = m.code.new_scope()
-        ns.name = self.compile_name(m)
+        name = ns.name = self.compile_name(m)
         ns.dotname = self.runtime_name(m)
         if m.pyx:
             ns.w("cdef class {name}(_Struct)")
@@ -142,13 +142,15 @@ class Node__Enum:
             ns.w("class {name}(_Struct): pass")
             ns.w("{name}.__name__ = '{dotname}'")
 
-        name = self.shortname(m)
         items = [m._field_name(item) for item in self.enum.enumerants]
-        m.declare_enum(name, name, items)
+        m.declare_enum(name, self.shortname(m), items)
         m.w('_{name}_list_item_type = _EnumItemType({name})', name=name)
         m.w()
 
-
+    def emit_reference_as_child(self, m):
+        if self.is_nested(m):
+            m.w("{shortname} = {name}", shortname=self.shortname(m),
+                name=self.compile_name(m))
 
 @Node__Const.__extend__
 class Node__Const:
