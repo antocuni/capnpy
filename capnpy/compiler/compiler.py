@@ -4,7 +4,7 @@ import sys
 import os
 import types
 import subprocess
-from distutils.version import StrictVersion
+from distutils.version import LooseVersion
 import capnpy
 from capnpy import schema
 from capnpy.message import loads
@@ -89,7 +89,7 @@ class BaseCompiler(object):
         if not version.startswith("Cap'n Proto version"):
             raise CompilerError("capnp version string not recognized: %s" % version)
         _, version = version.rsplit(' ', 1)
-        if version < StrictVersion('0.5.0'):
+        if version < LooseVersion('0.5.0'):
             raise CompilerError("The capnp executable is too old: the minimum required "
                                 "version is 0.5.0")
 
