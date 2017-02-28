@@ -137,6 +137,58 @@ class TestCompilerOptions(CompilerTest):
             # unfortunately, the nice dotted name works only in pure Python
             assert mod.Outer.Point.__name__ == 'Outer.Point'
 
+    def test_enum_within_struct(self):
+        schema = """
+        @0x8a1f3e2c350ebf04;
+
+        struct Foo {
+            enum Color {
+                red @0;
+                green @1;
+                blue @2;
+                yellow @3;
+            }
+            enum Gender {
+                male @0;
+                female @1;
+                unknown @2;
+            }
+            color @0 :Color;
+            gender @1 :Gender;
+        }
+        """
+        mod = self.compile(schema)
+        buf = '\x02\x00' '\x01\x00' '\x00\x00\x00\x00'
+        f = mod.Foo.from_buffer(buf, 0, 1, 0)
+        assert f.color == mod.Foo.Color.blue
+        assert f.gender == mod.Foo.Gender.female
+
+    def test_two_enums_with_same_name(self):
+        schema = """
+        @0x8a1f3e2c350ebf04;
+
+        struct Foo {
+            enum Color {
+                red @0;
+                green @1;
+            }
+            color @0 :Color;
+        }
+        struct Bar {
+            enum Color {
+                blue @0;
+                yellow @1;
+            }
+            color @0 :Color;
+        }
+        """
+        mod = self.compile(schema)
+        buf = '\x01\x00' '\x00\x00\x00\x00\x00\x00'
+        foo = mod.Foo.from_buffer(buf, 0, 1, 0)
+        assert foo.color == mod.Foo.Color.green
+        bar = mod.Bar.from_buffer(buf, 0, 1, 0)
+        assert bar.color == mod.Bar.Color.yellow
+
     def test_const(self):
         schema = """
         @0xbf5147cbbecf40c1;

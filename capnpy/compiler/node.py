@@ -133,13 +133,16 @@ class Node__Annotation:
 class Node__Enum:
 
     def emit_declaration(self, m):
-        name = self.shortname(m)
+        name =  self.compile_name(m)
         items = [m._field_name(item) for item in self.enum.enumerants]
-        m.declare_enum(name, name, items)
+        m.declare_enum(name, self.shortname(m), items)
         m.w('_{name}_list_item_type = _EnumItemType({name})', name=name)
         m.w()
 
-
+    def emit_reference_as_child(self, m):
+        if self.is_nested(m):
+            m.w("{shortname} = {name}", shortname=self.shortname(m),
+                name=self.compile_name(m))
 
 @Node__Const.__extend__
 class Node__Const:
