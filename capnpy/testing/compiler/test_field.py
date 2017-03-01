@@ -536,3 +536,13 @@ class TestList(CompilerTest):
                        [4, 5],
                        [6, 7, 8, 9]]
 
+    def test___fields__(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        """
+        mod = self.compile(schema)
+        assert mod.Point.__fields__ == ('x', 'y')

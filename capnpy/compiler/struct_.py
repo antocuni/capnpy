@@ -128,6 +128,7 @@ class Node__Struct:
 
     def _emit_init(self, m, ns):
         ctor = Structor(m, self.struct, self.struct.fields)
+        ns.w('__fields__ = {fields}', fields=tuple(ctor.argnames))
         ctor.emit()
         ns.w()
         with ns.def_('__init__', ['self'] + ctor.params):
