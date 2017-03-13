@@ -30,6 +30,26 @@ def test_alloc_struct():
     assert buf == ('\x00\x00\x00\x00\x02\x00\x00\x00'  # ptr to mystruct
                    + mybuf)
 
+def test_alloc_struct_evolution():
+    class MyStruct(Struct):
+        __static_data_size__ = 2
+        __static_ptrs_size__ = 0
+
+    # MyStruct has a static size of (2, 0), but the actual object comes from
+    # the future and has an actual size of (3, 1)
+    mybuf = ('\x01\x00\x00\x00\x00\x00\x00\x00'
+             '\x02\x00\x00\x00\x00\x00\x00\x00'
+             '\x03\x00\x00\x00\x00\x00\x00\x00'  # new field
+             '\x01\x00\x00\x00\x22\x00\x00\x00'  # new field
+             'foo\x00\x00\x00\x00\x00')          # new field
+    mystruct = MyStruct.from_buffer(mybuf, 0, 3, 1)
+    #
+    builder = Builder(0, 1)
+    builder.alloc_struct(0, MyStruct, mystruct)
+    buf = builder.build()
+    assert buf == ('\x00\x00\x00\x00\x03\x00\x01\x00'  # ptr of size (3, 1)
+                   + mybuf)
+
 
 def test_alloc_struct_with_offset():
     class MyStruct(Struct):
