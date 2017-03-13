@@ -35,8 +35,8 @@ class AbstractBuilder(object):
             raise TypeError("Expected %s instance, got %s" %
                             (struct_type.__class__.__name__, value))
         #
-        data_size = struct_type.__static_data_size__    # in words
-        ptrs_size = struct_type.__static_ptrs_size__    # in words
+        data_size = value._data_size                    # in words
+        ptrs_size = value._ptrs_size                    # in words
         ptr_offset = self._calc_relative_offset(offset) # in words
         #
         # we need to take the compact repr of the struct, else we might get
