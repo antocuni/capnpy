@@ -55,6 +55,11 @@ class Instance(object):
         def __hash__(self):
             return hash((self.x, self.y, self.z))
 
+    class Rectangle(object):
+        def __init__(self, a, b):
+            self.a = a
+            self.b = b
+
 # ============================================================
 # Namedtuple storage
 # ============================================================
@@ -82,6 +87,7 @@ class NamedTuple(object):
 
     Point = namedtuple('Point', ['x', 'y', 'z'])
     StrPoint = namedtuple('StrPoint', ['x', 'y', 'z'])
+    Rectangle = namedtuple('Rectangle', ['a', 'b'])
 
 # ============================================================
 # capnpy storage
@@ -168,3 +174,11 @@ class PyCapnp(object):
         s.z = z
         return pycapnp_schema.StrPoint.from_bytes(s.to_bytes())
 
+    @staticmethod
+    def Rectangle(a, b):
+        if pycapnp is None:
+            py.test.skip('cannot import pycapnp')
+        s = pycapnp_schema.Rectangle.new_message()
+        s.a = a
+        s.b = b
+        return pycapnp_schema.Rectangle.from_bytes(s.to_bytes())
