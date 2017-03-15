@@ -1,3 +1,5 @@
+import cython
+from capnpy cimport ptr
 from capnpy.packing cimport pack_into
 from capnpy.list cimport List, ItemType
 
@@ -6,6 +8,12 @@ cdef class AbstractBuilder(object):
     cdef public long _length
     cdef public object _extra
     cdef public long _total_length
+
+    cdef long _calc_relative_offset(self, long offset)
+
+    @cython.locals(ptr_offset=long, p=long)
+    cpdef alloc_data(self, int offset, bytes value, bytes suffix=*)
+
 
 cdef class Builder(AbstractBuilder):
     cdef public bytearray _buf

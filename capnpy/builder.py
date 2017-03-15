@@ -59,7 +59,7 @@ class AbstractBuilder(object):
         return p
 
     def alloc_text(self, offset, value):
-        return self.alloc_data(offset, value, suffix='\0')
+        return self.alloc_data(offset, value, suffix=b'\0')
 
     def _new_ptrlist(self, size_tag, ptr_offset, item_type, item_count):
         if size_tag != ptr.LIST_SIZE_COMPOSITE:

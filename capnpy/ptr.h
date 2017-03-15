@@ -47,7 +47,7 @@ enum {
 
 // list pointer
 #define PTR_NEW_LIST(ptr_offset, size_tag, item_count) \
-    ((item_count)<<35 | (size_tag)<<32 | (ptr_offset)<<2 | PTR_LIST)
+    ((item_count)<<35 | ((long)size_tag)<<32 | (ptr_offset)<<2 | PTR_LIST)
 #define PTR_LIST_SIZE_TAG(ptr) ((ptr)>>32 & 0x7)
 #define PTR_LIST_ITEM_COUNT(ptr) ((ptr)>>35)
 
