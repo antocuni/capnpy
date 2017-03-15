@@ -119,93 +119,42 @@ cpdef bytes pack_message_header(int segment_count, int segment_size, long p):
     return buf
 
 
-cpdef object pack_into_int8(bytearray buf, int offset, int8_t value):
+cpdef object pack_into(char ifmt, object buf, int offset, object value):
     cdef char* cbuf
     cdef void* valueaddr
     cdef Py_ssize_t length = 0
     cbuf = as_cbuf(buf, &length, rw=1)
     valueaddr = cbuf + offset
-    checkbound(1, length, offset)
-    (<int8_t*>valueaddr)[0] = value
-
-cpdef object pack_into_uint8(bytearray buf, int offset, uint8_t value):
-    cdef char* cbuf
-    cdef void* valueaddr
-    cdef Py_ssize_t length = 0
-    cbuf = as_cbuf(buf, &length, rw=1)
-    valueaddr = cbuf + offset
-    checkbound(1, length, offset)
-    (<uint8_t*>valueaddr)[0] = value
-
-cpdef object pack_into_int16(bytearray buf, int offset, int16_t value):
-    cdef char* cbuf
-    cdef void* valueaddr
-    cdef Py_ssize_t length = 0
-    cbuf = as_cbuf(buf, &length, rw=1)
-    valueaddr = cbuf + offset
-    checkbound(2, length, offset)
-    (<int16_t*>valueaddr)[0] = value
-
-cpdef object pack_into_uint16(bytearray buf, int offset, uint16_t value):
-    cdef char* cbuf
-    cdef void* valueaddr
-    cdef Py_ssize_t length = 0
-    cbuf = as_cbuf(buf, &length, rw=1)
-    valueaddr = cbuf + offset
-    checkbound(2, length, offset)
-    (<uint16_t*>valueaddr)[0] = value
-
-cpdef object pack_into_int32(bytearray buf, int offset, int32_t value):
-    cdef char* cbuf
-    cdef void* valueaddr
-    cdef Py_ssize_t length = 0
-    cbuf = as_cbuf(buf, &length, rw=1)
-    valueaddr = cbuf + offset
-    checkbound(4, length, offset)
-    (<int32_t*>valueaddr)[0] = value
-
-cpdef object pack_into_uint32(bytearray buf, int offset, uint32_t value):
-    cdef char* cbuf
-    cdef void* valueaddr
-    cdef Py_ssize_t length = 0
-    cbuf = as_cbuf(buf, &length, rw=1)
-    valueaddr = cbuf + offset
-    checkbound(4, length, offset)
-    (<uint32_t*>valueaddr)[0] = value
-
-cpdef object pack_into_int64(bytearray buf, int offset, int64_t value):
-    cdef char* cbuf
-    cdef void* valueaddr
-    cdef Py_ssize_t length = 0
-    cbuf = as_cbuf(buf, &length, rw=1)
-    valueaddr = cbuf + offset
-    checkbound(8, length, offset)
-    (<int64_t*>valueaddr)[0] = value
-
-cpdef object pack_into_uint64(bytearray buf, int offset, uint64_t value):
-    cdef char* cbuf
-    cdef void* valueaddr
-    cdef Py_ssize_t length = 0
-    cbuf = as_cbuf(buf, &length, rw=1)
-    valueaddr = cbuf + offset
-    checkbound(8, length, offset)
-    (<uint64_t*>valueaddr)[0] = value
-
-cpdef object pack_into_float32(bytearray buf, int offset, float value):
-    cdef char* cbuf
-    cdef void* valueaddr
-    cdef Py_ssize_t length = 0
-    cbuf = as_cbuf(buf, &length, rw=1)
-    valueaddr = cbuf + offset
-    checkbound(4, length, offset)
-    (<float*>valueaddr)[0] = value
-
-cpdef object pack_into_float64(bytearray buf, int offset, double value):
-    cdef char* cbuf
-    cdef void* valueaddr
-    cdef Py_ssize_t length = 0
-    cbuf = as_cbuf(buf, &length, rw=1)
-    valueaddr = cbuf + offset
-    checkbound(8, length, offset)
-    (<double*>valueaddr)[0] = value
-
+    if ifmt == 'q':
+        checkbound(8, length, offset)
+        (<int64_t*>valueaddr)[0] = value
+    elif ifmt == 'Q':
+        checkbound(8, length, offset)
+        (<uint64_t*>valueaddr)[0] = value
+    elif ifmt == 'd':
+        checkbound(8, length, offset)
+        (<double*>valueaddr)[0] = value
+    elif ifmt == 'f':
+        checkbound(4, length, offset)
+        (<float*>valueaddr)[0] = value
+    elif ifmt == 'i':
+        checkbound(4, length, offset)
+        (<int32_t*>valueaddr)[0] = value
+    elif ifmt == 'I':
+        checkbound(4, length, offset)
+        (<uint32_t*>valueaddr)[0] = value
+    elif ifmt == 'h':
+        checkbound(2, length, offset)
+        (<int16_t*>valueaddr)[0] = value
+    elif ifmt == 'H':
+        checkbound(2, length, offset)
+        (<uint16_t*>valueaddr)[0] = value
+    elif ifmt == 'b':
+        checkbound(1, length, offset)
+        (<int8_t*>valueaddr)[0] = value
+    elif ifmt == 'B':
+        checkbound(1, length, offset)
+        (<uint8_t*>valueaddr)[0] = value
+    else:
+        raise ValueError('unknown fmt %s' % chr(ifmt))
+    return None
