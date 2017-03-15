@@ -10,6 +10,7 @@ cdef class AbstractBuilder(object):
 cdef class Builder(AbstractBuilder):
     cdef public bytearray _buf
     cpdef set(self, char ifmt, int offset, object value)
+    cpdef bytes build(self)
 
 cdef class ListBuilder(AbstractBuilder):
     cdef public ItemType item_type

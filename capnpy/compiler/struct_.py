@@ -128,7 +128,7 @@ class Node__Struct:
             newfunc = '{clsname}.__new'.format(clsname=self.compile_name(m))
             call = m.code.call(newfunc, ctor.argnames)
             ns.w('_buf = {call}', call=call)
-            ns.w('_Struct.__init__(self, _buf, 0, {data_size}, {ptrs_size})')
+            ns.w('self._init_from_buffer(_buf, 0, {data_size}, {ptrs_size})')
         ns.w()
 
     def _emit_ctors_union(self, m, ns):
