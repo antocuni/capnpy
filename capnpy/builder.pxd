@@ -6,14 +6,19 @@ from capnpy.list cimport List, ItemType
 
 cdef class AbstractBuilder(object):
     cdef public long _length
-    cdef public object _extra
+    cdef public list _extra
     cdef public long _total_length
 
     cdef long _calc_relative_offset(self, long offset)
+    cdef _alloc(self, bytes s)
+
+    @cython.locals(padding=long)
+    cdef _force_alignment(self)
 
     @cython.locals(ptr_offset=long, p=long)
     cpdef alloc_data(self, int offset, bytes value, bytes suffix=*)
 
+    cpdef alloc_text(self, int offset, bytes value)
 
 cdef class Builder(AbstractBuilder):
     cdef public bytearray _buf
