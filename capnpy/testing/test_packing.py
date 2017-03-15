@@ -4,7 +4,11 @@ import sys
 import struct
 import math
 from pypytools import IS_PYPY
-from capnpy.packing import unpack_primitive, pack_message_header
+from capnpy.packing import (unpack_primitive, pack_message_header, pack_into_int8,
+                            pack_into_uint8, pack_into_int16, pack_into_uint16,
+                            pack_into_int32, pack_into_uint32, pack_into_int64,
+                            pack_into_uint64, pack_into_float32, pack_into_float64)
+
 
 class TestUnpack(object):
 
@@ -52,6 +56,41 @@ class TestUnpack(object):
         pytest.raises(IndexError, "unpack_primitive(ord('q'), buf, -1)")
         pytest.raises(IndexError, "unpack_primitive(ord('q'), buf, 8)")
         pytest.raises(TypeError, "unpack_primitive(ord('q'), 42, 0)")
+
+
+class TestPack(object):
+
+    def check(self, pack_into, typecode, value):
+        from random import randrange
+        # build a buffer which is surely big enough to contain what we need
+        # and check:
+        #   1) that we correctly write the bytes we expect
+        #   2) that we do NOT write outside the bounds
+        #
+        pattern = [chr(randrange(256)) for _ in range(256)]
+        pattern = ''.join(pattern)
+        buf = bytearray(pattern)
+        buf2 = bytearray(pattern)
+        offset = 16
+        pack_into(buf, offset, value)
+        struct.pack_into(typecode, buf2, offset, value)
+        assert buf == buf2
+        #
+        # check that it raises if it's out of bound
+        out_of_bound = 256-struct.calcsize(typecode)+1
+        pytest.raises(IndexError, "pack_into(buf, out_of_bound, value)")
+
+    def test_pack_into(self):
+        self.check(pack_into_int8,    'b', 2**7 - 1)
+        self.check(pack_into_uint8,   'B', 2**8 - 1)
+        self.check(pack_into_int16,   'h', 2**15 - 1)
+        self.check(pack_into_uint16,  'H', 2**16 - 1)
+        self.check(pack_into_int32,   'i', 2**31 - 1)
+        self.check(pack_into_uint32,  'I', 2**32 - 1)
+        self.check(pack_into_int64,   'q', 2**63 - 1)
+        self.check(pack_into_uint64,  'Q', 2**64 - 1)
+        self.check(pack_into_float32, 'f', 1.234)
+        self.check(pack_into_float64, 'd', 1.234)
 
 
 def test_pack_message_header():

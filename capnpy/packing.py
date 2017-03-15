@@ -41,3 +41,21 @@ def pack_message_header(segment_count, segment_size, p):
     """
     assert segment_count == 1
     return struct.pack('iiQ', segment_count-1, segment_size, p)
+
+
+def _pack_into(typecode, buf, offset, value):
+    try:
+        struct.pack_into(typecode, buf, offset, value)
+    except struct.error, e:
+        raise IndexError(e)
+
+def pack_into_int8(buf, offset, value):    return _pack_into('b', buf, offset, value)
+def pack_into_uint8(buf, offset, value):   return _pack_into('B', buf, offset, value)
+def pack_into_int16(buf, offset, value):   return _pack_into('h', buf, offset, value)
+def pack_into_uint16(buf, offset, value):  return _pack_into('H', buf, offset, value)
+def pack_into_int32(buf, offset, value):   return _pack_into('i', buf, offset, value)
+def pack_into_uint32(buf, offset, value):  return _pack_into('I', buf, offset, value)
+def pack_into_int64(buf, offset, value):   return _pack_into('q', buf, offset, value)
+def pack_into_uint64(buf, offset, value):  return _pack_into('Q', buf, offset, value)
+def pack_into_float32(buf, offset, value): return _pack_into('f', buf, offset, value)
+def pack_into_float64(buf, offset, value): return _pack_into('d', buf, offset, value)
