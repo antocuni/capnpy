@@ -131,8 +131,6 @@ class TestCompilerOptions(CompilerTest):
         p = mod.Outer.Point.from_buffer(buf, 0, 2, 0)
         assert p.x == 1
         assert p.y == 2
-        #
-        assert not hasattr(mod, 'Outer_Point')
         if not self.pyx:
             # unfortunately, the nice dotted name works only in pure Python
             assert mod.Outer.Point.__name__ == 'Outer.Point'

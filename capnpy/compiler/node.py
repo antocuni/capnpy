@@ -89,9 +89,6 @@ class Node:
     def emit_reference_as_child(self, m):
         pass # do nothing by default
 
-    def emit_delete_nested_from_globals(self, m):
-        pass
-
 
 @Node__Annotation.__extend__
 class Node__Annotation:

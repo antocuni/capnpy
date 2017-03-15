@@ -93,10 +93,6 @@ class RequestedFile:
             child.emit_reference_as_child(m)
         #
         m.w()
-        for child in children:
-            child.emit_delete_nested_from_globals(m)
-        #
-        m.w()
         if m.standalone:
             m.w('_extend_module_maybe(globals(), modname=__name__)')
         else:
