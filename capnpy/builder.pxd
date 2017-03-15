@@ -11,6 +11,7 @@ cdef class AbstractBuilder(object):
 
     cdef long _calc_relative_offset(self, long offset)
     cdef _alloc(self, bytes s)
+    cdef _record_allocation(self, long offset, long p)
 
     @cython.locals(padding=long)
     cdef _force_alignment(self)
@@ -24,6 +25,7 @@ cdef class Builder(AbstractBuilder):
     cdef public bytearray _buf
     cpdef set(self, char ifmt, int offset, object value)
     cpdef bytes build(self)
+
 
 cdef class ListBuilder(AbstractBuilder):
     cdef public ItemType item_type

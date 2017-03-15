@@ -103,7 +103,7 @@ class Builder(AbstractBuilder):
         self._buf = bytearray(length)
 
     def _record_allocation(self, offset, p):
-        self.set(Types.int64.ifmt, offset, p)
+        self.set(ord('q'), offset, p)
 
     def set(self, ifmt, offset, value):
         pack_into(ifmt, self._buf, offset, value)
