@@ -1,4 +1,6 @@
+from capnpy.packing cimport pack_into
 from capnpy.list cimport List, ItemType
+
 
 cdef class AbstractBuilder(object):
     cdef public long _length
@@ -7,6 +9,7 @@ cdef class AbstractBuilder(object):
 
 cdef class Builder(AbstractBuilder):
     cdef public bytearray _buf
+    cpdef set(self, char ifmt, int offset, object value)
 
 cdef class ListBuilder(AbstractBuilder):
     cdef public ItemType item_type

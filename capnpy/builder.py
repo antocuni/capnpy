@@ -1,7 +1,7 @@
 import struct
 from capnpy import ptr
 from capnpy.type import Types
-from capnpy.packing import unpack_primitive, mychr
+from capnpy.packing import unpack_primitive, mychr, pack_into
 from capnpy.printer import BufferPrinter
 
 class AbstractBuilder(object):
@@ -106,8 +106,7 @@ class Builder(AbstractBuilder):
         self.set(Types.int64.ifmt, offset, p)
 
     def set(self, ifmt, offset, value):
-        fmt = '<' + mychr(ifmt)
-        struct.pack_into(fmt, self._buf, offset, value)
+        pack_into(ifmt, self._buf, offset, value)
 
     def setbool(self, byteoffset, bitoffset, value):
         ifmt = Types.uint8.ifmt
