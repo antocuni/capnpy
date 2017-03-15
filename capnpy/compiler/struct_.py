@@ -131,7 +131,8 @@ class Node__Struct:
         ctor.emit()
         ns.w()
         with ns.def_('__init__', ['self'] + ctor.params):
-            call = m.code.call('self.__new', ctor.argnames)
+            newfunc = '{clsname}.__new'.format(clsname=self.compile_name(m))
+            call = m.code.call(newfunc, ctor.argnames)
             ns.w('_buf = {call}', call=call)
             ns.w('_Struct.__init__(self, _buf, 0, {data_size}, {ptrs_size})')
         ns.w()
@@ -146,7 +147,7 @@ class Node__Struct:
 
     def _emit_one_ctor_union(self, m, ns, fields, tag_field):
         ## def new_foo(cls, x=0, y=0):
-        ##     buf = self.__new(x=x, y=y, foo=None)
+        ##     buf = MyStruct.__new(x=x, y=y, foo=None)
         ##     return cls.from_buffer(buf, 0, ..., ...)
         tag_name = m._field_name(tag_field)
         name = 'new_' + tag_name
@@ -155,7 +156,8 @@ class Node__Struct:
         argnames = [(arg, arg) for arg in argnames]
         ns.w('@classmethod')
         with ns.def_(name, ['cls'] + params):
-            call = m.code.call('cls.__new', argnames)
+            newfunc = '{clsname}.__new'.format(clsname=self.compile_name(m))
+            call = m.code.call(newfunc, argnames)
             ns.w('buf = {call}', call=call)
             ns.w('return cls.from_buffer(buf, 0, {data_size}, {ptrs_size})')
         ns.w()

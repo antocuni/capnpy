@@ -47,7 +47,7 @@ class Structor(object):
             raise ValueError("Duplicate field name(s): %s" % argnames)
         #
         code.w('@staticmethod')
-        with code.def_('__new', self.params) as ns:
+        with code.cdef_('__new', self.params) as ns:
             ns.data_size = self.data_size
             ns.ptrs_size = self.ptrs_size
             ns.w('builder = _Builder({data_size}, {ptrs_size})')
