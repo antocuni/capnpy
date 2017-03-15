@@ -48,3 +48,6 @@ def pack_into(ifmt, buf, offset, value):
         struct.pack_into(fmt, buf, offset, value)
     except struct.error, e:
         raise IndexError(e)
+
+def pack_int64_into(buf, offset, value):
+    return pack_into(ord('q'), buf, offset, value)

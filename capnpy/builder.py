@@ -1,7 +1,7 @@
 import struct
 from capnpy import ptr
 from capnpy.type import Types
-from capnpy.packing import unpack_primitive, mychr, pack_into
+from capnpy.packing import unpack_primitive, mychr, pack_into, pack_int64_into
 from capnpy.printer import BufferPrinter
 
 class AbstractBuilder(object):
@@ -103,7 +103,8 @@ class Builder(AbstractBuilder):
         self._buf = bytearray(length)
 
     def _record_allocation(self, offset, p):
-        self.set(ord('q'), offset, p)
+        # write the pointer on the wire
+        pack_int64_into(self._buf, offset, p)
 
     def set(self, ifmt, offset, value):
         pack_into(ifmt, self._buf, offset, value)

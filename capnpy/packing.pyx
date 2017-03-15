@@ -158,3 +158,12 @@ cpdef object pack_into(char ifmt, object buf, int offset, object value):
     else:
         raise ValueError('unknown fmt %s' % chr(ifmt))
     return None
+
+cpdef object pack_int64_into(object buf, int offset, long value):
+    cdef char* cbuf
+    cdef void* valueaddr
+    cdef Py_ssize_t length = 0
+    cbuf = as_cbuf(buf, &length, rw=1)
+    valueaddr = cbuf + offset
+    checkbound(8, length, offset)
+    (<int64_t*>valueaddr)[0] = value
