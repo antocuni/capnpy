@@ -33,7 +33,7 @@ def get_cython_extensions():
              "capnpy/filelike.py",
              "capnpy/builder.py",
              "capnpy/ptr.pyx",
-             "capnpy/unpack.pyx",
+             "capnpy/packing.pyx",
              "capnpy/_hash.pyx",
              "capnpy/_util.pyx",
     ]

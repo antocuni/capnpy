@@ -17,7 +17,7 @@ class TestUnpack(object):
 
     @pytest.mark.benchmark(group="unpack")
     def test_unpack_primitive_int64(self, buftype, benchmark):
-        from capnpy.unpack import unpack_primitive
+        from capnpy.packing import unpack_primitive
         #
         def sum_unpack(buf):
             mybufs = (buf, buf)
@@ -34,7 +34,7 @@ class TestUnpack(object):
 
     @pytest.mark.benchmark(group="unpack")
     def test_unpack_int64(self, buftype, benchmark):
-        from capnpy.unpack import unpack_int64
+        from capnpy.packing import unpack_int64
         #
         def sum_unpack(buf):
             mybufs = (buf, buf)

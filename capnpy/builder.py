@@ -1,7 +1,7 @@
 import struct
 from capnpy import ptr
 from capnpy.type import Types
-from capnpy.unpack import unpack_primitive, mychr
+from capnpy.packing import unpack_primitive, mychr
 from capnpy.printer import BufferPrinter
 
 class AbstractBuilder(object):

@@ -1,6 +1,6 @@
 import cython
 from capnpy.type cimport BuiltinType
-from capnpy.unpack cimport unpack_primitive, unpack_int64, unpack_int16
+from capnpy.packing cimport unpack_primitive, unpack_int64, unpack_int16
 from capnpy cimport ptr
 from capnpy cimport _hash
 

@@ -11,7 +11,7 @@ from capnpy.util import extend
 from capnpy import ptr
 from capnpy.type import Types
 from capnpy.printer import BufferPrinter, print_buffer
-from capnpy.unpack import unpack_primitive, unpack_int64, unpack_int16
+from capnpy.packing import unpack_primitive, unpack_int64, unpack_int16
 from capnpy import _hash
 
 try:

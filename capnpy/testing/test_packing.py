@@ -4,7 +4,7 @@ import sys
 import struct
 import math
 from pypytools import IS_PYPY
-from capnpy.unpack import unpack_primitive, pack_message_header
+from capnpy.packing import unpack_primitive, pack_message_header
 
 class TestUnpack(object):
 
