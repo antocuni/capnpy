@@ -154,6 +154,16 @@ class Node__Struct:
         fieldtree = FieldTree(m, fields, field_force_default=tag_field)
         argnames, params = fieldtree.get_args_and_params()
         argnames = [(arg, arg) for arg in argnames]
+        #
+        # workaround for this Cython issue:
+        #     * https://github.com/cython/cython/issues/1630
+        # apparently, Cython complains if I don't pass a value for all the
+        # parameters, even if they have a default value; thus, we explicitly
+        # pass a value for all fields which are not explicitly listed
+        for f in self.struct.fields:
+            if f not in fields:
+                argnames.append((f.name, '_undefined'))
+        #
         ns.w('@classmethod')
         with ns.def_(name, ['cls'] + params):
             newfunc = '{clsname}.__new'.format(clsname=self.compile_name(m))
