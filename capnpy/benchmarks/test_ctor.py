@@ -22,3 +22,22 @@ class TestCtor(object):
         new_and_sum = code['new_and_sum']
         res = benchmark(new_and_sum, schema.Point)
         assert res == self.N*3
+
+    @pytest.mark.benchmark(group="ctor")
+    def test_text(self, schema, benchmark):
+        code = Code()
+        code.global_scope.N = self.N
+        code.ww("""
+            def new_and_sum(StrPoint):
+                res = 0
+                for i in range({N}):
+                    obj = StrPoint(x='hello',
+                                   y='this is a longer string',
+                                   z='bar')
+                    res += len(obj.z)
+                return res
+        """)
+        code.compile()
+        new_and_sum = code['new_and_sum']
+        res = benchmark(new_and_sum, schema.StrPoint)
+        assert res == self.N*3

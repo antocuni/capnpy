@@ -158,3 +158,13 @@ class PyCapnp(object):
         s.z = z
         return pycapnp_schema.Point.from_bytes(s.to_bytes())
 
+    @staticmethod
+    def StrPoint(x, y, z):
+        if pycapnp is None:
+            py.test.skip('cannot import pycapnp')
+        s = pycapnp_schema.StrPoint.new_message()
+        s.x = x
+        s.y = y
+        s.z = z
+        return pycapnp_schema.StrPoint.from_bytes(s.to_bytes())
+
