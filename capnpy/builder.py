@@ -82,7 +82,8 @@ class AbstractBuilder(object):
             return 0 # NULL
         # build the list, using a separate listbuilder
         item_count = len(lst)
-        listbuilder = ListBuilder(item_type, item_count)
+        listbuilder = ListBuilder.__new__(ListBuilder)
+        listbuilder._init(item_type, item_count)
         for i, item in enumerate(lst):
             s = item_type.pack_item(listbuilder, i, item)
             listbuilder.append(s)
@@ -128,6 +129,9 @@ class Builder(AbstractBuilder):
 class ListBuilder(AbstractBuilder):
 
     def __init__(self, item_type, item_count):
+        self._init(item_type, item_count)
+
+    def _init(self, item_type, item_count):
         self.item_type = item_type
         self.item_length, self.size_tag = item_type.get_item_length()
         self.item_count = item_count

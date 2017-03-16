@@ -25,6 +25,11 @@ cdef class AbstractBuilder(object):
 
     cpdef alloc_struct(self, int offset, type struct_type, Struct value)
 
+    @cython.locals(listbuilder=ListBuilder)
+    cpdef alloc_list(self, int offset, ItemType item_type, object lst)
+
+    cdef long _new_ptrlist(self, long size_tag, long ptr_offset, ItemType item_type, long item_count)
+
 cdef class Builder(AbstractBuilder):
     cdef public bytearray _buf
     cpdef set(self, char ifmt, int offset, object value)
@@ -40,4 +45,8 @@ cdef class ListBuilder(AbstractBuilder):
     cdef public long item_length
     cdef public long size_tag
     cdef public long item_count
-    cdef public object _items
+    cdef public list _items
+
+    cpdef _init(self, ItemType item_type, int item_count)
+    cpdef append(self, item)
+    cpdef build(self)
