@@ -9,6 +9,8 @@ cdef class AbstractBuilder(object):
     cdef public list _extra
     cdef public long _total_length
 
+    cdef _init_builder(self, long length)
+
     cdef long _calc_relative_offset(self, long offset)
     cpdef _alloc(self, bytes s)
     cdef _record_allocation(self, long offset, long p)
@@ -25,6 +27,10 @@ cdef class Builder(AbstractBuilder):
     cdef public bytearray _buf
     cpdef set(self, char ifmt, int offset, object value)
     cpdef bytes build(self)
+
+    @cython.locals(length=long)
+    cdef _init(self, long data_size, long ptrs_size)
+
 
 
 cdef class ListBuilder(AbstractBuilder):

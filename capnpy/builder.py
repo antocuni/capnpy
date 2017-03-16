@@ -6,7 +6,7 @@ from capnpy.printer import BufferPrinter
 
 class AbstractBuilder(object):
 
-    def __init__(self, length):
+    def _init_builder(self, length):
         self._length = length
         self._extra = []
         self._total_length = self._length # the total length, including the chunks in _extra
@@ -98,8 +98,14 @@ class AbstractBuilder(object):
 class Builder(AbstractBuilder):
 
     def __init__(self, data_size, ptrs_size):
+        # this is used only by tests. The real code calls Builder.__new__ and
+        # ._init() to avoid executing the pure-python code in __init__ (on
+        # CPython)
+        self._init(data_size, ptrs_size)
+
+    def _init(self, data_size, ptrs_size):
         length = (data_size + ptrs_size) * 8
-        AbstractBuilder.__init__(self, length)
+        self._init_builder(length)
         self._buf = bytearray(length)
 
     def _record_allocation(self, offset, p):
@@ -127,7 +133,7 @@ class ListBuilder(AbstractBuilder):
         self.item_count = item_count
         self._items = []
         length = self.item_length * self.item_count
-        AbstractBuilder.__init__(self, length)
+        self._init_builder(length)
         self._force_alignment()
 
     def append(self, item):
