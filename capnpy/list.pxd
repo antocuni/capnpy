@@ -1,5 +1,6 @@
 import cython
 from capnpy.blob cimport Blob
+from capnpy.struct_ cimport Struct
 from capnpy.type cimport BuiltinType
 from capnpy cimport ptr
 from capnpy.visit cimport end_of
@@ -45,6 +46,9 @@ cdef class EnumItemType(PrimitiveItemType):
 cdef class StructItemType(ItemType):
     cdef readonly type structcls
     cdef readonly long static_body_size
+
+    @cython.locals(body_offset=long, extra_offset=long, struct_item=Struct)
+    cpdef pack_item(self, ListBuilder listbuilder, long i, object item)
 
 cdef class TextItemType(ItemType):
     cdef readonly int additional_size

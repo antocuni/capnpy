@@ -274,9 +274,10 @@ class StructItemType(ItemType):
         #
         # Note that extra_offset is expressed in WORDS, while _total_length in
         # BYTES
+        struct_item = item
         body_offset = self.static_body_size * (i+1)
         extra_offset = listbuilder._total_length/8 - body_offset
-        body, extra = item._split(extra_offset)
+        body, extra = struct_item._split(extra_offset)
         listbuilder._alloc(extra)
         return body
 
