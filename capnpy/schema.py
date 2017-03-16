@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2017-01-02 16:43
+# generated on 2017-03-16 21:10
 
 from capnpy.ptr import E_IS_FAR_POINTER as _E_IS_FAR_POINTER
 from capnpy.struct_ import Struct as _Struct
@@ -10,7 +10,13 @@ from capnpy.enum import enum as _enum
 from capnpy.blob import Types as _Types
 from capnpy.builder import Builder as _Builder
 from capnpy.list import List as _List
+from capnpy.list import PrimitiveItemType as _PrimitiveItemType
+from capnpy.list import BoolItemType as _BoolItemType
+from capnpy.list import TextItemType as _TextItemType
 from capnpy.list import StructItemType as _StructItemType
+from capnpy.list import EnumItemType as _EnumItemType
+from capnpy.list import VoidItemType as _VoidItemType
+from capnpy.list import ListItemType as _ListItemType
 from capnpy.util import text_repr as _text_repr
 from capnpy.util import float32_repr as _float32_repr
 from capnpy.util import float64_repr as _float64_repr
@@ -20,129 +26,99 @@ from capnpy.util import extend_module_maybe as _extend_module_maybe
 
 class CodeGeneratorRequest_RequestedFile_Import(_Struct): pass
 CodeGeneratorRequest_RequestedFile_Import.__name__ = 'CodeGeneratorRequest.RequestedFile.Import'
-_CodeGeneratorRequest_RequestedFile_Import_list_item_type = _StructItemType(CodeGeneratorRequest_RequestedFile_Import)
 
 class CodeGeneratorRequest_RequestedFile(_Struct): pass
 CodeGeneratorRequest_RequestedFile.__name__ = 'CodeGeneratorRequest.RequestedFile'
-_CodeGeneratorRequest_RequestedFile_list_item_type = _StructItemType(CodeGeneratorRequest_RequestedFile)
 
 class CodeGeneratorRequest(_Struct): pass
 CodeGeneratorRequest.__name__ = 'CodeGeneratorRequest'
-_CodeGeneratorRequest_list_item_type = _StructItemType(CodeGeneratorRequest)
 
 class Method(_Struct): pass
 Method.__name__ = 'Method'
-_Method_list_item_type = _StructItemType(Method)
 
 class Enumerant(_Struct): pass
 Enumerant.__name__ = 'Enumerant'
-_Enumerant_list_item_type = _StructItemType(Enumerant)
 
 ElementSize = _enum('ElementSize', ['empty', 'bit', 'byte', 'twoBytes', 'fourBytes', 'eightBytes', 'pointer', 'inlineComposite'])
+_ElementSize_list_item_type = _EnumItemType(ElementSize)
 
 class Type_anyPointer_parameter(_Struct): pass
 Type_anyPointer_parameter.__name__ = 'Type.anyPointer.parameter'
-_Type_anyPointer_parameter_list_item_type = _StructItemType(Type_anyPointer_parameter)
 
 class Type_anyPointer_implicitMethodParameter(_Struct): pass
 Type_anyPointer_implicitMethodParameter.__name__ = 'Type.anyPointer.implicitMethodParameter'
-_Type_anyPointer_implicitMethodParameter_list_item_type = _StructItemType(Type_anyPointer_implicitMethodParameter)
 
 class Type_anyPointer(_Struct): pass
 Type_anyPointer.__name__ = 'Type.anyPointer'
-_Type_anyPointer_list_item_type = _StructItemType(Type_anyPointer)
 
 class Type_struct(_Struct): pass
 Type_struct.__name__ = 'Type.struct'
-_Type_struct_list_item_type = _StructItemType(Type_struct)
 
 class Type_enum(_Struct): pass
 Type_enum.__name__ = 'Type.enum'
-_Type_enum_list_item_type = _StructItemType(Type_enum)
 
 class Type_interface(_Struct): pass
 Type_interface.__name__ = 'Type.interface'
-_Type_interface_list_item_type = _StructItemType(Type_interface)
 
 class Type_list(_Struct): pass
 Type_list.__name__ = 'Type.list'
-_Type_list_list_item_type = _StructItemType(Type_list)
 
 class Type(_Struct): pass
 Type.__name__ = 'Type'
-_Type_list_item_type = _StructItemType(Type)
 
 class Field_group(_Struct): pass
 Field_group.__name__ = 'Field.group'
-_Field_group_list_item_type = _StructItemType(Field_group)
 
 class Field_ordinal(_Struct): pass
 Field_ordinal.__name__ = 'Field.ordinal'
-_Field_ordinal_list_item_type = _StructItemType(Field_ordinal)
 
 class Field_slot(_Struct): pass
 Field_slot.__name__ = 'Field.slot'
-_Field_slot_list_item_type = _StructItemType(Field_slot)
 
 class Field(_Struct): pass
 Field.__name__ = 'Field'
-_Field_list_item_type = _StructItemType(Field)
 
 class Superclass(_Struct): pass
 Superclass.__name__ = 'Superclass'
-_Superclass_list_item_type = _StructItemType(Superclass)
 
 class Value(_Struct): pass
 Value.__name__ = 'Value'
-_Value_list_item_type = _StructItemType(Value)
 
 class Brand_Binding(_Struct): pass
 Brand_Binding.__name__ = 'Brand.Binding'
-_Brand_Binding_list_item_type = _StructItemType(Brand_Binding)
 
 class Brand_Scope(_Struct): pass
 Brand_Scope.__name__ = 'Brand.Scope'
-_Brand_Scope_list_item_type = _StructItemType(Brand_Scope)
 
 class Brand(_Struct): pass
 Brand.__name__ = 'Brand'
-_Brand_list_item_type = _StructItemType(Brand)
 
 class Annotation(_Struct): pass
 Annotation.__name__ = 'Annotation'
-_Annotation_list_item_type = _StructItemType(Annotation)
 
 class Node_interface(_Struct): pass
 Node_interface.__name__ = 'Node.interface'
-_Node_interface_list_item_type = _StructItemType(Node_interface)
 
 class Node_const(_Struct): pass
 Node_const.__name__ = 'Node.const'
-_Node_const_list_item_type = _StructItemType(Node_const)
 
 class Node_struct(_Struct): pass
 Node_struct.__name__ = 'Node.struct'
-_Node_struct_list_item_type = _StructItemType(Node_struct)
 
 class Node_annotation(_Struct): pass
 Node_annotation.__name__ = 'Node.annotation'
-_Node_annotation_list_item_type = _StructItemType(Node_annotation)
 
 class Node_enum(_Struct): pass
 Node_enum.__name__ = 'Node.enum'
-_Node_enum_list_item_type = _StructItemType(Node_enum)
 
 class Node_NestedNode(_Struct): pass
 Node_NestedNode.__name__ = 'Node.NestedNode'
-_Node_NestedNode_list_item_type = _StructItemType(Node_NestedNode)
 
 class Node_Parameter(_Struct): pass
 Node_Parameter.__name__ = 'Node.Parameter'
-_Node_Parameter_list_item_type = _StructItemType(Node_Parameter)
 
 class Node(_Struct): pass
 Node.__name__ = 'Node'
-_Node_list_item_type = _StructItemType(Node)
 
 
 #### DEFINITIONS ####
@@ -175,14 +151,15 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
     
     @staticmethod
     def __new(id=0, name=None):
-        builder = _Builder(1, 1)
+        builder = _Builder.__new__(_Builder)
+        builder._init(1, 1)
         builder.set(ord('Q'), 0, id)
         builder.alloc_text(8, name)
         return builder.build()
     
     def __init__(self, id=0, name=None):
-        _buf = self.__new(id, name)
-        _Struct.__init__(self, _buf, 0, 1, 1)
+        _buf = CodeGeneratorRequest_RequestedFile_Import.__new(id, name)
+        self._init_from_buffer(_buf, 0, 1, 1)
     
     def shortrepr(self):
         parts = []
@@ -190,6 +167,7 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
         if self.has_name(): parts.append("name = %s" % _text_repr(self.get_name()))
         return "(%s)" % ", ".join(parts)
 
+_CodeGeneratorRequest_RequestedFile_Import_list_item_type = _StructItemType(CodeGeneratorRequest_RequestedFile_Import)
 
 @CodeGeneratorRequest_RequestedFile.__extend__
 class CodeGeneratorRequest_RequestedFile(_Struct):
@@ -235,15 +213,16 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
     
     @staticmethod
     def __new(id=0, filename=None, imports=None):
-        builder = _Builder(1, 2)
+        builder = _Builder.__new__(_Builder)
+        builder._init(1, 2)
         builder.set(ord('Q'), 0, id)
         builder.alloc_text(8, filename)
         builder.alloc_list(16, _CodeGeneratorRequest_RequestedFile_Import_list_item_type, imports)
         return builder.build()
     
     def __init__(self, id=0, filename=None, imports=None):
-        _buf = self.__new(id, filename, imports)
-        _Struct.__init__(self, _buf, 0, 1, 2)
+        _buf = CodeGeneratorRequest_RequestedFile.__new(id, filename, imports)
+        self._init_from_buffer(_buf, 0, 1, 2)
     
     def shortrepr(self):
         parts = []
@@ -252,6 +231,7 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
         if self.has_imports(): parts.append("imports = %s" % self.get_imports().shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_CodeGeneratorRequest_RequestedFile_list_item_type = _StructItemType(CodeGeneratorRequest_RequestedFile)
 
 @CodeGeneratorRequest.__extend__
 class CodeGeneratorRequest(_Struct):
@@ -292,14 +272,15 @@ class CodeGeneratorRequest(_Struct):
     
     @staticmethod
     def __new(nodes=None, requestedFiles=None):
-        builder = _Builder(0, 2)
+        builder = _Builder.__new__(_Builder)
+        builder._init(0, 2)
         builder.alloc_list(0, _Node_list_item_type, nodes)
         builder.alloc_list(8, _CodeGeneratorRequest_RequestedFile_list_item_type, requestedFiles)
         return builder.build()
     
     def __init__(self, nodes=None, requestedFiles=None):
-        _buf = self.__new(nodes, requestedFiles)
-        _Struct.__init__(self, _buf, 0, 0, 2)
+        _buf = CodeGeneratorRequest.__new(nodes, requestedFiles)
+        self._init_from_buffer(_buf, 0, 0, 2)
     
     def shortrepr(self):
         parts = []
@@ -307,6 +288,7 @@ class CodeGeneratorRequest(_Struct):
         if self.has_requestedFiles(): parts.append("requestedFiles = %s" % self.get_requestedFiles().shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_CodeGeneratorRequest_list_item_type = _StructItemType(CodeGeneratorRequest)
 
 @Method.__extend__
 class Method(_Struct):
@@ -432,7 +414,8 @@ class Method(_Struct):
     
     @staticmethod
     def __new(name=None, codeOrder=0, paramStructType=0, resultStructType=0, annotations=None, paramBrand=None, resultBrand=None, implicitParameters=None):
-        builder = _Builder(3, 5)
+        builder = _Builder.__new__(_Builder)
+        builder._init(3, 5)
         builder.alloc_text(24, name)
         builder.set(ord('H'), 0, codeOrder)
         builder.set(ord('Q'), 8, paramStructType)
@@ -444,8 +427,8 @@ class Method(_Struct):
         return builder.build()
     
     def __init__(self, name=None, codeOrder=0, paramStructType=0, resultStructType=0, annotations=None, paramBrand=None, resultBrand=None, implicitParameters=None):
-        _buf = self.__new(name, codeOrder, paramStructType, resultStructType, annotations, paramBrand, resultBrand, implicitParameters)
-        _Struct.__init__(self, _buf, 0, 3, 5)
+        _buf = Method.__new(name, codeOrder, paramStructType, resultStructType, annotations, paramBrand, resultBrand, implicitParameters)
+        self._init_from_buffer(_buf, 0, 3, 5)
     
     def shortrepr(self):
         parts = []
@@ -459,6 +442,7 @@ class Method(_Struct):
         if self.has_implicitParameters(): parts.append("implicitParameters = %s" % self.get_implicitParameters().shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_Method_list_item_type = _StructItemType(Method)
 
 @Enumerant.__extend__
 class Enumerant(_Struct):
@@ -503,15 +487,16 @@ class Enumerant(_Struct):
     
     @staticmethod
     def __new(name=None, codeOrder=0, annotations=None):
-        builder = _Builder(1, 2)
+        builder = _Builder.__new__(_Builder)
+        builder._init(1, 2)
         builder.alloc_text(8, name)
         builder.set(ord('H'), 0, codeOrder)
         builder.alloc_list(16, _Annotation_list_item_type, annotations)
         return builder.build()
     
     def __init__(self, name=None, codeOrder=0, annotations=None):
-        _buf = self.__new(name, codeOrder, annotations)
-        _Struct.__init__(self, _buf, 0, 1, 2)
+        _buf = Enumerant.__new(name, codeOrder, annotations)
+        self._init_from_buffer(_buf, 0, 1, 2)
     
     def shortrepr(self):
         parts = []
@@ -520,6 +505,7 @@ class Enumerant(_Struct):
         if self.has_annotations(): parts.append("annotations = %s" % self.get_annotations().shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_Enumerant_list_item_type = _StructItemType(Enumerant)
 
 @Type_anyPointer_parameter.__extend__
 class Type_anyPointer_parameter(_Struct):
@@ -549,6 +535,7 @@ class Type_anyPointer_parameter(_Struct):
         parts.append("parameterIndex = %s" % self.parameterIndex)
         return "(%s)" % ", ".join(parts)
 
+_Type_anyPointer_parameter_list_item_type = _StructItemType(Type_anyPointer_parameter)
 
 @Type_anyPointer_implicitMethodParameter.__extend__
 class Type_anyPointer_implicitMethodParameter(_Struct):
@@ -569,6 +556,7 @@ class Type_anyPointer_implicitMethodParameter(_Struct):
         parts.append("parameterIndex = %s" % self.parameterIndex)
         return "(%s)" % ", ".join(parts)
 
+_Type_anyPointer_implicitMethodParameter_list_item_type = _StructItemType(Type_anyPointer_implicitMethodParameter)
 
 @Type_anyPointer.__extend__
 class Type_anyPointer(_Struct):
@@ -622,6 +610,7 @@ class Type_anyPointer(_Struct):
         if self.is_implicitMethodParameter(): parts.append("implicitMethodParameter = %s" % self.implicitMethodParameter.shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_Type_anyPointer_list_item_type = _StructItemType(Type_anyPointer)
 
 @Type_struct.__extend__
 class Type_struct(_Struct):
@@ -668,6 +657,7 @@ class Type_struct(_Struct):
         if self.has_brand(): parts.append("brand = %s" % self.get_brand().shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_Type_struct_list_item_type = _StructItemType(Type_struct)
 
 @Type_enum.__extend__
 class Type_enum(_Struct):
@@ -714,6 +704,7 @@ class Type_enum(_Struct):
         if self.has_brand(): parts.append("brand = %s" % self.get_brand().shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_Type_enum_list_item_type = _StructItemType(Type_enum)
 
 @Type_interface.__extend__
 class Type_interface(_Struct):
@@ -760,6 +751,7 @@ class Type_interface(_Struct):
         if self.has_brand(): parts.append("brand = %s" % self.get_brand().shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_Type_interface_list_item_type = _StructItemType(Type_interface)
 
 @Type_list.__extend__
 class Type_list(_Struct):
@@ -797,6 +789,7 @@ class Type_list(_Struct):
         if self.has_elementType(): parts.append("elementType = %s" % self.get_elementType().shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_Type_list_list_item_type = _StructItemType(Type_list)
 
 @Type.__extend__
 class Type(_Struct):
@@ -978,7 +971,8 @@ class Type(_Struct):
     
     @staticmethod
     def __new(void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined):
-        builder = _Builder(3, 1)
+        builder = _Builder.__new__(_Builder)
+        builder._init(3, 1)
         anonymous__curtag = None
         anyPointer__curtag = None
         if void is not _undefined:
@@ -1067,102 +1061,102 @@ class Type(_Struct):
         return builder.build()
     
     def __init__(self, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined):
-        _buf = self.__new(void, bool, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, text, data, list, enum, struct, interface, anyPointer)
-        _Struct.__init__(self, _buf, 0, 3, 1)
+        _buf = Type.__new(void, bool, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, text, data, list, enum, struct, interface, anyPointer)
+        self._init_from_buffer(_buf, 0, 3, 1)
     
     @classmethod
     def new_void(cls, void=None):
-        buf = cls.__new(void=void)
+        buf = Type.__new(void=void, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @classmethod
     def new_bool(cls, bool=None):
-        buf = cls.__new(bool=bool)
+        buf = Type.__new(bool=bool, void=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @classmethod
     def new_int8(cls, int8=None):
-        buf = cls.__new(int8=int8)
+        buf = Type.__new(int8=int8, void=_undefined, bool=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @classmethod
     def new_int16(cls, int16=None):
-        buf = cls.__new(int16=int16)
+        buf = Type.__new(int16=int16, void=_undefined, bool=_undefined, int8=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @classmethod
     def new_int32(cls, int32=None):
-        buf = cls.__new(int32=int32)
+        buf = Type.__new(int32=int32, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @classmethod
     def new_int64(cls, int64=None):
-        buf = cls.__new(int64=int64)
+        buf = Type.__new(int64=int64, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @classmethod
     def new_uint8(cls, uint8=None):
-        buf = cls.__new(uint8=uint8)
+        buf = Type.__new(uint8=uint8, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @classmethod
     def new_uint16(cls, uint16=None):
-        buf = cls.__new(uint16=uint16)
+        buf = Type.__new(uint16=uint16, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @classmethod
     def new_uint32(cls, uint32=None):
-        buf = cls.__new(uint32=uint32)
+        buf = Type.__new(uint32=uint32, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @classmethod
     def new_uint64(cls, uint64=None):
-        buf = cls.__new(uint64=uint64)
+        buf = Type.__new(uint64=uint64, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @classmethod
     def new_float32(cls, float32=None):
-        buf = cls.__new(float32=float32)
+        buf = Type.__new(float32=float32, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @classmethod
     def new_float64(cls, float64=None):
-        buf = cls.__new(float64=float64)
+        buf = Type.__new(float64=float64, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @classmethod
     def new_text(cls, text=None):
-        buf = cls.__new(text=text)
+        buf = Type.__new(text=text, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @classmethod
     def new_data(cls, data=None):
-        buf = cls.__new(data=data)
+        buf = Type.__new(data=data, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @classmethod
     def new_list(cls, list=(None,)):
-        buf = cls.__new(list=list)
+        buf = Type.__new(list=list, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @classmethod
     def new_enum(cls, enum=(0, None,)):
-        buf = cls.__new(enum=enum)
+        buf = Type.__new(enum=enum, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @classmethod
     def new_struct(cls, struct=(0, None,)):
-        buf = cls.__new(struct=struct)
+        buf = Type.__new(struct=struct, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @classmethod
     def new_interface(cls, interface=(0, None,)):
-        buf = cls.__new(interface=interface)
+        buf = Type.__new(interface=interface, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     @classmethod
     def new_anyPointer(cls, anyPointer=(_undefined, _undefined, _undefined,)):
-        buf = cls.__new(anyPointer=anyPointer)
+        buf = Type.__new(anyPointer=anyPointer, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined)
         return cls.from_buffer(buf, 0, 3, 1)
     
     def shortrepr(self):
@@ -1188,6 +1182,7 @@ class Type(_Struct):
         if self.is_anyPointer(): parts.append("anyPointer = %s" % self.anyPointer.shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_Type_list_item_type = _StructItemType(Type)
 
 @Field_group.__extend__
 class Field_group(_Struct):
@@ -1208,6 +1203,7 @@ class Field_group(_Struct):
         parts.append("typeId = %s" % self.typeId)
         return "(%s)" % ", ".join(parts)
 
+_Field_group_list_item_type = _StructItemType(Field_group)
 
 @Field_ordinal.__extend__
 class Field_ordinal(_Struct):
@@ -1242,6 +1238,7 @@ class Field_ordinal(_Struct):
         if self.is_explicit(): parts.append("explicit = %s" % self.explicit)
         return "(%s)" % ", ".join(parts)
 
+_Field_ordinal_list_item_type = _StructItemType(Field_ordinal)
 
 @Field_slot.__extend__
 class Field_slot(_Struct):
@@ -1323,6 +1320,7 @@ class Field_slot(_Struct):
         parts.append("hadExplicitDefault = %s" % str(self.hadExplicitDefault).lower())
         return "(%s)" % ", ".join(parts)
 
+_Field_slot_list_item_type = _StructItemType(Field_slot)
 
 @Field.__extend__
 class Field(_Struct):
@@ -1420,7 +1418,8 @@ class Field(_Struct):
     
     @staticmethod
     def __new(name=None, codeOrder=0, annotations=None, discriminantValue=65535, slot=_undefined, group=_undefined, ordinal=(_undefined, _undefined,)):
-        builder = _Builder(3, 4)
+        builder = _Builder.__new__(_Builder)
+        builder._init(3, 4)
         anonymous__curtag = None
         ordinal__curtag = None
         builder.alloc_text(24, name)
@@ -1452,17 +1451,17 @@ class Field(_Struct):
         return builder.build()
     
     def __init__(self, name=None, codeOrder=0, annotations=None, discriminantValue=65535, slot=_undefined, group=_undefined, ordinal=(_undefined, _undefined,)):
-        _buf = self.__new(name, codeOrder, annotations, discriminantValue, slot, group, ordinal)
-        _Struct.__init__(self, _buf, 0, 3, 4)
+        _buf = Field.__new(name, codeOrder, annotations, discriminantValue, slot, group, ordinal)
+        self._init_from_buffer(_buf, 0, 3, 4)
     
     @classmethod
     def new_slot(cls, name=None, codeOrder=0, annotations=None, discriminantValue=65535, slot=(0, None, None, False,), ordinal=(_undefined, _undefined,)):
-        buf = cls.__new(name=name, codeOrder=codeOrder, annotations=annotations, discriminantValue=discriminantValue, slot=slot, ordinal=ordinal)
+        buf = Field.__new(name=name, codeOrder=codeOrder, annotations=annotations, discriminantValue=discriminantValue, slot=slot, ordinal=ordinal, group=_undefined)
         return cls.from_buffer(buf, 0, 3, 4)
     
     @classmethod
     def new_group(cls, name=None, codeOrder=0, annotations=None, discriminantValue=65535, group=(0,), ordinal=(_undefined, _undefined,)):
-        buf = cls.__new(name=name, codeOrder=codeOrder, annotations=annotations, discriminantValue=discriminantValue, group=group, ordinal=ordinal)
+        buf = Field.__new(name=name, codeOrder=codeOrder, annotations=annotations, discriminantValue=discriminantValue, group=group, ordinal=ordinal, slot=_undefined)
         return cls.from_buffer(buf, 0, 3, 4)
     
     def shortrepr(self):
@@ -1476,6 +1475,7 @@ class Field(_Struct):
         parts.append("ordinal = %s" % self.ordinal.shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_Field_list_item_type = _StructItemType(Field)
 
 @Superclass.__extend__
 class Superclass(_Struct):
@@ -1518,14 +1518,15 @@ class Superclass(_Struct):
     
     @staticmethod
     def __new(id=0, brand=None):
-        builder = _Builder(1, 1)
+        builder = _Builder.__new__(_Builder)
+        builder._init(1, 1)
         builder.set(ord('Q'), 0, id)
         builder.alloc_struct(8, Brand, brand)
         return builder.build()
     
     def __init__(self, id=0, brand=None):
-        _buf = self.__new(id, brand)
-        _Struct.__init__(self, _buf, 0, 1, 1)
+        _buf = Superclass.__new(id, brand)
+        self._init_from_buffer(_buf, 0, 1, 1)
     
     def shortrepr(self):
         parts = []
@@ -1533,6 +1534,7 @@ class Superclass(_Struct):
         if self.has_brand(): parts.append("brand = %s" % self.get_brand().shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_Superclass_list_item_type = _StructItemType(Superclass)
 
 @Value.__extend__
 class Value(_Struct):
@@ -1747,7 +1749,8 @@ class Value(_Struct):
     
     @staticmethod
     def __new(void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined):
-        builder = _Builder(2, 1)
+        builder = _Builder.__new__(_Builder)
+        builder._init(2, 1)
         anonymous__curtag = None
         if void is not _undefined:
             anonymous__curtag = _check_tag(anonymous__curtag, 'void')
@@ -1826,102 +1829,102 @@ class Value(_Struct):
         return builder.build()
     
     def __init__(self, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined):
-        _buf = self.__new(void, bool, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, text, data, list, enum, struct, interface, anyPointer)
-        _Struct.__init__(self, _buf, 0, 2, 1)
+        _buf = Value.__new(void, bool, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, text, data, list, enum, struct, interface, anyPointer)
+        self._init_from_buffer(_buf, 0, 2, 1)
     
     @classmethod
     def new_void(cls, void=None):
-        buf = cls.__new(void=void)
+        buf = Value.__new(void=void, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_bool(cls, bool=False):
-        buf = cls.__new(bool=bool)
+        buf = Value.__new(bool=bool, void=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_int8(cls, int8=0):
-        buf = cls.__new(int8=int8)
+        buf = Value.__new(int8=int8, void=_undefined, bool=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_int16(cls, int16=0):
-        buf = cls.__new(int16=int16)
+        buf = Value.__new(int16=int16, void=_undefined, bool=_undefined, int8=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_int32(cls, int32=0):
-        buf = cls.__new(int32=int32)
+        buf = Value.__new(int32=int32, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_int64(cls, int64=0):
-        buf = cls.__new(int64=int64)
+        buf = Value.__new(int64=int64, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_uint8(cls, uint8=0):
-        buf = cls.__new(uint8=uint8)
+        buf = Value.__new(uint8=uint8, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_uint16(cls, uint16=0):
-        buf = cls.__new(uint16=uint16)
+        buf = Value.__new(uint16=uint16, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_uint32(cls, uint32=0):
-        buf = cls.__new(uint32=uint32)
+        buf = Value.__new(uint32=uint32, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_uint64(cls, uint64=0):
-        buf = cls.__new(uint64=uint64)
+        buf = Value.__new(uint64=uint64, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_float32(cls, float32=0.0):
-        buf = cls.__new(float32=float32)
+        buf = Value.__new(float32=float32, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_float64(cls, float64=0.0):
-        buf = cls.__new(float64=float64)
+        buf = Value.__new(float64=float64, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_text(cls, text=None):
-        buf = cls.__new(text=text)
+        buf = Value.__new(text=text, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_data(cls, data=None):
-        buf = cls.__new(data=data)
+        buf = Value.__new(data=data, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_list(cls, list=None):
-        buf = cls.__new(list=list)
+        buf = Value.__new(list=list, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_enum(cls, enum=0):
-        buf = cls.__new(enum=enum)
+        buf = Value.__new(enum=enum, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_struct(cls, struct=None):
-        buf = cls.__new(struct=struct)
+        buf = Value.__new(struct=struct, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, interface=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_interface(cls, interface=None):
-        buf = cls.__new(interface=interface)
+        buf = Value.__new(interface=interface, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, anyPointer=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_anyPointer(cls, anyPointer=None):
-        buf = cls.__new(anyPointer=anyPointer)
+        buf = Value.__new(anyPointer=anyPointer, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     def shortrepr(self):
@@ -1957,6 +1960,7 @@ class Value(_Struct):
             parts.append("anyPointer = %s" % "???")
         return "(%s)" % ", ".join(parts)
 
+_Value_list_item_type = _StructItemType(Value)
 
 @Brand_Binding.__extend__
 class Brand_Binding(_Struct):
@@ -2004,7 +2008,8 @@ class Brand_Binding(_Struct):
     
     @staticmethod
     def __new(unbound=_undefined, type=_undefined):
-        builder = _Builder(1, 1)
+        builder = _Builder.__new__(_Builder)
+        builder._init(1, 1)
         anonymous__curtag = None
         if unbound is not _undefined:
             anonymous__curtag = _check_tag(anonymous__curtag, 'unbound')
@@ -2016,17 +2021,17 @@ class Brand_Binding(_Struct):
         return builder.build()
     
     def __init__(self, unbound=_undefined, type=_undefined):
-        _buf = self.__new(unbound, type)
-        _Struct.__init__(self, _buf, 0, 1, 1)
+        _buf = Brand_Binding.__new(unbound, type)
+        self._init_from_buffer(_buf, 0, 1, 1)
     
     @classmethod
     def new_unbound(cls, unbound=None):
-        buf = cls.__new(unbound=unbound)
+        buf = Brand_Binding.__new(unbound=unbound, type=_undefined)
         return cls.from_buffer(buf, 0, 1, 1)
     
     @classmethod
     def new_type(cls, type=None):
-        buf = cls.__new(type=type)
+        buf = Brand_Binding.__new(type=type, unbound=_undefined)
         return cls.from_buffer(buf, 0, 1, 1)
     
     def shortrepr(self):
@@ -2037,6 +2042,7 @@ class Brand_Binding(_Struct):
             parts.append("type = %s" % self.get_type().shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_Brand_Binding_list_item_type = _StructItemType(Brand_Binding)
 
 @Brand_Scope.__extend__
 class Brand_Scope(_Struct):
@@ -2082,7 +2088,8 @@ class Brand_Scope(_Struct):
     
     @staticmethod
     def __new(scopeId=0, bind=_undefined, inherit=_undefined):
-        builder = _Builder(2, 1)
+        builder = _Builder.__new__(_Builder)
+        builder._init(2, 1)
         anonymous__curtag = None
         builder.set(ord('Q'), 0, scopeId)
         if bind is not _undefined:
@@ -2095,17 +2102,17 @@ class Brand_Scope(_Struct):
         return builder.build()
     
     def __init__(self, scopeId=0, bind=_undefined, inherit=_undefined):
-        _buf = self.__new(scopeId, bind, inherit)
-        _Struct.__init__(self, _buf, 0, 2, 1)
+        _buf = Brand_Scope.__new(scopeId, bind, inherit)
+        self._init_from_buffer(_buf, 0, 2, 1)
     
     @classmethod
     def new_bind(cls, scopeId=0, bind=None):
-        buf = cls.__new(scopeId=scopeId, bind=bind)
+        buf = Brand_Scope.__new(scopeId=scopeId, bind=bind, inherit=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     @classmethod
     def new_inherit(cls, scopeId=0, inherit=None):
-        buf = cls.__new(scopeId=scopeId, inherit=inherit)
+        buf = Brand_Scope.__new(scopeId=scopeId, inherit=inherit, bind=_undefined)
         return cls.from_buffer(buf, 0, 2, 1)
     
     def shortrepr(self):
@@ -2117,6 +2124,7 @@ class Brand_Scope(_Struct):
         if self.is_inherit(): parts.append("inherit = %s" % "void")
         return "(%s)" % ", ".join(parts)
 
+_Brand_Scope_list_item_type = _StructItemType(Brand_Scope)
 
 @Brand.__extend__
 class Brand(_Struct):
@@ -2143,19 +2151,21 @@ class Brand(_Struct):
     
     @staticmethod
     def __new(scopes=None):
-        builder = _Builder(0, 1)
+        builder = _Builder.__new__(_Builder)
+        builder._init(0, 1)
         builder.alloc_list(0, _Brand_Scope_list_item_type, scopes)
         return builder.build()
     
     def __init__(self, scopes=None):
-        _buf = self.__new(scopes)
-        _Struct.__init__(self, _buf, 0, 0, 1)
+        _buf = Brand.__new(scopes)
+        self._init_from_buffer(_buf, 0, 0, 1)
     
     def shortrepr(self):
         parts = []
         if self.has_scopes(): parts.append("scopes = %s" % self.get_scopes().shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_Brand_list_item_type = _StructItemType(Brand)
 
 @Annotation.__extend__
 class Annotation(_Struct):
@@ -2223,15 +2233,16 @@ class Annotation(_Struct):
     
     @staticmethod
     def __new(id=0, value=None, brand=None):
-        builder = _Builder(1, 2)
+        builder = _Builder.__new__(_Builder)
+        builder._init(1, 2)
         builder.set(ord('Q'), 0, id)
         builder.alloc_struct(8, Value, value)
         builder.alloc_struct(16, Brand, brand)
         return builder.build()
     
     def __init__(self, id=0, value=None, brand=None):
-        _buf = self.__new(id, value, brand)
-        _Struct.__init__(self, _buf, 0, 1, 2)
+        _buf = Annotation.__new(id, value, brand)
+        self._init_from_buffer(_buf, 0, 1, 2)
     
     def shortrepr(self):
         parts = []
@@ -2240,6 +2251,7 @@ class Annotation(_Struct):
         if self.has_brand(): parts.append("brand = %s" % self.get_brand().shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_Annotation_list_item_type = _StructItemType(Annotation)
 
 @Node_interface.__extend__
 class Node_interface(_Struct):
@@ -2283,6 +2295,7 @@ class Node_interface(_Struct):
         if self.has_superclasses(): parts.append("superclasses = %s" % self.get_superclasses().shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_Node_interface_list_item_type = _StructItemType(Node_interface)
 
 @Node_const.__extend__
 class Node_const(_Struct):
@@ -2346,6 +2359,7 @@ class Node_const(_Struct):
         if self.has_value(): parts.append("value = %s" % self.get_value().shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_Node_const_list_item_type = _StructItemType(Node_const)
 
 @Node_struct.__extend__
 class Node_struct(_Struct):
@@ -2427,6 +2441,7 @@ class Node_struct(_Struct):
         if self.has_fields(): parts.append("fields = %s" % self.get_fields().shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_Node_struct_list_item_type = _StructItemType(Node_struct)
 
 @Node_annotation.__extend__
 class Node_annotation(_Struct):
@@ -2572,6 +2587,7 @@ class Node_annotation(_Struct):
         parts.append("targetsAnnotation = %s" % str(self.targetsAnnotation).lower())
         return "(%s)" % ", ".join(parts)
 
+_Node_annotation_list_item_type = _StructItemType(Node_annotation)
 
 @Node_enum.__extend__
 class Node_enum(_Struct):
@@ -2599,6 +2615,7 @@ class Node_enum(_Struct):
         if self.has_enumerants(): parts.append("enumerants = %s" % self.get_enumerants().shortrepr())
         return "(%s)" % ", ".join(parts)
 
+_Node_enum_list_item_type = _StructItemType(Node_enum)
 
 @Node_NestedNode.__extend__
 class Node_NestedNode(_Struct):
@@ -2628,14 +2645,15 @@ class Node_NestedNode(_Struct):
     
     @staticmethod
     def __new(name=None, id=0):
-        builder = _Builder(1, 1)
+        builder = _Builder.__new__(_Builder)
+        builder._init(1, 1)
         builder.alloc_text(8, name)
         builder.set(ord('Q'), 0, id)
         return builder.build()
     
     def __init__(self, name=None, id=0):
-        _buf = self.__new(name, id)
-        _Struct.__init__(self, _buf, 0, 1, 1)
+        _buf = Node_NestedNode.__new(name, id)
+        self._init_from_buffer(_buf, 0, 1, 1)
     
     def shortrepr(self):
         parts = []
@@ -2643,6 +2661,7 @@ class Node_NestedNode(_Struct):
         parts.append("id = %s" % self.id)
         return "(%s)" % ", ".join(parts)
 
+_Node_NestedNode_list_item_type = _StructItemType(Node_NestedNode)
 
 @Node_Parameter.__extend__
 class Node_Parameter(_Struct):
@@ -2664,19 +2683,21 @@ class Node_Parameter(_Struct):
     
     @staticmethod
     def __new(name=None):
-        builder = _Builder(0, 1)
+        builder = _Builder.__new__(_Builder)
+        builder._init(0, 1)
         builder.alloc_text(0, name)
         return builder.build()
     
     def __init__(self, name=None):
-        _buf = self.__new(name)
-        _Struct.__init__(self, _buf, 0, 0, 1)
+        _buf = Node_Parameter.__new(name)
+        self._init_from_buffer(_buf, 0, 0, 1)
     
     def shortrepr(self):
         parts = []
         if self.has_name(): parts.append("name = %s" % _text_repr(self.get_name()))
         return "(%s)" % ", ".join(parts)
 
+_Node_Parameter_list_item_type = _StructItemType(Node_Parameter)
 
 @Node.__extend__
 class Node(_Struct):
@@ -2858,7 +2879,8 @@ class Node(_Struct):
     
     @staticmethod
     def __new(id=0, displayName=None, displayNamePrefixLength=0, scopeId=0, nestedNodes=None, annotations=None, file=_undefined, struct=_undefined, enum=_undefined, interface=_undefined, const=_undefined, annotation=_undefined, parameters=None, isGeneric=False):
-        builder = _Builder(5, 6)
+        builder = _Builder.__new__(_Builder)
+        builder._init(5, 6)
         anonymous__curtag = None
         builder.set(ord('Q'), 0, id)
         builder.alloc_text(40, displayName)
@@ -2919,37 +2941,37 @@ class Node(_Struct):
         return builder.build()
     
     def __init__(self, id=0, displayName=None, displayNamePrefixLength=0, scopeId=0, nestedNodes=None, annotations=None, file=_undefined, struct=_undefined, enum=_undefined, interface=_undefined, const=_undefined, annotation=_undefined, parameters=None, isGeneric=False):
-        _buf = self.__new(id, displayName, displayNamePrefixLength, scopeId, nestedNodes, annotations, file, struct, enum, interface, const, annotation, parameters, isGeneric)
-        _Struct.__init__(self, _buf, 0, 5, 6)
+        _buf = Node.__new(id, displayName, displayNamePrefixLength, scopeId, nestedNodes, annotations, file, struct, enum, interface, const, annotation, parameters, isGeneric)
+        self._init_from_buffer(_buf, 0, 5, 6)
     
     @classmethod
     def new_file(cls, id=0, displayName=None, displayNamePrefixLength=0, scopeId=0, nestedNodes=None, annotations=None, file=None, parameters=None, isGeneric=False):
-        buf = cls.__new(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, file=file, parameters=parameters, isGeneric=isGeneric)
+        buf = Node.__new(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, file=file, parameters=parameters, isGeneric=isGeneric, struct=_undefined, enum=_undefined, interface=_undefined, const=_undefined, annotation=_undefined)
         return cls.from_buffer(buf, 0, 5, 6)
     
     @classmethod
     def new_struct(cls, id=0, displayName=None, displayNamePrefixLength=0, scopeId=0, nestedNodes=None, annotations=None, struct=(0, 0, 0, False, 0, 0, None,), parameters=None, isGeneric=False):
-        buf = cls.__new(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, struct=struct, parameters=parameters, isGeneric=isGeneric)
+        buf = Node.__new(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, struct=struct, parameters=parameters, isGeneric=isGeneric, file=_undefined, enum=_undefined, interface=_undefined, const=_undefined, annotation=_undefined)
         return cls.from_buffer(buf, 0, 5, 6)
     
     @classmethod
     def new_enum(cls, id=0, displayName=None, displayNamePrefixLength=0, scopeId=0, nestedNodes=None, annotations=None, enum=(None,), parameters=None, isGeneric=False):
-        buf = cls.__new(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, enum=enum, parameters=parameters, isGeneric=isGeneric)
+        buf = Node.__new(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, enum=enum, parameters=parameters, isGeneric=isGeneric, file=_undefined, struct=_undefined, interface=_undefined, const=_undefined, annotation=_undefined)
         return cls.from_buffer(buf, 0, 5, 6)
     
     @classmethod
     def new_interface(cls, id=0, displayName=None, displayNamePrefixLength=0, scopeId=0, nestedNodes=None, annotations=None, interface=(None, None,), parameters=None, isGeneric=False):
-        buf = cls.__new(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, interface=interface, parameters=parameters, isGeneric=isGeneric)
+        buf = Node.__new(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, interface=interface, parameters=parameters, isGeneric=isGeneric, file=_undefined, struct=_undefined, enum=_undefined, const=_undefined, annotation=_undefined)
         return cls.from_buffer(buf, 0, 5, 6)
     
     @classmethod
     def new_const(cls, id=0, displayName=None, displayNamePrefixLength=0, scopeId=0, nestedNodes=None, annotations=None, const=(None, None,), parameters=None, isGeneric=False):
-        buf = cls.__new(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, const=const, parameters=parameters, isGeneric=isGeneric)
+        buf = Node.__new(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, const=const, parameters=parameters, isGeneric=isGeneric, file=_undefined, struct=_undefined, enum=_undefined, interface=_undefined, annotation=_undefined)
         return cls.from_buffer(buf, 0, 5, 6)
     
     @classmethod
     def new_annotation(cls, id=0, displayName=None, displayNamePrefixLength=0, scopeId=0, nestedNodes=None, annotations=None, annotation=(None, False, False, False, False, False, False, False, False, False, False, False, False,), parameters=None, isGeneric=False):
-        buf = cls.__new(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, annotation=annotation, parameters=parameters, isGeneric=isGeneric)
+        buf = Node.__new(id=id, displayName=displayName, displayNamePrefixLength=displayNamePrefixLength, scopeId=scopeId, nestedNodes=nestedNodes, annotations=annotations, annotation=annotation, parameters=parameters, isGeneric=isGeneric, file=_undefined, struct=_undefined, enum=_undefined, interface=_undefined, const=_undefined)
         return cls.from_buffer(buf, 0, 5, 6)
     
     def shortrepr(self):
@@ -2970,13 +2992,7 @@ class Node(_Struct):
         parts.append("isGeneric = %s" % str(self.isGeneric).lower())
         return "(%s)" % ", ".join(parts)
 
+_Node_list_item_type = _StructItemType(Node)
 
-
-del globals()['CodeGeneratorRequest_RequestedFile']
-del globals()['CodeGeneratorRequest_RequestedFile_Import']
-del globals()['Brand_Binding']
-del globals()['Brand_Scope']
-del globals()['Node_NestedNode']
-del globals()['Node_Parameter']
 
 _extend_module_maybe(globals(), modname=__name__)
