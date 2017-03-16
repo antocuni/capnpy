@@ -55,7 +55,7 @@ cdef class Struct(Blob):
 
     @cython.locals(body_start=long, body_end=long, extra_start=long, extra_end=long,
                    data_size=long, old_extra_offset=long, additional_offset=long)
-    cdef object _split(self, long extra_offset)
+    cpdef object _split(self, long extra_offset)
 
     cpdef object compact(self)
     
