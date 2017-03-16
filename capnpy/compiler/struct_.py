@@ -36,10 +36,6 @@ class Node__Struct:
             ns.w("class {name}(_Struct): pass")
             ns.w("{name}.__name__ = '{dotname}'")
         #
-        if m.pyx:
-            ns.w("cdef _StructItemType _{name}_list_item_type = _StructItemType({name})")
-        else:
-            ns.w("_{name}_list_item_type = _StructItemType({name})")
         ns.w()
 
     def emit_definition(self, m):
@@ -76,6 +72,10 @@ class Node__Struct:
             self._emit_repr(m)
             self._emit_key_maybe(m)
         ns.w()
+        if m.pyx:
+            ns.w("cdef _StructItemType _{name}_list_item_type = _StructItemType({name})")
+        else:
+            ns.w("_{name}_list_item_type = _StructItemType({name})")
         ns.w()
 
     def emit_reference_as_child(self, m):
