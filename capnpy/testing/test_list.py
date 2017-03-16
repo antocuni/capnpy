@@ -41,6 +41,10 @@ def test_read_list_offset():
     assert lst._getitem_fast(3) == 4
 
 def test_list_of_structs():
+    class Point(Struct):
+        __static_data_size__ = 2
+        __static_ptrs_size__ = 0
+
     # list of Point {x: Int64, y: Int64}
     buf = ('\x01\x00\x00\x00\x47\x00\x00\x00'    # ptrlist
            '\x10\x00\x00\x00\x02\x00\x00\x00'    # list tag
@@ -53,7 +57,7 @@ def test_list_of_structs():
            '\x28\x00\x00\x00\x00\x00\x00\x00'    # 40
            '\x90\x01\x00\x00\x00\x00\x00\x00')   # 400
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
-    lst = blob._read_list(0, StructItemType(Struct))
+    lst = blob._read_list(0, StructItemType(Point))
     assert lst._buf is blob._buf
     assert lst._offset == 8
     assert lst._item_offset == 8

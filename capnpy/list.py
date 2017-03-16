@@ -224,15 +224,8 @@ class StructItemType(ItemType):
 
     def __init__(self, structcls):
         self.structcls = structcls
-        ## self.static_body_size = (structcls.__static_data_size__ +
-        ##                          structcls.__static_ptrs_size__)
-
-    @property
-    def static_body_size(self):
-        # XXX temporary for the refactoring
-        structcls = self.structcls
-        return (structcls.__static_data_size__ +
-                structcls.__static_ptrs_size__)
+        self.static_body_size = (structcls.__static_data_size__ +
+                                 structcls.__static_ptrs_size__)
 
     def get_type(self):
         return self.structcls
