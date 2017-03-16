@@ -10,7 +10,7 @@ cdef class AbstractBuilder(object):
     cdef public long _total_length
 
     cdef long _calc_relative_offset(self, long offset)
-    cdef _alloc(self, bytes s)
+    cpdef _alloc(self, bytes s)
     cdef _record_allocation(self, long offset, long p)
 
     @cython.locals(padding=long)
