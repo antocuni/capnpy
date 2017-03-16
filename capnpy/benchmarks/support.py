@@ -60,6 +60,11 @@ class Instance(object):
             self.a = a
             self.b = b
 
+    class MyStructContainer(object):
+        def __init__(self, items):
+            self.items = items
+
+
 # ============================================================
 # Namedtuple storage
 # ============================================================
@@ -88,6 +93,7 @@ class NamedTuple(object):
     Point = namedtuple('Point', ['x', 'y', 'z'])
     StrPoint = namedtuple('StrPoint', ['x', 'y', 'z'])
     Rectangle = namedtuple('Rectangle', ['a', 'b'])
+    MyStructContainer = namedtuple('MyStructContainer', ['items'])
 
 # ============================================================
 # capnpy storage
@@ -182,3 +188,11 @@ class PyCapnp(object):
         s.a = a
         s.b = b
         return pycapnp_schema.Rectangle.from_bytes(s.to_bytes())
+
+    @staticmethod
+    def MyStructContainer(items):
+        if pycapnp is None:
+            py.test.skip('cannot import pycapnp')
+        s = pycapnp_schema.MyStructContainer.new_message()
+        s.items = items
+        return pycapnp_schema.MyStructContainer.from_bytes(s.to_bytes())
