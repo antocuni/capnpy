@@ -43,7 +43,8 @@ cdef class EnumItemType(PrimitiveItemType):
     cdef readonly object enumcls
 
 cdef class StructItemType(ItemType):
-    cdef readonly object structcls
+    cdef readonly type structcls
+    cdef readonly long static_body_size
 
 cdef class TextItemType(ItemType):
     cdef readonly int additional_size
