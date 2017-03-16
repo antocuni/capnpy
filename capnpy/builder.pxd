@@ -1,6 +1,7 @@
 import cython
 from capnpy cimport ptr
 from capnpy.packing cimport pack_into, pack_int64_into
+from capnpy.struct_ cimport Struct
 from capnpy.list cimport List, ItemType
 
 
@@ -20,8 +21,9 @@ cdef class AbstractBuilder(object):
 
     @cython.locals(ptr_offset=long, p=long)
     cpdef alloc_data(self, int offset, bytes value, bytes suffix=*)
-
     cpdef alloc_text(self, int offset, bytes value)
+
+    cpdef alloc_struct(self, int offset, type struct_type, Struct value)
 
 cdef class Builder(AbstractBuilder):
     cdef public bytearray _buf
