@@ -10,7 +10,7 @@ cdef class AbstractBuilder(object):
     cdef public list _extra
     cdef public long _total_length
 
-    cdef _init_builder(self, long length)
+    cpdef _init_builder(self, long length)
 
     cdef long _calc_relative_offset(self, long offset)
     cpdef _alloc(self, bytes s)
@@ -31,7 +31,7 @@ cdef class Builder(AbstractBuilder):
     cpdef bytes build(self)
 
     @cython.locals(length=long)
-    cdef _init(self, long data_size, long ptrs_size)
+    cpdef _init(self, long data_size, long ptrs_size)
 
 
 
