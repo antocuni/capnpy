@@ -29,5 +29,4 @@ cdef class Blob:
     cdef readonly CapnpBuffer _buf
 
     cpdef _init_blob(self, object buf)
-    cpdef _read_ptr_generic(self, long offset)
     cpdef _richcmp(self, other, int op)

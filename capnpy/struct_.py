@@ -106,11 +106,6 @@ class Struct(Blob):
             raise TypeError("Cannot call which() on a non-union type")
         return self._read_data_int16(self.__tag_offset__)
 
-    def _read_ptr_generic(self, offset):
-        # generic method, defined in Blob and implemented also by List
-        offset += self._ptrs_offset
-        return offset, self._buf.read_ptr(offset)
-
     def _read_fast_ptr(self, offset):
         # Struct-specific logic
         if offset >= self._ptrs_size*8:

@@ -32,10 +32,6 @@ class List(Blob):
                         "the outer structure containing it, or convert it "
                         "to a Python list before pickling")
 
-    def _read_ptr_generic(self, offset):
-        offset += self._offset
-        return offset, self._buf.read_ptr(offset)
-
     def _set_list_tag(self, size_tag, item_count):
         self._size_tag = size_tag
         if size_tag == ptr.LIST_SIZE_COMPOSITE:
