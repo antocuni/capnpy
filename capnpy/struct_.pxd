@@ -50,6 +50,9 @@ cdef class Struct(Blob):
 
     cpdef long _get_body_start(self)
     cpdef long _get_body_end(self)
+
+    @cython.locals(i=long)
+    cpdef long _get_extra_start(self)
     cpdef long _get_end(self)
     cpdef long _is_compact(self)
 

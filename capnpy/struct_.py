@@ -215,11 +215,13 @@ class Struct(Blob):
     def _get_extra_start(self):
         if self._ptrs_size == 0:
             return self._get_body_end()
-        for i in range(self._ptrs_size):
+        i = 0
+        while i < self._ptrs_size:
             p = self._read_raw_ptr(i*8)
             assert ptr.kind(p) != ptr.FAR
             if p != 0:
                 return self._ptrs_offset + ptr.deref(p, i*8)
+            i += 1
         #
         # if we are here, it means that all ptrs are null
         return self._get_body_end()
