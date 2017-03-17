@@ -1,6 +1,6 @@
 import cython
 from capnpy cimport ptr
-from capnpy.packing cimport pack_into, pack_int64_into
+from capnpy.packing cimport pack_into, pack_int64_into, pack_int64
 from capnpy.struct_ cimport Struct
 from capnpy.list cimport List, ItemType, StructItemType
 

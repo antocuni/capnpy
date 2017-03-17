@@ -4,6 +4,7 @@ from capnpy.blob import Blob, Types, PYX
 from capnpy import ptr
 from capnpy.util import text_repr, float32_repr, float64_repr
 from capnpy.visit import end_of
+from capnpy.packing import pack_int64
 
 class List(Blob):
 
@@ -308,7 +309,7 @@ class TextItemType(ItemType):
             ptr = listbuilder.alloc_data(offset, item)
         else:
             ptr = listbuilder.alloc_text(offset, item)
-        packed = struct.pack('q', ptr)
+        packed = pack_int64(ptr)
         return packed
 
 
@@ -342,7 +343,7 @@ class ListItemType(ItemType):
     def pack_item(self, listbuilder, i, item):
         offset = i * listbuilder.item_length
         ptr = listbuilder.alloc_list(offset, self.inner_item_type, item)
-        packed = struct.pack('q', ptr)
+        packed = pack_int64(ptr)
         return packed
 
 

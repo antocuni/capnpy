@@ -3,6 +3,7 @@ from capnpy.blob cimport Blob
 from capnpy.visit cimport end_of, is_compact
 from capnpy cimport ptr
 from capnpy.list cimport List, ItemType
+from capnpy.packing cimport pack_int64
 
 cpdef str check_tag(str curtag, str newtag)
 

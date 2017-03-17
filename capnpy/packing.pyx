@@ -119,6 +119,14 @@ cpdef bytes pack_message_header(int segment_count, int segment_size, long p):
     return buf
 
 
+cpdef bytes pack_int64(long value):
+    cdef bytes buf
+    cdef char* cbuf
+    buf = PyString_FromStringAndSize(NULL, 8)
+    cbuf = PyString_AS_STRING(buf)
+    (<int64_t*>(cbuf+0))[0] = value
+    return buf
+
 cpdef object pack_into(char ifmt, object buf, int offset, object value):
     cdef char* cbuf
     cdef void* valueaddr

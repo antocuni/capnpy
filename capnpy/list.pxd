@@ -5,6 +5,7 @@ from capnpy.type cimport BuiltinType
 from capnpy cimport ptr
 from capnpy.visit cimport end_of
 from capnpy.builder cimport ListBuilder
+from capnpy.packing cimport pack_int64
 
 cdef class ItemType(object)
 

@@ -1,7 +1,6 @@
-import struct
 from capnpy import ptr
 from capnpy.type import Types
-from capnpy.packing import unpack_primitive, mychr, pack_into, pack_int64_into
+from capnpy.packing import unpack_primitive, pack_into, pack_int64_into, pack_int64
 from capnpy.printer import BufferPrinter
 
 class AbstractBuilder(object):
@@ -75,7 +74,7 @@ class AbstractBuilder(object):
         #
         # emit the tag
         tag = ptr.new_struct(item_count, data_size, ptrs_size)
-        self._alloc(struct.pack('<q', tag))
+        self._alloc(pack_int64(tag))
         return ptr.new_list(ptr_offset, ptr.LIST_SIZE_COMPOSITE, total_words)
 
     def alloc_list(self, offset, item_type, lst):

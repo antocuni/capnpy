@@ -1,9 +1,9 @@
-import struct
 import capnpy
 from capnpy import ptr
 from capnpy.blob import Blob, Types
 from capnpy.visit import end_of, is_compact
 from capnpy.list import List
+from capnpy.packing import pack_int64
 
 class Undefined(object):
     def __repr__(self):
@@ -286,7 +286,7 @@ class Struct(Blob):
                 p = ptr.new_generic(ptr.kind(p),
                                     ptr.offset(p)+additional_offset,
                                     ptr.extra(p))
-            s = struct.pack('q', p)
+            s = pack_int64(p)
             parts.append(s)
         #
         body_buf = ''.join(parts)
