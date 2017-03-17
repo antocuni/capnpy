@@ -278,7 +278,8 @@ class Struct(Blob):
         #
         # iterate over and fix the pointers
         parts = [data_buf]
-        for j in range(self._ptrs_size):
+        j = 0
+        while j < self._ptrs_size:
             # read pointer, update its offset, and pack it
             p = self._read_raw_ptr(j*8)
             if p != 0:
@@ -288,6 +289,7 @@ class Struct(Blob):
                                     ptr.extra(p))
             s = pack_int64(p)
             parts.append(s)
+            j += 1
         #
         body_buf = ''.join(parts)
         # 3) extra part
