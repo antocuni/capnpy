@@ -81,3 +81,8 @@ class TestCtor(object):
         items = [get_obj(schema)] * 10
         res = benchmark(new_and_sum, schema.MyStructContainer, items)
         assert res == self.N
+        ## import vmprof
+        ## with open('/tmp/pytest.vmprof', 'w+') as f:
+        ##     vmprof.enable(f.fileno(), native=True)
+        ##     res = benchmark(new_and_sum, schema.MyStructContainer, items)
+        ##     vmprof.disable()
