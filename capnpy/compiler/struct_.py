@@ -159,7 +159,7 @@ class Node__Struct:
         # pass a value for all fields which are not explicitly listed
         for f in self.struct.fields:
             if f not in fields:
-                argnames.append((f.name, '_undefined'))
+                argnames.append((m._field_name(f), '_undefined'))
         #
         ns.w('@classmethod')
         with ns.def_(name, ['cls'] + params):

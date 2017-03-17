@@ -15,6 +15,7 @@ class BaseTestUnionConstructors(CompilerTest):
             circle @2 :Int64;      # radius
             square @3 :Int64;      # width
             empty  @4 :Void;
+            fooBar @5 :Void;
           }
         }
         """
@@ -98,7 +99,6 @@ class TestSpecificCtors(BaseTestUnionConstructors):
         assert p.perimeter == 2
         assert p.square == 3
         assert p.color == 'red'
-
 
 class TestGenericCtor(BaseTestUnionConstructors):
 
