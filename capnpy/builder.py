@@ -68,8 +68,9 @@ class AbstractBuilder(object):
         #
         # if size is composite, ptr contains the total size in words, and
         # we also need to emit a "list tag"
-        data_size = item_type.structcls.__static_data_size__  # in words
-        ptrs_size = item_type.structcls.__static_ptrs_size__  # in words
+        struct_item_type = item_type
+        data_size = struct_item_type.static_data_size
+        ptrs_size = struct_item_type.static_ptrs_size
         total_words = (data_size+ptrs_size) * item_count
         #
         # emit the tag
@@ -84,9 +85,11 @@ class AbstractBuilder(object):
         item_count = len(lst)
         listbuilder = ListBuilder.__new__(ListBuilder)
         listbuilder._init(item_type, item_count)
-        for i, item in enumerate(lst):
-            s = item_type.pack_item(listbuilder, i, item)
+        i = 0
+        while i < item_count:
+            s = item_type.pack_item(listbuilder, i, lst[i])
             listbuilder.append(s)
+            i += 1
         #
         # create the ptrlist, and allocate the list body itself
         ptr_offset = self._calc_relative_offset(offset)

@@ -45,7 +45,8 @@ cdef class EnumItemType(PrimitiveItemType):
 
 cdef class StructItemType(ItemType):
     cdef readonly type structcls
-    cdef readonly long static_body_size
+    cdef readonly long static_data_size
+    cdef readonly long static_ptrs_size
 
     @cython.locals(body_offset=long, extra_offset=long, struct_item=Struct)
     cpdef pack_item(self, ListBuilder listbuilder, long i, object item)

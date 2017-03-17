@@ -220,8 +220,8 @@ class StructItemType(ItemType):
 
     def __init__(self, structcls):
         self.structcls = structcls
-        self.static_body_size = (structcls.__static_data_size__ +
-                                 structcls.__static_ptrs_size__)
+        self.static_data_size = structcls.__static_data_size__
+        self.static_ptrs_size = structcls.__static_ptrs_size__
 
     def get_type(self):
         return self.structcls
@@ -240,7 +240,7 @@ class StructItemType(ItemType):
         return item.shortrepr()
 
     def get_item_length(self):
-        total_length = self.static_body_size*8          # in bytes
+        total_length = (self.static_data_size+self.static_ptrs_size)*8   # in bytes
         if total_length > 8:
             return total_length, ptr.LIST_SIZE_COMPOSITE
         assert False, 'XXX'
@@ -271,7 +271,7 @@ class StructItemType(ItemType):
         # Note that extra_offset is expressed in WORDS, while _total_length in
         # BYTES
         struct_item = item
-        body_offset = self.static_body_size * (i+1)
+        body_offset = (self.static_data_size+self.static_ptrs_size) * (i+1)
         extra_offset = listbuilder._total_length/8 - body_offset
         body, extra = struct_item._split(extra_offset)
         listbuilder._alloc(extra)

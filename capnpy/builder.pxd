@@ -2,7 +2,7 @@ import cython
 from capnpy cimport ptr
 from capnpy.packing cimport pack_into, pack_int64_into
 from capnpy.struct_ cimport Struct
-from capnpy.list cimport List, ItemType
+from capnpy.list cimport List, ItemType, StructItemType
 
 
 cdef class AbstractBuilder(object):
@@ -25,9 +25,11 @@ cdef class AbstractBuilder(object):
 
     cpdef alloc_struct(self, int offset, type struct_type, Struct value)
 
-    @cython.locals(listbuilder=ListBuilder)
+    @cython.locals(listbuilder=ListBuilder, i=long)
     cpdef alloc_list(self, int offset, ItemType item_type, object lst)
 
+    @cython.locals(struct_item_type=StructItemType, data_size=long,
+                   ptrs_size=long, total_words=long)
     cdef long _new_ptrlist(self, long size_tag, long ptr_offset, ItemType item_type, long item_count)
 
 cdef class Builder(AbstractBuilder):
