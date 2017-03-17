@@ -10,12 +10,12 @@ cdef extern from "Python.h":
     char* PyByteArray_AS_STRING(object o)
     Py_ssize_t PyByteArray_GET_SIZE(object o)
 
-cdef char* as_cbuf(object buf, Py_ssize_t* length) except NULL:
+cdef char* as_cbuf(object buf, Py_ssize_t* length, bint rw=0) except NULL:
     # PyString_AS_STRING seems to be faster than relying of cython's own logic
     # to convert bytes to char*
     cdef bytes bytes_buf
     cdef bytearray ba_buf
-    if PyString_CheckExact(buf):
+    if not rw and PyString_CheckExact(buf):
         bytes_buf = buf
         length[0] = PyString_GET_SIZE(bytes_buf)
         return PyString_AS_STRING(bytes_buf)
@@ -24,7 +24,10 @@ cdef char* as_cbuf(object buf, Py_ssize_t* length) except NULL:
         length[0] = PyByteArray_GET_SIZE(ba_buf)
         return PyByteArray_AS_STRING(ba_buf)
     else:
-        raise TypeError("Expected str or bytearray")
+        if rw:
+            raise TypeError("Expected bytearray")
+        else:
+            raise TypeError("Expected str or bytearray")
 
 cdef checkbound(int size, Py_ssize_t length, int offset):
     if offset < 0 or offset + size > length:
@@ -114,3 +117,61 @@ cpdef bytes pack_message_header(int segment_count, int segment_size, long p):
     (<int32_t*>(cbuf+4))[0] = segment_size
     (<int64_t*>(cbuf+8))[0] = p
     return buf
+
+
+cpdef bytes pack_int64(long value):
+    cdef bytes buf
+    cdef char* cbuf
+    buf = PyString_FromStringAndSize(NULL, 8)
+    cbuf = PyString_AS_STRING(buf)
+    (<int64_t*>(cbuf+0))[0] = value
+    return buf
+
+cpdef object pack_into(char ifmt, object buf, int offset, object value):
+    cdef char* cbuf
+    cdef void* valueaddr
+    cdef Py_ssize_t length = 0
+    cbuf = as_cbuf(buf, &length, rw=1)
+    valueaddr = cbuf + offset
+    if ifmt == 'q':
+        checkbound(8, length, offset)
+        (<int64_t*>valueaddr)[0] = value
+    elif ifmt == 'Q':
+        checkbound(8, length, offset)
+        (<uint64_t*>valueaddr)[0] = value
+    elif ifmt == 'd':
+        checkbound(8, length, offset)
+        (<double*>valueaddr)[0] = value
+    elif ifmt == 'f':
+        checkbound(4, length, offset)
+        (<float*>valueaddr)[0] = value
+    elif ifmt == 'i':
+        checkbound(4, length, offset)
+        (<int32_t*>valueaddr)[0] = value
+    elif ifmt == 'I':
+        checkbound(4, length, offset)
+        (<uint32_t*>valueaddr)[0] = value
+    elif ifmt == 'h':
+        checkbound(2, length, offset)
+        (<int16_t*>valueaddr)[0] = value
+    elif ifmt == 'H':
+        checkbound(2, length, offset)
+        (<uint16_t*>valueaddr)[0] = value
+    elif ifmt == 'b':
+        checkbound(1, length, offset)
+        (<int8_t*>valueaddr)[0] = value
+    elif ifmt == 'B':
+        checkbound(1, length, offset)
+        (<uint8_t*>valueaddr)[0] = value
+    else:
+        raise ValueError('unknown fmt %s' % chr(ifmt))
+    return None
+
+cpdef object pack_int64_into(object buf, int offset, long value):
+    cdef char* cbuf
+    cdef void* valueaddr
+    cdef Py_ssize_t length = 0
+    cbuf = as_cbuf(buf, &length, rw=1)
+    valueaddr = cbuf + offset
+    checkbound(8, length, offset)
+    (<int64_t*>valueaddr)[0] = value

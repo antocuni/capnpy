@@ -1,8 +1,11 @@
 import cython
 from capnpy.blob cimport Blob
+from capnpy.struct_ cimport Struct
 from capnpy.type cimport BuiltinType
 from capnpy cimport ptr
 from capnpy.visit cimport end_of
+from capnpy.builder cimport ListBuilder
+from capnpy.packing cimport pack_int64
 
 cdef class ItemType(object)
 
@@ -26,6 +29,7 @@ cdef class ItemType(object):
     cpdef read_item(self, List lst, long offset)
     cpdef long offset_for_item(self, List lst, long i)
     cpdef bint can_compare(self)
+    cpdef pack_item(self, ListBuilder listbuilder, long i, object item)
 
 cdef class VoidItemType(ItemType):
     pass
@@ -41,7 +45,12 @@ cdef class EnumItemType(PrimitiveItemType):
     cdef readonly object enumcls
 
 cdef class StructItemType(ItemType):
-    cdef readonly object structcls
+    cdef readonly type structcls
+    cdef readonly long static_data_size
+    cdef readonly long static_ptrs_size
+
+    @cython.locals(body_offset=long, extra_offset=long, struct_item=Struct)
+    cpdef pack_item(self, ListBuilder listbuilder, long i, object item)
 
 cdef class TextItemType(ItemType):
     cdef readonly int additional_size

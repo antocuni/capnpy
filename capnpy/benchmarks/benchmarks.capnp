@@ -53,3 +53,8 @@ struct StrPoint $Py.key("x, y, z") {
 struct MyStructContainer {
     items @0 :List(MyStruct);
 }
+
+struct Rectangle {
+    a @0 :Point;
+    b @1 :Point;
+}

@@ -1,9 +1,9 @@
-import struct
 import capnpy
 from capnpy import ptr
 from capnpy.blob import Blob, Types
 from capnpy.visit import end_of, is_compact
 from capnpy.list import List
+from capnpy.packing import pack_int64
 
 class Undefined(object):
     def __repr__(self):
@@ -105,11 +105,6 @@ class Struct(Blob):
         if self.__tag_offset__ is None:
             raise TypeError("Cannot call which() on a non-union type")
         return self._read_data_int16(self.__tag_offset__)
-
-    def _read_ptr_generic(self, offset):
-        # generic method, defined in Blob and implemented also by List
-        offset += self._ptrs_offset
-        return offset, self._buf.read_ptr(offset)
 
     def _read_fast_ptr(self, offset):
         # Struct-specific logic
@@ -220,11 +215,13 @@ class Struct(Blob):
     def _get_extra_start(self):
         if self._ptrs_size == 0:
             return self._get_body_end()
-        for i in range(self._ptrs_size):
+        i = 0
+        while i < self._ptrs_size:
             p = self._read_raw_ptr(i*8)
             assert ptr.kind(p) != ptr.FAR
             if p != 0:
                 return self._ptrs_offset + ptr.deref(p, i*8)
+            i += 1
         #
         # if we are here, it means that all ptrs are null
         return self._get_body_end()
@@ -281,7 +278,8 @@ class Struct(Blob):
         #
         # iterate over and fix the pointers
         parts = [data_buf]
-        for j in range(self._ptrs_size):
+        j = 0
+        while j < self._ptrs_size:
             # read pointer, update its offset, and pack it
             p = self._read_raw_ptr(j*8)
             if p != 0:
@@ -289,8 +287,9 @@ class Struct(Blob):
                 p = ptr.new_generic(ptr.kind(p),
                                     ptr.offset(p)+additional_offset,
                                     ptr.extra(p))
-            s = struct.pack('q', p)
+            s = pack_int64(p)
             parts.append(s)
+            j += 1
         #
         body_buf = ''.join(parts)
         # 3) extra part

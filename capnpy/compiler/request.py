@@ -49,7 +49,7 @@ class RequestedFile:
         m.w("from capnpy.struct_ import undefined as _undefined")
         m.w("from capnpy.enum import enum as _enum")
         m.w("from capnpy.blob import Types as _Types")
-        m.w("from capnpy.builder import Builder as _Builder")
+        m.w("from capnpy.builder {cimport} Builder as _Builder")
         m.w("from capnpy.list {cimport} List as _List")
         m.w("from capnpy.list {cimport} PrimitiveItemType as _PrimitiveItemType")
         m.w("from capnpy.list {cimport} BoolItemType as _BoolItemType")
@@ -91,10 +91,6 @@ class RequestedFile:
         #
         for child in children:
             child.emit_reference_as_child(m)
-        #
-        m.w()
-        for child in children:
-            child.emit_delete_nested_from_globals(m)
         #
         m.w()
         if m.standalone:

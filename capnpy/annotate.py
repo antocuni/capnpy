@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2017-01-02 16:43
+# generated on 2017-03-16 21:10
 
 from capnpy.ptr import E_IS_FAR_POINTER as _E_IS_FAR_POINTER
 from capnpy.struct_ import Struct as _Struct
@@ -10,7 +10,13 @@ from capnpy.enum import enum as _enum
 from capnpy.blob import Types as _Types
 from capnpy.builder import Builder as _Builder
 from capnpy.list import List as _List
+from capnpy.list import PrimitiveItemType as _PrimitiveItemType
+from capnpy.list import BoolItemType as _BoolItemType
+from capnpy.list import TextItemType as _TextItemType
 from capnpy.list import StructItemType as _StructItemType
+from capnpy.list import EnumItemType as _EnumItemType
+from capnpy.list import VoidItemType as _VoidItemType
+from capnpy.list import ListItemType as _ListItemType
 from capnpy.util import text_repr as _text_repr
 from capnpy.util import float32_repr as _float32_repr
 from capnpy.util import float64_repr as _float64_repr
@@ -48,7 +54,6 @@ class key(object):
     targets_annotation = False
 
 #### DEFINITIONS ####
-
 
 
 _extend_module_maybe(globals(), modname=__name__)

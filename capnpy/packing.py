@@ -41,3 +41,17 @@ def pack_message_header(segment_count, segment_size, p):
     """
     assert segment_count == 1
     return struct.pack('iiQ', segment_count-1, segment_size, p)
+
+def pack_int64(value):
+    return struct.pack('q', value)
+
+def pack_into(ifmt, buf, offset, value):
+    fmt = '<' + mychr(ifmt)
+    try:
+        struct.pack_into(fmt, buf, offset, value)
+    except struct.error, e:
+        raise IndexError(e)
+
+def pack_int64_into(buf, offset, value):
+    return pack_into(ord('q'), buf, offset, value)
+

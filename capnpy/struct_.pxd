@@ -3,6 +3,7 @@ from capnpy.blob cimport Blob
 from capnpy.visit cimport end_of, is_compact
 from capnpy cimport ptr
 from capnpy.list cimport List, ItemType
+from capnpy.packing cimport pack_int64
 
 cpdef str check_tag(str curtag, str newtag)
 
@@ -49,5 +50,16 @@ cdef class Struct(Blob):
     cpdef long __which__(self) except -1
 
     cpdef long _get_body_start(self)
+    cpdef long _get_body_end(self)
+
+    @cython.locals(i=long)
+    cpdef long _get_extra_start(self)
     cpdef long _get_end(self)
     cpdef long _is_compact(self)
+
+    @cython.locals(body_start=long, body_end=long, extra_start=long, extra_end=long,
+                   j=long, data_size=long, old_extra_offset=long, additional_offset=long)
+    cpdef object _split(self, long extra_offset)
+
+    cpdef object compact(self)
+    

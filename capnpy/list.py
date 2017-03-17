@@ -4,6 +4,7 @@ from capnpy.blob import Blob, Types, PYX
 from capnpy import ptr
 from capnpy.util import text_repr, float32_repr, float64_repr
 from capnpy.visit import end_of
+from capnpy.packing import pack_int64
 
 class List(Blob):
 
@@ -31,10 +32,6 @@ class List(Blob):
         raise TypeError("Cannot pickle capnpy List directly. Either pickle "
                         "the outer structure containing it, or convert it "
                         "to a Python list before pickling")
-
-    def _read_ptr_generic(self, offset):
-        offset += self._offset
-        return offset, self._buf.read_ptr(offset)
 
     def _set_list_tag(self, size_tag, item_count):
         self._size_tag = size_tag
@@ -224,6 +221,8 @@ class StructItemType(ItemType):
 
     def __init__(self, structcls):
         self.structcls = structcls
+        self.static_data_size = structcls.__static_data_size__
+        self.static_ptrs_size = structcls.__static_ptrs_size__
 
     def get_type(self):
         return self.structcls
@@ -242,10 +241,7 @@ class StructItemType(ItemType):
         return item.shortrepr()
 
     def get_item_length(self):
-        structcls = self.structcls
-        total_size = (structcls.__static_data_size__ +
-                      structcls.__static_ptrs_size__)   # in words
-        total_length = total_size*8                     # in bytes
+        total_length = (self.static_data_size+self.static_ptrs_size)*8   # in bytes
         if total_length > 8:
             return total_length, ptr.LIST_SIZE_COMPOSITE
         assert False, 'XXX'
@@ -275,10 +271,10 @@ class StructItemType(ItemType):
         #
         # Note that extra_offset is expressed in WORDS, while _total_length in
         # BYTES
-        body_size = structcls.__static_data_size__ + structcls.__static_ptrs_size__
-        body_offset = body_size * (i+1)
+        struct_item = item
+        body_offset = (self.static_data_size+self.static_ptrs_size) * (i+1)
         extra_offset = listbuilder._total_length/8 - body_offset
-        body, extra = item._split(extra_offset)
+        body, extra = struct_item._split(extra_offset)
         listbuilder._alloc(extra)
         return body
 
@@ -313,7 +309,7 @@ class TextItemType(ItemType):
             ptr = listbuilder.alloc_data(offset, item)
         else:
             ptr = listbuilder.alloc_text(offset, item)
-        packed = struct.pack('q', ptr)
+        packed = pack_int64(ptr)
         return packed
 
 
@@ -347,7 +343,7 @@ class ListItemType(ItemType):
     def pack_item(self, listbuilder, i, item):
         offset = i * listbuilder.item_length
         ptr = listbuilder.alloc_list(offset, self.inner_item_type, item)
-        packed = struct.pack('q', ptr)
+        packed = pack_int64(ptr)
         return packed
 
 

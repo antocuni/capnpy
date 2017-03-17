@@ -36,7 +36,6 @@ class Node__Struct:
             ns.w("class {name}(_Struct): pass")
             ns.w("{name}.__name__ = '{dotname}'")
         #
-        ns.w("_{name}_list_item_type = _StructItemType({name})")
         ns.w()
 
     def emit_definition(self, m):
@@ -73,18 +72,16 @@ class Node__Struct:
             self._emit_repr(m)
             self._emit_key_maybe(m)
         ns.w()
+        if m.pyx:
+            ns.w("cdef _StructItemType _{name}_list_item_type = _StructItemType({name})")
+        else:
+            ns.w("_{name}_list_item_type = _StructItemType({name})")
         ns.w()
 
     def emit_reference_as_child(self, m):
         if self.is_nested(m) and not self.struct.isGroup:
             m.w('{shortname} = {name}', shortname=self.shortname(m),
                 name=self.compile_name(m))
-
-    def emit_delete_nested_from_globals(self, m):
-        if self.is_nested(m) and not self.struct.isGroup:
-            m.w("del globals()['{name}']", name=self.compile_name(m))
-        for child in m.children[self.id]:
-            child.emit_delete_nested_from_globals(m)
 
     def _emit_union_tag(self, m):
         # union tags are 16 bits, so *2
@@ -131,9 +128,10 @@ class Node__Struct:
         ctor.emit()
         ns.w()
         with ns.def_('__init__', ['self'] + ctor.params):
-            call = m.code.call('self.__new', ctor.argnames)
+            newfunc = '{clsname}.__new'.format(clsname=self.compile_name(m))
+            call = m.code.call(newfunc, ctor.argnames)
             ns.w('_buf = {call}', call=call)
-            ns.w('_Struct.__init__(self, _buf, 0, {data_size}, {ptrs_size})')
+            ns.w('self._init_from_buffer(_buf, 0, {data_size}, {ptrs_size})')
         ns.w()
 
     def _emit_ctors_union(self, m, ns):
@@ -146,16 +144,27 @@ class Node__Struct:
 
     def _emit_one_ctor_union(self, m, ns, fields, tag_field):
         ## def new_foo(cls, x=0, y=0):
-        ##     buf = self.__new(x=x, y=y, foo=None)
+        ##     buf = MyStruct.__new(x=x, y=y, foo=None)
         ##     return cls.from_buffer(buf, 0, ..., ...)
         tag_name = m._field_name(tag_field)
         name = 'new_' + tag_name
         fieldtree = FieldTree(m, fields, field_force_default=tag_field)
         argnames, params = fieldtree.get_args_and_params()
         argnames = [(arg, arg) for arg in argnames]
+        #
+        # workaround for this Cython issue:
+        #     * https://github.com/cython/cython/issues/1630
+        # apparently, Cython complains if I don't pass a value for all the
+        # parameters, even if they have a default value; thus, we explicitly
+        # pass a value for all fields which are not explicitly listed
+        for f in self.struct.fields:
+            if f not in fields:
+                argnames.append((f.name, '_undefined'))
+        #
         ns.w('@classmethod')
         with ns.def_(name, ['cls'] + params):
-            call = m.code.call('cls.__new', argnames)
+            newfunc = '{clsname}.__new'.format(clsname=self.compile_name(m))
+            call = m.code.call(newfunc, argnames)
             ns.w('buf = {call}', call=call)
             ns.w('return cls.from_buffer(buf, 0, {data_size}, {ptrs_size})')
         ns.w()

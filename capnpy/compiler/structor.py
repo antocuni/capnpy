@@ -47,10 +47,12 @@ class Structor(object):
             raise ValueError("Duplicate field name(s): %s" % argnames)
         #
         code.w('@staticmethod')
-        with code.def_('__new', self.params) as ns:
+        with code.cdef_('__new', self.params) as ns:
             ns.data_size = self.data_size
             ns.ptrs_size = self.ptrs_size
-            ns.w('builder = _Builder({data_size}, {ptrs_size})')
+            ns.cdef_var('_Builder', 'builder')
+            ns.w('builder = _Builder.__new__(_Builder)')
+            ns.w('builder._init({data_size}, {ptrs_size})')
             for union in self.fieldtree.all_unions():
                 ns.w('{union}__curtag = None', union=union.varname)
             for node in self.fieldtree.children:

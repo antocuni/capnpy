@@ -11,7 +11,7 @@ from capnpy.util import extend
 from capnpy import ptr
 from capnpy.type import Types
 from capnpy.printer import BufferPrinter, print_buffer
-from capnpy.unpack import unpack_primitive, unpack_int64, unpack_int16
+from capnpy.packing import unpack_primitive, unpack_int64, unpack_int16
 from capnpy import _hash
 
 try:
@@ -148,37 +148,6 @@ class Blob(object):
             buf = CapnpBuffer(buf)
         self._buf = buf
 
-    def _read_ptr_generic(self, offset):
-        """
-        Abstract method to read a pointer at the specified offset. Implemented
-        differently by Struct and List, it is used only to do a generic
-        traversal of a message. It returns a tuple (offset, p).
-
-        Not to be confused with Struct._read_fast_ptr, which is the "real"
-        logic to read a statically-typed field, and returns only a p (for
-        performance).
-        """
-        raise NotImplementedError
-
-    def _read_list_or_struct(self, ptr_offset, default_=None):
-        ptr_offset, p = self._read_ptr_generic(ptr_offset)
-        if p == 0:
-            return default_
-        blob_offet = ptr.deref(p, ptr_offset)
-        if ptr.kind(p) == ptr.STRUCT:
-            Struct = capnpy.struct_.Struct
-            return Struct.from_buffer(self._buf, blob_offet,
-                                      ptr.struct_data_size(p),
-                                      ptr.struct_ptrs_size(p))
-        elif ptr.kind(p) == ptr.LIST:
-            List = capnpy.list.List
-            return List.from_buffer(self._buf, blob_offet,
-                                    ptr.list_size_tag(p),
-                                    ptr.list_item_count(p),
-                                    capnpy.list.StructItemType(Blob))
-        else:
-            assert False, 'Unkwown pointer kind: %s' % ptr.kind(p)
-
     def _print_buf(self, start=None, end='auto', **kwds):
         if start is None:
             start = self._data_offset
@@ -249,9 +218,3 @@ try:
     Blob.__ge__ = Blob.__dict__['_cmp_error']
 except TypeError:
     pass
-
-
-# that these two modules are used by _read_list_or_struct. We need to put them
-# at the end because of circular references
-import capnpy.struct_
-import capnpy.list
