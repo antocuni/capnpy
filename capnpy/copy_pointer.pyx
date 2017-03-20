@@ -16,16 +16,18 @@ cdef class MutableBuffer(object):
     cdef long end # index of the current end position of cbuf; the next
                   # allocation will start at this position
 
-    def __cinit__(self):
+    def __cinit__(self, length):
         cdef Py_ssize_t unused
-        self.length = 4096 # XXX: don't use a fixed size
+        self.length = length
         self.buf = bytearray(self.length)
         self.cbuf = as_cbuf(self.buf, &unused)
         self.end = 0
 
-    cpdef char* allocate(self, long length):
+    cpdef char* allocate(self, long length) except NULL:
         cdef long end = self.end
         self.end += length
+        if self.end > self.length:
+            raise ValueError("buffer too small; TODO: implement resizing or multiple segments")
         return self.cbuf + end
 
     cpdef as_bytes(self):
