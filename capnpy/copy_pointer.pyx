@@ -61,20 +61,20 @@ cdef class MutableBuffer(object):
 cdef int64_t read_int64(const char* src, long i):
     return (<int64_t*>(src+i))[0]
 
-cpdef copy_pointer(bytes src, long p, long offset, MutableBuffer dst, long pos):
+cpdef copy_pointer(bytes src, long p, long src_pos, MutableBuffer dst, long dst_pos):
     """
-    Copy from: buffer src, pointer p at the specified offset
-         to:   buffer dst at position dst
+    Copy from: buffer src, pointer p living at the src_pos offset
+         to:   buffer dst at position dst_pos
     """
     cdef Py_ssize_t unused
     cdef char* srcbuf = as_cbuf(src, &unused)
-    _copy(srcbuf, p, offset, dst, pos)
+    _copy(srcbuf, p, src_pos, dst, dst_pos)
 
 
-cdef _copy(const char* src, long p, long offset, MutableBuffer dst, long pos):
+cdef _copy(const char* src, long p, long src_pos, MutableBuffer dst, long dst_pos):
     cdef long kind = ptr.kind(p)
     if kind == ptr.STRUCT:
-        return _copy_struct(src, p, offset, dst, pos)
+        return _copy_struct(src, p, src_pos, dst, dst_pos)
     ## elif kind == ptr.LIST:
     ##     item_size = ptr.list_size_tag(p)
     ##     if item_size == ptr.LIST_SIZE_COMPOSITE:
@@ -90,19 +90,19 @@ cdef _copy(const char* src, long p, long offset, MutableBuffer dst, long pos):
     else:
         assert False, 'unknown ptr kind'
 
+cdef _copy_many_ptrs(long n, const char* src, long src_pos, MutableBuffer dst, long dst_pos):
+    cdef long i, p, offset
+    for i in range(n):
+        offset = i*8
+        p = read_int64(src, src_pos + offset)
+        _copy(src, p, src_pos + offset, dst, dst_pos + offset)
 
-cdef _copy_struct(const char* src, long p, long offset, MutableBuffer dst, long pos):
-    offset = ptr.deref(p, offset)
+
+cdef _copy_struct(const char* src, long p, long src_pos, MutableBuffer dst, long dst_pos):
+    src_pos = ptr.deref(p, src_pos)
     cdef long data_size = ptr.struct_data_size(p)
     cdef long ptrs_size = ptr.struct_ptrs_size(p)
-    cdef long dst_p = dst.alloc_struct(pos, data_size, ptrs_size)
-    # copy the data section verbatim
-    dst.memcpy_from(dst_p, src+offset, data_size*8)
-    # deep-copy the pointer section
-    cdef long i
-    cdef long p_offset
-    cdef long src_p
-    for i in range(ptrs_size):
-        p_offset = (data_size+i)*8
-        src_p = read_int64(src, offset+p_offset)
-        _copy(src, src_p, offset+p_offset, dst, dst_p+p_offset)
+    cdef long ds = data_size*8
+    dst_pos = dst.alloc_struct(dst_pos, data_size, ptrs_size)
+    dst.memcpy_from(dst_pos, src+src_pos, ds)                    # copy data section
+    _copy_many_ptrs(ptrs_size, src, src_pos+ds, dst, dst_pos+ds) # copy the ptrs section
