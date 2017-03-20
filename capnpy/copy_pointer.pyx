@@ -58,6 +58,8 @@ cdef class MutableBuffer(object):
         self.set_int64(i, p)
         return result
 
+cdef int64_t read_int64(const char* src, long i):
+    return (<int64_t*>(src+i))[0]
 
 cpdef copy_pointer(bytes src, long p, long offset, MutableBuffer dst, long pos):
     """
@@ -96,4 +98,11 @@ cdef _copy_struct(const char* src, long p, long offset, MutableBuffer dst, long 
     cdef long dst_p = dst.alloc_struct(pos, data_size, ptrs_size)
     # copy the data section verbatim
     dst.memcpy_from(dst_p, src+offset, data_size*8)
-    # XXX, copy the pointers
+    # deep-copy the pointer section
+    cdef long i
+    cdef long p_offset
+    cdef long src_p
+    for i in range(ptrs_size):
+        p_offset = (data_size+i)*8
+        src_p = read_int64(src, offset+p_offset)
+        _copy(src, src_p, offset+p_offset, dst, dst_p+p_offset)

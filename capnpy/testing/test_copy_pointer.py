@@ -61,3 +61,34 @@ class TestCopyPointer(object):
                        '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                        '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
 
+    def test_struct_ptrs(self):
+        ## struct Point {
+        ##   x @0 :Int64;
+        ##   y @1 :Int64;
+        ## }
+        ##
+        ## struct Rectangle {
+        ##   color @0 :Int64;
+        ##   a @1 :Point;
+        ##   b @2 :Point;
+        ## }
+        src = ('garbage0'
+               '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+               '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+               '\x10\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
+               'garbage1'
+               'garbage2'
+               '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
+               '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
+               '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
+        dst = self.copy_struct(src, offset=8, data_size=1, ptrs_size=2)
+        assert dst == (
+            '\x00\x00\x00\x00\x01\x00\x02\x00'       # ptr to Rectangle (1, 2)
+            '\x01\x00\x00\x00\x00\x00\x00\x00'       # color == 1
+            '\x04\x00\x00\x00\x02\x00\x00\x00'       # ptr to a
+            '\x08\x00\x00\x00\x02\x00\x00\x00'       # ptr to b
+            '\x01\x00\x00\x00\x00\x00\x00\x00'       # a.x == 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00'       # a.y == 2
+            '\x03\x00\x00\x00\x00\x00\x00\x00'       # b.x == 3
+            '\x04\x00\x00\x00\x00\x00\x00\x00')      # b.y == 4
