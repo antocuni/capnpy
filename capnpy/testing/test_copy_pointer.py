@@ -114,8 +114,20 @@ class TestCopyPointer(object):
             '\x02\x00\x00\x00\x00\x00\x00\x00'       # a.y == 2
             '\x03\x00\x00\x00\x00\x00\x00\x00'       # b.x == 3
             '\x04\x00\x00\x00\x00\x00\x00\x00')      # b.y == 4
+        #
+        # sanity check: make sure that src is a valid message
+        dst = self.copy_struct(src, offset=0, data_size=1, ptrs_size=2)
+        assert dst[8:] == src # dst contain an extra pointer to the content of src
+        #
         cut_data = src[:-8] # remove b.y, to trigger an out-of-bound in the data section
         with pytest.raises(IndexError) as exc:
             self.copy_struct(cut_data, offset=0, data_size=1, ptrs_size=2,
+                             bufsize=128)
+        assert exc.value.message.startswith('Invalid capnproto message: offset out of bound')
+        #
+        cut_ptr = src[:8] # remove from "ptr to a" to the end, to trigger an
+                           # out-of-bound in the ptrs section
+        with pytest.raises(IndexError) as exc:
+            self.copy_struct(cut_ptr, offset=0, data_size=1, ptrs_size=2,
                              bufsize=128)
         assert exc.value.message.startswith('Invalid capnproto message: offset out of bound')

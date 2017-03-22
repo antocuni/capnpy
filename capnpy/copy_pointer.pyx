@@ -94,6 +94,11 @@ cdef long _copy(const char* src, Py_ssize_t src_len, long p, long src_pos,
 cdef long _copy_many_ptrs(long n, const char* src, Py_ssize_t src_len, long src_pos,
                           MutableBuffer dst, long dst_pos) except -1:
     cdef long i, p, offset
+    cdef long end_of_ptrs = src_pos+(n*8)
+    if end_of_ptrs > src_len:
+        msg = ("Invalid capnproto message: offset out of bound "
+               "at position %s (%s > %s)" % (src_pos, end_of_ptrs, src_len))
+        raise IndexError(msg)
     for i in range(n):
         offset = i*8
         p = read_int64(src, src_pos + offset)
