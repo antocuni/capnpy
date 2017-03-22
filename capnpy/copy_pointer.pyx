@@ -66,15 +66,16 @@ cpdef copy_pointer(bytes src, long p, long src_pos, MutableBuffer dst, long dst_
     Copy from: buffer src, pointer p living at the src_pos offset
          to:   buffer dst at position dst_pos
     """
-    cdef Py_ssize_t unused
-    cdef char* srcbuf = as_cbuf(src, &unused)
-    _copy(srcbuf, p, src_pos, dst, dst_pos)
+    cdef Py_ssize_t src_len
+    cdef char* srcbuf = as_cbuf(src, &src_len)
+    _copy(srcbuf, src_len, p, src_pos, dst, dst_pos)
 
 
-cdef long _copy(const char* src, long p, long src_pos, MutableBuffer dst, long dst_pos) except -1:
+cdef long _copy(const char* src, Py_ssize_t src_len, long p, long src_pos,
+                MutableBuffer dst, long dst_pos) except -1:
     cdef long kind = ptr.kind(p)
     if kind == ptr.STRUCT:
-        return _copy_struct(src, p, src_pos, dst, dst_pos)
+        return _copy_struct(src, src_len, p, src_pos, dst, dst_pos)
     ## elif kind == ptr.LIST:
     ##     item_size = ptr.list_size_tag(p)
     ##     if item_size == ptr.LIST_SIZE_COMPOSITE:
@@ -88,21 +89,27 @@ cdef long _copy(const char* src, long p, long src_pos, MutableBuffer dst, long d
     ## elif kind == ptr.FAR:
     ##     raise NotImplementedError('Far pointer not supported')
     else:
-        assert False, 'unknown ptr kind'
+        assert False, 'unknown ptr kind: %s' % kind
 
-cdef long _copy_many_ptrs(long n, const char* src, long src_pos, MutableBuffer dst, long dst_pos) except -1:
+cdef long _copy_many_ptrs(long n, const char* src, Py_ssize_t src_len, long src_pos,
+                          MutableBuffer dst, long dst_pos) except -1:
     cdef long i, p, offset
     for i in range(n):
         offset = i*8
         p = read_int64(src, src_pos + offset)
-        _copy(src, p, src_pos + offset, dst, dst_pos + offset)
+        _copy(src, src_len, p, src_pos + offset, dst, dst_pos + offset)
 
 
-cdef long _copy_struct(const char* src, long p, long src_pos, MutableBuffer dst, long dst_pos) except -1:
+cdef long _copy_struct(const char* src, src_len, long p, long src_pos,
+                       MutableBuffer dst, long dst_pos) except -1:
     src_pos = ptr.deref(p, src_pos)
     cdef long data_size = ptr.struct_data_size(p)
     cdef long ptrs_size = ptr.struct_ptrs_size(p)
     cdef long ds = data_size*8
     dst_pos = dst.alloc_struct(dst_pos, data_size, ptrs_size)
-    dst.memcpy_from(dst_pos, src+src_pos, ds)                    # copy data section
-    _copy_many_ptrs(ptrs_size, src, src_pos+ds, dst, dst_pos+ds) # copy the ptrs section
+    if src_pos+ds > src_len:
+        msg = ("Invalid capnproto message: offset out of bound "
+               "at position %s (%s > %s)" % (src_pos, src_pos+ds, src_len))
+        raise IndexError(msg)
+    dst.memcpy_from(dst_pos, src+src_pos, ds) # copy data section
+    _copy_many_ptrs(ptrs_size, src, src_len, src_pos+ds, dst, dst_pos+ds)

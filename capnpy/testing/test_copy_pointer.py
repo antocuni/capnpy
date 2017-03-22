@@ -44,8 +44,10 @@ class TestMutableBuffer(object):
 
 class TestCopyPointer(object):
 
-    def copy_struct(self, src, offset, data_size, ptrs_size):
-        dst = MutableBuffer(len(src))
+    def copy_struct(self, src, offset, data_size, ptrs_size, bufsize=None):
+        if bufsize is None:
+            bufsize = len(src)+8
+        dst = MutableBuffer(bufsize)
         dst_pos = dst.allocate(8) # allocate the space to store the pointer p
         p = ptr.new_struct(0, data_size, ptrs_size)
         copy_pointer(src, p, offset-8, dst, dst_pos)
@@ -92,3 +94,28 @@ class TestCopyPointer(object):
             '\x02\x00\x00\x00\x00\x00\x00\x00'       # a.y == 2
             '\x03\x00\x00\x00\x00\x00\x00\x00'       # b.x == 3
             '\x04\x00\x00\x00\x00\x00\x00\x00')      # b.y == 4
+
+    def test_struct_out_of_bound(self):
+        ## struct Point {
+        ##   x @0 :Int64;
+        ##   y @1 :Int64;
+        ## }
+        ##
+        ## struct Rectangle {
+        ##   color @0 :Int64;
+        ##   a @1 :Point;
+        ##   b @2 :Point;
+        ## }
+        src = (
+            '\x01\x00\x00\x00\x00\x00\x00\x00'       # color == 1
+            '\x04\x00\x00\x00\x02\x00\x00\x00'       # ptr to a
+            '\x08\x00\x00\x00\x02\x00\x00\x00'       # ptr to b
+            '\x01\x00\x00\x00\x00\x00\x00\x00'       # a.x == 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00'       # a.y == 2
+            '\x03\x00\x00\x00\x00\x00\x00\x00'       # b.x == 3
+            '\x04\x00\x00\x00\x00\x00\x00\x00')      # b.y == 4
+        cut_data = src[:-8] # remove b.y, to trigger an out-of-bound in the data section
+        with pytest.raises(IndexError) as exc:
+            self.copy_struct(cut_data, offset=0, data_size=1, ptrs_size=2,
+                             bufsize=128)
+        assert exc.value.message.startswith('Invalid capnproto message: offset out of bound')
