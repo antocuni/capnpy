@@ -71,7 +71,7 @@ cpdef copy_pointer(bytes src, long p, long src_pos, MutableBuffer dst, long dst_
     _copy(srcbuf, p, src_pos, dst, dst_pos)
 
 
-cdef _copy(const char* src, long p, long src_pos, MutableBuffer dst, long dst_pos):
+cdef long _copy(const char* src, long p, long src_pos, MutableBuffer dst, long dst_pos) except -1:
     cdef long kind = ptr.kind(p)
     if kind == ptr.STRUCT:
         return _copy_struct(src, p, src_pos, dst, dst_pos)
@@ -90,7 +90,7 @@ cdef _copy(const char* src, long p, long src_pos, MutableBuffer dst, long dst_po
     else:
         assert False, 'unknown ptr kind'
 
-cdef _copy_many_ptrs(long n, const char* src, long src_pos, MutableBuffer dst, long dst_pos):
+cdef long _copy_many_ptrs(long n, const char* src, long src_pos, MutableBuffer dst, long dst_pos) except -1:
     cdef long i, p, offset
     for i in range(n):
         offset = i*8
@@ -98,7 +98,7 @@ cdef _copy_many_ptrs(long n, const char* src, long src_pos, MutableBuffer dst, l
         _copy(src, p, src_pos + offset, dst, dst_pos + offset)
 
 
-cdef _copy_struct(const char* src, long p, long src_pos, MutableBuffer dst, long dst_pos):
+cdef long _copy_struct(const char* src, long p, long src_pos, MutableBuffer dst, long dst_pos) except -1:
     src_pos = ptr.deref(p, src_pos)
     cdef long data_size = ptr.struct_data_size(p)
     cdef long ptrs_size = ptr.struct_ptrs_size(p)
