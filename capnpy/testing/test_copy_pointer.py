@@ -202,3 +202,46 @@ class TestCopyPointer(object):
             '\x00\x00\x00\x00\x00\x00\x01\x00'    # ptr (0, 1)
             '\x01\x00\x00\x00\x19\x00\x00\x00'    # ptrlist
             '\x03\x00\x00\x00\x00\x00\x00\x00')   # [True, True, False]
+
+    def test_list_of_pointers(self):
+        src = (
+            '\x01\x00\x00\x00\x1e\x00\x00\x00'   # ptr to list of strings
+            '\x0d\x00\x00\x00\x32\x00\x00\x00'   # strings[0] == ptr to #0
+            '\x11\x00\x00\x00\x52\x00\x00\x00'   # strings[1] == ptr to #1
+            '\x19\x00\x00\x00\xb2\x00\x00\x00'   # strings[2] == ptr to #2
+            'garbage1'
+            'h' 'e' 'l' 'l' 'o' '\x00\x00\x00'   # #0
+            'garbage2'
+            'c' 'a' 'p' 'n' 'p' 'r' 'o' 't'      # #1...
+            'o' '\x00\x00\x00\x00\x00\x00\x00'
+            'garbage3'
+            't' 'h' 'i' 's' ' ' 'i' 's' ' '      # #2...
+            'a' ' ' 'l' 'o' 'n' 'g' ' ' 's'
+            't' 'r' 'i' 'n' 'g' '\x00\x00\x00')
+        dst = self.copy_struct(src, offset=0, data_size=0, ptrs_size=1)
+        assert dst == (
+            '\x00\x00\x00\x00\x00\x00\x01\x00'   # ptr (0, 1)
+            '\x01\x00\x00\x00\x1e\x00\x00\x00'   # ptr to list of strings
+            '\x09\x00\x00\x00\x32\x00\x00\x00'   # strings[0] == ptr to #0
+            '\x09\x00\x00\x00\x52\x00\x00\x00'   # strings[1] == ptr to #1
+            '\x0d\x00\x00\x00\xb2\x00\x00\x00'   # strings[2] == ptr to #2
+            'h' 'e' 'l' 'l' 'o' '\x00\x00\x00'   # #0
+            'c' 'a' 'p' 'n' 'p' 'r' 'o' 't'      # #1...
+            'o' '\x00\x00\x00\x00\x00\x00\x00'
+            't' 'h' 'i' 's' ' ' 'i' 's' ' '      # #2...
+            'a' ' ' 'l' 'o' 'n' 'g' ' ' 's'
+            't' 'r' 'i' 'n' 'g' '\x00\x00\x00')
+
+    def test_list_of_pointers_all_null(self):
+        src = ('\x01\x00\x00\x00\x1e\x00\x00\x00'   # ptr to list
+               '\x00\x00\x00\x00\x00\x00\x00\x00'
+               '\x00\x00\x00\x00\x00\x00\x00\x00'
+               '\x00\x00\x00\x00\x00\x00\x00\x00'
+               'garbage1')
+        dst = self.copy_struct(src, offset=0, data_size=0, ptrs_size=1)
+        assert dst == (
+            '\x00\x00\x00\x00\x00\x00\x01\x00'   # ptr (0, 1)
+            '\x01\x00\x00\x00\x1e\x00\x00\x00'   # ptr to list
+            '\x00\x00\x00\x00\x00\x00\x00\x00'
+            '\x00\x00\x00\x00\x00\x00\x00\x00'
+            '\x00\x00\x00\x00\x00\x00\x00\x00')

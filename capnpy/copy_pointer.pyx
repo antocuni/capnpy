@@ -99,8 +99,7 @@ cdef long _copy(const char* src, Py_ssize_t src_len, long p, long src_pos,
             assert False
             #return _copy_list_composite(buf, p, offset)
         elif item_size == ptr.LIST_SIZE_PTR:
-            assert False
-            #return _copy_list_ptr(buf, p, offset)
+            return _copy_list_ptr(src, src_len, p, src_pos, dst, dst_pos)
         else:
             return _copy_list_primitive(src, src_len, p, src_pos, dst, dst_pos)
     ## elif kind == ptr.FAR:
@@ -149,3 +148,12 @@ cdef long _copy_list_primitive(const char* src, Py_ssize_t src_len, long p, long
     dst_pos = dst.alloc_list(dst_pos, size_tag, count, body_length)
     check_bound(src_pos, body_length, src_len)
     dst.memcpy_from(dst_pos, src+src_pos, body_length)
+
+cdef long _copy_list_ptr(const char* src, Py_ssize_t src_len, long p, long src_pos,
+                         MutableBuffer dst, long dst_pos) except -1:
+    src_pos = ptr.deref(p, src_pos)
+    cdef long count = ptr.list_item_count(p)
+    cdef long body_length = count*8
+    dst_pos = dst.alloc_list(dst_pos, ptr.LIST_SIZE_PTR, count, body_length)
+    check_bound(src_pos, body_length, src_len)
+    _copy_many_ptrs(count, src, src_len, src_pos, dst, dst_pos)
