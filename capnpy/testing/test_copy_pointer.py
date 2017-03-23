@@ -159,3 +159,35 @@ class TestCopyPointer(object):
         assert dst == (
             '\x00\x00\x00\x00\x01\x00\x02\x00' +    # ptr to Rectangle (1, 2)
             src)
+
+    def test_list_primitive(self):
+        src = (
+            '\x11\x00\x00\x00\x1a\x00\x00\x00'   #  0: ptr list<8>  to a
+            '\x15\x00\x00\x00\x1b\x00\x00\x00'   #  8: ptr list<16> to b
+            '\x19\x00\x00\x00\x1c\x00\x00\x00'   # 16: ptr list<32> to c
+            '\x21\x00\x00\x00\x1d\x00\x00\x00'   # 24: ptr list<64> to d
+            'garbage1'
+            '\x01\x02\x03\x00\x00\x00\x00\x00'   # 40: a = [1, 2, 3]
+            'garbage2'
+            '\x04\x00\x05\x00\x06\x00\x00\x00'   # 56: b = [4, 5, 6]
+            'garbage3'
+            '\x07\x00\x00\x00\x08\x00\x00\x00'   # 72: c = [7, 8,
+            '\x09\x00\x00\x00\x00\x00\x00\x00'   # 80:      9]
+            'garbage4'
+            '\x0a\x00\x00\x00\x00\x00\x00\x00'   # 96: d = [10,
+            '\x0b\x00\x00\x00\x00\x00\x00\x00'   # 104      11,
+            '\x0c\x00\x00\x00\x00\x00\x00\x00')  # 112      12]
+        dst = self.copy_struct(src, offset=0, data_size=0, ptrs_size=4)
+        assert dst == (
+            '\x00\x00\x00\x00\x00\x00\x04\x00'   # ptr to Rectangle (0, 4)
+            '\x0d\x00\x00\x00\x1a\x00\x00\x00'   #  0: ptr list<8>  to a
+            '\x0d\x00\x00\x00\x1b\x00\x00\x00'   #  8: ptr list<16> to b
+            '\x0d\x00\x00\x00\x1c\x00\x00\x00'   # 16: ptr list<32> to c
+            '\x11\x00\x00\x00\x1d\x00\x00\x00'   # 24: ptr list<64> to d
+            '\x01\x02\x03\x00\x00\x00\x00\x00'   # 32: a = [1, 2, 3]
+            '\x04\x00\x05\x00\x06\x00\x00\x00'   # 40: b = [4, 5, 6]
+            '\x07\x00\x00\x00\x08\x00\x00\x00'   # 48: c = [7, 8, 9]
+            '\x09\x00\x00\x00\x00\x00\x00\x00'   # 56:
+            '\x0a\x00\x00\x00\x00\x00\x00\x00'   # 64: d = [10, 11, 12]
+            '\x0b\x00\x00\x00\x00\x00\x00\x00'   # 72
+            '\x0c\x00\x00\x00\x00\x00\x00\x00')  # 80

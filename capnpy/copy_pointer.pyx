@@ -46,17 +46,34 @@ cdef class MutableBuffer(object):
             raise ValueError("buffer too small; TODO: implement resizing or multiple segments")
         return result
 
-    cpdef long alloc_struct(self, long i, long data_size, long ptrs_size) except -1:
+    cpdef long alloc_struct(self, long pos, long data_size, long ptrs_size) except -1:
         """
         Allocate a new struct of the given size, and write the resulting pointer
         at position i. Return the newly allocated position.
         """
         cdef long length = (data_size+ptrs_size) * 8
         cdef long result = self.allocate(length)
-        cdef long offet = result - (i+8)
+        cdef long offet = result - (pos+8)
         cdef long p = ptr.new_struct(offet/8, data_size, ptrs_size)
-        self.set_int64(i, p)
+        self.set_int64(pos, p)
         return result
+
+    cpdef long alloc_list(self, long pos, long size_tag, long item_count,
+                          long body_length) except -1:
+        """
+        Allocate a new list of the given size, and write the resulting pointer
+        at position i. Return the newly allocated position.
+        """
+        body_length = round_to_word(body_length)
+        cdef long result = self.allocate(body_length)
+        cdef long offet = result - (pos+8)
+        cdef long p = ptr.new_list(offet/8, size_tag, item_count)
+        self.set_int64(pos, p)
+        return result
+
+cdef long round_to_word(long pos):
+    return (pos + (8 - 1)) & -8;  # Round up to 8-byte boundary
+
 
 cdef int64_t read_int64(const char* src, long i):
     return (<int64_t*>(src+i))[0]
@@ -76,20 +93,22 @@ cdef long _copy(const char* src, Py_ssize_t src_len, long p, long src_pos,
     cdef long kind = ptr.kind(p)
     if kind == ptr.STRUCT:
         return _copy_struct(src, src_len, p, src_pos, dst, dst_pos)
-    ## elif kind == ptr.LIST:
-    ##     item_size = ptr.list_size_tag(p)
-    ##     if item_size == ptr.LIST_SIZE_COMPOSITE:
-    ##         return _copy_list_composite(buf, p, offset)
-    ##     elif item_size == ptr.LIST_SIZE_PTR:
-    ##         return _copy_list_ptr(buf, p, offset)
-    ##     elif item_size == ptr.LIST_SIZE_BIT:
-    ##         return _copy_list_bit(buf, p, offset)
-    ##     else:
-    ##         return _copy_list_primitive(buf, p, offset)
+    elif kind == ptr.LIST:
+        item_size = ptr.list_size_tag(p)
+        if item_size == ptr.LIST_SIZE_COMPOSITE:
+            assert False
+            #return _copy_list_composite(buf, p, offset)
+        elif item_size == ptr.LIST_SIZE_PTR:
+            assert False
+            #return _copy_list_ptr(buf, p, offset)
+        elif item_size == ptr.LIST_SIZE_BIT:
+            assert False
+            #return _copy_list_bit(buf, p, offset)
+        else:
+            return _copy_list_primitive(src, src_len, p, src_pos, dst, dst_pos)
     ## elif kind == ptr.FAR:
     ##     raise NotImplementedError('Far pointer not supported')
-    else:
-        assert False, 'unknown ptr kind: %s' % kind
+    assert False, 'unknown ptr kind: %s' % kind
 
 cdef long _copy_many_ptrs(long n, const char* src, Py_ssize_t src_len, long src_pos,
                           MutableBuffer dst, long dst_pos) except -1:
@@ -119,3 +138,26 @@ cdef long _copy_struct(const char* src, src_len, long p, long src_pos,
         raise IndexError(msg)
     dst.memcpy_from(dst_pos, src+src_pos, ds) # copy data section
     _copy_many_ptrs(ptrs_size, src, src_len, src_pos+ds, dst, dst_pos+ds)
+
+
+cdef long _copy_list_primitive(const char* src, src_len, long p, long src_pos,
+                               MutableBuffer dst, long dst_pos) except -1:
+    src_pos = ptr.deref(p, src_pos)
+    cdef long count = ptr.list_item_count(p)
+    cdef long size_tag = ptr.list_size_tag(p)
+    cdef long item_size = 0
+    if size_tag == ptr.LIST_SIZE_8:
+        item_size = 1
+    elif size_tag == ptr.LIST_SIZE_16:
+        item_size = 2
+    elif size_tag == ptr.LIST_SIZE_32:
+        item_size = 4
+    elif size_tag == ptr.LIST_SIZE_64:
+        item_size = 8
+    else:
+        assert False, 'Unknown item_size: %s' % item_size
+    #
+    cdef long body_length = item_size*count
+    dst_pos = dst.alloc_list(dst_pos, size_tag, count, body_length)
+    # XXX check bound
+    dst.memcpy_from(dst_pos, src+src_pos, body_length)
