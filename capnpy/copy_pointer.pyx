@@ -113,17 +113,18 @@ cdef long _copy(const char* src, Py_ssize_t src_len, long p, long src_pos,
 cdef long _copy_many_ptrs(long n, const char* src, Py_ssize_t src_len, long src_pos,
                           MutableBuffer dst, long dst_pos) except -1:
     cdef long i, p, offset
-    cdef long end_of_ptrs = src_pos+(n*8)
-    if end_of_ptrs > src_len:
-        msg = ("Invalid capnproto message: offset out of bound "
-               "at position %s (%s > %s)" % (src_pos, end_of_ptrs, src_len))
-        raise IndexError(msg)
+    check_bound(src_pos, n*8, src_len)
     for i in range(n):
         offset = i*8
         p = read_int64(src, src_pos + offset)
         if p != 0:
             _copy(src, src_len, p, src_pos + offset, dst, dst_pos + offset)
 
+cdef long check_bound(long pos, long n, Py_ssize_t src_len) except -1:
+    if pos+n > src_len:
+        msg = ("Invalid capnproto message: offset out of bound "
+               "at position %s (%s > %s)" % (pos, pos+n, src_len))
+        raise IndexError(msg)
 
 cdef long _copy_struct(const char* src, Py_ssize_t src_len, long p, long src_pos,
                        MutableBuffer dst, long dst_pos) except -1:
@@ -132,10 +133,7 @@ cdef long _copy_struct(const char* src, Py_ssize_t src_len, long p, long src_pos
     cdef long ptrs_size = ptr.struct_ptrs_size(p)
     cdef long ds = data_size*8
     dst_pos = dst.alloc_struct(dst_pos, data_size, ptrs_size)
-    if src_pos+ds > src_len:
-        msg = ("Invalid capnproto message: offset out of bound "
-               "at position %s (%s > %s)" % (src_pos, src_pos+ds, src_len))
-        raise IndexError(msg)
+    check_bound(src_pos, ds, src_len)
     dst.memcpy_from(dst_pos, src+src_pos, ds) # copy data section
     _copy_many_ptrs(ptrs_size, src, src_len, src_pos+ds, dst, dst_pos+ds)
 
@@ -148,5 +146,5 @@ cdef long _copy_list_primitive(const char* src, Py_ssize_t src_len, long p, long
     cdef long item_size = ptr.list_item_length(size_tag)
     cdef long body_length = item_size*count
     dst_pos = dst.alloc_list(dst_pos, size_tag, count, body_length)
-    # XXX check bound
+    check_bound(src_pos, body_length, src_len)
     dst.memcpy_from(dst_pos, src+src_pos, body_length)
