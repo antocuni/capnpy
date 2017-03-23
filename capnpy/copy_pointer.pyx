@@ -145,18 +145,7 @@ cdef long _copy_list_primitive(const char* src, src_len, long p, long src_pos,
     src_pos = ptr.deref(p, src_pos)
     cdef long count = ptr.list_item_count(p)
     cdef long size_tag = ptr.list_size_tag(p)
-    cdef long item_size = 0
-    if size_tag == ptr.LIST_SIZE_8:
-        item_size = 1
-    elif size_tag == ptr.LIST_SIZE_16:
-        item_size = 2
-    elif size_tag == ptr.LIST_SIZE_32:
-        item_size = 4
-    elif size_tag == ptr.LIST_SIZE_64:
-        item_size = 8
-    else:
-        assert False, 'Unknown item_size: %s' % item_size
-    #
+    cdef long item_size = ptr.list_item_length(size_tag)
     cdef long body_length = item_size*count
     dst_pos = dst.alloc_list(dst_pos, size_tag, count, body_length)
     # XXX check bound
