@@ -125,7 +125,7 @@ cdef long _copy_many_ptrs(long n, const char* src, Py_ssize_t src_len, long src_
             _copy(src, src_len, p, src_pos + offset, dst, dst_pos + offset)
 
 
-cdef long _copy_struct(const char* src, src_len, long p, long src_pos,
+cdef long _copy_struct(const char* src, Py_ssize_t src_len, long p, long src_pos,
                        MutableBuffer dst, long dst_pos) except -1:
     src_pos = ptr.deref(p, src_pos)
     cdef long data_size = ptr.struct_data_size(p)
@@ -140,7 +140,7 @@ cdef long _copy_struct(const char* src, src_len, long p, long src_pos,
     _copy_many_ptrs(ptrs_size, src, src_len, src_pos+ds, dst, dst_pos+ds)
 
 
-cdef long _copy_list_primitive(const char* src, src_len, long p, long src_pos,
+cdef long _copy_list_primitive(const char* src, Py_ssize_t src_len, long p, long src_pos,
                                MutableBuffer dst, long dst_pos) except -1:
     src_pos = ptr.deref(p, src_pos)
     cdef long count = ptr.list_item_count(p)
