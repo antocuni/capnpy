@@ -96,8 +96,7 @@ cdef long _copy(const char* src, Py_ssize_t src_len, long p, long src_pos,
     elif kind == ptr.LIST:
         item_size = ptr.list_size_tag(p)
         if item_size == ptr.LIST_SIZE_COMPOSITE:
-            assert False
-            #return _copy_list_composite(buf, p, offset)
+            return _copy_list_composite(src, src_len, p, src_pos, dst, dst_pos)
         elif item_size == ptr.LIST_SIZE_PTR:
             return _copy_list_ptr(src, src_len, p, src_pos, dst, dst_pos)
         else:
@@ -157,3 +156,31 @@ cdef long _copy_list_ptr(const char* src, Py_ssize_t src_len, long p, long src_p
     dst_pos = dst.alloc_list(dst_pos, ptr.LIST_SIZE_PTR, count, body_length)
     check_bound(src_pos, body_length, src_len)
     _copy_many_ptrs(count, src, src_len, src_pos, dst, dst_pos)
+
+
+cdef long _copy_list_composite(const char* src, Py_ssize_t src_len, long p, long src_pos,
+                               MutableBuffer dst, long dst_pos) except -1:
+    src_pos = ptr.deref(p, src_pos)
+    cdef long total_words = ptr.list_item_count(p) # n of words NOT including the tag
+    cdef long body_length = (total_words+1)*8      # total length INCLUDING the tag
+    #
+    # XXX: bound check?
+    cdef long tag = read_int64(src, src_pos)
+    cdef long count = ptr.offset(tag)
+    cdef long data_size = ptr.struct_data_size(tag)
+    cdef long ptrs_size = ptr.struct_ptrs_size(tag)
+    #
+    # allocate the list and copy the whole body at once
+    dst_pos = dst.alloc_list(dst_pos, ptr.LIST_SIZE_COMPOSITE, total_words, body_length)
+    dst.memcpy_from(dst_pos, src+src_pos, body_length)
+    #
+    # iterate over the elements, fix the pointers and copy the content
+    cdef long i = 0
+    cdef long item_length = (data_size+ptrs_size) * 8
+    cdef long ptrs_section_offset = 0
+    for i in range(count):
+        ptrs_section_offset = 8 + item_length*i + data_size*8
+        _copy_many_ptrs(ptrs_size, src, src_len,
+                        src_pos + ptrs_section_offset,
+                        dst,
+                        dst_pos + ptrs_section_offset)

@@ -245,3 +245,46 @@ class TestCopyPointer(object):
             '\x00\x00\x00\x00\x00\x00\x00\x00'
             '\x00\x00\x00\x00\x00\x00\x00\x00'
             '\x00\x00\x00\x00\x00\x00\x00\x00')
+
+    def test_list_composite(self):
+        ## struct Point {
+        ##   x @0 :Int64;
+        ##   y @1 :Int64;
+        ##   name @2 :Text;
+        ## }
+        src = (
+            '\x05\x00\x00\x00\x4f\x00\x00\x00'   # ptr to list
+            'garbage1'
+            '\x0c\x00\x00\x00\x02\x00\x01\x00'   # list tag
+            '\x01\x00\x00\x00\x00\x00\x00\x00'   # points[0].x == 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00'   # points[0].y == 2
+            '\x1d\x00\x00\x00\x42\x00\x00\x00'   # points[0].name == ptr
+            '\x03\x00\x00\x00\x00\x00\x00\x00'   # points[1].x == 3
+            '\x04\x00\x00\x00\x00\x00\x00\x00'   # points[1].y == 4
+            '\x19\x00\x00\x00\x42\x00\x00\x00'   # points[1].name == ptr
+            '\x05\x00\x00\x00\x00\x00\x00\x00'   # points[2].x == 5
+            '\x06\x00\x00\x00\x00\x00\x00\x00'   # points[2].y == 6
+            '\x15\x00\x00\x00\x42\x00\x00\x00'   # points[2].name == ptr
+            'garbage2'
+            'P' 'o' 'i' 'n' 't' ' ' 'A' '\x00'
+            'garbage3'
+            'P' 'o' 'i' 'n' 't' ' ' 'B' '\x00'
+            'garbage4'
+            'P' 'o' 'i' 'n' 't' ' ' 'C' '\x00')
+        dst = self.copy_struct(src, offset=0, data_size=0, ptrs_size=1)
+        assert dst == (
+            '\x00\x00\x00\x00\x00\x00\x01\x00'   # ptr (0, 1)
+            '\x01\x00\x00\x00\x4f\x00\x00\x00'   # ptr to list
+            '\x0c\x00\x00\x00\x02\x00\x01\x00'   # list tag
+            '\x01\x00\x00\x00\x00\x00\x00\x00'   # points[0].x == 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00'   # points[0].y == 2
+            '\x19\x00\x00\x00\x42\x00\x00\x00'   # points[0].name == ptr
+            '\x03\x00\x00\x00\x00\x00\x00\x00'   # points[1].x == 3
+            '\x04\x00\x00\x00\x00\x00\x00\x00'   # points[1].y == 4
+            '\x11\x00\x00\x00\x42\x00\x00\x00'   # points[1].name == ptr
+            '\x05\x00\x00\x00\x00\x00\x00\x00'   # points[2].x == 5
+            '\x06\x00\x00\x00\x00\x00\x00\x00'   # points[2].y == 6
+            '\x09\x00\x00\x00\x42\x00\x00\x00'   # points[2].name == ptr
+            'P' 'o' 'i' 'n' 't' ' ' 'A' '\x00'
+            'P' 'o' 'i' 'n' 't' ' ' 'B' '\x00'
+            'P' 'o' 'i' 'n' 't' ' ' 'C' '\x00')
