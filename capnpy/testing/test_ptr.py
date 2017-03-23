@@ -54,7 +54,17 @@ def test_new_list():
     assert ptr.list_size_tag(p) == 7
     assert ptr.list_item_count(p) == 200
     assert p == 0x0000064700000101
-    
+
+def test_list_item_length():
+    assert ptr.list_item_length(ptr.LIST_SIZE_VOID) == 0
+    assert ptr.list_item_length(ptr.LIST_SIZE_BIT) == -1
+    assert ptr.list_item_length(ptr.LIST_SIZE_8) == 1
+    assert ptr.list_item_length(ptr.LIST_SIZE_16) == 2
+    assert ptr.list_item_length(ptr.LIST_SIZE_32) == 4
+    assert ptr.list_item_length(ptr.LIST_SIZE_64) == 8
+    assert ptr.list_item_length(ptr.LIST_SIZE_PTR) == 8
+    assert ptr.list_item_length(ptr.LIST_SIZE_COMPOSITE) == -1
+
 def test_signedness():
     #       0000001          item_count<<1
     #              7         item_size

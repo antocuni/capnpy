@@ -27,3 +27,5 @@ cdef extern from "ptr.h":
     long far_landing_pad "PTR_FAR_LANDING_PAD" (long ptr)
     long far_offset "PTR_FAR_OFFSET" (long ptr)
     long far_target "PTR_FAR_TARGET" (long ptr)
+
+cpdef long list_item_length(long size_tag)

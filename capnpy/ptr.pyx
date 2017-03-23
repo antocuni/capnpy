@@ -19,7 +19,6 @@ globals()['LIST_SIZE_64'] = LIST_SIZE_64
 globals()['LIST_SIZE_PTR'] = LIST_SIZE_PTR
 globals()['LIST_SIZE_COMPOSITE'] = LIST_SIZE_COMPOSITE
 globals()['E_IS_FAR_POINTER'] = E_IS_FAR_POINTER
-LIST_SIZE_LENGTH = (-1, -1, 1, 2, 4, 8, 8)
 
 def remove_underscore(func):
     name = func.__name__
@@ -74,6 +73,26 @@ def _list_size_tag(ptr):
 @remove_underscore
 def _list_item_count(ptr):
     return list_item_count(ptr)
+
+LIST_SIZE_LENGTH = (-1, -1, 1, 2, 4, 8, 8)
+
+cpdef long list_item_length(long size_tag):
+    if size_tag == 0:   # LIST_SIZE_VOID
+        return 0
+    elif size_tag == 1: # LIST_SIZE_BIT
+        return -1
+    elif size_tag == 2: # LIST_SIZE_8
+        return 1
+    elif size_tag == 3: # LIST_SIZE_16
+        return 2
+    elif size_tag == 4: # LIST_SIZE_32
+        return 4
+    elif size_tag == 5: # LIST_SIZE_64
+        return 8
+    elif size_tag == 6: # LIST_SIZE_PTR
+        return 8
+    else:
+        return -1
 
 @remove_underscore
 def _new_far(landing_pad, offset, target):
