@@ -164,7 +164,9 @@ cdef long _copy_list_composite(const char* src, Py_ssize_t src_len, long p, long
     cdef long total_words = ptr.list_item_count(p) # n of words NOT including the tag
     cdef long body_length = (total_words+1)*8      # total length INCLUDING the tag
     #
-    # XXX: bound check?
+    # check that there is enough data for both the tag AND the whole body;
+    # this way we do the bound checking only once
+    check_bound(src_pos, body_length, src_len)
     cdef long tag = read_int64(src, src_pos)
     cdef long count = ptr.offset(tag)
     cdef long data_size = ptr.struct_data_size(tag)

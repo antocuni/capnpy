@@ -288,3 +288,27 @@ class TestCopyPointer(object):
             'P' 'o' 'i' 'n' 't' ' ' 'A' '\x00'
             'P' 'o' 'i' 'n' 't' ' ' 'B' '\x00'
             'P' 'o' 'i' 'n' 't' ' ' 'C' '\x00')
+
+    def test_list_composite_out_of_bound(self):
+        ## struct Point {
+        ##   x @0 :Int64;
+        ##   y @1 :Int64;
+        ##   name @2 :Text;
+        ## }
+        src = (
+            '\x05\x00\x00\x00\x4f\x00\x00\x00'   # ptr to list
+            'garbage1'
+            '\x0c\x00\x00\x00\x02\x00\x01\x00'   # list tag
+            '\x01\x00\x00\x00\x00\x00\x00\x00'   # points[0].x == 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00'   # points[0].y == 2
+            '\x1d\x00\x00\x00\x42\x00\x00\x00'   # points[0].name == ptr
+            '\x03\x00\x00\x00\x00\x00\x00\x00'   # points[1].x == 3
+            '\x04\x00\x00\x00\x00\x00\x00\x00'   # points[1].y == 4
+            '\x19\x00\x00\x00\x42\x00\x00\x00'   # points[1].name == ptr
+            '\x05\x00\x00\x00\x00\x00\x00\x00'   # points[2].x == 5
+            '\x06\x00\x00\x00\x00\x00\x00\x00')  # points[2].y == 6
+                                                 # points[2].name MISSING
+        with pytest.raises(IndexError) as exc:
+            self.copy_struct(src, offset=0, data_size=0, ptrs_size=1, bufsize=128)
+        assert exc.value.message == ('Invalid capnproto message: '
+                                     'offset out of bound at position 16 (96 > 88)')
