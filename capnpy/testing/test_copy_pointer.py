@@ -131,3 +131,31 @@ class TestCopyPointer(object):
             self.copy_struct(cut_ptr, offset=0, data_size=1, ptrs_size=2,
                              bufsize=128)
         assert exc.value.message.startswith('Invalid capnproto message: offset out of bound')
+
+    def test_struct_one_null_ptr(self):
+        src = (
+            '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+            '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+            '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
+            'garbage1'
+            'garbage2'
+            '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
+        dst = self.copy_struct(src, offset=0, data_size=1, ptrs_size=2)
+        assert dst == (
+            '\x00\x00\x00\x00\x01\x00\x02\x00'    # ptr to Rectangle (1, 2)
+            '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+            '\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+            '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
+            '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
+
+    def test_struct_all_null_ptrs(self):
+        src = (
+            '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+            '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to a, NULL
+            '\x00\x00\x00\x00\x00\x00\x00\x00')   # ptr to b, NULL
+        dst = self.copy_struct(src, offset=0, data_size=1, ptrs_size=2)
+        assert dst == (
+            '\x00\x00\x00\x00\x01\x00\x02\x00' +    # ptr to Rectangle (1, 2)
+            src)

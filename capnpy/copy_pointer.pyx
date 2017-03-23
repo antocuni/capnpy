@@ -102,7 +102,8 @@ cdef long _copy_many_ptrs(long n, const char* src, Py_ssize_t src_len, long src_
     for i in range(n):
         offset = i*8
         p = read_int64(src, src_pos + offset)
-        _copy(src, src_len, p, src_pos + offset, dst, dst_pos + offset)
+        if p != 0:
+            _copy(src, src_len, p, src_pos + offset, dst, dst_pos + offset)
 
 
 cdef long _copy_struct(const char* src, src_len, long p, long src_pos,
