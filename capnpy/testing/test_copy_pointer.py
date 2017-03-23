@@ -191,3 +191,14 @@ class TestCopyPointer(object):
             '\x0a\x00\x00\x00\x00\x00\x00\x00'   # 64: d = [10, 11, 12]
             '\x0b\x00\x00\x00\x00\x00\x00\x00'   # 72
             '\x0c\x00\x00\x00\x00\x00\x00\x00')  # 80
+
+    def test_list_of_bool(self):
+        src = (
+            '\x05\x00\x00\x00\x19\x00\x00\x00'    # ptrlist
+            'garbage1'
+            '\x03\x00\x00\x00\x00\x00\x00\x00')   # [True, True, False]
+        dst = self.copy_struct(src, offset=0, data_size=0, ptrs_size=1)
+        assert dst == (
+            '\x00\x00\x00\x00\x00\x00\x01\x00'    # ptr (0, 1)
+            '\x01\x00\x00\x00\x19\x00\x00\x00'    # ptrlist
+            '\x03\x00\x00\x00\x00\x00\x00\x00')   # [True, True, False]

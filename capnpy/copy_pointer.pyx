@@ -101,9 +101,6 @@ cdef long _copy(const char* src, Py_ssize_t src_len, long p, long src_pos,
         elif item_size == ptr.LIST_SIZE_PTR:
             assert False
             #return _copy_list_ptr(buf, p, offset)
-        elif item_size == ptr.LIST_SIZE_BIT:
-            assert False
-            #return _copy_list_bit(buf, p, offset)
         else:
             return _copy_list_primitive(src, src_len, p, src_pos, dst, dst_pos)
     ## elif kind == ptr.FAR:
@@ -143,8 +140,12 @@ cdef long _copy_list_primitive(const char* src, Py_ssize_t src_len, long p, long
     src_pos = ptr.deref(p, src_pos)
     cdef long count = ptr.list_item_count(p)
     cdef long size_tag = ptr.list_size_tag(p)
-    cdef long item_size = ptr.list_item_length(size_tag)
-    cdef long body_length = item_size*count
+    cdef long body_length = 0
+    if size_tag == ptr.LIST_SIZE_BIT:
+        body_length = (count + 8 - 1) / 8; # divide by 8 and round up
+    else:
+        body_length = count * ptr.list_item_length(size_tag)
+    #
     dst_pos = dst.alloc_list(dst_pos, size_tag, count, body_length)
     check_bound(src_pos, body_length, src_len)
     dst.memcpy_from(dst_pos, src+src_pos, body_length)
