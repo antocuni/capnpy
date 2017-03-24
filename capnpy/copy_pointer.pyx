@@ -10,6 +10,18 @@ cdef extern from "Python.h":
     int PyByteArray_Resize(object o, Py_ssize_t len)
     char* PyByteArray_AS_STRING(object o)
 
+# this is a bit of a hack because apparently it is not possible to define the
+# equivalent of C macros in Cython. Earlier, check_bound was a normal cdef
+# function which raised if needed. Now, we turned check_bound into a C macro
+# with a fast-path (the bound check), and we moved the slow path inside the
+# raise_out_of_bound function. This seems to give a ~40% speedup!
+cdef extern from "copy_pointer.h":
+    long check_bound "CHECK_BOUND" (long pos, long n, Py_ssize_t src_len) except -1
+
+cdef long raise_out_of_bound(long pos, long n, Py_ssize_t src_len) except -1:
+    msg = ("Invalid capnproto message: offset out of bound "
+           "at position %s (%s > %s)" % (pos, pos+n, src_len))
+    raise IndexError(msg)
 
 @cython.final
 cdef class MutableBuffer(object):
@@ -94,7 +106,6 @@ cdef class MutableBuffer(object):
 cdef long round_to_word(long pos):
     return (pos + (8 - 1)) & -8;  # Round up to 8-byte boundary
 
-
 cdef int64_t read_int64(const char* src, long i):
     return (<int64_t*>(src+i))[0]
 
@@ -134,12 +145,6 @@ cdef long _copy_many_ptrs(long n, const char* src, Py_ssize_t src_len, long src_
         p = read_int64(src, src_pos + offset)
         if p != 0:
             _copy(src, src_len, p, src_pos + offset, dst, dst_pos + offset)
-
-cdef long check_bound(long pos, long n, Py_ssize_t src_len) except -1:
-    if pos+n > src_len:
-        msg = ("Invalid capnproto message: offset out of bound "
-               "at position %s (%s > %s)" % (pos, pos+n, src_len))
-        raise IndexError(msg)
 
 cdef long _copy_struct(const char* src, Py_ssize_t src_len, long p, long src_pos,
                        MutableBuffer dst, long dst_pos) except -1:
