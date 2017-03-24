@@ -38,7 +38,7 @@ cdef class MutableBuffer(object):
         self.cbuf = PyByteArray_AS_STRING(self.buf)
         self.end = 0
 
-    cdef _resize(self, Py_ssize_t minlen):
+    cdef void _resize(self, Py_ssize_t minlen):
         # exponential growth of the buffer. By using this formula, we grow
         # faster at the beginning (where the constant plays a major role) and
         # slower when the buffer it's already big (where length >> 1 plays a
@@ -67,7 +67,7 @@ cdef class MutableBuffer(object):
         cdef void* dst = self.cbuf + i
         memcpy(dst, src, n)
 
-    cpdef long allocate(self, long length) except -1:
+    cpdef long allocate(self, long length):
         """
         Allocate ``length`` bytes of memory inside the buffer. Return the start
         position of the newly allocated space.
@@ -78,7 +78,7 @@ cdef class MutableBuffer(object):
             self._resize(self.end)
         return result
 
-    cpdef long alloc_struct(self, long pos, long data_size, long ptrs_size) except -1:
+    cpdef long alloc_struct(self, long pos, long data_size, long ptrs_size):
         """
         Allocate a new struct of the given size, and write the resulting pointer
         at position i. Return the newly allocated position.
@@ -91,7 +91,7 @@ cdef class MutableBuffer(object):
         return result
 
     cpdef long alloc_list(self, long pos, long size_tag, long item_count,
-                          long body_length) except -1:
+                          long body_length):
         """
         Allocate a new list of the given size, and write the resulting pointer
         at position i. Return the newly allocated position.
