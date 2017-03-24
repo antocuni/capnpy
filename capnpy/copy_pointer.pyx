@@ -1,12 +1,13 @@
 cimport cython
 from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
                           uint32_t, int32_t, int64_t, uint64_t)
-from libc.string cimport memcpy
+from libc.string cimport memcpy, memset
 from cpython.string cimport PyString_AS_STRING, PyString_FromStringAndSize
 from capnpy cimport ptr
 from capnpy.packing cimport as_cbuf
 
 cdef extern from "Python.h":
+    int PyByteArray_Resize(object o, Py_ssize_t len)
     char* PyByteArray_AS_STRING(object o)
 
 
@@ -18,12 +19,30 @@ cdef class MutableBuffer(object):
     cdef long end # index of the current end position of cbuf; the next
                   # allocation will start at this position
 
-    def __cinit__(self, length):
-        cdef Py_ssize_t unused
+    def __cinit__(self, long length=512):
         self.length = length
         self.buf = bytearray(self.length)
-        self.cbuf = as_cbuf(self.buf, &unused)
+        self.cbuf = PyByteArray_AS_STRING(self.buf)
         self.end = 0
+
+    cdef _resize(self, Py_ssize_t minlen):
+        # exponential growth of the buffer. By using this formula, we grow
+        # faster at the beginning (where the constant plays a major role) and
+        # slower when the buffer it's already big (where length >> 1 plays a
+        # major role)
+        cdef long newlen = self.length + ( self.length >> 1 ) + 512;
+        newlen = max(newlen, int(self.length*2))
+        newlen = round_to_word(newlen)
+        cdef long curlen = self.length
+        PyByteArray_Resize(self.buf, newlen)
+        cdef char* oldbuf = self.cbuf
+        self.cbuf = PyByteArray_AS_STRING(self.buf)
+        ## if oldbuf != self.cbuf:
+        ##     print 'REALLOC %s --> %s' % (curlen, newlen)
+        ## else:
+        ##     print '        %s --> %s' % (curlen, newlen)
+        memset(self.cbuf + curlen, 0, newlen - curlen)
+        self.length = newlen
 
     cpdef as_string(self):
         return PyString_FromStringAndSize(self.cbuf, self.end)
@@ -43,7 +62,7 @@ cdef class MutableBuffer(object):
         cdef long result = self.end
         self.end += length
         if self.end > self.length:
-            raise ValueError("buffer too small; TODO: implement resizing or multiple segments")
+            self._resize(self.end)
         return result
 
     cpdef long alloc_struct(self, long pos, long data_size, long ptrs_size) except -1:

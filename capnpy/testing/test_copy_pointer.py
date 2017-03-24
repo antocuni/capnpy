@@ -1,4 +1,5 @@
 import pytest
+import struct
 from capnpy import ptr
 from capnpy.printer import print_buffer
 from capnpy.copy_pointer import MutableBuffer, copy_pointer
@@ -10,12 +11,6 @@ class TestMutableBuffer(object):
         assert buf.allocate(8) == 0
         s = buf.as_string()
         assert s == '\x00' * 8
-
-    def test_allocate_failure(self):
-        buf = MutableBuffer(16)
-        assert buf.allocate(8) == 0
-        assert buf.allocate(8) == 8
-        pytest.raises(ValueError, "buf.allocate(1)")
 
     def test_set_int64(self):
         buf = MutableBuffer(8)
@@ -40,6 +35,18 @@ class TestMutableBuffer(object):
                      '\x02\x00\x00\x00\x00\x00\x00\x00'   #    2
                      '\x03\x00\x00\x00\x00\x00\x00\x00'   #    3
                      '\x04\x00\x00\x00\x00\x00\x00\x00')  # b: 4
+
+    def test_resize(self):
+        buf = MutableBuffer()
+        buf.allocate(64)
+        print
+        buf.set_int64(0, 42)
+        for i in range(63):
+            buf.allocate(64)
+        s = buf.as_string()
+        assert len(s) == 64*64
+        assert s[:8] == struct.pack('q', 42)
+        assert s[8:] == '\x00' * (64*64-8)
 
 
 class TestCopyPointer(object):
