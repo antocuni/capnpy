@@ -48,6 +48,16 @@ class TestMutableBuffer(object):
         assert s[:8] == struct.pack('q', 42)
         assert s[8:] == '\x00' * (64*64-8)
 
+    def test_resize_big_allocation(self):
+        buf = MutableBuffer(32)
+        assert buf.length == 32
+        assert buf.end == 0
+        # make a big allocation, which is bigger than the normal exponential
+        # growth of the buffer
+        buf.allocate(4096)
+        assert buf.length == 4096
+        assert buf.end == 4096
+
 
 class TestCopyPointer(object):
 

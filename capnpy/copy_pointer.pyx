@@ -15,9 +15,10 @@ cdef extern from "Python.h":
 cdef class MutableBuffer(object):
     cdef bytearray buf
     cdef char* cbuf
-    cdef long length
-    cdef long end # index of the current end position of cbuf; the next
-                  # allocation will start at this position
+    cdef readonly long length  # length of the allocated buffer
+    cdef readonly long end     # index of the current end position of cbuf;
+                               # the next allocation will start at this
+                               # position
 
     def __cinit__(self, long length=512):
         self.length = length
@@ -31,7 +32,7 @@ cdef class MutableBuffer(object):
         # slower when the buffer it's already big (where length >> 1 plays a
         # major role)
         cdef long newlen = self.length + ( self.length >> 1 ) + 512;
-        newlen = max(newlen, int(self.length*2))
+        newlen = max(minlen, newlen)
         newlen = round_to_word(newlen)
         cdef long curlen = self.length
         PyByteArray_Resize(self.buf, newlen)
