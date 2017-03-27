@@ -2,6 +2,8 @@ import pytest
 import struct
 from capnpy import ptr
 from capnpy.printer import print_buffer
+
+pytest.importorskip('capnpy.copy_pointer')
 from capnpy.copy_pointer import MutableBuffer, copy_pointer
 
 class TestMutableBuffer(object):
