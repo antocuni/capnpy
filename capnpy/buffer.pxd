@@ -14,7 +14,7 @@ cdef class MutableBuffer(object):
 
     cdef void _resize(self, Py_ssize_t minlen)
     cpdef as_string(self)
-    cpdef void set_int64(self, Py_ssize_t i, int64_t value)
+    cpdef void write_int64(self, Py_ssize_t i, int64_t value)
     cdef void memcpy_from(self, Py_ssize_t i, const char* src, Py_ssize_t n)
     cpdef Py_ssize_t allocate(self, Py_ssize_t length)
     cpdef Py_ssize_t alloc_struct(self, Py_ssize_t pos, long data_size, long ptrs_size)

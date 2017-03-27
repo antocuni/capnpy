@@ -45,7 +45,7 @@ cdef class MutableBuffer(object):
     cpdef as_string(self):
         return PyString_FromStringAndSize(self.cbuf, self.end)
 
-    cpdef void set_int64(self, Py_ssize_t i, int64_t value):
+    cpdef void write_int64(self, Py_ssize_t i, int64_t value):
         (<int64_t*>(self.cbuf+i))[0] = value
 
     cdef void memcpy_from(self, Py_ssize_t i, const char* src, Py_ssize_t n):
@@ -72,7 +72,7 @@ cdef class MutableBuffer(object):
         cdef Py_ssize_t result = self.allocate(length)
         cdef long offet = result - (pos+8)
         cdef long p = ptr.new_struct(offet/8, data_size, ptrs_size)
-        self.set_int64(pos, p)
+        self.write_int64(pos, p)
         return result
 
     cpdef Py_ssize_t alloc_list(self, Py_ssize_t pos, long size_tag, long item_count,
@@ -85,7 +85,7 @@ cdef class MutableBuffer(object):
         cdef Py_ssize_t result = self.allocate(body_length)
         cdef long offet = result - (pos+8)
         cdef long p = ptr.new_list(offet/8, size_tag, item_count)
-        self.set_int64(pos, p)
+        self.write_int64(pos, p)
         return result
 
 

@@ -13,10 +13,10 @@ class TestMutableBuffer(object):
         s = buf.as_string()
         assert s == '\x00' * 8
 
-    def test_set_int64(self):
+    def test_write_int64(self):
         buf = MutableBuffer(8)
         buf.allocate(8)
-        buf.set_int64(0, 0x1234ABCD)
+        buf.write_int64(0, 0x1234ABCD)
         s = buf.as_string()
         assert s == '\xCD\xAB\x34\x12\x00\x00\x00\x00'
 
@@ -25,10 +25,10 @@ class TestMutableBuffer(object):
         buf.allocate(16)
         a = buf.alloc_struct(0, data_size=3, ptrs_size=0)
         b = buf.alloc_struct(8, data_size=1, ptrs_size=0)
-        buf.set_int64(a,    1)
-        buf.set_int64(a+8,  2)
-        buf.set_int64(a+16, 3)
-        buf.set_int64(b,    4)
+        buf.write_int64(a,    1)
+        buf.write_int64(a+8,  2)
+        buf.write_int64(a+16, 3)
+        buf.write_int64(b,    4)
         s = buf.as_string()
         assert s == ('\x04\x00\x00\x00\x03\x00\x00\x00'   # ptr to a (3, 0)
                      '\x0c\x00\x00\x00\x01\x00\x00\x00'   # ptr to b (1, 0)
@@ -41,7 +41,7 @@ class TestMutableBuffer(object):
         buf = MutableBuffer()
         buf.allocate(64)
         print
-        buf.set_int64(0, 42)
+        buf.write_int64(0, 42)
         for i in range(63):
             buf.allocate(64)
         s = buf.as_string()
