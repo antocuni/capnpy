@@ -45,44 +45,44 @@ cdef class MutableBuffer(object):
     cpdef as_string(self):
         return PyString_FromStringAndSize(self.cbuf, self.end)
 
-    cpdef void set_int64(self, long i, int64_t value):
+    cpdef void set_int64(self, Py_ssize_t i, int64_t value):
         (<int64_t*>(self.cbuf+i))[0] = value
 
-    cdef void memcpy_from(self, long i, const char* src, long n):
+    cdef void memcpy_from(self, Py_ssize_t i, const char* src, Py_ssize_t n):
         cdef void* dst = self.cbuf + i
         memcpy(dst, src, n)
 
-    cpdef long allocate(self, long length):
+    cpdef Py_ssize_t allocate(self, Py_ssize_t length):
         """
         Allocate ``length`` bytes of memory inside the buffer. Return the start
         position of the newly allocated space.
         """
-        cdef long result = self.end
+        cdef Py_ssize_t result = self.end
         self.end += length
         if self.end > self.length:
             self._resize(self.end)
         return result
 
-    cpdef long alloc_struct(self, long pos, long data_size, long ptrs_size):
+    cpdef Py_ssize_t alloc_struct(self, Py_ssize_t pos, long data_size, long ptrs_size):
         """
         Allocate a new struct of the given size, and write the resulting pointer
         at position i. Return the newly allocated position.
         """
         cdef long length = (data_size+ptrs_size) * 8
-        cdef long result = self.allocate(length)
+        cdef Py_ssize_t result = self.allocate(length)
         cdef long offet = result - (pos+8)
         cdef long p = ptr.new_struct(offet/8, data_size, ptrs_size)
         self.set_int64(pos, p)
         return result
 
-    cpdef long alloc_list(self, long pos, long size_tag, long item_count,
-                          long body_length):
+    cpdef Py_ssize_t alloc_list(self, Py_ssize_t pos, long size_tag, long item_count,
+                                long body_length):
         """
         Allocate a new list of the given size, and write the resulting pointer
         at position i. Return the newly allocated position.
         """
         body_length = round_to_word(body_length)
-        cdef long result = self.allocate(body_length)
+        cdef Py_ssize_t result = self.allocate(body_length)
         cdef long offet = result - (pos+8)
         cdef long p = ptr.new_list(offet/8, size_tag, item_count)
         self.set_int64(pos, p)
