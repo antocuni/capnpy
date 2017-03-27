@@ -93,16 +93,7 @@ class EndOf(Visitor):
         return offset + 8*count
 
     def visit_list_primitive(self, buf, p, offset, item_size, count):
-        if item_size == ptr.LIST_SIZE_8:
-            item_size = 1
-        elif item_size == ptr.LIST_SIZE_16:
-            item_size = 2
-        elif item_size == ptr.LIST_SIZE_32:
-            item_size = 4
-        elif item_size == ptr.LIST_SIZE_64:
-            item_size = 8
-        else:
-            assert False, 'Unknown item_size: %s' % item_size
+        item_size = ptr.list_item_length(item_size)
         return offset + item_size*count
 
     def visit_list_bit(self, buf, p, offset, count):

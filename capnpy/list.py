@@ -44,7 +44,7 @@ class List(Blob):
         else:
             self._tag = -1
             self._item_count = item_count
-            self._item_length = ptr.LIST_SIZE_LENGTH[size_tag]
+            self._item_length = ptr.list_item_length(size_tag)
             self._item_offset = 0
 
     def __repr__(self):

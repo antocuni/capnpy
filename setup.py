@@ -2,6 +2,8 @@ import sys
 import os
 from setuptools import setup, find_packages, Extension
 
+DEBUG = False
+
 try:
     import Cython
 except ImportError:
@@ -34,18 +36,23 @@ def get_cython_extensions():
              "capnpy/builder.py",
              "capnpy/ptr.pyx",
              "capnpy/packing.pyx",
+             "capnpy/copy_pointer.pyx",
              "capnpy/_hash.pyx",
              "capnpy/_util.pyx",
     ]
 
     def getext(fname):
         extname = fname.replace('/', '.').replace('.pyx', '').replace('.py', '')
+        if DEBUG:
+            extra_compile_args = ['-O0', '-g']
+        else:
+            extra_compile_args = ['-O3']
         return Extension(
             extname,
             [fname],
-            extra_compile_args = ['-O3'],
+            extra_compile_args = extra_compile_args,
         )
-    return cythonize(map(getext, files), gdb_debug=False)
+    return cythonize(map(getext, files), gdb_debug=DEBUG)
 
 # we try to cythonize() the files even if USE_CYTHON is False; this way, we
 # make sure that the *.c files will be included in the sdist. This is needed

@@ -22,7 +22,6 @@ LIST_SIZE_32 = 4
 LIST_SIZE_64 = 5
 LIST_SIZE_PTR = 6
 LIST_SIZE_COMPOSITE = 7
-LIST_SIZE_LENGTH = (0, -1, 1, 2, 4, 8, 8) # -1 means "bit", used for List(Bool)
 
 # error code to indicate that the fast path to get a pointer failed because
 # it's a FAR pointer, and you should use the slower API to access it.  From
@@ -149,6 +148,10 @@ def list_size_tag(ptr):
 
 def list_item_count(ptr):
     return ptr>>35
+
+_LIST_SIZE_LENGTH = (0, -1, 1, 2, 4, 8, 8, -1) # -1 means "invalid"
+def list_item_length(size_tag):
+    return _LIST_SIZE_LENGTH[size_tag]
 
 
 ## =================================================================
