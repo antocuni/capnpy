@@ -56,6 +56,14 @@ class TestSegment(object):
         assert val == sys.maxint+1 == s.read_uint64(8)
         assert type(val) is long
 
+    def test_read_primitive(self):
+        buf = struct.pack('Q', 0x1234567887654321)
+        s = Segment(buf)
+        for fmt in 'qQiIhHbBdf':
+            val = s.read_primitive(0, ord(fmt))
+            val2 = struct.unpack_from(fmt, buf, 0)[0]
+            assert val == val2
+
     def test_errors(self):
         buf = '\xff' * 8
         s = Segment(buf)

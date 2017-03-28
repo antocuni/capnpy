@@ -33,6 +33,29 @@ cdef class Segment(object):
         if offset < 0 or offset + size > buflen:
             raise IndexError('Offset out of bounds: %d' % offset)
 
+    cpdef object read_primitive(self, Py_ssize_t offset, char ifmt):
+        if ifmt == 'q':
+            return self.read_int64(offset)
+        elif ifmt == 'Q':
+            return self.read_uint64(offset)
+        elif ifmt == 'd':
+            return self.read_double(offset)
+        elif ifmt == 'f':
+            return self.read_float(offset)
+        elif ifmt == 'i':
+            return self.read_int32(offset)
+        elif ifmt == 'I':
+            return self.read_uint32(offset)
+        elif ifmt == 'h':
+            return self.read_int16(offset)
+        elif ifmt == 'H':
+            return self.read_uint16(offset)
+        elif ifmt == 'b':
+            return self.read_int8(offset)
+        elif ifmt == 'B':
+            return self.read_uint8(offset)
+        raise ValueError('unknown fmt %s' % chr(ifmt))
+
     cpdef int64_t read_int64(self, Py_ssize_t offset) except? 0x7fffffffffffffff:
         self.check_bounds(8, offset)
         return (<int64_t*>(self.cbuf+offset))[0]
@@ -41,7 +64,7 @@ cdef class Segment(object):
         self.check_bounds(8, offset)
         return (<uint64_t*>(self.cbuf+offset))[0]
 
-    cpdef read_uint64_magic(self, Py_ssize_t offset):
+    cpdef object read_uint64_magic(self, Py_ssize_t offset):
         # Special version of read_uint64; it returns a PyObject* instead of a
         # typed object (so it should be called only if the return value is
         # going to be converted to object anyway).  If the value is small
