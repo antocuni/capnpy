@@ -1,5 +1,5 @@
 from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
-                          uint32_t, int32_t, int64_t, uint64_t)
+                          uint32_t, int32_t, int64_t, uint64_t, INT64_MAX)
 from libc.string cimport memcpy, memset
 from cpython.string cimport (PyString_AS_STRING, PyString_GET_SIZE,
                              PyString_FromStringAndSize)
@@ -23,7 +23,7 @@ cdef class Segment(object):
         self.buf = buf
         self.cbuf = PyString_AS_STRING(self.buf)
 
-    cdef inline check_bounds(self, Py_ssize_t offset, Py_ssize_t size):
+    cdef inline check_bounds(self, Py_ssize_t size, Py_ssize_t offset):
         # the bound check seems to introduce a 5-10% overhead when calling
         # read_int64 from Python. However, I expect the overhead to be
         # relatively much higher if you call it from C. In case it's needed,
@@ -33,9 +33,51 @@ cdef class Segment(object):
         if offset < 0 or offset + size > buflen:
             raise IndexError('Offset out of bounds: %d' % offset)
 
-    cpdef int64_t read_int64(self, Py_ssize_t offset) except? -2:
-        self.check_bounds(offset, 8)
+    cpdef int64_t read_int64(self, Py_ssize_t offset) except? -1:
+        self.check_bounds(8, offset)
         return (<int64_t*>(self.cbuf+offset))[0]
+
+    cpdef uint64_t read_uint64(self, Py_ssize_t offset) except? -1:
+        # if the value is small enough, it returns a python int. Else, a
+        # python long
+        self.check_bounds(8, offset)
+        uint64_value = (<uint64_t*>self.cbuf)[0]
+        if uint64_value <= INT64_MAX:
+            return <int64_t>uint64_value
+        else:
+            return uint64_value
+
+    cpdef int32_t read_int32(self, Py_ssize_t offset) except? -1:
+        self.check_bounds(4, offset)
+        return (<int32_t*>self.cbuf)[0]
+
+    cpdef uint32_t read_uint32(self, Py_ssize_t offset) except? -1:
+        self.check_bounds(4, offset)
+        return (<uint32_t*>self.cbuf)[0]
+
+    cpdef int16_t read_int16(self, Py_ssize_t offset) except? -1:
+        self.check_bounds(2, offset)
+        return (<int16_t*>self.cbuf)[0]
+
+    cpdef uint16_t read_uint16(self, Py_ssize_t offset) except? -1:
+        self.check_bounds(2, offset)
+        return (<uint16_t*>self.cbuf)[0]
+
+    cpdef int8_t read_int8(self, Py_ssize_t offset) except? -1:
+        self.check_bounds(1, offset)
+        return (<int8_t*>self.cbuf)[0]
+
+    cpdef uint8_t read_uint8(self, Py_ssize_t offset) except? -1:
+        self.check_bounds(1, offset)
+        return (<uint8_t*>self.cbuf)[0]
+
+    cpdef double read_double(self, Py_ssize_t offset) except? -1:
+        self.check_bounds(8, offset)
+        return (<double*>self.cbuf)[0]
+
+    cpdef float read_float(self, Py_ssize_t offset) except? -1:
+        self.check_bounds(4, offset)
+        return (<float*>self.cbuf)[0]
 
 
 

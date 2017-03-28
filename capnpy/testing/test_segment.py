@@ -13,6 +13,20 @@ class TestSegment(object):
         assert s.read_int64(8) == 43
         assert s.read_int64(16) == 44
 
+    def test_read_ints(self):
+        buf = '\xff' * 8
+        s = Segment(buf)
+        assert s.read_int8(0) == -1
+        assert s.read_int16(0) == -1
+        assert s.read_int32(0) == -1
+        assert s.read_int64(0) == -1
+        #
+        assert s.read_uint8(0)  == (1 <<  8) - 1
+        assert s.read_uint16(0) == (1 << 16) - 1
+        assert s.read_uint32(0) == (1 << 32) - 1
+        assert s.read_uint64(0) == (1 << 64) - 1
+
+
 
 class TestSegmentBuilder(object):
 
