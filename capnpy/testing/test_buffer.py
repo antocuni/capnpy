@@ -2,7 +2,16 @@ import pytest
 import struct
 from capnpy import ptr
 from capnpy.printer import print_buffer
-from capnpy.buffer import SegmentBuilder
+from capnpy.buffer import Segment, SegmentBuilder
+
+class TestSegment(object):
+
+    def test_read_int64(self):
+        buf = struct.pack('qqq', 42, 43, 44)
+        s = Segment(buf)
+        assert s.read_int64(0) == 42
+        assert s.read_int64(8) == 43
+        assert s.read_int64(16) == 44
 
 
 class TestSegmentBuilder(object):

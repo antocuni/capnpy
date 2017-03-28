@@ -1,16 +1,42 @@
 from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
                           uint32_t, int32_t, int64_t, uint64_t)
 from libc.string cimport memcpy, memset
-from cpython.string cimport PyString_FromStringAndSize
+from cpython.string cimport (PyString_AS_STRING, PyString_GET_SIZE,
+                             PyString_FromStringAndSize)
 from capnpy cimport ptr
 
 cdef extern from "Python.h":
     int PyByteArray_Resize(object o, Py_ssize_t len)
     char* PyByteArray_AS_STRING(object o)
 
-
 cdef long round_to_word(long pos):
     return (pos + (8 - 1)) & -8  # Round up to 8-byte boundary
+
+
+cimport cython
+@cython.final
+cdef class Segment(object):
+    cdef bytes buf
+    cdef const char* cbuf
+
+    def __cinit__(self, bytes buf):
+        self.buf = buf
+        self.cbuf = PyString_AS_STRING(self.buf)
+
+    cdef inline check_bounds(self, Py_ssize_t offset, Py_ssize_t size):
+        # the bound check seems to introduce a 5-10% overhead when calling
+        # read_int64 from Python. However, I expect the overhead to be
+        # relatively much higher if you call it from C. In case it's needed,
+        # consider adding a read_int64_fast or similar method, which does
+        # *not* do the check.
+        cdef Py_ssize_t buflen = PyString_GET_SIZE(self.buf)
+        if offset < 0 or offset + size > buflen:
+            raise IndexError('Offset out of bounds: %d' % offset)
+
+    cpdef int64_t read_int64(self, Py_ssize_t offset) except? -2:
+        self.check_bounds(offset, 8)
+        return (<int64_t*>(self.cbuf+offset))[0]
+
 
 
 cdef class SegmentBuilder(object):
