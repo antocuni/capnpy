@@ -2,7 +2,7 @@ import pytest
 import struct
 from capnpy import ptr
 from capnpy.printer import print_buffer
-from capnpy.buffer import Segment, SegmentBuilder
+from capnpy.segment import Segment, SegmentBuilder
 
 class TestSegment(object):
 

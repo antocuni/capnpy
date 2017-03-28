@@ -36,7 +36,7 @@ def get_cython_extensions():
              "capnpy/builder.py",
              "capnpy/ptr.pyx",
              "capnpy/packing.pyx",
-             "capnpy/buffer.pyx",
+             "capnpy/segment.pyx",
              "capnpy/copy_pointer.pyx",
              "capnpy/_hash.pyx",
              "capnpy/_util.pyx",
