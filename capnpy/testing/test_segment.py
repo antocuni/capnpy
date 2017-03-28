@@ -1,6 +1,8 @@
 import pytest
+import sys
 import struct
 import math
+from pypytools import IS_PYPY
 from capnpy import ptr
 from capnpy.printer import print_buffer
 from capnpy.segment import Segment, SegmentBuilder
@@ -15,27 +17,27 @@ class TestSegment(object):
         assert s.read_int64(16) == 44
 
     def test_read_ints(self):
-        buf = '\xff' * 8
+        buf = 'garbage0' + '\xff' * 8
         s = Segment(buf)
-        assert s.read_int8(0) == -1
-        assert s.read_int16(0) == -1
-        assert s.read_int32(0) == -1
-        assert s.read_int64(0) == -1
+        assert s.read_int8(8) == -1
+        assert s.read_int16(8) == -1
+        assert s.read_int32(8) == -1
+        assert s.read_int64(8) == -1
         #
-        assert s.read_uint8(0)  == (1 <<  8) - 1
-        assert s.read_uint16(0) == (1 << 16) - 1
-        assert s.read_uint32(0) == (1 << 32) - 1
-        assert s.read_uint64(0) == (1 << 64) - 1
+        assert s.read_uint8(8)  == (1 <<  8) - 1
+        assert s.read_uint16(8) == (1 << 16) - 1
+        assert s.read_uint32(8) == (1 << 32) - 1
+        assert s.read_uint64(8) == (1 << 64) - 1
 
     def test_read_float(self):
-        buf = struct.pack('f', math.pi)
+        buf = struct.pack('ff', 0, math.pi)
         s = Segment(buf)
-        assert s.read_float(0) == struct.unpack('f', buf)[0]
+        assert s.read_float(4) == struct.unpack('ff', buf)[1]
 
     def test_read_double(self):
-        buf = struct.pack('d', math.pi)
+        buf = struct.pack('dd', 0, math.pi)
         s = Segment(buf)
-        assert s.read_double(0) == struct.unpack('d', buf)[0]
+        assert s.read_double(8) == struct.unpack('dd', buf)[1]
 
 
 class TestSegmentBuilder(object):

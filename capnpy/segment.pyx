@@ -41,7 +41,7 @@ cdef class Segment(object):
         # if the value is small enough, it returns a python int. Else, a
         # python long
         self.check_bounds(8, offset)
-        uint64_value = (<uint64_t*>self.cbuf)[0]
+        uint64_value = (<uint64_t*>(self.cbuf+offset))[0]
         if uint64_value <= INT64_MAX:
             return <int64_t>uint64_value
         else:
@@ -49,35 +49,35 @@ cdef class Segment(object):
 
     cpdef int32_t read_int32(self, Py_ssize_t offset) except? -1:
         self.check_bounds(4, offset)
-        return (<int32_t*>self.cbuf)[0]
+        return (<int32_t*>(self.cbuf+offset))[0]
 
     cpdef uint32_t read_uint32(self, Py_ssize_t offset) except? -1:
         self.check_bounds(4, offset)
-        return (<uint32_t*>self.cbuf)[0]
+        return (<uint32_t*>(self.cbuf+offset))[0]
 
     cpdef int16_t read_int16(self, Py_ssize_t offset) except? -1:
         self.check_bounds(2, offset)
-        return (<int16_t*>self.cbuf)[0]
+        return (<int16_t*>(self.cbuf+offset))[0]
 
     cpdef uint16_t read_uint16(self, Py_ssize_t offset) except? -1:
         self.check_bounds(2, offset)
-        return (<uint16_t*>self.cbuf)[0]
+        return (<uint16_t*>(self.cbuf+offset))[0]
 
     cpdef int8_t read_int8(self, Py_ssize_t offset) except? -1:
         self.check_bounds(1, offset)
-        return (<int8_t*>self.cbuf)[0]
+        return (<int8_t*>(self.cbuf+offset))[0]
 
     cpdef uint8_t read_uint8(self, Py_ssize_t offset) except? -1:
         self.check_bounds(1, offset)
-        return (<uint8_t*>self.cbuf)[0]
+        return (<uint8_t*>(self.cbuf+offset))[0]
 
     cpdef double read_double(self, Py_ssize_t offset) except? -1:
         self.check_bounds(8, offset)
-        return (<double*>self.cbuf)[0]
+        return (<double*>(self.cbuf+offset))[0]
 
     cpdef float read_float(self, Py_ssize_t offset) except? -1:
         self.check_bounds(4, offset)
-        return (<float*>self.cbuf)[0]
+        return (<float*>(self.cbuf+offset))[0]
 
 
 
