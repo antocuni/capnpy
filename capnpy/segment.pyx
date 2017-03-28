@@ -38,8 +38,14 @@ cdef class Segment(object):
         return (<int64_t*>(self.cbuf+offset))[0]
 
     cpdef uint64_t read_uint64(self, Py_ssize_t offset) except? -1:
-        # if the value is small enough, it returns a python int. Else, a
-        # python long
+        self.check_bounds(8, offset)
+        return (<uint64_t*>(self.cbuf+offset))[0]
+
+    cpdef read_uint64_magic(self, Py_ssize_t offset):
+        # Special version of read_uint64; it returns a PyObject* instead of a
+        # typed object (so it should be called only if the return value is
+        # going to be converted to object anyway).  If the value is small
+        # enough, it returns a python int. Else, a python long
         self.check_bounds(8, offset)
         uint64_value = (<uint64_t*>(self.cbuf+offset))[0]
         if uint64_value <= INT64_MAX:

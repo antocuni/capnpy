@@ -39,6 +39,23 @@ class TestSegment(object):
         s = Segment(buf)
         assert s.read_double(8) == struct.unpack('dd', buf)[1]
 
+    def test_uint64(self):
+        if sys.maxint != (1 << 63)-1:
+            py.test.skip('64 bit only')
+        if IS_PYPY and sys.pypy_version_info < (5, 6):
+            py.test.skip('Broken on PyPy<5.6')
+        #
+        buf = struct.pack('QQ', sys.maxint, sys.maxint+1)
+        s = Segment(buf)
+        #
+        val = s.read_uint64_magic(0)
+        assert val == sys.maxint == s.read_uint64(0)
+        assert type(val) is int
+        #
+        val = s.read_uint64_magic(8)
+        assert val == sys.maxint+1 == s.read_uint64(8)
+        assert type(val) is long
+
 
 class TestSegmentBuilder(object):
 
