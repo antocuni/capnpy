@@ -1,5 +1,6 @@
 import pytest
 import struct
+import math
 from capnpy import ptr
 from capnpy.printer import print_buffer
 from capnpy.segment import Segment, SegmentBuilder
@@ -26,6 +27,15 @@ class TestSegment(object):
         assert s.read_uint32(0) == (1 << 32) - 1
         assert s.read_uint64(0) == (1 << 64) - 1
 
+    def test_read_float(self):
+        buf = struct.pack('f', math.pi)
+        s = Segment(buf)
+        assert s.read_float(0) == struct.unpack('f', buf)[0]
+
+    def test_read_double(self):
+        buf = struct.pack('d', math.pi)
+        s = Segment(buf)
+        assert s.read_double(0) == struct.unpack('d', buf)[0]
 
 
 class TestSegmentBuilder(object):
