@@ -33,11 +33,11 @@ cdef class Segment(object):
         if offset < 0 or offset + size > buflen:
             raise IndexError('Offset out of bounds: %d' % offset)
 
-    cpdef int64_t read_int64(self, Py_ssize_t offset) except? -1:
+    cpdef int64_t read_int64(self, Py_ssize_t offset) except? 0x7fffffffffffffff:
         self.check_bounds(8, offset)
         return (<int64_t*>(self.cbuf+offset))[0]
 
-    cpdef uint64_t read_uint64(self, Py_ssize_t offset) except? -1:
+    cpdef uint64_t read_uint64(self, Py_ssize_t offset) except? 0xffffffffffffffff:
         self.check_bounds(8, offset)
         return (<uint64_t*>(self.cbuf+offset))[0]
 
@@ -53,27 +53,27 @@ cdef class Segment(object):
         else:
             return uint64_value
 
-    cpdef int32_t read_int32(self, Py_ssize_t offset) except? -1:
+    cpdef int32_t read_int32(self, Py_ssize_t offset) except? 0x7fffffff:
         self.check_bounds(4, offset)
         return (<int32_t*>(self.cbuf+offset))[0]
 
-    cpdef uint32_t read_uint32(self, Py_ssize_t offset) except? -1:
+    cpdef uint32_t read_uint32(self, Py_ssize_t offset) except? 0xffffffff:
         self.check_bounds(4, offset)
         return (<uint32_t*>(self.cbuf+offset))[0]
 
-    cpdef int16_t read_int16(self, Py_ssize_t offset) except? -1:
+    cpdef int16_t read_int16(self, Py_ssize_t offset) except? 0x7fff:
         self.check_bounds(2, offset)
         return (<int16_t*>(self.cbuf+offset))[0]
 
-    cpdef uint16_t read_uint16(self, Py_ssize_t offset) except? -1:
+    cpdef uint16_t read_uint16(self, Py_ssize_t offset) except? 0xffff:
         self.check_bounds(2, offset)
         return (<uint16_t*>(self.cbuf+offset))[0]
 
-    cpdef int8_t read_int8(self, Py_ssize_t offset) except? -1:
+    cpdef int8_t read_int8(self, Py_ssize_t offset) except? 0x7f:
         self.check_bounds(1, offset)
         return (<int8_t*>(self.cbuf+offset))[0]
 
-    cpdef uint8_t read_uint8(self, Py_ssize_t offset) except? -1:
+    cpdef uint8_t read_uint8(self, Py_ssize_t offset) except? 0xff:
         self.check_bounds(1, offset)
         return (<uint8_t*>(self.cbuf+offset))[0]
 

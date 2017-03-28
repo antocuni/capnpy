@@ -56,6 +56,24 @@ class TestSegment(object):
         assert val == sys.maxint+1 == s.read_uint64(8)
         assert type(val) is long
 
+    def test_errors(self):
+        buf = '\xff' * 8
+        s = Segment(buf)
+        pytest.raises(IndexError, "s.read_int8(-1)")
+        pytest.raises(IndexError, "s.read_int16(-1)")
+        pytest.raises(IndexError, "s.read_int32(-1)")
+        pytest.raises(IndexError, "s.read_int64(-1)")
+        #
+        pytest.raises(IndexError, "s.read_uint8(-1)")
+        pytest.raises(IndexError, "s.read_uint16(-1)")
+        pytest.raises(IndexError, "s.read_uint32(-1)")
+        pytest.raises(IndexError, "s.read_uint64(-1)")
+        #
+        pytest.raises(IndexError, "s.read_float(-1)")
+        pytest.raises(IndexError, "s.read_double(-1)")
+        #
+        pytest.raises(IndexError, "s.read_int64(8)")
+
 
 class TestSegmentBuilder(object):
 
