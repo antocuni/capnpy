@@ -1,4 +1,3 @@
-cimport cython
 from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
                           uint32_t, int32_t, int64_t, uint64_t)
 from libc.string cimport memcpy, memset
@@ -14,8 +13,7 @@ cdef long round_to_word(long pos):
     return (pos + (8 - 1)) & -8  # Round up to 8-byte boundary
 
 
-@cython.final
-cdef class MutableBuffer(object):
+cdef class SegmentBuilder(object):
 
     def __cinit__(self, long length=512):
         self.length = length

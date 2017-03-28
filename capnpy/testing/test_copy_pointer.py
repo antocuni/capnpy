@@ -5,14 +5,14 @@ from capnpy.printer import print_buffer
 
 pytest.importorskip('capnpy.copy_pointer')
 from capnpy.copy_pointer import copy_pointer
-from capnpy.buffer import MutableBuffer
+from capnpy.buffer import SegmentBuilder
 
 class TestCopyPointer(object):
 
     def copy_struct(self, src, offset, data_size, ptrs_size, bufsize=None):
         if bufsize is None:
             bufsize = len(src)+8
-        dst = MutableBuffer(bufsize)
+        dst = SegmentBuilder(bufsize)
         dst_pos = dst.allocate(8) # allocate the space to store the pointer p
         p = ptr.new_struct(0, data_size, ptrs_size)
         copy_pointer(src, p, offset-8, dst, dst_pos)

@@ -2,7 +2,7 @@ from libc.stdint cimport int64_t
 from libc.string cimport memcpy
 from capnpy cimport ptr
 from capnpy.packing cimport as_cbuf
-from capnpy.buffer cimport MutableBuffer
+from capnpy.buffer cimport SegmentBuilder
 
 
 # this is a bit of a hack because apparently it is not possible to define the
@@ -23,7 +23,7 @@ cdef long raise_out_of_bound(long pos, long n, Py_ssize_t src_len) except -1:
 cdef int64_t read_int64(const char* src, long i):
     return (<int64_t*>(src+i))[0]
 
-cpdef copy_pointer(bytes src, long p, long src_pos, MutableBuffer dst, long dst_pos):
+cpdef copy_pointer(bytes src, long p, long src_pos, SegmentBuilder dst, long dst_pos):
     """
     Copy from: buffer src, pointer p living at the src_pos offset
          to:   buffer dst at position dst_pos
@@ -34,7 +34,7 @@ cpdef copy_pointer(bytes src, long p, long src_pos, MutableBuffer dst, long dst_
 
 
 cdef long _copy(const char* src, Py_ssize_t src_len, long p, long src_pos,
-                MutableBuffer dst, long dst_pos) except -1:
+                SegmentBuilder dst, long dst_pos) except -1:
     cdef long kind = ptr.kind(p)
     if kind == ptr.STRUCT:
         return _copy_struct(src, src_len, p, src_pos, dst, dst_pos)
@@ -51,7 +51,7 @@ cdef long _copy(const char* src, Py_ssize_t src_len, long p, long src_pos,
     assert False, 'unknown ptr kind: %s' % kind
 
 cdef long _copy_many_ptrs(long n, const char* src, Py_ssize_t src_len, long src_pos,
-                          MutableBuffer dst, long dst_pos) except -1:
+                          SegmentBuilder dst, long dst_pos) except -1:
     cdef long i, p, offset
     check_bound(src_pos, n*8, src_len)
     for i in range(n):
@@ -61,7 +61,7 @@ cdef long _copy_many_ptrs(long n, const char* src, Py_ssize_t src_len, long src_
             _copy(src, src_len, p, src_pos + offset, dst, dst_pos + offset)
 
 cdef long _copy_struct(const char* src, Py_ssize_t src_len, long p, long src_pos,
-                       MutableBuffer dst, long dst_pos) except -1:
+                       SegmentBuilder dst, long dst_pos) except -1:
     src_pos = ptr.deref(p, src_pos)
     cdef long data_size = ptr.struct_data_size(p)
     cdef long ptrs_size = ptr.struct_ptrs_size(p)
@@ -73,7 +73,7 @@ cdef long _copy_struct(const char* src, Py_ssize_t src_len, long p, long src_pos
 
 
 cdef long _copy_list_primitive(const char* src, Py_ssize_t src_len, long p, long src_pos,
-                               MutableBuffer dst, long dst_pos) except -1:
+                               SegmentBuilder dst, long dst_pos) except -1:
     src_pos = ptr.deref(p, src_pos)
     cdef long count = ptr.list_item_count(p)
     cdef long size_tag = ptr.list_size_tag(p)
@@ -88,7 +88,7 @@ cdef long _copy_list_primitive(const char* src, Py_ssize_t src_len, long p, long
     dst.memcpy_from(dst_pos, src+src_pos, body_length)
 
 cdef long _copy_list_ptr(const char* src, Py_ssize_t src_len, long p, long src_pos,
-                         MutableBuffer dst, long dst_pos) except -1:
+                         SegmentBuilder dst, long dst_pos) except -1:
     src_pos = ptr.deref(p, src_pos)
     cdef long count = ptr.list_item_count(p)
     cdef long body_length = count*8
@@ -98,7 +98,7 @@ cdef long _copy_list_ptr(const char* src, Py_ssize_t src_len, long p, long src_p
 
 
 cdef long _copy_list_composite(const char* src, Py_ssize_t src_len, long p, long src_pos,
-                               MutableBuffer dst, long dst_pos) except -1:
+                               SegmentBuilder dst, long dst_pos) except -1:
     src_pos = ptr.deref(p, src_pos)
     cdef long total_words = ptr.list_item_count(p) # n of words NOT including the tag
     cdef long body_length = (total_words+1)*8      # total length INCLUDING the tag

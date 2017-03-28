@@ -4,7 +4,7 @@ from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
 
 
 @cython.final
-cdef class MutableBuffer(object):
+cdef class SegmentBuilder(object):
     cdef bytearray buf
     cdef char* cbuf
     cdef readonly Py_ssize_t length  # length of the allocated buffer
