@@ -37,7 +37,7 @@ cdef class Segment(object):
         if ifmt == 'q':
             return self.read_int64(offset)
         elif ifmt == 'Q':
-            return self.read_uint64(offset)
+            return self.read_uint64_magic(offset)
         elif ifmt == 'd':
             return self.read_double(offset)
         elif ifmt == 'f':

@@ -52,6 +52,10 @@ class TestSegment(object):
         assert val == sys.maxint == s.read_uint64(0)
         assert type(val) is int
         #
+        val = s.read_primitive(0, ord('Q'))
+        assert val == sys.maxint == s.read_uint64(0)
+        assert type(val) is int
+        #
         val = s.read_uint64_magic(8)
         assert val == sys.maxint+1 == s.read_uint64(8)
         assert type(val) is long
