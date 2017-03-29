@@ -1,5 +1,6 @@
 import py
-from capnpy.blob import Types, CapnpBufferWithSegments
+from capnpy.type import Types
+from capnpy.segment import MultiSegment
 from capnpy.struct_ import Struct, undefined
 from capnpy.enum import enum
 from capnpy.printer import print_buffer
@@ -46,7 +47,7 @@ def test__read_struct():
            '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
     s = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     p = s._read_struct(0, Struct)
-    assert p._buf is s._buf
+    assert p._seg is s._seg
     assert p._data_offset == 8
     assert p._data_size == 2
     assert p._ptrs_size == 0
@@ -64,7 +65,7 @@ def test__read_struct_with_offset():
            '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
     s = Struct.from_buffer(buf, 4, data_size=0, ptrs_size=1)
     p = s._read_struct(0, Struct)
-    assert p._buf is s._buf
+    assert p._seg is s._seg
     assert p._data_offset == 12
     assert p._data_size == 2
     assert p._ptrs_size == 0
@@ -112,7 +113,7 @@ def test_far_pointer():
             '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
             '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
     #
-    buf = CapnpBufferWithSegments(seg0+seg1, segment_offsets=(0, 16))
+    buf = MultiSegment(seg0+seg1, segment_offsets=(0, 16))
     blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
     p = blob._read_struct(0, Struct)
     assert p._read_data(0, Types.int64.ifmt) == 1
@@ -187,7 +188,7 @@ def test_compact():
     rect = Rect.from_buffer(buf, 8, data_size=1, ptrs_size=2)
     rect2 = rect.compact()
     assert rect2.__class__ is Rect
-    assert rect2._buf.s == ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+    assert rect2._seg.buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
                             '\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
                             '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
                             '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
@@ -210,7 +211,7 @@ def test_comparisons_succeed():
 
         def _equals(self, other):
             # dummy, random implementation
-            return self._buf.s == other._buf.s
+            return self._seg.buf == other._seg.buf
     #
     s1 = MyStruct.from_buffer('', 0, data_size=0, ptrs_size=0)
     s2 = MyStruct.from_buffer('', 0, data_size=0, ptrs_size=0)

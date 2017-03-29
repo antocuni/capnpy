@@ -135,14 +135,14 @@ class Field__Slot:
             {ensure_union}
             {cdef_offset} = {offset}
             {cdef_p} = self._read_fast_ptr(offset)
-            if p == _E_IS_FAR_POINTER:
+            if _ptr.kind(p) == _ptr.FAR:
                 offset, p = self._read_far_ptr(offset)
             else:
                 offset += self._ptrs_offset
             if p == 0:
                 return None
             {cdef_obj} = {structcls}.__new__({structcls})
-            obj._init_from_pointer(self._buf, offset, p)
+            obj._init_from_pointer(self._seg, offset, p)
             return obj
         """)
         ns.ww("""
@@ -217,7 +217,7 @@ class Field__Group:
         m.def_property(ns, name, """
             {ensure_union}
             obj = {groupcls}.__new__({groupcls})
-            _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+            _Struct._init_from_buffer(obj, self._seg, self._data_offset,
                                       self._data_size, self._ptrs_size)
             return obj
         """)

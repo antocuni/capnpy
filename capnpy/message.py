@@ -1,6 +1,6 @@
 import struct
 from capnpy.packing import unpack_uint32, pack_message_header
-from capnpy.blob import CapnpBuffer, CapnpBufferWithSegments
+from capnpy.segment import Segment, MultiSegment
 from capnpy.struct_ import Struct, struct_from_buffer
 from capnpy import ptr
 from capnpy.filelike import as_filelike
@@ -84,7 +84,7 @@ def _load_buffer_single_segment(f):
     if len(buf) < message_lenght:
         raise ValueError("Unexpected EOF: expected %d bytes, got only %s. " 
                          "Segment size: %s" % (message_lenght, len(buf), message_size))
-    return CapnpBuffer(buf)
+    return Segment(buf)
 
 def _load_buffer_multiple_segments(f, n):
     # slow path for the multiple-segments case
@@ -119,7 +119,7 @@ def _load_buffer_multiple_segments(f, n):
         segment_offsets.append(offset)
     #
     # 5. we are finally done :)
-    return CapnpBufferWithSegments(buf, tuple(segment_offsets))
+    return MultiSegment(buf, tuple(segment_offsets))
 
 
 def dumps(obj):
@@ -133,7 +133,7 @@ def dumps(obj):
         obj = obj.compact()
     a = obj._get_body_start()
     b = obj._get_end()
-    buf = obj._buf.s[a:b]
+    buf = obj._seg.buf[a:b]
     p = ptr.new_struct(0, obj._data_size, obj._ptrs_size)
     #
     segment_count = 1

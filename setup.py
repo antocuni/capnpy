@@ -26,6 +26,7 @@ else:
 def get_cython_extensions():
     from Cython.Build import cythonize
     files = ["capnpy/blob.py",
+             "capnpy/segment.py",
              "capnpy/visit.py",
              "capnpy/struct_.py",
              "capnpy/list.py",
@@ -36,6 +37,7 @@ def get_cython_extensions():
              "capnpy/builder.py",
              "capnpy/ptr.pyx",
              "capnpy/packing.pyx",
+             "capnpy/basesegment.pyx",
              "capnpy/copy_pointer.pyx",
              "capnpy/_hash.pyx",
              "capnpy/_util.pyx",

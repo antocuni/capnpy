@@ -1,12 +1,12 @@
 from capnpy import ptr
 from capnpy.printer import print_buffer
 from capnpy.visit import end_of, is_compact
-from capnpy.blob import CapnpBuffer
+from capnpy.segment import Segment
 
 class TestEndOf(object):
 
     def end_of(self, buf, offset, data_size, ptrs_size):
-        buf = CapnpBuffer(buf)
+        buf = Segment(buf)
         p = ptr.new_struct(0, data_size, ptrs_size)
         return end_of(buf, p, offset-8)
 
@@ -221,7 +221,7 @@ class TestEndOf(object):
 class TestIsCompact(object):
 
     def is_compact(self, buf, offset, kind, **kwds):
-        buf = CapnpBuffer(buf)
+        buf = Segment(buf)
         if kind == ptr.STRUCT:
             p = ptr.new_struct(0, **kwds)
         elif kind == ptr.LIST:

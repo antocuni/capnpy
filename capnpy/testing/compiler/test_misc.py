@@ -71,7 +71,7 @@ class TestIntegration(CompilerTest):
         assert foo.key.name == 'dummy'
         # we check that the structure has been packed
         assert foo.key._data_offset == 8
-        assert foo.key._buf.s[8:] == ('\x01\x00\x00\x00\x32\x00\x00\x00'  # ptr to dummy
+        assert foo.key._seg.buf[8:] == ('\x01\x00\x00\x00\x32\x00\x00\x00'  # ptr to dummy
                                       'dummy\x00\x00\x00')
 
     def test_compact_struct_inside_list(self):

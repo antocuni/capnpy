@@ -21,12 +21,12 @@ class TestConstructors(CompilerTest):
         p = mod.Point(1, 2)
         assert p.x == 1
         assert p.y == 2
-        assert p._buf.s == buf
+        assert p._seg.buf == buf
         #
         p = mod.Point(y=2, x=1)
         assert p.x == 1
         assert p.y == 2
-        assert p._buf.s == buf
+        assert p._seg.buf == buf
 
     def test_enum(self):
         schema = """
@@ -52,7 +52,7 @@ class TestConstructors(CompilerTest):
         assert p.x == 1
         assert p.y == 2
         assert p.color == mod.Color.yellow
-        assert p._buf.s == buf
+        assert p._seg.buf == buf
 
 
     def test_order_of_arguments(self):
@@ -88,7 +88,7 @@ class TestConstructors(CompilerTest):
         p = mod.Point(1, 2)
         assert p.x == 1
         assert p.y == 2
-        assert p._buf.s == buf
+        assert p._seg.buf == buf
         py.test.raises(TypeError, "mod.Point(z=None)")
 
     def test_text(self):
@@ -101,7 +101,7 @@ class TestConstructors(CompilerTest):
         """
         mod = self.compile(schema)
         foo = mod.Foo(1, 'hello capnp')
-        assert foo._buf.s == ('\x01\x00\x00\x00\x00\x00\x00\x00'
+        assert foo._seg.buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'
                               '\x01\x00\x00\x00\x62\x00\x00\x00'
                               'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
                               'p' 'n' 'p' '\x00\x00\x00\x00\x00')
@@ -116,7 +116,7 @@ class TestConstructors(CompilerTest):
         """
         mod = self.compile(schema)
         foo = mod.Foo(1, 'hello capnp')
-        assert foo._buf.s == ('\x01\x00\x00\x00\x00\x00\x00\x00'
+        assert foo._seg.buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'
                               '\x01\x00\x00\x00\x5a\x00\x00\x00'
                               'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
                               'p' 'n' 'p' '\x00\x00\x00\x00\x00')
@@ -135,9 +135,9 @@ class TestConstructors(CompilerTest):
         mod = self.compile(schema)
         p = mod.Point(1, 2)
         foo = mod.Foo(p)
-        assert foo._buf.s == ('\x00\x00\x00\x00\x02\x00\x00\x00'  # ptr to point
-                              '\x01\x00\x00\x00\x00\x00\x00\x00'  # p.x == 1
-                              '\x02\x00\x00\x00\x00\x00\x00\x00') # p.y == 2
+        assert foo._seg.buf == ('\x00\x00\x00\x00\x02\x00\x00\x00'  # ptr to point
+                                '\x01\x00\x00\x00\x00\x00\x00\x00'  # p.x == 1
+                                '\x02\x00\x00\x00\x00\x00\x00\x00') # p.y == 2
 
 
     def test_list(self):
@@ -149,7 +149,7 @@ class TestConstructors(CompilerTest):
         """
         mod = self.compile(schema)
         foo = mod.Foo([1, 2, 3, 4])
-        assert foo._buf.s == ('\x01\x00\x00\x00\x22\x00\x00\x00'   # ptrlist
+        assert foo._seg.buf == ('\x01\x00\x00\x00\x22\x00\x00\x00'   # ptrlist
                               '\x01\x02\x03\x04\x00\x00\x00\x00')  # 1,2,3,4 + padding
 
     def test_list_of_void(self):
@@ -161,7 +161,7 @@ class TestConstructors(CompilerTest):
         """
         mod = self.compile(schema)
         foo = mod.Foo([None]*4)
-        assert foo._buf.s == ('\x01\x00\x00\x00\x20\x00\x00\x00')  # ptrlist
+        assert foo._seg.buf == ('\x01\x00\x00\x00\x20\x00\x00\x00')  # ptrlist
 
     def test_list_of_text(self):
         schema = """
@@ -179,7 +179,7 @@ class TestConstructors(CompilerTest):
                     'foo\x00\x00\x00\x00\x00'
                     'bar\x00\x00\x00\x00\x00'
                     'baz\x00\x00\x00\x00\x00')
-        assert foo._buf.s == expected
+        assert foo._seg.buf == expected
 
     def test_list_of_data(self):
         schema = """
@@ -197,7 +197,7 @@ class TestConstructors(CompilerTest):
                     'foo\x00\x00\x00\x00\x00'
                     'bar\x00\x00\x00\x00\x00'
                     'baz\x00\x00\x00\x00\x00')
-        assert foo._buf.s == expected
+        assert foo._seg.buf == expected
 
     def test_list_of_structs(self):
         schema = """
@@ -235,7 +235,7 @@ class TestConstructors(CompilerTest):
                     '\x01\x02\x03\x00\x00\x00\x00\x00'
                     '\x04\x05\x00\x00\x00\x00\x00\x00'
                     '\x06\x07\x08\x09\x00\x00\x00\x00')
-        assert foo._buf.s == expected
+        assert foo._seg.buf == expected
 
 
     def test_group(self):

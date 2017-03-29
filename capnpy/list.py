@@ -1,6 +1,7 @@
 import struct
 import capnpy
-from capnpy.blob import Blob, Types, PYX
+from capnpy.type import Types
+from capnpy.blob import Blob, PYX
 from capnpy import ptr
 from capnpy.util import text_repr, float32_repr, float64_repr
 from capnpy.visit import end_of
@@ -36,7 +37,7 @@ class List(Blob):
     def _set_list_tag(self, size_tag, item_count):
         self._size_tag = size_tag
         if size_tag == ptr.LIST_SIZE_COMPOSITE:
-            tag = self._buf.read_raw_ptr(self._offset)
+            tag = self._seg.read_ptr(self._offset)
             self._tag = tag
             self._item_count = ptr.offset(tag)
             self._item_length = (ptr.struct_data_size(tag)+ptr.struct_ptrs_size(tag))*8
@@ -71,14 +72,14 @@ class List(Blob):
 
     def _get_end(self):
         p = ptr.new_list(0, self._size_tag, self._item_count)
-        return end_of(self._buf, p, self._offset-8)
+        return end_of(self._seg, p, self._offset-8)
 
     def _get_slice(self):
         # XXX: investigate whether it is faster to user memoryview for
         # comparing the memory without doing a full copy
         start = self._offset
         end = self._get_end()
-        return self._buf.s[start:end]
+        return self._seg.buf[start:end]
 
     def _equals(self, other):
         if not self._item_type.can_compare():
@@ -152,7 +153,7 @@ class BoolItemType(ItemType):
     def read_item(self, lst, i):
         byteoffset, bitoffset = divmod(i, 8)
         bitmask = 1 << bitoffset
-        value = lst._buf.read_primitive(lst._offset+byteoffset, ord('b'))
+        value = lst._seg.read_primitive(lst._offset+byteoffset, ord('b'))
         return bool(value & bitmask)
 
     def item_repr(self, item):
@@ -176,7 +177,7 @@ class PrimitiveItemType(ItemType):
 
     def read_item(self, lst, i):
         offset = lst._offset + (i * lst._item_length)
-        return lst._buf.read_primitive(offset, self.ifmt)
+        return lst._seg.read_primitive(offset, self.ifmt)
 
     def item_repr(self, item):
         if self.t is Types.float32:
@@ -232,7 +233,7 @@ class StructItemType(ItemType):
 
     def read_item(self, lst, i):
         offset = self.offset_for_item(lst, i)
-        return self.structcls.from_buffer(lst._buf,
+        return self.structcls.from_buffer(lst._seg,
                                           lst._offset+offset,
                                           ptr.struct_data_size(lst._tag),
                                           ptr.struct_ptrs_size(lst._tag))
@@ -292,10 +293,10 @@ class TextItemType(ItemType):
 
     def read_item(self, lst, i):
         offset = lst._offset + (i*8)
-        p = lst._buf.read_ptr(offset)
-        if p == ptr.E_IS_FAR_POINTER:
+        p = lst._seg.read_ptr(offset)
+        if ptr.kind(p) == ptr.FAR:
             raise NotImplementedError('FAR pointers not supported here')
-        return lst._buf.read_str(p, offset, None, self.additional_size)
+        return lst._seg.read_str(p, offset, None, self.additional_size)
 
     def item_repr(self, item):
         return text_repr(item)
@@ -323,11 +324,11 @@ class ListItemType(ItemType):
 
     def read_item(self, lst, i):
         offset = lst._offset + (i*8)
-        p = lst._buf.read_ptr(offset)
-        if p == ptr.E_IS_FAR_POINTER:
+        p = lst._seg.read_ptr(offset)
+        if ptr.kind(p) == ptr.FAR:
             raise NotImplementedError('FAR pointers not supported here')
         obj = List.__new__(List)
-        obj._init_from_buffer(lst._buf,
+        obj._init_from_buffer(lst._seg,
                               ptr.deref(p, offset),
                               ptr.list_size_tag(p),
                               ptr.list_item_count(p),

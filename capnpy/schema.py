@@ -1,13 +1,13 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2017-03-16 21:10
+# generated on 2017-03-29 12:05
 
-from capnpy.ptr import E_IS_FAR_POINTER as _E_IS_FAR_POINTER
+from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
 from capnpy.struct_ import check_tag as _check_tag
 from capnpy.struct_ import undefined as _undefined
 from capnpy.enum import enum as _enum
-from capnpy.blob import Types as _Types
+from capnpy.type import Types as _Types
 from capnpy.builder import Builder as _Builder
 from capnpy.list import List as _List
 from capnpy.list import PrimitiveItemType as _PrimitiveItemType
@@ -352,14 +352,14 @@ class Method(_Struct):
         # no union check
         offset = 16
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Brand.__new__(Brand)
-        obj._init_from_pointer(self._buf, offset, p)
+        obj._init_from_pointer(self._seg, offset, p)
         return obj
     
     def get_paramBrand(self):
@@ -377,14 +377,14 @@ class Method(_Struct):
         # no union check
         offset = 24
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Brand.__new__(Brand)
-        obj._init_from_pointer(self._buf, offset, p)
+        obj._init_from_pointer(self._seg, offset, p)
         return obj
     
     def get_resultBrand(self):
@@ -583,7 +583,7 @@ class Type_anyPointer(_Struct):
     def parameter(self):
         self._ensure_union(1)
         obj = Type_anyPointer_parameter.__new__(Type_anyPointer_parameter)
-        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
                                   self._data_size, self._ptrs_size)
         return obj
     
@@ -595,7 +595,7 @@ class Type_anyPointer(_Struct):
     def implicitMethodParameter(self):
         self._ensure_union(2)
         obj = Type_anyPointer_implicitMethodParameter.__new__(Type_anyPointer_implicitMethodParameter)
-        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
                                   self._data_size, self._ptrs_size)
         return obj
     
@@ -631,14 +631,14 @@ class Type_struct(_Struct):
         # no union check
         offset = 0
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Brand.__new__(Brand)
-        obj._init_from_pointer(self._buf, offset, p)
+        obj._init_from_pointer(self._seg, offset, p)
         return obj
     
     def get_brand(self):
@@ -678,14 +678,14 @@ class Type_enum(_Struct):
         # no union check
         offset = 0
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Brand.__new__(Brand)
-        obj._init_from_pointer(self._buf, offset, p)
+        obj._init_from_pointer(self._seg, offset, p)
         return obj
     
     def get_brand(self):
@@ -725,14 +725,14 @@ class Type_interface(_Struct):
         # no union check
         offset = 0
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Brand.__new__(Brand)
-        obj._init_from_pointer(self._buf, offset, p)
+        obj._init_from_pointer(self._seg, offset, p)
         return obj
     
     def get_brand(self):
@@ -764,14 +764,14 @@ class Type_list(_Struct):
         # no union check
         offset = 0
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Type.__new__(Type)
-        obj._init_from_pointer(self._buf, offset, p)
+        obj._init_from_pointer(self._seg, offset, p)
         return obj
     
     def get_elementType(self):
@@ -913,7 +913,7 @@ class Type(_Struct):
     def list(self):
         self._ensure_union(14)
         obj = Type_list.__new__(Type_list)
-        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
                                   self._data_size, self._ptrs_size)
         return obj
     
@@ -925,7 +925,7 @@ class Type(_Struct):
     def enum(self):
         self._ensure_union(15)
         obj = Type_enum.__new__(Type_enum)
-        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
                                   self._data_size, self._ptrs_size)
         return obj
     
@@ -937,7 +937,7 @@ class Type(_Struct):
     def struct(self):
         self._ensure_union(16)
         obj = Type_struct.__new__(Type_struct)
-        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
                                   self._data_size, self._ptrs_size)
         return obj
     
@@ -949,7 +949,7 @@ class Type(_Struct):
     def interface(self):
         self._ensure_union(17)
         obj = Type_interface.__new__(Type_interface)
-        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
                                   self._data_size, self._ptrs_size)
         return obj
     
@@ -961,7 +961,7 @@ class Type(_Struct):
     def anyPointer(self):
         self._ensure_union(18)
         obj = Type_anyPointer.__new__(Type_anyPointer)
-        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
                                   self._data_size, self._ptrs_size)
         return obj
     
@@ -1259,14 +1259,14 @@ class Field_slot(_Struct):
         # no union check
         offset = 16
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Type.__new__(Type)
-        obj._init_from_pointer(self._buf, offset, p)
+        obj._init_from_pointer(self._seg, offset, p)
         return obj
     
     def get_type(self):
@@ -1284,14 +1284,14 @@ class Field_slot(_Struct):
         # no union check
         offset = 24
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Value.__new__(Value)
-        obj._init_from_pointer(self._buf, offset, p)
+        obj._init_from_pointer(self._seg, offset, p)
         return obj
     
     def get_defaultValue(self):
@@ -1384,7 +1384,7 @@ class Field(_Struct):
     def slot(self):
         self._ensure_union(0)
         obj = Field_slot.__new__(Field_slot)
-        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
                                   self._data_size, self._ptrs_size)
         return obj
     
@@ -1396,7 +1396,7 @@ class Field(_Struct):
     def group(self):
         self._ensure_union(1)
         obj = Field_group.__new__(Field_group)
-        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
                                   self._data_size, self._ptrs_size)
         return obj
     
@@ -1408,7 +1408,7 @@ class Field(_Struct):
     def ordinal(self):
         # no union check
         obj = Field_ordinal.__new__(Field_ordinal)
-        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
                                   self._data_size, self._ptrs_size)
         return obj
     
@@ -1496,14 +1496,14 @@ class Superclass(_Struct):
         # no union check
         offset = 0
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Brand.__new__(Brand)
-        obj._init_from_pointer(self._buf, offset, p)
+        obj._init_from_pointer(self._seg, offset, p)
         return obj
     
     def get_brand(self):
@@ -1986,14 +1986,14 @@ class Brand_Binding(_Struct):
         self._ensure_union(1)
         offset = 0
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Type.__new__(Type)
-        obj._init_from_pointer(self._buf, offset, p)
+        obj._init_from_pointer(self._seg, offset, p)
         return obj
     
     def get_type(self):
@@ -2186,14 +2186,14 @@ class Annotation(_Struct):
         # no union check
         offset = 0
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Value.__new__(Value)
-        obj._init_from_pointer(self._buf, offset, p)
+        obj._init_from_pointer(self._seg, offset, p)
         return obj
     
     def get_value(self):
@@ -2211,14 +2211,14 @@ class Annotation(_Struct):
         # no union check
         offset = 8
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Brand.__new__(Brand)
-        obj._init_from_pointer(self._buf, offset, p)
+        obj._init_from_pointer(self._seg, offset, p)
         return obj
     
     def get_brand(self):
@@ -2308,14 +2308,14 @@ class Node_const(_Struct):
         # no union check
         offset = 24
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Type.__new__(Type)
-        obj._init_from_pointer(self._buf, offset, p)
+        obj._init_from_pointer(self._seg, offset, p)
         return obj
     
     def get_type(self):
@@ -2333,14 +2333,14 @@ class Node_const(_Struct):
         # no union check
         offset = 32
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Value.__new__(Value)
-        obj._init_from_pointer(self._buf, offset, p)
+        obj._init_from_pointer(self._seg, offset, p)
         return obj
     
     def get_value(self):
@@ -2454,14 +2454,14 @@ class Node_annotation(_Struct):
         # no union check
         offset = 24
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
         if p == 0:
             return None
         obj = Type.__new__(Type)
-        obj._init_from_pointer(self._buf, offset, p)
+        obj._init_from_pointer(self._seg, offset, p)
         return obj
     
     def get_type(self):
@@ -2798,7 +2798,7 @@ class Node(_Struct):
     def struct(self):
         self._ensure_union(1)
         obj = Node_struct.__new__(Node_struct)
-        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
                                   self._data_size, self._ptrs_size)
         return obj
     
@@ -2810,7 +2810,7 @@ class Node(_Struct):
     def enum(self):
         self._ensure_union(2)
         obj = Node_enum.__new__(Node_enum)
-        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
                                   self._data_size, self._ptrs_size)
         return obj
     
@@ -2822,7 +2822,7 @@ class Node(_Struct):
     def interface(self):
         self._ensure_union(3)
         obj = Node_interface.__new__(Node_interface)
-        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
                                   self._data_size, self._ptrs_size)
         return obj
     
@@ -2834,7 +2834,7 @@ class Node(_Struct):
     def const(self):
         self._ensure_union(4)
         obj = Node_const.__new__(Node_const)
-        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
                                   self._data_size, self._ptrs_size)
         return obj
     
@@ -2846,7 +2846,7 @@ class Node(_Struct):
     def annotation(self):
         self._ensure_union(5)
         obj = Node_annotation.__new__(Node_annotation)
-        _Struct._init_from_buffer(obj, self._buf, self._data_offset,
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
                                   self._data_size, self._ptrs_size)
         return obj
     

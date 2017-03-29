@@ -34,7 +34,7 @@ class TestSpecificCtors(BaseTestUnionConstructors):
                '\x03\x00\x00\x00\x00\x00\x00\x00'   # perimeter == 3
                '\x02\x00\x00\x00\x00\x00\x00\x00'   # circle == 2
                '\x00\x00\x00\x00\x00\x00\x00\x00')  # __tag__ == 0 (circle)
-        assert s._buf.s == buf
+        assert s._seg.buf == buf
         #
         s = mod.Shape.new_square(area=1, square=2, perimeter=3)
         assert s.which() == mod.Shape.__tag__.square
@@ -45,7 +45,7 @@ class TestSpecificCtors(BaseTestUnionConstructors):
                '\x03\x00\x00\x00\x00\x00\x00\x00'   # perimeter == 3
                '\x02\x00\x00\x00\x00\x00\x00\x00'   # squadre == 2
                '\x01\x00\x00\x00\x00\x00\x00\x00')  # __tag__ == 1 (square)
-        assert s._buf.s == buf
+        assert s._seg.buf == buf
 
     def test_default(self, mod):
         p = mod.Shape.new_circle()

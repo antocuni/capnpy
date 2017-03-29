@@ -16,7 +16,7 @@ class Visitor(object):
             item_size = ptr.list_size_tag(p)
             count = ptr.list_item_count(p)
             if item_size == ptr.LIST_SIZE_COMPOSITE:
-                tag = buf.read_raw_ptr(offset)
+                tag = buf.read_ptr(offset)
                 count = ptr.offset(tag)
                 data_size = ptr.struct_data_size(tag)
                 ptrs_size = ptr.struct_ptrs_size(tag)
@@ -60,7 +60,7 @@ class EndOf(Visitor):
         while i > 0:
             i -= 1
             p2_offset = offset + i*8
-            p2 = buf.read_raw_ptr(p2_offset)
+            p2 = buf.read_ptr(p2_offset)
             if p2:
                 return self.visit(buf, p2, p2_offset)
         return -1
@@ -115,7 +115,7 @@ class IsCompact(Visitor):
         i = 0
         while i < ptrs_size:
             p2_offset = offset + i*8
-            p2 = buf.read_raw_ptr(p2_offset)
+            p2 = buf.read_ptr(p2_offset)
             if p2:
                 return ptr.deref(p2, p2_offset)
             i += 1
