@@ -117,10 +117,6 @@ class Struct(Blob):
             return offset, 0
         return self._buf.read_far_ptr(self._ptrs_offset+offset)
 
-    def _read_raw_ptr(self, offset):
-        # XXX: kill this as soon as we kill _get_extra_start and _split
-        return self._buf.read_ptr(self._ptrs_offset+offset)
-
     def _read_data(self, offset, ifmt):
         if offset >= self._data_size*8:
             # reading bytes beyond _data_size is equivalent to read 0
@@ -218,7 +214,7 @@ class Struct(Blob):
             return self._get_body_end()
         i = 0
         while i < self._ptrs_size:
-            p = self._read_raw_ptr(i*8)
+            p = self._read_fast_ptr(i*8)
             assert ptr.kind(p) != ptr.FAR
             if p != 0:
                 return self._ptrs_offset + ptr.deref(p, i*8)
@@ -282,7 +278,7 @@ class Struct(Blob):
         j = 0
         while j < self._ptrs_size:
             # read pointer, update its offset, and pack it
-            p = self._read_raw_ptr(j*8)
+            p = self._read_fast_ptr(j*8)
             if p != 0:
                 assert ptr.kind(p) != ptr.FAR
                 p = ptr.new_generic(ptr.kind(p),

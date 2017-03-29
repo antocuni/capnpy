@@ -8,7 +8,6 @@ cdef class CapnpBuffer:
     cdef readonly bytes s
     cpdef read_primitive(self, long offset, char ifmt)
     cpdef long read_int16(self, long offset)
-    cpdef long read_raw_ptr(self, long offset)
     cpdef long read_ptr(self, long offset)
     cpdef read_far_ptr(self, long offset)
 

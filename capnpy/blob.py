@@ -44,9 +44,6 @@ class CapnpBuffer(object):
     def read_int16(self, offset):
         return unpack_int16(self.s, offset)
 
-    def read_raw_ptr(self, offset):
-        return unpack_int64(self.s, offset)
-
     def read_ptr(self, offset):
         """
         Return the pointer at the specifield offet.
@@ -117,11 +114,11 @@ class CapnpBufferWithSegments(CapnpBuffer):
         """
         Read and return the ptr referenced by this far pointer
         """
-        p = self.read_raw_ptr(offset)
+        p = self.read_ptr(offset)
         assert ptr.far_landing_pad(p) == 0
         segment_start = self.segment_offsets[ptr.far_target(p)] # in bytes
         offset  = segment_start + ptr.far_offset(p)*8
-        p = self.read_raw_ptr(offset)
+        p = self.read_ptr(offset)
         return offset, p
 
 

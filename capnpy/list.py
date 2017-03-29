@@ -36,7 +36,7 @@ class List(Blob):
     def _set_list_tag(self, size_tag, item_count):
         self._size_tag = size_tag
         if size_tag == ptr.LIST_SIZE_COMPOSITE:
-            tag = self._buf.read_raw_ptr(self._offset)
+            tag = self._buf.read_ptr(self._offset)
             self._tag = tag
             self._item_count = ptr.offset(tag)
             self._item_length = (ptr.struct_data_size(tag)+ptr.struct_ptrs_size(tag))*8
