@@ -16,8 +16,6 @@ cdef long round_to_word(long pos):
 
 
 cdef class BaseSegment(object):
-    cdef bytes buf
-    cdef const char* cbuf
 
     def __cinit__(self, bytes buf):
         self.buf = buf

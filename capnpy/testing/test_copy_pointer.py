@@ -5,7 +5,7 @@ from capnpy.printer import print_buffer
 
 pytest.importorskip('capnpy.copy_pointer')
 from capnpy.copy_pointer import copy_pointer
-from capnpy.segment import SegmentBuilder
+from capnpy.basesegment import SegmentBuilder
 
 class TestCopyPointer(object):
 
