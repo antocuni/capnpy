@@ -1,8 +1,8 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2017-03-16 21:10
+# generated on 2017-03-29 12:05
 
-_E_IS_FAR_POINTER = -1 # manual hack for now
+from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
 from capnpy.struct_ import check_tag as _check_tag
 from capnpy.struct_ import undefined as _undefined
@@ -352,7 +352,7 @@ class Method(_Struct):
         # no union check
         offset = 16
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -377,7 +377,7 @@ class Method(_Struct):
         # no union check
         offset = 24
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -631,7 +631,7 @@ class Type_struct(_Struct):
         # no union check
         offset = 0
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -678,7 +678,7 @@ class Type_enum(_Struct):
         # no union check
         offset = 0
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -725,7 +725,7 @@ class Type_interface(_Struct):
         # no union check
         offset = 0
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -764,7 +764,7 @@ class Type_list(_Struct):
         # no union check
         offset = 0
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -1259,7 +1259,7 @@ class Field_slot(_Struct):
         # no union check
         offset = 16
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -1284,7 +1284,7 @@ class Field_slot(_Struct):
         # no union check
         offset = 24
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -1496,7 +1496,7 @@ class Superclass(_Struct):
         # no union check
         offset = 0
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -1986,7 +1986,7 @@ class Brand_Binding(_Struct):
         self._ensure_union(1)
         offset = 0
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -2186,7 +2186,7 @@ class Annotation(_Struct):
         # no union check
         offset = 0
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -2211,7 +2211,7 @@ class Annotation(_Struct):
         # no union check
         offset = 8
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -2308,7 +2308,7 @@ class Node_const(_Struct):
         # no union check
         offset = 24
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -2333,7 +2333,7 @@ class Node_const(_Struct):
         # no union check
         offset = 32
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -2454,7 +2454,7 @@ class Node_annotation(_Struct):
         # no union check
         offset = 24
         p = self._read_fast_ptr(offset)
-        if p == _E_IS_FAR_POINTER:
+        if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset

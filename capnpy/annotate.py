@@ -1,8 +1,8 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2017-03-16 21:10
+# generated on 2017-03-29 12:05
 
-_E_IS_FAR_POINTER = -1 # manual hack for now
+from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
 from capnpy.struct_ import check_tag as _check_tag
 from capnpy.struct_ import undefined as _undefined
