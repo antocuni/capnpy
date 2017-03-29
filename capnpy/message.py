@@ -133,7 +133,7 @@ def dumps(obj):
         obj = obj.compact()
     a = obj._get_body_start()
     b = obj._get_end()
-    buf = obj._buf.buf[a:b]
+    buf = obj._seg.buf[a:b]
     p = ptr.new_struct(0, obj._data_size, obj._ptrs_size)
     #
     segment_count = 1

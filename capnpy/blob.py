@@ -36,11 +36,11 @@ class Blob(object):
     def __init__(self, buf):
         self._init_blob(buf)
 
-    def _init_blob(self, buf):
-        assert buf is not None
-        if isinstance(buf, str):
-            buf = Segment(buf)
-        self._buf = buf
+    def _init_blob(self, seg):
+        assert seg is not None
+        if isinstance(seg, str):
+            seg = Segment(seg)
+        self._seg = seg
 
     def _print_buf(self, start=None, end='auto', **kwds):
         if start is None:
@@ -48,8 +48,8 @@ class Blob(object):
         if end == 'auto':
             end = self._get_body_end()
         elif end is None:
-            end = len(self._buf.buf)
-        p = BufferPrinter(self._buf.buf)
+            end = len(self._seg.buf)
+        p = BufferPrinter(self._seg.buf)
         p.printbuf(start=start, end=end, **kwds)
 
 

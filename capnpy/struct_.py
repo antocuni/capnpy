@@ -51,8 +51,8 @@ class Struct(Blob):
         self._ptrs_offset = offset + data_size*8
         self._data_size = data_size
         self._ptrs_size = ptrs_size
-        assert self._data_offset + data_size*8 <= len(self._buf.buf)
-        assert self._ptrs_offset + ptrs_size*8 <= len(self._buf.buf)
+        assert self._data_offset + data_size*8 <= len(self._seg.buf)
+        assert self._ptrs_offset + ptrs_size*8 <= len(self._seg.buf)
 
     def _init_from_pointer(self, buf, offset, p):
         assert ptr.kind(p) == ptr.STRUCT
@@ -63,7 +63,7 @@ class Struct(Blob):
 
     def __reduce__(self):
         # pickle support
-        args = (self.__class__, self._buf, self._data_offset,
+        args = (self.__class__, self._seg, self._data_offset,
                 self._data_size, self._ptrs_size)
         return (struct_from_buffer, args)
 
@@ -111,24 +111,24 @@ class Struct(Blob):
         # Struct-specific logic
         if offset >= self._ptrs_size*8:
             return 0
-        return self._buf.read_ptr(self._ptrs_offset+offset)
+        return self._seg.read_ptr(self._ptrs_offset+offset)
 
     def _read_far_ptr(self, offset):
         if offset >= self._ptrs_size*8:
             return offset, 0
-        return self._buf.read_far_ptr(self._ptrs_offset+offset)
+        return self._seg.read_far_ptr(self._ptrs_offset+offset)
 
     def _read_data(self, offset, ifmt):
         if offset >= self._data_size*8:
             # reading bytes beyond _data_size is equivalent to read 0
             return 0
-        return self._buf.read_primitive(self._data_offset+offset, ifmt)
+        return self._seg.read_primitive(self._data_offset+offset, ifmt)
 
     def _read_data_int16(self, offset):
         if offset >= self._data_size*8:
             # reading bytes beyond _data_size is equivalent to read 0
             return 0
-        return self._buf.read_int16(self._data_offset+offset)
+        return self._seg.read_int16(self._data_offset+offset)
 
     def _read_bit(self, offset, bitmask):
         val = self._read_data(offset, Types.uint8.ifmt)
@@ -152,7 +152,7 @@ class Struct(Blob):
             return None
         assert ptr.kind(p) == ptr.STRUCT
         obj = structcls.__new__(structcls)
-        obj._init_from_pointer(self._buf, offset, p)
+        obj._init_from_pointer(self._seg, offset, p)
         return obj
 
     def _read_list(self, offset, item_type, default_=None):
@@ -168,7 +168,7 @@ class Struct(Blob):
         # in theory we could simply use List.from_buffer; however, Cython is
         # not able to compile classmethods, so we create it manually
         obj = List.__new__(List)
-        obj._init_from_buffer(self._buf,
+        obj._init_from_buffer(self._seg,
                               list_offset,
                               ptr.list_size_tag(p),
                               ptr.list_item_count(p),
@@ -187,7 +187,7 @@ class Struct(Blob):
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
-        return self._buf.read_str(p, offset, default_, additional_size)
+        return self._seg.read_str(p, offset, default_, additional_size)
 
     def _hash_str_data(self, offset, default_=hash(None), additional_size=0):
         p = self._read_fast_ptr(offset)
@@ -195,7 +195,7 @@ class Struct(Blob):
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
-        return self._buf.hash_str(p, offset, default_, additional_size)
+        return self._seg.hash_str(p, offset, default_, additional_size)
 
     def _ensure_union(self, expected_tag):
         if self.__which__() != expected_tag:
@@ -226,11 +226,11 @@ class Struct(Blob):
 
     def _get_end(self):
         p = ptr.new_struct(0, self._data_size, self._ptrs_size)
-        return end_of(self._buf, p, self._data_offset-8)
+        return end_of(self._seg, p, self._data_offset-8)
 
     def _is_compact(self):
         p = ptr.new_struct(0, self._data_size, self._ptrs_size)
-        return is_compact(self._buf, p, self._data_offset-8)
+        return is_compact(self._seg, p, self._data_offset-8)
 
     def _split(self, extra_offset):
         """
@@ -242,9 +242,9 @@ class Struct(Blob):
         body_end = self._get_body_end()
         if self._ptrs_size == 0:
             # easy case, just copy the body
-            return self._buf.buf[body_start:body_end], ''
+            return self._seg.buf[body_start:body_end], ''
         #
-        # hard case. The layout of self._buf is like this:
+        # hard case. The layout of self._seg is like this:
         # +----------+------+------+----------+-------------+
         # | garbage0 | data | ptrs | garbage1 |    extra    |
         # +----------+------+------+----------+-------------+
@@ -264,7 +264,7 @@ class Struct(Blob):
         #
         # 1) data section
         data_size = self._data_size
-        data_buf = self._buf.buf[body_start:body_start+data_size*8]
+        data_buf = self._seg.buf[body_start:body_start+data_size*8]
         #
         # 2) ptrs section
         #    for each ptr:
@@ -291,7 +291,7 @@ class Struct(Blob):
         #
         body_buf = ''.join(parts)
         # 3) extra part
-        extra_buf = self._buf.buf[extra_start:extra_end]
+        extra_buf = self._seg.buf[extra_start:extra_end]
         #
         return body_buf, extra_buf
 

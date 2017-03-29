@@ -6,7 +6,7 @@ from capnpy cimport _hash
 from capnpy.segment cimport Segment
 
 cdef class Blob:
-    cdef readonly Segment _buf
+    cdef readonly Segment _seg
 
     cpdef _init_blob(self, object buf)
     cpdef _richcmp(self, other, int op)

@@ -112,8 +112,8 @@ def test_segments():
     msg = _load_message(as_filelike(f))
     assert f.tell() == len(buf)
     assert msg._data_offset == 0
-    assert msg._buf.segment_offsets == (0, 16*8, (16+32)*8, (16+32+64)*8)
-    assert msg._buf.buf == payload
+    assert msg._seg.segment_offsets == (0, 16*8, (16+32)*8, (16+32+64)*8)
+    assert msg._seg.buf == payload
 
 def test_dumps():
     class Point(Struct):
