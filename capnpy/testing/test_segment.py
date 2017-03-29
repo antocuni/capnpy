@@ -87,7 +87,7 @@ class TestSegment(object):
         pytest.raises(IndexError, "s.read_int64(8)")
 
 
-@pytest.mark.skipif(IS_PYPY, reason='WIP')
+@pytest.mark.skipif(getattr(SegmentBuilder, 'WIP', False), reason='WIP')
 class TestSegmentBuilder(object):
 
     def test_allocate(self):
