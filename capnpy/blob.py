@@ -8,7 +8,7 @@ from pypytools import IS_PYPY
 import capnpy
 from capnpy.util import extend
 from capnpy.printer import BufferPrinter
-from capnpy.segment import CapnpBuffer
+from capnpy.segment import Segment
 
 try:
     import cython
@@ -39,7 +39,7 @@ class Blob(object):
     def _init_blob(self, buf):
         assert buf is not None
         if isinstance(buf, str):
-            buf = CapnpBuffer(buf)
+            buf = Segment(buf)
         self._buf = buf
 
     def _print_buf(self, start=None, end='auto', **kwds):

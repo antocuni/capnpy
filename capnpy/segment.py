@@ -73,12 +73,12 @@ class MultiSegment(Segment):
 
     def __init__(self, s, segment_offsets):
         assert segment_offsets is not None
-        super(CapnpBufferWithSegments, self).__init__(s)
+        super(MultiSegment, self).__init__(s)
         self.segment_offsets = segment_offsets
 
     def __reduce__(self):
         # pickle support
-        return CapnpBufferWithSegments, (self.buf, self.segment_offsets)
+        return MultiSegment, (self.buf, self.segment_offsets)
 
     def read_far_ptr(self, offset):
         """
@@ -90,8 +90,3 @@ class MultiSegment(Segment):
         offset  = segment_start + ptr.far_offset(p)*8
         p = self.read_ptr(offset)
         return offset, p
-
-
-# WIP
-CapnpBuffer = Segment
-CapnpBufferWithSegments = MultiSegment
