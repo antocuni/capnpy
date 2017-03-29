@@ -293,7 +293,7 @@ class TextItemType(ItemType):
     def read_item(self, lst, i):
         offset = lst._offset + (i*8)
         p = lst._buf.read_ptr(offset)
-        if p == ptr.E_IS_FAR_POINTER:
+        if ptr.kind(p) == ptr.FAR:
             raise NotImplementedError('FAR pointers not supported here')
         return lst._buf.read_str(p, offset, None, self.additional_size)
 
@@ -324,7 +324,7 @@ class ListItemType(ItemType):
     def read_item(self, lst, i):
         offset = lst._offset + (i*8)
         p = lst._buf.read_ptr(offset)
-        if p == ptr.E_IS_FAR_POINTER:
+        if ptr.kind(p) == ptr.FAR:
             raise NotImplementedError('FAR pointers not supported here')
         obj = List.__new__(List)
         obj._init_from_buffer(lst._buf,

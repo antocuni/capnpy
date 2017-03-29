@@ -4,9 +4,6 @@ from capnpy.packing cimport unpack_primitive, unpack_int64, unpack_int16
 from capnpy cimport ptr
 from capnpy cimport _hash
 
-cdef enum:
-    E_IS_FAR_POINTER = -1
-
 cdef class CapnpBuffer:
     cdef readonly bytes s
     cpdef read_primitive(self, long offset, char ifmt)

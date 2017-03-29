@@ -10,7 +10,6 @@ cdef extern from "ptr.h":
     cdef int LIST_SIZE_64 "PTR_LIST_SIZE_64"
     cdef int LIST_SIZE_PTR "PTR_LIST_SIZE_PTR"
     cdef int LIST_SIZE_COMPOSITE "PTR_LIST_SIZE_COMPOSITE"
-    cdef int E_IS_FAR_POINTER "E_IS_FAR_POINTER"
 
     long new_generic "PTR_NEW_GENERIC" (long kind, long offset, long extra)
     long kind "PTR_KIND" (long ptr)

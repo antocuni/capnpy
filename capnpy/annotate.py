@@ -2,7 +2,7 @@
 # do not edit by hand
 # generated on 2017-03-16 21:10
 
-from capnpy.ptr import E_IS_FAR_POINTER as _E_IS_FAR_POINTER
+_E_IS_FAR_POINTER = -1 # manual hack for now
 from capnpy.struct_ import Struct as _Struct
 from capnpy.struct_ import check_tag as _check_tag
 from capnpy.struct_ import undefined as _undefined

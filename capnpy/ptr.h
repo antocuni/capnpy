@@ -25,10 +25,6 @@ enum _PTR_LIST_SIZE {
     PTR_LIST_SIZE_COMPOSITE = 7
 };
 
-enum {
-    E_IS_FAR_POINTER = -1
-};
-
 #define LONGBITS (sizeof(long)*8)
 #define CAST_AS_SIGNED(x, bits) (((long)x) << (LONGBITS-bits) >> (LONGBITS-bits))
 

@@ -135,7 +135,7 @@ class Field__Slot:
             {ensure_union}
             {cdef_offset} = {offset}
             {cdef_p} = self._read_fast_ptr(offset)
-            if p == _E_IS_FAR_POINTER:
+            if _ptr.kind(p) == _ptr.FAR:
                 offset, p = self._read_far_ptr(offset)
             else:
                 offset += self._ptrs_offset

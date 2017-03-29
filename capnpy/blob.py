@@ -51,19 +51,17 @@ class CapnpBuffer(object):
         """
         Return the pointer at the specifield offet.
 
-        WARNING: you MUST check if the return value is E_IS_FAR_POINTER, and
-        in that case call read_far_ptr. We need this messy interface for
+        WARNING: you MUST check whether the returned pointer is FAR, and in
+        that case call again read_far_ptr, which handles FAR pointers
+        correctly but it is much slower than this. We need this messy interface for
         speed; the proper alternative would be to simply return a tuple
         (offset, p) and handle the far ptr here: this is fine on PyPy but slow
         on CPython, because this way we cannot give a static return type.
 
-        We could raise an exception instead of returning an error value:
-        however, this is ~20% slower.
+        Or, we could raise an exception to signal that we found a FAR
+        pointer. However, this would be ~20% slower than the current approach.
         """
-        p = self.read_raw_ptr(offset)
-        if ptr.kind(p) == ptr.FAR:
-            return ptr.E_IS_FAR_POINTER
-        return p
+        return unpack_int64(self.s, offset)
 
     def read_far_ptr(self, offset):
         raise ValueError("Cannot read a far pointer inside a single-segment message")

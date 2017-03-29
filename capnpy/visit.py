@@ -60,7 +60,7 @@ class EndOf(Visitor):
         while i > 0:
             i -= 1
             p2_offset = offset + i*8
-            p2 = buf.read_raw_ptr(p2_offset)
+            p2 = buf.read_ptr(p2_offset)
             if p2:
                 return self.visit(buf, p2, p2_offset)
         return -1

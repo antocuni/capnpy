@@ -118,7 +118,8 @@ class Struct(Blob):
         return self._buf.read_far_ptr(self._ptrs_offset+offset)
 
     def _read_raw_ptr(self, offset):
-        return self._buf.read_raw_ptr(self._ptrs_offset+offset)
+        # XXX: kill this as soon as we kill _get_extra_start and _split
+        return self._buf.read_ptr(self._ptrs_offset+offset)
 
     def _read_data(self, offset, ifmt):
         if offset >= self._data_size*8:
@@ -146,7 +147,7 @@ class Struct(Blob):
         instance of ``structcls`` pointing to the dereferenced struct.
         """
         p = self._read_fast_ptr(offset)
-        if p == ptr.E_IS_FAR_POINTER:
+        if ptr.kind(p) == ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -159,7 +160,7 @@ class Struct(Blob):
 
     def _read_list(self, offset, item_type, default_=None):
         p = self._read_fast_ptr(offset)
-        if p == ptr.E_IS_FAR_POINTER:
+        if ptr.kind(p) == ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -185,7 +186,7 @@ class Struct(Blob):
 
     def _read_str_data(self, offset, default_=None, additional_size=0):
         p = self._read_fast_ptr(offset)
-        if p == ptr.E_IS_FAR_POINTER:
+        if ptr.kind(p) == ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
@@ -193,7 +194,7 @@ class Struct(Blob):
 
     def _hash_str_data(self, offset, default_=hash(None), additional_size=0):
         p = self._read_fast_ptr(offset)
-        if p == ptr.E_IS_FAR_POINTER:
+        if ptr.kind(p) == ptr.FAR:
             offset, p = self._read_far_ptr(offset)
         else:
             offset += self._ptrs_offset
