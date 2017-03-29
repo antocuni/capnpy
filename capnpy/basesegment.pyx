@@ -17,7 +17,9 @@ cdef long round_to_word(long pos):
 
 cdef class BaseSegment(object):
 
-    def __cinit__(self, bytes buf):
+    # bah, we need to specify segment_offsets also here, even if it's used
+    # only by MultiSegment
+    def __cinit__(self, bytes buf, object segment_offsets=None):
         assert buf is not None
         self.buf = buf
         self.cbuf = PyString_AS_STRING(self.buf)

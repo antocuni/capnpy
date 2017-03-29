@@ -4,7 +4,7 @@ from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
 
 
 cdef class BaseSegment(object):
-    cdef bytes buf
+    cdef readonly bytes buf
     cdef const char* cbuf
 
     cdef inline check_bounds(self, Py_ssize_t size, Py_ssize_t offset)
