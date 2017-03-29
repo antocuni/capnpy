@@ -21,7 +21,7 @@ else:
     mychr = chr
 
 
-class Segment(object):
+class BaseSegment(object):
 
     def __init__(self, buf):
         self.buf = buf
@@ -65,6 +65,7 @@ class Segment(object):
     def read_float(self, offset):
         return self.read_primitive(offset, ord('f'))
 
+BaseSegmentForTests = BaseSegment
 
 class SegmentBuilder(object):
     WIP = True

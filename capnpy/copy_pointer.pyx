@@ -2,7 +2,7 @@ from libc.stdint cimport int64_t
 from libc.string cimport memcpy
 from capnpy cimport ptr
 from capnpy.packing cimport as_cbuf
-from capnpy.segment cimport SegmentBuilder
+from capnpy.basesegment cimport SegmentBuilder
 
 
 # this is a bit of a hack because apparently it is not possible to define the

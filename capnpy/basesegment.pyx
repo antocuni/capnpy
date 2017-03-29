@@ -1,3 +1,4 @@
+cimport cython
 from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
                           uint32_t, int32_t, int64_t, uint64_t, INT64_MAX)
 from libc.string cimport memcpy, memset
@@ -13,9 +14,8 @@ cdef long round_to_word(long pos):
     return (pos + (8 - 1)) & -8  # Round up to 8-byte boundary
 
 
-cimport cython
-@cython.final
-cdef class Segment(object):
+
+cdef class BaseSegment(object):
     cdef bytes buf
     cdef const char* cbuf
 
@@ -23,6 +23,7 @@ cdef class Segment(object):
         self.buf = buf
         self.cbuf = PyString_AS_STRING(self.buf)
 
+    @cython.final
     cdef inline check_bounds(self, Py_ssize_t size, Py_ssize_t offset):
         # the bound check seems to introduce a 5-10% overhead when calling
         # read_int64 from Python. However, I expect the overhead to be
@@ -33,7 +34,8 @@ cdef class Segment(object):
         if offset < 0 or offset + size > buflen:
             raise IndexError('Offset out of bounds: %d' % offset)
 
-    cpdef object read_primitive(self, Py_ssize_t offset, char ifmt):
+    @cython.final
+    cdef object read_primitive(self, Py_ssize_t offset, char ifmt):
         if ifmt == 'q':
             return self.read_int64(offset)
         elif ifmt == 'Q':
@@ -56,15 +58,18 @@ cdef class Segment(object):
             return self.read_uint8(offset)
         raise ValueError('unknown fmt %s' % chr(ifmt))
 
-    cpdef int64_t read_int64(self, Py_ssize_t offset) except? 0x7fffffffffffffff:
+    @cython.final
+    cdef int64_t read_int64(self, Py_ssize_t offset) except? 0x7fffffffffffffff:
         self.check_bounds(8, offset)
         return (<int64_t*>(self.cbuf+offset))[0]
 
-    cpdef uint64_t read_uint64(self, Py_ssize_t offset) except? 0xffffffffffffffff:
+    @cython.final
+    cdef uint64_t read_uint64(self, Py_ssize_t offset) except? 0xffffffffffffffff:
         self.check_bounds(8, offset)
         return (<uint64_t*>(self.cbuf+offset))[0]
 
-    cpdef object read_uint64_magic(self, Py_ssize_t offset):
+    @cython.final
+    cdef object read_uint64_magic(self, Py_ssize_t offset):
         # Special version of read_uint64; it returns a PyObject* instead of a
         # typed object (so it should be called only if the return value is
         # going to be converted to object anyway).  If the value is small
@@ -76,37 +81,93 @@ cdef class Segment(object):
         else:
             return uint64_value
 
-    cpdef int32_t read_int32(self, Py_ssize_t offset) except? 0x7fffffff:
+    @cython.final
+    cdef int32_t read_int32(self, Py_ssize_t offset) except? 0x7fffffff:
         self.check_bounds(4, offset)
         return (<int32_t*>(self.cbuf+offset))[0]
 
-    cpdef uint32_t read_uint32(self, Py_ssize_t offset) except? 0xffffffff:
+    @cython.final
+    cdef uint32_t read_uint32(self, Py_ssize_t offset) except? 0xffffffff:
         self.check_bounds(4, offset)
         return (<uint32_t*>(self.cbuf+offset))[0]
 
-    cpdef int16_t read_int16(self, Py_ssize_t offset) except? 0x7fff:
+    @cython.final
+    cdef int16_t read_int16(self, Py_ssize_t offset) except? 0x7fff:
         self.check_bounds(2, offset)
         return (<int16_t*>(self.cbuf+offset))[0]
 
-    cpdef uint16_t read_uint16(self, Py_ssize_t offset) except? 0xffff:
+    @cython.final
+    cdef uint16_t read_uint16(self, Py_ssize_t offset) except? 0xffff:
         self.check_bounds(2, offset)
         return (<uint16_t*>(self.cbuf+offset))[0]
 
-    cpdef int8_t read_int8(self, Py_ssize_t offset) except? 0x7f:
+    @cython.final
+    cdef int8_t read_int8(self, Py_ssize_t offset) except? 0x7f:
         self.check_bounds(1, offset)
         return (<int8_t*>(self.cbuf+offset))[0]
 
-    cpdef uint8_t read_uint8(self, Py_ssize_t offset) except? 0xff:
+    @cython.final
+    cdef uint8_t read_uint8(self, Py_ssize_t offset) except? 0xff:
         self.check_bounds(1, offset)
         return (<uint8_t*>(self.cbuf+offset))[0]
 
-    cpdef double read_double(self, Py_ssize_t offset) except? -1:
+    @cython.final
+    cdef double read_double(self, Py_ssize_t offset) except? -1:
         self.check_bounds(8, offset)
         return (<double*>(self.cbuf+offset))[0]
 
-    cpdef float read_float(self, Py_ssize_t offset) except? -1:
+    @cython.final
+    cdef float read_float(self, Py_ssize_t offset) except? -1:
         self.check_bounds(4, offset)
         return (<float*>(self.cbuf+offset))[0]
+
+
+cdef class BaseSegmentForTests(object):
+    """
+    All the BaseSegment's methods are "final cdef", and thus you cannot call them
+    from Python. This class is a just a wrapper to be able to call them from
+    tests
+    """
+    cdef BaseSegment s
+
+    def __cinit__(self, bytes buf):
+        self.s = BaseSegment(buf)
+
+    def read_primitive(self, Py_ssize_t offset, char ifmt):
+        return self.s.read_primitive(offset, ifmt)
+
+    def read_int64(self, Py_ssize_t offset):
+        return self.s.read_int64(offset)
+
+    def read_uint64(self, Py_ssize_t offset):
+        return self.s.read_uint64(offset)
+
+    def read_uint64_magic(self, Py_ssize_t offset):
+        return self.s.read_uint64_magic(offset)
+
+    def read_int32(self, Py_ssize_t offset):
+        return self.s.read_int32(offset)
+
+    def read_uint32(self, Py_ssize_t offset):
+        return self.s.read_uint32(offset)
+
+    def read_int16(self, Py_ssize_t offset):
+        return self.s.read_int16(offset)
+
+    def read_uint16(self, Py_ssize_t offset):
+        return self.s.read_uint16(offset)
+
+    def read_int8(self, Py_ssize_t offset):
+        return self.s.read_int8(offset)
+
+    def read_uint8(self, Py_ssize_t offset):
+        return self.s.read_uint8(offset)
+
+    def read_double(self, Py_ssize_t offset):
+        return self.s.read_double(offset)
+
+    def read_float(self, Py_ssize_t offset):
+        return self.s.read_float(offset)
 
 
 
