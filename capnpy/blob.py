@@ -24,25 +24,17 @@ else:
 if not IS_PYPY and not PYX:
     print >> sys.stderr, 'WARNING: capnpy was not compiled correctly, PYX mode disabled'
 
-class CapnpBuffer(object):
+
+from capnpy.basesegment import BaseSegment
+class CapnpBuffer(BaseSegment):
     """
     Represent a capnproto buffer for a single-segment message. Far pointers are
     not allowed here
     """
 
-    def __init__(self, s):
-        assert s is not None
-        self.s = s
-
     def __reduce__(self):
         # pickle support
-        return CapnpBuffer, (self.s,)
-
-    def read_primitive(self, offset, ifmt):
-        return unpack_primitive(ifmt, self.s, offset)
-
-    def read_int16(self, offset):
-        return unpack_int16(self.s, offset)
+        return CapnpBuffer, (self.buf,)
 
     def read_ptr(self, offset):
         """
@@ -58,7 +50,7 @@ class CapnpBuffer(object):
         Or, we could raise an exception to signal that we found a FAR
         pointer. However, this would be ~20% slower than the current approach.
         """
-        return unpack_int64(self.s, offset)
+        return self.read_int64(offset)
 
     def read_far_ptr(self, offset):
         raise ValueError("Cannot read a far pointer inside a single-segment message")
@@ -77,7 +69,7 @@ class CapnpBuffer(object):
         assert ptr.list_size_tag(p) == ptr.LIST_SIZE_8
         start = ptr.deref(p, offset)
         end = start + ptr.list_item_count(p) + additional_size
-        return self.s[start:end]
+        return self.buf[start:end]
 
     def hash_str(self, p, offset, default_, additional_size):
         if p == 0:
@@ -86,10 +78,10 @@ class CapnpBuffer(object):
         assert ptr.list_size_tag(p) == ptr.LIST_SIZE_8
         start = ptr.deref(p, offset)
         size = ptr.list_item_count(p) + additional_size
-        return _hash.strhash(self.s, start, size)
+        return _hash.strhash(self.buf, start, size)
 
     def _print(self, **kwds):
-        p = BufferPrinter(self.s)
+        p = BufferPrinter(self.buf)
         p.printbuf(start=0, end=None, **kwds)
 
 
@@ -103,12 +95,12 @@ class CapnpBufferWithSegments(CapnpBuffer):
 
     def __init__(self, s, segment_offsets):
         assert segment_offsets is not None
-        self.s = s
+        super(CapnpBufferWithSegments, self).__init__(s)
         self.segment_offsets = segment_offsets
 
     def __reduce__(self):
         # pickle support
-        return CapnpBufferWithSegments, (self.s, self.segment_offsets)
+        return CapnpBufferWithSegments, (self.buf, self.segment_offsets)
 
     def read_far_ptr(self, offset):
         """
@@ -149,8 +141,8 @@ class Blob(object):
         if end == 'auto':
             end = self._get_body_end()
         elif end is None:
-            end = len(self._buf.s)
-        p = BufferPrinter(self._buf.s)
+            end = len(self._buf.buf)
+        p = BufferPrinter(self._buf.buf)
         p.printbuf(start=start, end=end, **kwds)
 
 

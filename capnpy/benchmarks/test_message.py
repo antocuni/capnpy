@@ -72,7 +72,7 @@ class TestDump(object):
             res = 0
             for i in range(self.N):
                 obj = myobjs[i%2]
-                res = obj._buf.s[:]
+                res = obj._buf.buf[:]
             return res
         #
         obj = get_obj(schema)

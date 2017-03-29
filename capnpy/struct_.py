@@ -50,8 +50,8 @@ class Struct(Blob):
         self._ptrs_offset = offset + data_size*8
         self._data_size = data_size
         self._ptrs_size = ptrs_size
-        assert self._data_offset + data_size*8 <= len(self._buf.s)
-        assert self._ptrs_offset + ptrs_size*8 <= len(self._buf.s)
+        assert self._data_offset + data_size*8 <= len(self._buf.buf)
+        assert self._ptrs_offset + ptrs_size*8 <= len(self._buf.buf)
 
     def _init_from_pointer(self, buf, offset, p):
         assert ptr.kind(p) == ptr.STRUCT
@@ -241,7 +241,7 @@ class Struct(Blob):
         body_end = self._get_body_end()
         if self._ptrs_size == 0:
             # easy case, just copy the body
-            return self._buf.s[body_start:body_end], ''
+            return self._buf.buf[body_start:body_end], ''
         #
         # hard case. The layout of self._buf is like this:
         # +----------+------+------+----------+-------------+
@@ -263,7 +263,7 @@ class Struct(Blob):
         #
         # 1) data section
         data_size = self._data_size
-        data_buf = self._buf.s[body_start:body_start+data_size*8]
+        data_buf = self._buf.buf[body_start:body_start+data_size*8]
         #
         # 2) ptrs section
         #    for each ptr:
@@ -290,7 +290,7 @@ class Struct(Blob):
         #
         body_buf = ''.join(parts)
         # 3) extra part
-        extra_buf = self._buf.s[extra_start:extra_end]
+        extra_buf = self._buf.buf[extra_start:extra_end]
         #
         return body_buf, extra_buf
 

@@ -113,7 +113,7 @@ def test_segments():
     assert f.tell() == len(buf)
     assert msg._data_offset == 0
     assert msg._buf.segment_offsets == (0, 16*8, (16+32)*8, (16+32+64)*8)
-    assert msg._buf.s == payload
+    assert msg._buf.buf == payload
 
 def test_dumps():
     class Point(Struct):

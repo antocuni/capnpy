@@ -42,7 +42,7 @@ class AbstractBuilder(object):
         # garbage and wrong offsets. See
         # test_alloc_list_of_structs_with_pointers
         p = ptr.new_struct(ptr_offset, data_size, ptrs_size)
-        self._alloc(value.compact()._buf.s)
+        self._alloc(value.compact()._buf.buf)
         self._record_allocation(offset, p)
         return p
 

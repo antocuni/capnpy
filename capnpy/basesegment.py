@@ -24,6 +24,7 @@ else:
 class BaseSegment(object):
 
     def __init__(self, buf):
+        assert buf is not None
         self.buf = buf
 
     def read_primitive(self, offset, ifmt):

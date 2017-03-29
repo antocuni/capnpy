@@ -78,7 +78,7 @@ class List(Blob):
         # comparing the memory without doing a full copy
         start = self._offset
         end = self._get_end()
-        return self._buf.s[start:end]
+        return self._buf.buf[start:end]
 
     def _equals(self, other):
         if not self._item_type.can_compare():

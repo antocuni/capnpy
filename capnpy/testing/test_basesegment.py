@@ -9,6 +9,9 @@ from capnpy.basesegment import BaseSegmentForTests as BaseSegment, SegmentBuilde
 
 class TestBaseSegment(object):
 
+    def test_None(self):
+        pytest.raises(AssertionError, "BaseSegment(None)")
+
     def test_read_int64(self):
         buf = struct.pack('qqq', 42, 43, 44)
         s = BaseSegment(buf)

@@ -57,21 +57,21 @@ def test_CapnpBuffer_pickle():
     buf = CapnpBuffer('hello')
     #
     buf2 = pickle.loads(pickle.dumps(buf))
-    assert buf2.s == 'hello'
+    assert buf2.buf == 'hello'
     #
     buf2 = pickle.loads(pickle.dumps(buf, pickle.HIGHEST_PROTOCOL))
-    assert buf2.s == 'hello'
+    assert buf2.buf == 'hello'
 
 def test_CapnpBufferWithSegments_pickle():
     import cPickle as pickle
     buf = CapnpBufferWithSegments('hello', (1, 2, 3))
     #
     buf2 = pickle.loads(pickle.dumps(buf))
-    assert buf2.s == 'hello'
+    assert buf2.buf == 'hello'
     assert buf2.segment_offsets == (1, 2, 3)
     #
     buf2 = pickle.loads(pickle.dumps(buf, pickle.HIGHEST_PROTOCOL))
-    assert buf2.s == 'hello'
+    assert buf2.buf == 'hello'
     assert buf2.segment_offsets == (1, 2, 3)
 
 def test_float64():
