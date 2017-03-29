@@ -1,5 +1,5 @@
 cimport cython
-from capnpy.basesegment cimport BaseSegment
+from capnpy.segment.base cimport BaseSegment
 from capnpy cimport ptr
 from capnpy cimport _hash
 

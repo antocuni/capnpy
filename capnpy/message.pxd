@@ -1,6 +1,6 @@
 import cython
 from capnpy.packing cimport unpack_uint32, pack_message_header
-from capnpy.segment cimport Segment
+from capnpy.segment.segment cimport Segment
 from capnpy.struct_ cimport Struct, struct_from_buffer
 from capnpy cimport ptr
 from capnpy.filelike cimport FileLike, as_filelike

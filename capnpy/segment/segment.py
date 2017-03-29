@@ -1,4 +1,4 @@
-from capnpy.basesegment import BaseSegment
+from capnpy.segment.base import BaseSegment
 from capnpy import ptr
 from capnpy import _hash
 from capnpy.printer import print_buffer, BufferPrinter

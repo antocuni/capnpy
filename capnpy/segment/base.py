@@ -67,7 +67,3 @@ class BaseSegment(object):
         return self.read_primitive(offset, ord('f'))
 
 BaseSegmentForTests = BaseSegment
-
-class SegmentBuilder(object):
-    WIP = True
-

@@ -25,8 +25,10 @@ else:
 
 def get_cython_extensions():
     from Cython.Build import cythonize
-    files = ["capnpy/blob.py",
-             "capnpy/segment.py",
+    files = ["capnpy/segment/base.pyx",
+             "capnpy/segment/segment.py",
+             "capnpy/segment/builder.pyx",
+             "capnpy/blob.py",
              "capnpy/visit.py",
              "capnpy/struct_.py",
              "capnpy/list.py",
@@ -37,11 +39,13 @@ def get_cython_extensions():
              "capnpy/builder.py",
              "capnpy/ptr.pyx",
              "capnpy/packing.pyx",
-             "capnpy/basesegment.pyx",
              "capnpy/copy_pointer.pyx",
              "capnpy/_hash.pyx",
              "capnpy/_util.pyx",
     ]
+
+    root_dir = os.path.abspath(os.path.dirname(__file__))
+    capnpy_dir = os.path.join(root_dir, 'capnpy')
 
     def getext(fname):
         extname = fname.replace('/', '.').replace('.pyx', '').replace('.py', '')
@@ -52,6 +56,7 @@ def get_cython_extensions():
         return Extension(
             extname,
             [fname],
+            include_dirs = [capnpy_dir],
             extra_compile_args = extra_compile_args,
         )
     return cythonize(map(getext, files), gdb_debug=DEBUG)

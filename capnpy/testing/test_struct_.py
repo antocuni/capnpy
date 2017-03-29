@@ -1,6 +1,6 @@
 import py
 from capnpy.type import Types
-from capnpy.segment import MultiSegment
+from capnpy.segment.segment import MultiSegment
 from capnpy.struct_ import Struct, undefined
 from capnpy.enum import enum
 from capnpy.printer import print_buffer

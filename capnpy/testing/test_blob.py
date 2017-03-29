@@ -1,7 +1,7 @@
 import py
 import os
 import struct
-from capnpy.segment import Segment, MultiSegment
+from capnpy.segment.segment import Segment, MultiSegment
 from capnpy.type import Types
 from capnpy.packing import unpack_primitive
 from capnpy.blob import PYX

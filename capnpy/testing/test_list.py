@@ -1,6 +1,6 @@
 import py
 from capnpy.type import Types
-from capnpy.segment import MultiSegment
+from capnpy.segment.segment import MultiSegment
 from capnpy import ptr
 from capnpy.list import List, StructItemType, PrimitiveItemType, TextItemType
 from capnpy.struct_ import Struct

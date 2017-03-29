@@ -1,6 +1,6 @@
 import cython
 from capnpy cimport ptr
-from capnpy.segment cimport Segment
+from capnpy.segment.segment cimport Segment
 
 cpdef long end_of(Segment buf, long p, long offset) except -2
 cpdef long is_compact(Segment buf, long p, long offset) except -2

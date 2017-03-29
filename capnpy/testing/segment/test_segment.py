@@ -1,6 +1,6 @@
 import py
 from capnpy import ptr
-from capnpy.segment import Segment, MultiSegment
+from capnpy.segment.segment import Segment, MultiSegment
 
 def test_Segment_pickle():
     import cPickle as pickle

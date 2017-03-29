@@ -8,7 +8,7 @@ from pypytools import IS_PYPY
 import capnpy
 from capnpy.util import extend
 from capnpy.printer import BufferPrinter
-from capnpy.segment import Segment
+from capnpy.segment.segment import Segment
 
 try:
     import cython
