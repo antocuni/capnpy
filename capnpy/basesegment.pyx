@@ -18,6 +18,7 @@ cdef long round_to_word(long pos):
 cdef class BaseSegment(object):
 
     def __cinit__(self, bytes buf):
+        assert buf is not None
         self.buf = buf
         self.cbuf = PyString_AS_STRING(self.buf)
 
