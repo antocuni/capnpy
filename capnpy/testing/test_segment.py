@@ -41,9 +41,9 @@ class TestSegment(object):
 
     def test_uint64(self):
         if sys.maxint != (1 << 63)-1:
-            py.test.skip('64 bit only')
+            pytest.skip('64 bit only')
         if IS_PYPY and sys.pypy_version_info < (5, 6):
-            py.test.skip('Broken on PyPy<5.6')
+            pytest.skip('Broken on PyPy<5.6')
         #
         buf = struct.pack('QQ', sys.maxint, sys.maxint+1)
         s = Segment(buf)
