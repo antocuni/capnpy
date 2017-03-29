@@ -1,6 +1,6 @@
 import py
 from capnpy.builder import Builder
-from capnpy.blob import Types
+from capnpy.type import Types
 from capnpy.list import List, StructItemType, PrimitiveItemType, TextItemType
 from capnpy.struct_ import Struct
 from capnpy.printer import print_buffer

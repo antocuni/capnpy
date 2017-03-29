@@ -1,5 +1,6 @@
 import py
-from capnpy.blob import CapnpBufferWithSegments, Blob, Types
+from capnpy.type import Types
+from capnpy.segment import MultiSegment
 from capnpy import ptr
 from capnpy.list import List, StructItemType, PrimitiveItemType, TextItemType
 from capnpy.struct_ import Struct
@@ -179,7 +180,7 @@ def test_far_pointer():
             '\x02\x00\x00\x00\x00\x00\x00\x00'    # 2
             '\x03\x00\x00\x00\x00\x00\x00\x00'    # 3
             '\x04\x00\x00\x00\x00\x00\x00\x00')   # 4
-    buf = CapnpBufferWithSegments(seg0+seg1, segment_offsets=(0, 16))
+    buf = MultiSegment(seg0+seg1, segment_offsets=(0, 16))
     blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
     lst = blob._read_list(0, PrimitiveItemType(Types.int64))
     assert lst == [1, 2, 3, 4]

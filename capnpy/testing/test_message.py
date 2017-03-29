@@ -2,7 +2,7 @@ import py
 from cStringIO import StringIO
 from capnpy.message import load, loads, load_all, _load_message, dumps
 from capnpy.filelike import as_filelike
-from capnpy.blob import Types
+from capnpy.type import Types
 from capnpy.struct_ import Struct
 from capnpy.printer import print_buffer
 

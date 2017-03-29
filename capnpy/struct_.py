@@ -1,6 +1,7 @@
 import capnpy
 from capnpy import ptr
-from capnpy.blob import Blob, Types
+from capnpy.type import Types
+from capnpy.blob import Blob
 from capnpy.visit import end_of, is_compact
 from capnpy.list import List
 from capnpy.packing import pack_int64

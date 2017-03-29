@@ -1,6 +1,7 @@
 import struct
 import capnpy
-from capnpy.blob import Blob, Types, PYX
+from capnpy.type import Types
+from capnpy.blob import Blob, PYX
 from capnpy import ptr
 from capnpy.util import text_repr, float32_repr, float64_repr
 from capnpy.visit import end_of

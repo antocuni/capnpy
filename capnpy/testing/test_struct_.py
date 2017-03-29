@@ -1,5 +1,6 @@
 import py
-from capnpy.blob import Types, CapnpBufferWithSegments
+from capnpy.type import Types
+from capnpy.segment import MultiSegment
 from capnpy.struct_ import Struct, undefined
 from capnpy.enum import enum
 from capnpy.printer import print_buffer
@@ -112,7 +113,7 @@ def test_far_pointer():
             '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
             '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
     #
-    buf = CapnpBufferWithSegments(seg0+seg1, segment_offsets=(0, 16))
+    buf = MultiSegment(seg0+seg1, segment_offsets=(0, 16))
     blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
     p = blob._read_struct(0, Struct)
     assert p._read_data(0, Types.int64.ifmt) == 1

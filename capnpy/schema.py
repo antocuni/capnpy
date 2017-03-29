@@ -7,7 +7,7 @@ from capnpy.struct_ import Struct as _Struct
 from capnpy.struct_ import check_tag as _check_tag
 from capnpy.struct_ import undefined as _undefined
 from capnpy.enum import enum as _enum
-from capnpy.blob import Types as _Types
+from capnpy.type import Types as _Types
 from capnpy.builder import Builder as _Builder
 from capnpy.list import List as _List
 from capnpy.list import PrimitiveItemType as _PrimitiveItemType

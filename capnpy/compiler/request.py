@@ -48,7 +48,7 @@ class RequestedFile:
         m.w("from capnpy.struct_ {cimport} check_tag as _check_tag")
         m.w("from capnpy.struct_ import undefined as _undefined")
         m.w("from capnpy.enum import enum as _enum")
-        m.w("from capnpy.blob import Types as _Types")
+        m.w("from capnpy.type import Types as _Types")
         m.w("from capnpy.builder {cimport} Builder as _Builder")
         m.w("from capnpy.list {cimport} List as _List")
         m.w("from capnpy.list {cimport} PrimitiveItemType as _PrimitiveItemType")
