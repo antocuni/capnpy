@@ -11,12 +11,23 @@ class TestSegmentBuilder(object):
         s = buf.as_string()
         assert s == '\x00' * 8
 
-    def test_write_int64(self):
-        buf = SegmentBuilder(8)
-        buf.allocate(8)
-        buf.write_int64(0, 0x1234ABCD)
+    def test_write(self):
+        expected = struct.pack('<bBhHiIqQfd', 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+        n = len(expected)
+        buf = SegmentBuilder(n)
+        buf.allocate(n)
+        buf.write_int8(0, 10)
+        buf.write_uint8(1, 20)
+        buf.write_int16(2, 30)
+        buf.write_uint16(4, 40)
+        buf.write_int32(6, 50)
+        buf.write_uint32(10, 60)
+        buf.write_int64(14, 70)
+        buf.write_uint64(22, 80)
+        buf.write_float(30, 90)
+        buf.write_double(34, 100)
         s = buf.as_string()
-        assert s == '\xCD\xAB\x34\x12\x00\x00\x00\x00'
+        assert s == expected
 
     def test_alloc_struct(self):
         buf = SegmentBuilder(64)

@@ -42,8 +42,35 @@ cdef class SegmentBuilder(object):
     cpdef as_string(self):
         return PyString_FromStringAndSize(self.cbuf, self.end)
 
+    cpdef void write_int8(self, Py_ssize_t i, int8_t value):
+        (<int8_t*>(self.cbuf+i))[0] = value
+
+    cpdef void write_uint8(self, Py_ssize_t i, uint8_t value):
+        (<uint8_t*>(self.cbuf+i))[0] = value
+
+    cpdef void write_int16(self, Py_ssize_t i, int16_t value):
+        (<int16_t*>(self.cbuf+i))[0] = value
+
+    cpdef void write_uint16(self, Py_ssize_t i, uint16_t value):
+        (<uint16_t*>(self.cbuf+i))[0] = value
+
+    cpdef void write_uint32(self, Py_ssize_t i, uint32_t value):
+        (<uint32_t*>(self.cbuf+i))[0] = value
+
+    cpdef void write_int32(self, Py_ssize_t i, int32_t value):
+        (<int32_t*>(self.cbuf+i))[0] = value
+
     cpdef void write_int64(self, Py_ssize_t i, int64_t value):
         (<int64_t*>(self.cbuf+i))[0] = value
+
+    cpdef void write_uint64(self, Py_ssize_t i, uint64_t value):
+        (<uint64_t*>(self.cbuf+i))[0] = value
+
+    cpdef void write_float(self, Py_ssize_t i, float value):
+        (<float*>(self.cbuf+i))[0] = value
+
+    cpdef void write_double(self, Py_ssize_t i, double value):
+        (<double*>(self.cbuf+i))[0] = value
 
     cdef void memcpy_from(self, Py_ssize_t i, const char* src, Py_ssize_t n):
         cdef void* dst = self.cbuf + i
