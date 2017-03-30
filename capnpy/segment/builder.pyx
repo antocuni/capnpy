@@ -54,11 +54,11 @@ cdef class SegmentBuilder(object):
     cpdef void write_uint16(self, Py_ssize_t i, uint16_t value):
         (<uint16_t*>(self.cbuf+i))[0] = value
 
-    cpdef void write_uint32(self, Py_ssize_t i, uint32_t value):
-        (<uint32_t*>(self.cbuf+i))[0] = value
-
     cpdef void write_int32(self, Py_ssize_t i, int32_t value):
         (<int32_t*>(self.cbuf+i))[0] = value
+
+    cpdef void write_uint32(self, Py_ssize_t i, uint32_t value):
+        (<uint32_t*>(self.cbuf+i))[0] = value
 
     cpdef void write_int64(self, Py_ssize_t i, int64_t value):
         (<int64_t*>(self.cbuf+i))[0] = value

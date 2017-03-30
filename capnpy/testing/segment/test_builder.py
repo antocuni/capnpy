@@ -2,7 +2,8 @@ import pytest
 import struct
 from capnpy.segment.builder import SegmentBuilder
 
-@pytest.mark.skipif(getattr(SegmentBuilder, 'WIP', False), reason='WIP')
+WIP = pytest.mark.skipif(getattr(SegmentBuilder, 'WIP', False), reason='WIP')
+
 class TestSegmentBuilder(object):
 
     def test_allocate(self):
@@ -29,6 +30,7 @@ class TestSegmentBuilder(object):
         s = buf.as_string()
         assert s == expected
 
+    @WIP
     def test_alloc_struct(self):
         buf = SegmentBuilder(64)
         buf.allocate(16)
@@ -58,6 +60,7 @@ class TestSegmentBuilder(object):
         assert s[:8] == struct.pack('q', 42)
         assert s[8:] == '\x00' * (64*64-8)
 
+    @WIP
     def test_resize_big_allocation(self):
         buf = SegmentBuilder(32)
         assert buf.length == 32
