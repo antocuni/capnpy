@@ -124,6 +124,14 @@ class Field_slot:
         elif self.type.is_enum():
             return 'h'
 
+    def get_typename(self):
+        if self.type.is_primitive():
+            return str(self.type.which())
+        elif self.type.is_pointer():
+            return 'int64'
+        elif self.type.is_enum():
+            return 'int16'
+
     def get_size(self):
         # XXX: even more hackish, we need a better way
         if self.type.is_void():

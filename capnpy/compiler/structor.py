@@ -34,7 +34,8 @@ class Structor(object):
         ## generate a constructor which looks like this
         ## @staticmethod
         ## def __new(x=0, y=0, z=None):
-        ##     builder = _Builder(24)
+        ##     builder = _SegmentBuilder()
+        ##     builder.allocate(24)
         ##     builder.set(ord('q', 0, x)
         ##     builder.set(ord('q', 8, y)
         ##     builder.alloc_text(16, z)
@@ -48,16 +49,15 @@ class Structor(object):
         #
         code.w('@staticmethod')
         with code.cdef_('__new', self.params) as ns:
-            ns.data_size = self.data_size
-            ns.ptrs_size = self.ptrs_size
-            ns.cdef_var('_Builder', 'builder')
-            ns.w('builder = _Builder.__new__(_Builder)')
-            ns.w('builder._init({data_size}, {ptrs_size})')
+            ns.length = (self.data_size + self.ptrs_size)*8
+            ns.cdef_var('_SegmentBuilder', 'builder')
+            ns.w('builder = _SegmentBuilder()')
+            ns.w('builder.allocate({length})')
             for union in self.fieldtree.all_unions():
                 ns.w('{union}__curtag = None', union=union.varname)
             for node in self.fieldtree.children:
                 self.handle_node(node)
-            ns.w('return builder.build()')
+            ns.w('return builder.as_string()')
 
     def handle_node(self, node):
         if node.f.is_part_of_union():
@@ -171,9 +171,9 @@ class Structor(object):
             ns.default_ = node.f.slot.defaultValue.as_pyobj()
             ns.w('{arg} ^= {default_}')
         #
-        ns.ifmt = "ord(%r)" % node.f.slot.get_fmt()
+        ns.type = node.f.slot.get_typename()
         ns.offset = self.slot_offset(node.f)
-        ns.w('builder.set({ifmt}, {offset}, {arg})')
+        ns.w('builder.write_{type}({offset}, {arg})')
 
     def handle_bool(self, node):
         ns = self.m.code.new_scope()
