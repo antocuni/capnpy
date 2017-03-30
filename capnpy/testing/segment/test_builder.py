@@ -68,19 +68,22 @@ class TestSegmentBuilder(object):
                      'foo\x00\x00\x00\x00\x00'
                      '\x34\x12\x78\x56\x00\x00\x00\x00')   # 0x1234 0x5678
 
-    def test_alloc_text(self):
+    def test_alloc_text_and_data(self):
         buf = SegmentBuilder()
-        buf.allocate(24)
+        buf.allocate(32)
         buf.alloc_text(0, 'foo')
         buf.alloc_text(8, None)
         buf.alloc_text(16, 'bar')
+        buf.alloc_data(24, 'bar')
         s = buf.as_string()
         print
         print_buffer(s)
-        assert s == ('\x09\x00\x00\x00\x22\x00\x00\x00'    # ptr to 'foo'
+        assert s == ('\x0D\x00\x00\x00\x22\x00\x00\x00'    # ptr to 'foo'
                      '\x00\x00\x00\x00\x00\x00\x00\x00'    # NULL
-                     '\x05\x00\x00\x00\x22\x00\x00\x00'    # ptr to 'bar'
+                     '\x09\x00\x00\x00\x22\x00\x00\x00'    # ptr to text 'bar' (4 items)
+                     '\x09\x00\x00\x00\x1A\x00\x00\x00'    # ptr to data 'bar' (3 items)
                      'foo\x00\x00\x00\x00\x00'
+                     'bar\x00\x00\x00\x00\x00'
                      'bar\x00\x00\x00\x00\x00')
 
     def test_resize(self):

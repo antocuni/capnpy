@@ -74,13 +74,17 @@ class SegmentBuilder(object):
         self.write_int64(pos, p)
         return result
 
-    def alloc_text(self, pos, s):
+    def alloc_text(self, pos, s, trailing_zero=1):
         if s is None:
             self.write_int64(pos, 0)
             return -1
         n = len(s)
-        result = self.alloc_list(pos, ptr.LIST_SIZE_8, n+1, n+1)
+        nn = n + trailing_zero
+        result = self.alloc_list(pos, ptr.LIST_SIZE_8, nn, nn)
         self.buf[result:result+n] = s
         # there is no need to write the trailing 0 as the byte is already
         # guaranteed to be 0
         return result
+
+    def alloc_data(self, pos, s):
+        return self.alloc_text(pos, s, trailing_zero=0)

@@ -32,4 +32,5 @@ cdef class SegmentBuilder(object):
     cpdef Py_ssize_t alloc_struct(self, Py_ssize_t pos, long data_size, long ptrs_size)
     cpdef Py_ssize_t alloc_list(self, Py_ssize_t pos, long size_tag, long item_count,
                                 long body_length)
-    cpdef Py_ssize_t alloc_text(self, Py_ssize_t pos, bytes s)
+    cpdef Py_ssize_t alloc_text(self, Py_ssize_t pos, bytes s, long trailing_zero=*)
+    cpdef Py_ssize_t alloc_data(self, Py_ssize_t pos, bytes s)
