@@ -2,7 +2,8 @@ cimport cython
 from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
                           uint32_t, int32_t, int64_t, uint64_t, INT64_MAX)
 from libc.string cimport memcpy, memset
-from cpython.string cimport PyString_FromStringAndSize
+from cpython.string cimport (PyString_FromStringAndSize, PyString_GET_SIZE,
+                             PyString_AS_STRING)
 
 cdef extern from "Python.h":
     int PyByteArray_Resize(object o, Py_ssize_t len)
@@ -112,4 +113,14 @@ cdef class SegmentBuilder(object):
         self.write_int64(pos, p)
         return result
 
-
+    cpdef Py_ssize_t alloc_text(self, Py_ssize_t pos, bytes s):
+        if s is None:
+            self.write_int64(pos, 0)
+            return -1
+        cdef Py_ssize_t n = PyString_GET_SIZE(s)
+        cdef const char *src = PyString_AS_STRING(s)
+        cdef Py_ssize_t result = self.alloc_list(pos, ptr.LIST_SIZE_8, n+1, n+1)
+        self.memcpy_from(result, src, n)
+        # there is no need to write the trailing 0 as the byte is already
+        # guaranteed to be 0
+        return result
