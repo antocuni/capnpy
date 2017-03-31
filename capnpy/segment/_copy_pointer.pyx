@@ -47,14 +47,17 @@ cdef long raise_out_of_bounds(Py_ssize_t size, Py_ssize_t offset) except -1:
  
 # ======================
 
-
-cpdef long copy_pointer(BaseSegment src, long p, long src_pos,
-                        SegmentBuilder dst, long dst_pos) except -1:
+@cython.ccall
+@cython.returns(long)
+@cython.except_(-1)
+@cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
+               kind=long)
+def copy_pointer(src, p, src_pos, dst, dst_pos):
     """
-    Copy from: src, pointer p living at the src_pos offset
-           to: dst at position dst_pos
+    Copy from: BaseSegment src, pointer p living at the src_pos offset
+           to: SegmentBuilder dst at position dst_pos
     """
-    cdef long kind = ptr.kind(p)
+    kind = ptr.kind(p)
     if kind == ptr.STRUCT:
         return _copy_struct(src, p, src_pos, dst, dst_pos)
     elif kind == ptr.LIST:
@@ -69,9 +72,13 @@ cpdef long copy_pointer(BaseSegment src, long p, long src_pos,
     ##     raise NotImplementedError('Far pointer not supported')
     assert False, 'unknown ptr kind: %s' % kind
 
-cdef long _copy_many_ptrs(long n, BaseSegment src, long src_pos,
-                          SegmentBuilder dst, long dst_pos) except -1:
-    cdef long i, p, offset
+
+@cython.cfunc
+@cython.returns(long)
+@cython.except_(-1)
+@cython.locals(n=long, src=BaseSegment, src_pos=long, dst=SegmentBuilder, dst_pos=long,
+               i=long, p=long, offset=long)
+def _copy_many_ptrs(n, src, src_pos, dst, dst_pos):
     check_bounds(src, n*8, src_pos)
     for i in range(n):
         offset = i*8

@@ -129,5 +129,4 @@ cdef class SegmentBuilder(object):
     cpdef Py_ssize_t alloc_data(self, Py_ssize_t pos, bytes s):
         return self.alloc_text(pos, s, trailing_zero=0)
 
-
 include "_copy_pointer.pyx"
