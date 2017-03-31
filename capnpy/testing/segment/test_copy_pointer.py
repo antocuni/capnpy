@@ -88,14 +88,14 @@ class TestCopyPointer(object):
         with pytest.raises(IndexError) as exc:
             self.copy_struct(cut_data, offset=0, data_size=1, ptrs_size=2,
                              bufsize=128)
-        assert exc.value.message.startswith('Invalid capnproto message: offset out of bound')
+        assert exc.value.message.startswith('Offset out of bounds')
         #
         cut_ptr = src[:8] # remove from "ptr to a" to the end, to trigger an
                            # out-of-bound in the ptrs section
         with pytest.raises(IndexError) as exc:
             self.copy_struct(cut_ptr, offset=0, data_size=1, ptrs_size=2,
                              bufsize=128)
-        assert exc.value.message.startswith('Invalid capnproto message: offset out of bound')
+        assert exc.value.message.startswith('Offset out of bounds')
 
     def test_struct_one_null_ptr(self):
         src = (
@@ -275,5 +275,4 @@ class TestCopyPointer(object):
                                                  # points[2].name MISSING
         with pytest.raises(IndexError) as exc:
             self.copy_struct(src, offset=0, data_size=0, ptrs_size=1, bufsize=128)
-        assert exc.value.message == ('Invalid capnproto message: '
-                                     'offset out of bound at position 16 (96 > 88)')
+        assert exc.value.message == ('Offset out of bounds: 96')
