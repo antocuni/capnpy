@@ -21,11 +21,13 @@ from capnpy.segment.builder cimport SegmentBuilder
 
 @cython.final
 cdef class SrcBuffer(object):
+    cdef bytes buf
     cdef const char* cbuf
-    cdef Py_ssize_t len
 
     def __cinit__(self, bytes src):
-        self.cbuf = as_cbuf(src, &self.len)
+        cdef Py_ssize_t ununsed
+        self.buf = src
+        self.cbuf = as_cbuf(src, &ununsed)
 
 # this is a bit of a hack because apparently it is not possible to define the
 # equivalent of C macros in Cython. Earlier, check_bound was a normal cdef
