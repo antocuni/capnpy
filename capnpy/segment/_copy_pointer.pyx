@@ -20,6 +20,20 @@ from capnpy.packing cimport as_cbuf
 from capnpy.segment.builder cimport SegmentBuilder
 from capnpy.segment.base cimport BaseSegment
 
+# =====================
+# BaseSegment speedups
+#
+# it turns out that calling src.read_int64 and src.check_bounds add a
+# significant overhead to copy_pointer, because they are expensive virtual
+# calls which does not much in the body. So, we are reimplementing them here,
+# in form of fast functions and macros.
+#
+# Together, they make a 2.1x slowdown!
+
+cdef int64_t read_int64_fast(BaseSegment src, long i):
+    return (<int64_t*>(src.cbuf+i))[0]
+
+# check_bounds:
 # this is a bit of a hack because apparently it is not possible to define the
 # equivalent of C macros in Cython. Earlier, check_bound was a normal cdef
 # function which raised if needed. Now, we turned check_bound into a C macro
@@ -31,8 +45,8 @@ cdef extern from "_copy_pointer.h":
 cdef long raise_out_of_bounds(Py_ssize_t size, Py_ssize_t offset) except -1:
     raise IndexError('Offset out of bounds: %d' % (offset+size))
  
-cdef int64_t read_int64(BaseSegment src, long i):
-    return (<int64_t*>(src.cbuf+i))[0]
+# ======================
+
 
 cpdef copy_pointer(bytes src, long p, long src_pos, SegmentBuilder dst, long dst_pos):
     """
@@ -66,7 +80,7 @@ cdef long _copy_many_ptrs(long n, BaseSegment src, long src_pos,
     check_bounds(src, n*8, src_pos)
     for i in range(n):
         offset = i*8
-        p = read_int64(src, src_pos + offset)
+        p = read_int64_fast(src, src_pos + offset)
         if p != 0:
             _copy(src, p, src_pos + offset, dst, dst_pos + offset)
 
@@ -116,7 +130,7 @@ cdef long _copy_list_composite(BaseSegment src, long p, long src_pos,
     # check that there is enough data for both the tag AND the whole body;
     # this way we do the bound checking only once
     check_bounds(src, body_length, src_pos)
-    cdef long tag = read_int64(src, src_pos)
+    cdef long tag = read_int64_fast(src, src_pos)
     cdef long count = ptr.offset(tag)
     cdef long data_size = ptr.struct_data_size(tag)
     cdef long ptrs_size = ptr.struct_ptrs_size(tag)
