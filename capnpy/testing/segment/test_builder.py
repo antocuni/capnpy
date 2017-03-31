@@ -26,7 +26,7 @@ class TestSegmentBuilder(object):
         assert s[:8] == struct.pack('q', 42)
         assert s[8:] == '\x00' * (64*64-8)
 
-    @pytest.mark.spikif(not PYX, reason='PYX only')
+    @pytest.mark.skipif(not PYX, reason='PYX only')
     def test_resize_big_allocation(self):
         buf = SegmentBuilder(32)
         assert buf.length == 32

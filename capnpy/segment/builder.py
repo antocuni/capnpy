@@ -44,6 +44,9 @@ class SegmentBuilder(object):
     def write_double(self, i, value):
         struct.pack_into('d', self.buf, i, value)
 
+    def write_slice(self, i, src, start, n):
+        self.buf[i:i+n] = src.buf[start:start+n]
+
     def allocate(self, length):
         # XXX: check whether there is a better method to zero-extend the array in PyPy
         result = len(self.buf)
