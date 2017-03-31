@@ -114,7 +114,7 @@ def _copy_list_primitive(src, p, src_pos, dst, dst_pos):
     size_tag = ptr.list_size_tag(p)
     body_length = 0
     if size_tag == ptr.LIST_SIZE_BIT:
-        body_length = (count + 8 - 1) / 8; # divide by 8 and round up
+        body_length = (count + 8 - 1) / 8 # divide by 8 and round up
     else:
         body_length = count * ptr.list_item_length(size_tag)
     #
@@ -122,38 +122,49 @@ def _copy_list_primitive(src, p, src_pos, dst, dst_pos):
     check_bounds(src, body_length, src_pos)
     dst.memcpy_from(dst_pos, src.cbuf+src_pos, body_length)
 
-cdef long _copy_list_ptr(BaseSegment src, long p, long src_pos,
-                         SegmentBuilder dst, long dst_pos) except -1:
+
+@cython.cfunc
+@cython.returns(long)
+@cython.except_(-1)
+@cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
+               count=long, body_length=long)
+def _copy_list_ptr(src, p, src_pos, dst, dst_pos):
     src_pos = ptr.deref(p, src_pos)
-    cdef long count = ptr.list_item_count(p)
-    cdef long body_length = count*8
+    count = ptr.list_item_count(p)
+    body_length = count*8
     dst_pos = dst.alloc_list(dst_pos, ptr.LIST_SIZE_PTR, count, body_length)
     check_bounds(src, body_length, src_pos)
     _copy_many_ptrs(count, src, src_pos, dst, dst_pos)
 
 
-cdef long _copy_list_composite(BaseSegment src, long p, long src_pos,
-                               SegmentBuilder dst, long dst_pos) except -1:
+@cython.cfunc
+@cython.returns(long)
+@cython.except_(-1)
+@cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
+               total_words=long, body_length=long,
+               tag=long, count=long, data_size=long, ptrs_size=long,
+               i=long, item_length=long, ptrs_section_offset=long)
+def _copy_list_composite(src, p, src_pos, dst, dst_pos):
     src_pos = ptr.deref(p, src_pos)
-    cdef long total_words = ptr.list_item_count(p) # n of words NOT including the tag
-    cdef long body_length = (total_words+1)*8      # total length INCLUDING the tag
+    total_words = ptr.list_item_count(p) # n of words NOT including the tag
+    body_length = (total_words+1)*8      # total length INCLUDING the tag
     #
     # check that there is enough data for both the tag AND the whole body;
     # this way we do the bound checking only once
     check_bounds(src, body_length, src_pos)
-    cdef long tag = read_int64_fast(src, src_pos)
-    cdef long count = ptr.offset(tag)
-    cdef long data_size = ptr.struct_data_size(tag)
-    cdef long ptrs_size = ptr.struct_ptrs_size(tag)
+    tag = read_int64_fast(src, src_pos)
+    count = ptr.offset(tag)
+    data_size = ptr.struct_data_size(tag)
+    ptrs_size = ptr.struct_ptrs_size(tag)
     #
     # allocate the list and copy the whole body at once
     dst_pos = dst.alloc_list(dst_pos, ptr.LIST_SIZE_COMPOSITE, total_words, body_length)
     dst.memcpy_from(dst_pos, src.cbuf+src_pos, body_length)
     #
     # iterate over the elements, fix the pointers and copy the content
-    cdef long i = 0
-    cdef long item_length = (data_size+ptrs_size) * 8
-    cdef long ptrs_section_offset = 0
+    i = 0
+    item_length = (data_size+ptrs_size) * 8
+    ptrs_section_offset = 0
     for i in range(count):
         ptrs_section_offset = 8 + item_length*i + data_size*8
         _copy_many_ptrs(ptrs_size, src,
