@@ -129,4 +129,9 @@ cdef class SegmentBuilder(object):
     cpdef Py_ssize_t alloc_data(self, Py_ssize_t pos, bytes s):
         return self.alloc_text(pos, s, trailing_zero=0)
 
+
+# we need to play weird tricks to be able to use the copy_pointer algo both
+# for Cython and PyPy AND to have very good performance. See the big comment
+# at the beginning of _copy_pointer.py for an explanation
 include "_copy_pointer.pyx"
+include "_copy_pointer.py"
