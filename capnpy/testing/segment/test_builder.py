@@ -1,10 +1,9 @@
 import pytest
 import struct
+from capnpy.blob import PYX
 from capnpy import ptr
 from capnpy.printer import print_buffer
 from capnpy.segment.builder import SegmentBuilder
-
-WIP = pytest.mark.skipif(getattr(SegmentBuilder, 'WIP', False), reason='WIP')
 
 class TestSegmentBuilder(object):
 
@@ -13,6 +12,29 @@ class TestSegmentBuilder(object):
         assert buf.allocate(8) == 0
         s = buf.as_string()
         assert s == '\x00' * 8
+
+    def test_resize(self):
+        buf = SegmentBuilder()
+        buf.allocate(64)
+        print
+        buf.write_int64(0, 42)
+        for i in range(63):
+            buf.allocate(64)
+        s = buf.as_string()
+        assert len(s) == 64*64
+        assert s[:8] == struct.pack('q', 42)
+        assert s[8:] == '\x00' * (64*64-8)
+
+    @pytest.mark.spikif(not PYX, reason='PYX only')
+    def test_resize_big_allocation(self):
+        buf = SegmentBuilder(32)
+        assert buf.length == 32
+        assert buf.end == 0
+        # make a big allocation, which is bigger than the normal exponential
+        # growth of the buffer
+        buf.allocate(4096)
+        assert buf.length == 4096
+        assert buf.end == 4096
 
     def test_write(self):
         expected = struct.pack('<bBhHiIqQfd', 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
@@ -85,27 +107,3 @@ class TestSegmentBuilder(object):
                      'foo\x00\x00\x00\x00\x00'
                      'bar\x00\x00\x00\x00\x00'
                      'bar\x00\x00\x00\x00\x00')
-
-    def test_resize(self):
-        buf = SegmentBuilder()
-        buf.allocate(64)
-        print
-        buf.write_int64(0, 42)
-        for i in range(63):
-            buf.allocate(64)
-        s = buf.as_string()
-        assert len(s) == 64*64
-        assert s[:8] == struct.pack('q', 42)
-        assert s[8:] == '\x00' * (64*64-8)
-
-    @WIP
-    def test_resize_big_allocation(self):
-        buf = SegmentBuilder(32)
-        assert buf.length == 32
-        assert buf.end == 0
-        # make a big allocation, which is bigger than the normal exponential
-        # growth of the buffer
-        buf.allocate(4096)
-        assert buf.length == 4096
-        assert buf.end == 4096
-
