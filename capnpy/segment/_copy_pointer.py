@@ -34,7 +34,11 @@ if not cython.compiled:
         if offset+size > len(src.buf):
             raise IndexError('Offset out of bounds: %d' % (offset+size))
 
+    def _read_int64_fast(src, offset):
+        return src.read_int64(offset)
+
     globals()['check_bounds'] = _check_bounds
+    globals()['read_int64_fast'] = _read_int64_fast
 
 @cython.ccall
 @cython.returns(long)
