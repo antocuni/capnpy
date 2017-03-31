@@ -90,6 +90,4 @@ class SegmentBuilder(object):
         return self.alloc_text(pos, s, trailing_zero=0)
 
 
-def copy_pointer():
-    pass
-copy_pointer.WIP = True
+from capnpy.segment._copy_pointer import copy_pointer

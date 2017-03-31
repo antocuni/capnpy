@@ -19,6 +19,23 @@ On the other hand, when we are on PyPy, this is a normal Python module, which
 is imported by builder.py
 """
 
+import cython
+if not cython.compiled:
+    from capnpy import ptr
+    from capnpy.segment.builder import SegmentBuilder
+    from capnpy.segment.base import BaseSegment
+
+    # we cannot call this check_bounds directly, else Cython (incorrectly)
+    # thinks that we are overriding the low-level check_bounds defined in
+    # _copy_pointer.pyx, and thus goes through a very slow path to call
+    # it. However, we can trick Cython by calling it _check_bounds and
+    # 'rename' it later by modifying globals(). Bah.
+    def _check_bounds(src, size, offset):
+        if offset+size > len(src.buf):
+            raise IndexError('Offset out of bounds: %d' % (offset+size))
+
+    globals()['check_bounds'] = _check_bounds
+
 @cython.ccall
 @cython.returns(long)
 @cython.except_(-1)
