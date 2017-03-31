@@ -86,24 +86,33 @@ def _copy_many_ptrs(n, src, src_pos, dst, dst_pos):
         if p != 0:
             copy_pointer(src, p, src_pos + offset, dst, dst_pos + offset)
 
-cdef long _copy_struct(BaseSegment src, long p, long src_pos,
-                       SegmentBuilder dst, long dst_pos) except -1:
+
+@cython.cfunc
+@cython.returns(long)
+@cython.except_(-1)
+@cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
+               data_size=long, ptrs_size=long, ds=long)
+def _copy_struct(src, p, src_pos, dst, dst_pos):
     src_pos = ptr.deref(p, src_pos)
-    cdef long data_size = ptr.struct_data_size(p)
-    cdef long ptrs_size = ptr.struct_ptrs_size(p)
-    cdef long ds = data_size*8
+    data_size = ptr.struct_data_size(p)
+    ptrs_size = ptr.struct_ptrs_size(p)
+    ds = data_size*8
     dst_pos = dst.alloc_struct(dst_pos, data_size, ptrs_size)
     check_bounds(src, ds, src_pos)
     dst.memcpy_from(dst_pos, src.cbuf+src_pos, ds) # copy data section
     _copy_many_ptrs(ptrs_size, src, src_pos+ds, dst, dst_pos+ds)
 
 
-cdef long _copy_list_primitive(BaseSegment src, long p, long src_pos,
-                               SegmentBuilder dst, long dst_pos) except -1:
+@cython.cfunc
+@cython.returns(long)
+@cython.except_(-1)
+@cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
+               count=long, size_tag=long, body_length=long)
+def _copy_list_primitive(src, p, src_pos, dst, dst_pos):
     src_pos = ptr.deref(p, src_pos)
-    cdef long count = ptr.list_item_count(p)
-    cdef long size_tag = ptr.list_size_tag(p)
-    cdef long body_length = 0
+    count = ptr.list_item_count(p)
+    size_tag = ptr.list_size_tag(p)
+    body_length = 0
     if size_tag == ptr.LIST_SIZE_BIT:
         body_length = (count + 8 - 1) / 8; # divide by 8 and round up
     else:
