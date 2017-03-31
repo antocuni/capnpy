@@ -1,3 +1,18 @@
+"""
+Schema-less deep-copy of a generic pointer.
+
+Note that when we are using Cython, this is *NOT* a standalone
+module. Instead, this file is textually included by builder.pyx, for
+performance reasons.
+
+SegmentBuilder is a @cython.final class, which means that whenever we do a
+method call such as "allocate_struct()", Cython can insert a direct call
+instead of going through the vtable.  However, this is done only if the method
+call is inside the same compilation unit of the class. Thus, by including this
+file inside SegmentBuilder we enable this optimization, which seems to give a
+~40% performance improvement.
+"""
+
 from libc.stdint cimport int64_t
 from libc.string cimport memcpy
 from capnpy cimport ptr
@@ -10,7 +25,7 @@ from capnpy.segment.builder cimport SegmentBuilder
 # function which raised if needed. Now, we turned check_bound into a C macro
 # with a fast-path (the bound check), and we moved the slow path inside the
 # raise_out_of_bound function. This seems to give a ~40% speedup!
-cdef extern from "copy_pointer.h":
+cdef extern from "_copy_pointer.h":
     long check_bound "CHECK_BOUND" (long pos, long n, Py_ssize_t src_len) except -1
 
 cdef long raise_out_of_bound(long pos, long n, Py_ssize_t src_len) except -1:

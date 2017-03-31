@@ -2,11 +2,11 @@ import pytest
 import struct
 from capnpy import ptr
 from capnpy.printer import print_buffer
+from capnpy.segment.builder import SegmentBuilder, copy_pointer
 
-pytest.importorskip('capnpy.copy_pointer')
-from capnpy.copy_pointer import copy_pointer
-from capnpy.segment.builder import SegmentBuilder
+WIP = pytest.mark.skipif(getattr(copy_pointer, 'WIP', False), reason='WIP')
 
+@WIP
 class TestCopyPointer(object):
 
     def copy_struct(self, src, offset, data_size, ptrs_size, bufsize=None):
