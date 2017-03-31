@@ -48,17 +48,12 @@ cdef long raise_out_of_bounds(Py_ssize_t size, Py_ssize_t offset) except -1:
 # ======================
 
 
-cpdef copy_pointer(bytes src, long p, long src_pos, SegmentBuilder dst, long dst_pos):
+cpdef long copy_pointer(BaseSegment src, long p, long src_pos,
+                        SegmentBuilder dst, long dst_pos) except -1:
     """
-    Copy from: buffer src, pointer p living at the src_pos offset
-         to:   buffer dst at position dst_pos
+    Copy from: src, pointer p living at the src_pos offset
+           to: dst at position dst_pos
     """
-    cdef BaseSegment srcbuf = BaseSegment(src)
-    _copy(srcbuf, p, src_pos, dst, dst_pos)
-
-
-cdef long _copy(BaseSegment src, long p, long src_pos,
-                SegmentBuilder dst, long dst_pos) except -1:
     cdef long kind = ptr.kind(p)
     if kind == ptr.STRUCT:
         return _copy_struct(src, p, src_pos, dst, dst_pos)
@@ -82,7 +77,7 @@ cdef long _copy_many_ptrs(long n, BaseSegment src, long src_pos,
         offset = i*8
         p = read_int64_fast(src, src_pos + offset)
         if p != 0:
-            _copy(src, p, src_pos + offset, dst, dst_pos + offset)
+            copy_pointer(src, p, src_pos + offset, dst, dst_pos + offset)
 
 cdef long _copy_struct(BaseSegment src, long p, long src_pos,
                        SegmentBuilder dst, long dst_pos) except -1:

@@ -2,6 +2,7 @@ import pytest
 import struct
 from capnpy import ptr
 from capnpy.printer import print_buffer
+from capnpy.segment.segment import Segment
 from capnpy.segment.builder import SegmentBuilder, copy_pointer
 
 WIP = pytest.mark.skipif(getattr(copy_pointer, 'WIP', False), reason='WIP')
@@ -10,12 +11,13 @@ WIP = pytest.mark.skipif(getattr(copy_pointer, 'WIP', False), reason='WIP')
 class TestCopyPointer(object):
 
     def copy_struct(self, src, offset, data_size, ptrs_size, bufsize=None):
+        src_seg = Segment(src)
         if bufsize is None:
             bufsize = len(src)+8
         dst = SegmentBuilder(bufsize)
         dst_pos = dst.allocate(8) # allocate the space to store the pointer p
         p = ptr.new_struct(0, data_size, ptrs_size)
-        copy_pointer(src, p, offset-8, dst, dst_pos)
+        copy_pointer(src_seg, p, offset-8, dst, dst_pos)
         return dst.as_string()
 
     def test_struct_data(self):
