@@ -21,11 +21,11 @@ from capnpy.segment.builder cimport SegmentBuilder
 
 @cython.final
 cdef class SrcBuffer(object):
-    cdef const char* buf
+    cdef const char* cbuf
     cdef Py_ssize_t len
 
     def __cinit__(self, bytes src):
-        self.buf = as_cbuf(src, &self.len)
+        self.cbuf = as_cbuf(src, &self.len)
 
 # this is a bit of a hack because apparently it is not possible to define the
 # equivalent of C macros in Cython. Earlier, check_bound was a normal cdef
@@ -41,7 +41,7 @@ cdef long raise_out_of_bound(long pos, long n, Py_ssize_t src_len) except -1:
     raise IndexError(msg)
  
 cdef int64_t read_int64(SrcBuffer src, long i):
-    return (<int64_t*>(src.buf+i))[0]
+    return (<int64_t*>(src.cbuf+i))[0]
 
 cpdef copy_pointer(bytes src, long p, long src_pos, SegmentBuilder dst, long dst_pos):
     """
@@ -87,7 +87,7 @@ cdef long _copy_struct(SrcBuffer src, long p, long src_pos,
     cdef long ds = data_size*8
     dst_pos = dst.alloc_struct(dst_pos, data_size, ptrs_size)
     check_bound(src_pos, ds, src.len)
-    dst.memcpy_from(dst_pos, src.buf+src_pos, ds) # copy data section
+    dst.memcpy_from(dst_pos, src.cbuf+src_pos, ds) # copy data section
     _copy_many_ptrs(ptrs_size, src, src_pos+ds, dst, dst_pos+ds)
 
 
@@ -104,7 +104,7 @@ cdef long _copy_list_primitive(SrcBuffer src, long p, long src_pos,
     #
     dst_pos = dst.alloc_list(dst_pos, size_tag, count, body_length)
     check_bound(src_pos, body_length, src.len)
-    dst.memcpy_from(dst_pos, src.buf+src_pos, body_length)
+    dst.memcpy_from(dst_pos, src.cbuf+src_pos, body_length)
 
 cdef long _copy_list_ptr(SrcBuffer src, long p, long src_pos,
                          SegmentBuilder dst, long dst_pos) except -1:
@@ -132,7 +132,7 @@ cdef long _copy_list_composite(SrcBuffer src, long p, long src_pos,
     #
     # allocate the list and copy the whole body at once
     dst_pos = dst.alloc_list(dst_pos, ptr.LIST_SIZE_COMPOSITE, total_words, body_length)
-    dst.memcpy_from(dst_pos, src.buf+src_pos, body_length)
+    dst.memcpy_from(dst_pos, src.cbuf+src_pos, body_length)
     #
     # iterate over the elements, fix the pointers and copy the content
     cdef long i = 0
