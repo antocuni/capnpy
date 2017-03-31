@@ -4,6 +4,7 @@ from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
 from libc.string cimport memcpy, memset
 from cpython.string cimport (PyString_FromStringAndSize, PyString_GET_SIZE,
                              PyString_AS_STRING)
+from capnpy.segment.base cimport BaseSegment
 
 cdef extern from "Python.h":
     int PyByteArray_Resize(object o, Py_ssize_t len)
@@ -73,9 +74,11 @@ cdef class SegmentBuilder(object):
     cpdef void write_double(self, Py_ssize_t i, double value):
         (<double*>(self.cbuf+i))[0] = value
 
-    cdef void memcpy_from(self, Py_ssize_t i, const char* src, Py_ssize_t n):
-        cdef void* dst = self.cbuf + i
-        memcpy(dst, src, n)
+    cpdef void write_slice(self, Py_ssize_t i, BaseSegment src,
+                           Py_ssize_t start, Py_ssize_t n):
+        cdef void* pdst = self.cbuf + i
+        cdef const void* psrc = src.cbuf + start
+        memcpy(pdst, psrc, n)
 
     cpdef Py_ssize_t allocate(self, Py_ssize_t length):
         """
@@ -121,7 +124,7 @@ cdef class SegmentBuilder(object):
         cdef Py_ssize_t nn = n + trailing_zero
         cdef const char *src = PyString_AS_STRING(s)
         cdef Py_ssize_t result = self.alloc_list(pos, ptr.LIST_SIZE_8, nn, nn)
-        self.memcpy_from(result, src, n)
+        memcpy(self.cbuf+result, src, n)
         # there is no need to write the trailing 0 as the byte is already
         # guaranteed to be 0
         return result

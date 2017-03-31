@@ -88,7 +88,7 @@ def _copy_struct(src, p, src_pos, dst, dst_pos):
     ds = data_size*8
     dst_pos = dst.alloc_struct(dst_pos, data_size, ptrs_size)
     check_bounds(src, ds, src_pos)
-    dst.memcpy_from(dst_pos, src.cbuf+src_pos, ds) # copy data section
+    dst.write_slice(dst_pos, src, src_pos, ds) # copy data section
     _copy_many_ptrs(ptrs_size, src, src_pos+ds, dst, dst_pos+ds)
 
 
@@ -109,7 +109,7 @@ def _copy_list_primitive(src, p, src_pos, dst, dst_pos):
     #
     dst_pos = dst.alloc_list(dst_pos, size_tag, count, body_length)
     check_bounds(src, body_length, src_pos)
-    dst.memcpy_from(dst_pos, src.cbuf+src_pos, body_length)
+    dst.write_slice(dst_pos, src, src_pos, body_length)
 
 
 @cython.cfunc
@@ -148,7 +148,7 @@ def _copy_list_composite(src, p, src_pos, dst, dst_pos):
     #
     # allocate the list and copy the whole body at once
     dst_pos = dst.alloc_list(dst_pos, ptr.LIST_SIZE_COMPOSITE, total_words, body_length)
-    dst.memcpy_from(dst_pos, src.cbuf+src_pos, body_length)
+    dst.write_slice(dst_pos, src, src_pos, body_length)
     #
     # iterate over the elements, fix the pointers and copy the content
     i = 0

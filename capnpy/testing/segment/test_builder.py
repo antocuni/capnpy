@@ -3,6 +3,7 @@ import struct
 from capnpy.blob import PYX
 from capnpy import ptr
 from capnpy.printer import print_buffer
+from capnpy.segment.segment import Segment
 from capnpy.segment.builder import SegmentBuilder
 
 class TestSegmentBuilder(object):
@@ -107,3 +108,13 @@ class TestSegmentBuilder(object):
                      'foo\x00\x00\x00\x00\x00'
                      'bar\x00\x00\x00\x00\x00'
                      'bar\x00\x00\x00\x00\x00')
+
+    def test_write_slice(self):
+        src = Segment('1234foobar1234')
+        buf = SegmentBuilder()
+        buf.allocate(8)
+        pos = buf.allocate(8)
+        buf.write_slice(pos, src, start=4, n=6)
+        s = buf.as_string()
+        assert s == ('\x00\x00\x00\x00\x00\x00\x00\x00'
+                     'foobar\x00\x00')
