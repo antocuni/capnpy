@@ -18,16 +18,7 @@ from libc.string cimport memcpy
 from capnpy cimport ptr
 from capnpy.packing cimport as_cbuf
 from capnpy.segment.builder cimport SegmentBuilder
-
-@cython.final
-cdef class SrcBuffer(object):
-    cdef bytes buf
-    cdef const char* cbuf
-
-    def __cinit__(self, bytes src):
-        cdef Py_ssize_t ununsed
-        self.buf = src
-        self.cbuf = as_cbuf(src, &ununsed)
+from capnpy.segment.base cimport BaseSegment
 
 # this is a bit of a hack because apparently it is not possible to define the
 # equivalent of C macros in Cython. Earlier, check_bound was a normal cdef
@@ -35,12 +26,12 @@ cdef class SrcBuffer(object):
 # with a fast-path (the bound check), and we moved the slow path inside the
 # raise_out_of_bound function. This seems to give a ~40% speedup!
 cdef extern from "_copy_pointer.h":
-    long check_bounds "CHECK_BOUNDS" (SrcBuffer src, Py_ssize_t size, Py_ssize_t offset) except -1
+    long check_bounds "CHECK_BOUNDS" (BaseSegment src, Py_ssize_t size, Py_ssize_t offset) except -1
 
 cdef long raise_out_of_bounds(Py_ssize_t size, Py_ssize_t offset) except -1:
     raise IndexError('Offset out of bounds: %d' % (offset+size))
  
-cdef int64_t read_int64(SrcBuffer src, long i):
+cdef int64_t read_int64(BaseSegment src, long i):
     return (<int64_t*>(src.cbuf+i))[0]
 
 cpdef copy_pointer(bytes src, long p, long src_pos, SegmentBuilder dst, long dst_pos):
@@ -48,11 +39,11 @@ cpdef copy_pointer(bytes src, long p, long src_pos, SegmentBuilder dst, long dst
     Copy from: buffer src, pointer p living at the src_pos offset
          to:   buffer dst at position dst_pos
     """
-    cdef SrcBuffer srcbuf = SrcBuffer(src)
+    cdef BaseSegment srcbuf = BaseSegment(src)
     _copy(srcbuf, p, src_pos, dst, dst_pos)
 
 
-cdef long _copy(SrcBuffer src, long p, long src_pos,
+cdef long _copy(BaseSegment src, long p, long src_pos,
                 SegmentBuilder dst, long dst_pos) except -1:
     cdef long kind = ptr.kind(p)
     if kind == ptr.STRUCT:
@@ -69,7 +60,7 @@ cdef long _copy(SrcBuffer src, long p, long src_pos,
     ##     raise NotImplementedError('Far pointer not supported')
     assert False, 'unknown ptr kind: %s' % kind
 
-cdef long _copy_many_ptrs(long n, SrcBuffer src, long src_pos,
+cdef long _copy_many_ptrs(long n, BaseSegment src, long src_pos,
                           SegmentBuilder dst, long dst_pos) except -1:
     cdef long i, p, offset
     check_bounds(src, n*8, src_pos)
@@ -79,7 +70,7 @@ cdef long _copy_many_ptrs(long n, SrcBuffer src, long src_pos,
         if p != 0:
             _copy(src, p, src_pos + offset, dst, dst_pos + offset)
 
-cdef long _copy_struct(SrcBuffer src, long p, long src_pos,
+cdef long _copy_struct(BaseSegment src, long p, long src_pos,
                        SegmentBuilder dst, long dst_pos) except -1:
     src_pos = ptr.deref(p, src_pos)
     cdef long data_size = ptr.struct_data_size(p)
@@ -91,7 +82,7 @@ cdef long _copy_struct(SrcBuffer src, long p, long src_pos,
     _copy_many_ptrs(ptrs_size, src, src_pos+ds, dst, dst_pos+ds)
 
 
-cdef long _copy_list_primitive(SrcBuffer src, long p, long src_pos,
+cdef long _copy_list_primitive(BaseSegment src, long p, long src_pos,
                                SegmentBuilder dst, long dst_pos) except -1:
     src_pos = ptr.deref(p, src_pos)
     cdef long count = ptr.list_item_count(p)
@@ -106,7 +97,7 @@ cdef long _copy_list_primitive(SrcBuffer src, long p, long src_pos,
     check_bounds(src, body_length, src_pos)
     dst.memcpy_from(dst_pos, src.cbuf+src_pos, body_length)
 
-cdef long _copy_list_ptr(SrcBuffer src, long p, long src_pos,
+cdef long _copy_list_ptr(BaseSegment src, long p, long src_pos,
                          SegmentBuilder dst, long dst_pos) except -1:
     src_pos = ptr.deref(p, src_pos)
     cdef long count = ptr.list_item_count(p)
@@ -116,7 +107,7 @@ cdef long _copy_list_ptr(SrcBuffer src, long p, long src_pos,
     _copy_many_ptrs(count, src, src_pos, dst, dst_pos)
 
 
-cdef long _copy_list_composite(SrcBuffer src, long p, long src_pos,
+cdef long _copy_list_composite(BaseSegment src, long p, long src_pos,
                                SegmentBuilder dst, long dst_pos) except -1:
     src_pos = ptr.deref(p, src_pos)
     cdef long total_words = ptr.list_item_count(p) # n of words NOT including the tag
