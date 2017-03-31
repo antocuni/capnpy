@@ -2,9 +2,7 @@
 # be expressed in pure-python mode, such as cimports and cdef extern from
 
 from libc.stdint cimport int64_t
-from libc.string cimport memcpy
 from capnpy cimport ptr
-from capnpy.packing cimport as_cbuf
 from capnpy.segment.builder cimport SegmentBuilder
 from capnpy.segment.base cimport BaseSegment
 
