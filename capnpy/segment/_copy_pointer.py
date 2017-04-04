@@ -19,8 +19,13 @@ On the other hand, when we are on PyPy, this is a normal Python module, which
 is imported by builder.py
 """
 
-import cython
+from pypytools import fakecython
+with fakecython:
+    import cython
+
 if not cython.compiled:
+    # this code runs only if we are in pure-python mode. If we are in PYX
+    # mode, the equivalent functions are defined in _copy_pointer.pyx
     from capnpy import ptr
     from capnpy.segment.builder import SegmentBuilder
     from capnpy.segment.base import BaseSegment
