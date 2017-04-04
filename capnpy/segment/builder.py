@@ -92,5 +92,7 @@ class SegmentBuilder(object):
     def alloc_data(self, pos, s):
         return self.alloc_text(pos, s, trailing_zero=0)
 
+    def copy_from_pointer(self, dst_pos, src, p, src_pos):
+        return copy_pointer(src, p, src_pos, self, dst_pos)
 
 from capnpy.segment._copy_pointer import copy_pointer

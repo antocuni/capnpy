@@ -14,7 +14,7 @@ class TestCopyPointer(object):
         dst = SegmentBuilder(bufsize)
         dst_pos = dst.allocate(8) # allocate the space to store the pointer p
         p = ptr.new_struct(0, data_size, ptrs_size)
-        copy_pointer(src_seg, p, offset-8, dst, dst_pos)
+        dst.copy_from_pointer(dst_pos, src_seg, p, offset-8)
         return dst.as_string()
 
     def test_struct_data(self):
