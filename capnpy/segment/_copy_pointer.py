@@ -45,9 +45,20 @@ if not cython.compiled:
     globals()['check_bounds'] = _check_bounds
     globals()['read_int64_fast'] = _read_int64_fast
 
+
+# depending on the phase of the moon, I saw speeupds up to 20% if we declare
+# all these functions as returning a long and "except -1". However, other
+# times I didn't see any significant speedup.
+#
+# For now, the decorators are commented out because @cython.except_ is
+# available only in my Cython fork:
+#    https://github.com/antocuni/cython/tree/pure-except
+#
+# we can re-enable them as soon as the fork is merged.
+
 @cython.ccall
-@cython.returns(long)
-@cython.except_(-1)
+##@cython.returns(long)
+##@cython.except_(-1)
 @cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
                kind=long)
 def copy_pointer(src, p, src_pos, dst, dst_pos):
@@ -72,8 +83,8 @@ def copy_pointer(src, p, src_pos, dst, dst_pos):
 
 
 @cython.cfunc
-@cython.returns(long)
-@cython.except_(-1)
+##@cython.returns(long)
+##@cython.except_(-1)
 @cython.locals(n=long, src=BaseSegment, src_pos=long, dst=SegmentBuilder, dst_pos=long,
                i=long, p=long, offset=long)
 def _copy_many_ptrs(n, src, src_pos, dst, dst_pos):
@@ -86,8 +97,8 @@ def _copy_many_ptrs(n, src, src_pos, dst, dst_pos):
 
 
 @cython.cfunc
-@cython.returns(long)
-@cython.except_(-1)
+##@cython.returns(long)
+##@cython.except_(-1)
 @cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
                data_size=long, ptrs_size=long, ds=long)
 def _copy_struct(src, p, src_pos, dst, dst_pos):
@@ -102,8 +113,8 @@ def _copy_struct(src, p, src_pos, dst, dst_pos):
 
 
 @cython.cfunc
-@cython.returns(long)
-@cython.except_(-1)
+##@cython.returns(long)
+##@cython.except_(-1)
 @cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
                count=long, size_tag=long, body_length=long)
 def _copy_list_primitive(src, p, src_pos, dst, dst_pos):
@@ -122,8 +133,8 @@ def _copy_list_primitive(src, p, src_pos, dst, dst_pos):
 
 
 @cython.cfunc
-@cython.returns(long)
-@cython.except_(-1)
+##@cython.returns(long)
+##@cython.except_(-1)
 @cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
                count=long, body_length=long)
 def _copy_list_ptr(src, p, src_pos, dst, dst_pos):
@@ -136,8 +147,8 @@ def _copy_list_ptr(src, p, src_pos, dst, dst_pos):
 
 
 @cython.cfunc
-@cython.returns(long)
-@cython.except_(-1)
+##@cython.returns(long)
+##@cython.except_(-1)
 @cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
                total_words=long, body_length=long,
                tag=long, count=long, data_size=long, ptrs_size=long,
