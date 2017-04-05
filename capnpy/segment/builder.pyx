@@ -132,6 +132,10 @@ cdef class SegmentBuilder(object):
     cpdef Py_ssize_t alloc_data(self, Py_ssize_t pos, bytes s):
         return self.alloc_text(pos, s, trailing_zero=0)
 
+    cpdef copy_from_pointer(self, Py_ssize_t dst_pos, BaseSegment src, long p,
+                            Py_ssize_t src_pos):
+        return copy_pointer(src, p, src_pos, self, dst_pos)
+
     cpdef copy_from_list(self, Py_ssize_t pos, item_type, lst):
         return copy_from_list(self, pos, item_type, lst)
 
