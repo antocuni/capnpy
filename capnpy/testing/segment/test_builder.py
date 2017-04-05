@@ -5,6 +5,8 @@ from capnpy import ptr
 from capnpy.printer import print_buffer
 from capnpy.segment.segment import Segment
 from capnpy.segment.builder import SegmentBuilder
+from capnpy.list import PrimitiveItemType
+from capnpy.type import Types
 
 class TestSegmentBuilder(object):
 
@@ -118,3 +120,18 @@ class TestSegmentBuilder(object):
         s = buf.as_string()
         assert s == ('\x00\x00\x00\x00\x00\x00\x00\x00'
                      'foobar\x00\x00')
+
+    def test_copy_from_list(self):
+        buf = SegmentBuilder()
+        buf.allocate(8) # allocate some garbage at the beginning
+        pos = buf.allocate(8)
+        item_type = PrimitiveItemType(Types.int64)
+        buf.copy_from_list(pos, item_type, [1, 2, 3, 4])
+        s = buf.as_string()
+        assert s == (
+            '\x00\x00\x00\x00\x00\x00\x00\x00'  # garbage
+            '\x01\x00\x00\x00\x25\x00\x00\x00'  # ptrlist
+            '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
+            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
+            '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
