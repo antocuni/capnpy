@@ -35,6 +35,4 @@ cdef class SegmentBuilder(object):
                                 long body_length)
     cpdef Py_ssize_t alloc_text(self, Py_ssize_t pos, bytes s, long trailing_zero=*)
     cpdef Py_ssize_t alloc_data(self, Py_ssize_t pos, bytes s)
-
-
-
+    cpdef copy_from_list(self, Py_ssize_t pos, item_type, lst)

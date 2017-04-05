@@ -96,12 +96,7 @@ class SegmentBuilder(object):
         return copy_pointer(src, p, src_pos, self, dst_pos)
 
     def copy_from_list(self, pos, item_type, lst):
-        item_length, size_tag = item_type.get_item_length()
-        item_count = len(lst)
-        body_length = item_length * item_count
-        pos = self.alloc_list(pos, size_tag, item_count, body_length)
-        for item in lst:
-            self.write_int64(pos, item) # XXX
-            pos += item_length
+        return copy_from_list(self, pos, item_type, lst)
 
 from capnpy.segment._copy_pointer import copy_pointer
+from capnpy.segment._copy_list import copy_from_list
