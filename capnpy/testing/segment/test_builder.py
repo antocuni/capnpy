@@ -57,6 +57,24 @@ class TestSegmentBuilder(object):
         s = buf.as_string()
         assert s == expected
 
+    def test_write_generic(self):
+        expected = struct.pack('<bBhHiIqQfd', 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+        n = len(expected)
+        buf = SegmentBuilder(n)
+        buf.allocate(n)
+        buf.write_generic(ord('b'), 0, 10)
+        buf.write_generic(ord('B'), 1, 20)
+        buf.write_generic(ord('h'), 2, 30)
+        buf.write_generic(ord('H'), 4, 40)
+        buf.write_generic(ord('i'), 6, 50)
+        buf.write_generic(ord('I'), 10, 60)
+        buf.write_generic(ord('q'), 14, 70)
+        buf.write_generic(ord('Q'), 22, 80)
+        buf.write_generic(ord('f'), 30, 90)
+        buf.write_generic(ord('d'), 34, 100)
+        s = buf.as_string()
+        assert s == expected
+
     def test_alloc_struct(self):
         buf = SegmentBuilder(64)
         buf.allocate(16)

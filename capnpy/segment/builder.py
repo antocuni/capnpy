@@ -1,5 +1,6 @@
 import struct
 from capnpy import ptr
+from capnpy.packing import mychr
 
 def round_to_word(pos):
     return (pos + (8 - 1)) & -8  # Round up to 8-byte boundary
@@ -13,6 +14,9 @@ class SegmentBuilder(object):
 
     def as_string(self):
         return str(self.buf)
+
+    def write_generic(self, ifmt, i, value):
+        struct.pack_into(mychr(ifmt), self.buf, i, value)
 
     def write_int8(self, i, value):
         struct.pack_into('b', self.buf, i, value)

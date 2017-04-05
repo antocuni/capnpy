@@ -17,6 +17,7 @@ cdef class SegmentBuilder(object):
     cdef void _resize(self, Py_ssize_t minlen)
     cpdef as_string(self)
 
+    cpdef object write_generic(self, char ifmt, Py_ssize_t i, object value)
     cpdef void write_int8(self, Py_ssize_t i, int8_t value)
     cpdef void write_uint8(self, Py_ssize_t i, uint8_t value)
     cpdef void write_int16(self, Py_ssize_t i, int16_t value)

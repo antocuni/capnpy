@@ -44,6 +44,30 @@ cdef class SegmentBuilder(object):
     cpdef as_string(self):
         return PyString_FromStringAndSize(self.cbuf, self.end)
 
+    cpdef object write_generic(self, char ifmt, Py_ssize_t i, object value):
+        if ifmt == 'q':
+            self.write_int64(i, value)
+        elif ifmt == 'Q':
+            self.write_uint64(i, value)
+        elif ifmt == 'd':
+            self.write_double(i, value)
+        elif ifmt == 'f':
+            self.write_float(i, value)
+        elif ifmt == 'i':
+            self.write_int32(i, value)
+        elif ifmt == 'I':
+            self.write_uint32(i, value)
+        elif ifmt == 'h':
+            self.write_int16(i, value)
+        elif ifmt == 'H':
+            self.write_uint16(i, value)
+        elif ifmt == 'b':
+            self.write_int8(i, value)
+        elif ifmt == 'B':
+            self.write_uint8(i, value)
+        else:
+            raise ValueError('unknown fmt %s' % chr(ifmt))
+
     cpdef void write_int8(self, Py_ssize_t i, int8_t value):
         (<int8_t*>(self.cbuf+i))[0] = value
 
