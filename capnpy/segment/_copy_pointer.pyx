@@ -26,9 +26,9 @@ cdef int64_t read_int64_fast(BaseSegment src, long i):
 # with a fast-path (the bound check), and we moved the slow path inside the
 # raise_out_of_bound function. This seems to give a ~40% speedup!
 cdef extern from "_copy_pointer.h":
-    long check_bounds "CHECK_BOUNDS" (BaseSegment src, Py_ssize_t size, Py_ssize_t offset) except -1
+    object check_bounds "CHECK_BOUNDS" (BaseSegment src, Py_ssize_t size, Py_ssize_t offset)
 
-cdef long raise_out_of_bounds(Py_ssize_t size, Py_ssize_t offset) except -1:
+cdef object raise_out_of_bounds(Py_ssize_t size, Py_ssize_t offset):
     raise IndexError('Offset out of bounds: %d' % (offset+size))
- 
+
 # ======================

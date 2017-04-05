@@ -54,7 +54,9 @@ if not cython.compiled:
 # available only in my Cython fork:
 #    https://github.com/antocuni/cython/tree/pure-except
 #
-# we can re-enable them as soon as the fork is merged.
+# we can re-enable them as soon as the fork is merged. If we do, remember to
+# change the signature of check_bounds and raise_out_of_bounds in
+# _copy_pointer.h and _copy_pointer.pyx accordingly.
 
 @cython.ccall
 ##@cython.returns(long)
