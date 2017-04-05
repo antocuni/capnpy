@@ -104,3 +104,17 @@ def test_new_struct_overflow():
     #
     p = ptr.new_struct(0, 0, -1)
     assert unpack(p) == (0, 0, 2**16-1)
+
+def test_new_list_overflow():
+    def unpack(p):
+        assert ptr.kind(p) == ptr.LIST
+        return ptr.offset(p), ptr.list_size_tag(p), ptr.list_item_count(p)
+    #
+    p = ptr.new_list(-1, 0, 0)
+    assert unpack(p) == (-1, 0, 0)
+    #
+    p = ptr.new_list(0, -1, 0)
+    assert unpack(p) == (0, 7, 0)
+    #
+    p = ptr.new_list(0, 0, -1)
+    assert unpack(p) == (0, 0, 2**29-1)

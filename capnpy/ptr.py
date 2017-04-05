@@ -119,8 +119,8 @@ def struct_ptrs_size(ptr):
 def new_list(ptr_offset, size_tag, item_count):
     p = 0
     p |= item_count << 35
-    p |= size_tag << 32
-    p |= ptr_offset << 2
+    p |= (size_tag << 32 & 0x700000000)
+    p |= (ptr_offset << 2 & 0xfffffffc)
     p |= LIST
     return p
 
@@ -128,7 +128,7 @@ def list_size_tag(ptr):
     return ptr>>32 & 0x7
 
 def list_item_count(ptr):
-    return ptr>>35
+    return ptr>>35 & 0x1fffffff
 
 _LIST_SIZE_LENGTH = (0, -1, 1, 2, 4, 8, 8, -1) # -1 means "invalid"
 def list_item_length(size_tag):
