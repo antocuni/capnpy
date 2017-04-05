@@ -170,7 +170,7 @@ class Structor(object):
         ns.offset = self.slot_offset(node.f)
         t = node.f.slot.type.list.elementType
         ns.list_item_type = t.list_item_type(self.m)
-        ns.w('builder.alloc_list({offset}, {list_item_type}, {fname})')
+        ns.w('builder.copy_from_list(pos + {offset}, {list_item_type}, {fname})')
 
     def handle_primitive(self, node):
         ns = self.m.code.new_scope()
