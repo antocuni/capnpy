@@ -81,8 +81,8 @@ def deref(ptr, ofs):
 def new_struct(offset, data_size, ptrs_size):
     p = 0
     p |= ptrs_size << 48
-    p |= data_size << 32
-    p |= offset << 2
+    p |= (data_size << 32 & 0xffff00000000)
+    p |= (offset << 2 & 0xfffffffc)
     p |= STRUCT
     return p
 
