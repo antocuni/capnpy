@@ -155,8 +155,8 @@ def list_item_length(size_tag):
 def new_far(landing_pad, offset, target):
     p = 0
     p |= target << 32
-    p |= offset << 3
-    p |= landing_pad << 2
+    p |= (offset << 3 & 0xfffffff8)
+    p |= (landing_pad << 2 & 0x4)
     p |= FAR
     return p
 
@@ -167,4 +167,4 @@ def far_offset(ptr):
     return ptr>>3 & 0x1fffffff
 
 def far_target(ptr):
-    return ptr>>32
+    return ptr>>32 & 0xffffffff

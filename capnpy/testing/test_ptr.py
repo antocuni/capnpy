@@ -118,3 +118,17 @@ def test_new_list_overflow():
     #
     p = ptr.new_list(0, 0, -1)
     assert unpack(p) == (0, 0, 2**29-1)
+
+def test_new_far_overflow():
+    def unpack(p):
+        assert ptr.kind(p) == ptr.FAR
+        return ptr.far_landing_pad(p), ptr.far_offset(p), ptr.far_target(p)
+    #
+    p = ptr.new_far(-1, 0, 0)
+    assert unpack(p) == (1, 0, 0)
+    #
+    p = ptr.new_far(0, -1, 0)
+    assert unpack(p) == (0, 2**29-1, 0)
+    #
+    p = ptr.new_far(0, 0, -1)
+    assert unpack(p) == (0, 0, 2**32-1)
