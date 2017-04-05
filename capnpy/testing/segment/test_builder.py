@@ -139,7 +139,7 @@ class TestSegmentBuilder(object):
         assert s == ('\x00\x00\x00\x00\x00\x00\x00\x00'
                      'foobar\x00\x00')
 
-    def test_copy_from_list(self):
+    def test_copy_from_list_int64(self):
         buf = SegmentBuilder()
         buf.allocate(8) # allocate some garbage at the beginning
         pos = buf.allocate(8)
@@ -147,9 +147,36 @@ class TestSegmentBuilder(object):
         buf.copy_from_list(pos, item_type, [1, 2, 3, 4])
         s = buf.as_string()
         assert s == (
-            '\x00\x00\x00\x00\x00\x00\x00\x00'  # garbage
-            '\x01\x00\x00\x00\x25\x00\x00\x00'  # ptrlist
+            '\x00\x00\x00\x00\x00\x00\x00\x00'   # garbage
+            '\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
             '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
             '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
             '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
             '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
+
+    def test_copy_from_list_int8(self):
+        buf = SegmentBuilder()
+        buf.allocate(8) # allocate some garbage at the beginning
+        pos = buf.allocate(8)
+        item_type = PrimitiveItemType(Types.int8)
+        buf.copy_from_list(pos, item_type, [1, 2, 3, 4])
+        s = buf.as_string()
+        assert s == (
+            '\x00\x00\x00\x00\x00\x00\x00\x00'   # garbage
+            '\x01\x00\x00\x00\x22\x00\x00\x00'   # ptrlist
+            '\x01\x02\x03\x04\x00\x00\x00\x00')  # 1,2,3,4 + padding
+
+    def test_copy_from_list_float64(self):
+        buf = SegmentBuilder()
+        buf.allocate(8) # allocate some garbage at the beginning
+        pos = buf.allocate(8)
+        item_type = PrimitiveItemType(Types.float64)
+        buf.copy_from_list(pos, item_type, [1.234, 2.345, 3.456, 4.567])
+        s = buf.as_string()
+        assert s == (
+            '\x00\x00\x00\x00\x00\x00\x00\x00'   # garbage
+            '\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
+            '\x58\x39\xb4\xc8\x76\xbe\xf3\x3f'   # 1.234
+            '\xc3\xf5\x28\x5c\x8f\xc2\x02\x40'   # 2.345
+            '\xd9\xce\xf7\x53\xe3\xa5\x0b\x40'   # 3.456
+            '\xf8\x53\xe3\xa5\x9b\x44\x12\x40')  # 4.567

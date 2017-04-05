@@ -162,9 +162,12 @@ class BoolItemType(ItemType):
     def get_item_length(self):
         raise NotImplementedError
 
+    # XXX: kill this as soon as we kill builder.py
     def pack_item(self, listbuilder, i, item):
         raise NotImplementedError
 
+    def write_item(self, builder, pos, item):
+        raise NotImplementedError
 
 class PrimitiveItemType(ItemType):
 
@@ -202,6 +205,9 @@ class PrimitiveItemType(ItemType):
 
     def pack_item(self, listbuilder, i, item):
         return struct.pack('<'+self.t.fmt, item)
+
+    def write_item(self, builder, pos, item):
+        builder.write_generic(self.ifmt, pos, item)
 
 
 class EnumItemType(PrimitiveItemType):
