@@ -35,11 +35,11 @@ class Structor(object):
         ## @staticmethod
         ## def __new(x=0, y=0, z=None):
         ##     builder = _SegmentBuilder()
-        ##     builder.allocate(24)
-        ##     builder.set(ord('q', 0, x)
-        ##     builder.set(ord('q', 8, y)
-        ##     builder.alloc_text(16, z)
-        ##     return builder.build()
+        ##     pos = builder.allocate(24)
+        ##     builder.write_int64(pos + 0, x)
+        ##     builder.write_int64(pos + 8, y)
+        ##     builder.alloc_text(pos + 16, z)
+        ##     return builder.as_string()
         #
         # the parameters have the same order as fields
         code = self.m.code
@@ -51,8 +51,9 @@ class Structor(object):
         with code.cdef_('__new', self.params) as ns:
             ns.length = (self.data_size + self.ptrs_size)*8
             ns.cdef_var('_SegmentBuilder', 'builder')
+            ns.cdef_var('long', 'pos')
             ns.w('builder = _SegmentBuilder()')
-            ns.w('builder.allocate({length})')
+            ns.w('pos = builder.allocate({length})')
             for union in self.fieldtree.all_unions():
                 ns.w('{union}__curtag = None', union=union.varname)
             for node in self.fieldtree.children:
@@ -151,10 +152,17 @@ class Structor(object):
                       arg=node.varname, offset=self.slot_offset(node.f))
 
     def handle_struct(self, node):
-        offset = self.slot_offset(node.f)
-        structname = node.f.slot.type.runtime_name(self.m)
-        self.m.code.w('builder.alloc_struct({offset}, {structname}, {arg})',
-                      arg=node.varname, offset=offset, structname=structname)
+        ## @staticmethod
+        ## def __new(x=0, y=<some struct>):
+        ##     builder = _SegmentBuilder()
+        ##     pos = builder.allocate(16)
+        ##     ...
+        ##     builder.copy_from_pointer(pos+8, y._seg, y._as_pointer(0), 0)
+        ns = self.m.code.new_scope()
+        ns.fname = node.varname
+        ns.offset = self.slot_offset(node.f)
+        ns.w('builder.copy_from_pointer(pos + {offset}, {fname}._seg, '
+             '{fname}._as_pointer(0), 0)')
 
     def handle_list(self, node):
         ns = self.m.code.new_scope()
@@ -173,7 +181,7 @@ class Structor(object):
         #
         ns.type = node.f.slot.get_typename()
         ns.offset = self.slot_offset(node.f)
-        ns.w('builder.write_{type}({offset}, {arg})')
+        ns.w('builder.write_{type}(pos + {offset}, {arg})')
 
     def handle_bool(self, node):
         ns = self.m.code.new_scope()
