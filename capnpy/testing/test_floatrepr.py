@@ -1,8 +1,6 @@
 import pytest
-try:
-    from capnpy.floatrepr import float32_repr, float64_repr
-except ImportError:
-    pytest.skip('floatrepr not compiled')
+pytest.importorskip("capnpy.floatrepr")
+from capnpy.floatrepr import float32_repr, float64_repr
     
 def test_float32_repr():
     x = 193.161239624
