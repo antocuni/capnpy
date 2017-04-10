@@ -107,6 +107,7 @@ class SegmentBuilder(object):
 
     def copy_from_struct(self, dst_pos, structcls, value):
         if value is None:
+            self.write_int64(dst_pos, 0)
             return
         if not isinstance(value, structcls):
             raise TypeError("Expected %s instance, got %s" %
