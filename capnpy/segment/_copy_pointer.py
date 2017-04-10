@@ -102,13 +102,14 @@ def _copy_many_ptrs(n, src, src_pos, dst, dst_pos):
 ##@cython.returns(long)
 ##@cython.except_(-1)
 @cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
-               data_size=long, ptrs_size=long, ds=long)
-def _copy_struct(src, p, src_pos, dst, dst_pos):
+               data_size=long, ptrs_size=long, ds=long, do_allocation=int)
+def _copy_struct(src, p, src_pos, dst, dst_pos, do_allocation=1):
     src_pos = ptr.deref(p, src_pos)
     data_size = ptr.struct_data_size(p)
     ptrs_size = ptr.struct_ptrs_size(p)
     ds = data_size*8
-    dst_pos = dst.alloc_struct(dst_pos, data_size, ptrs_size)
+    if do_allocation:
+        dst_pos = dst.alloc_struct(dst_pos, data_size, ptrs_size)
     check_bounds(src, ds, src_pos)
     dst.write_slice(dst_pos, src, src_pos, ds) # copy data section
     _copy_many_ptrs(ptrs_size, src, src_pos+ds, dst, dst_pos+ds)

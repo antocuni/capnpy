@@ -1,6 +1,7 @@
 import struct
 from capnpy import ptr
 from capnpy.packing import mychr
+from capnpy.printer import print_buffer
 
 def round_to_word(pos):
     return (pos + (8 - 1)) & -8  # Round up to 8-byte boundary
@@ -14,6 +15,9 @@ class SegmentBuilder(object):
 
     def as_string(self):
         return str(self.buf)
+
+    def _print(self):
+        print_buffer(self.as_string())
 
     def write_generic(self, ifmt, i, value):
         struct.pack_into(mychr(ifmt), self.buf, i, value)
@@ -99,8 +103,18 @@ class SegmentBuilder(object):
     def copy_from_pointer(self, dst_pos, src, p, src_pos):
         return copy_pointer(src, p, src_pos, self, dst_pos)
 
+    def copy_from_struct_inline(self, dst_pos, src, p, src_pos):
+        """
+        Similar to copy_from_pointer but:
+          1. it assumes that p is a pointer to a struct
+
+          2. it does NOT allocate a new struct in dst_pos: instead, it writes
+             the struct directly into dst_pos
+        """
+        return _copy_struct(src, p, src_pos, self, dst_pos, do_allocation=False)
+
     def copy_from_list(self, pos, item_type, lst):
         return copy_from_list(self, pos, item_type, lst)
 
-from capnpy.segment._copy_pointer import copy_pointer
+from capnpy.segment._copy_pointer import copy_pointer, _copy_struct
 from capnpy.segment._copy_list import copy_from_list
