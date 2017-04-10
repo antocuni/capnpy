@@ -51,9 +51,9 @@ cdef class SegmentBuilder(object):
         elif ifmt == 'Q':
             self.write_uint64(i, value)
         elif ifmt == 'd':
-            self.write_double(i, value)
+            self.write_float64(i, value)
         elif ifmt == 'f':
-            self.write_float(i, value)
+            self.write_float32(i, value)
         elif ifmt == 'i':
             self.write_int32(i, value)
         elif ifmt == 'I':
