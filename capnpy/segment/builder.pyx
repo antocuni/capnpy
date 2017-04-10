@@ -98,6 +98,11 @@ cdef class SegmentBuilder(object):
     cpdef void write_float64(self, Py_ssize_t i, double value):
         (<double*>(self.cbuf+i))[0] = value
 
+    cpdef void write_bool(self, Py_ssize_t byteoffset, int bitoffset, bint value):
+        cdef uint8_t current = (<uint8_t*>(self.cbuf+byteoffset))[0]
+        current |= (value << bitoffset)
+        (<uint8_t*>(self.cbuf+byteoffset)) = current
+
     cpdef void write_slice(self, Py_ssize_t i, BaseSegment src,
                            Py_ssize_t start, Py_ssize_t n):
         cdef void* pdst = self.cbuf + i

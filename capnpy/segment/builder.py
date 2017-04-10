@@ -52,6 +52,11 @@ class SegmentBuilder(object):
     def write_float64(self, i, value):
         struct.pack_into('d', self.buf, i, value)
 
+    def write_bool(self, byteoffset, bitoffset, value):
+        current = struct.unpack_from('B', self.buf, byteoffset)[0]
+        current |= (value << bitoffset)
+        struct.pack_into('B', self.buf, byteoffset, current)
+
     def write_slice(self, i, src, start, n):
         self.buf[i:i+n] = src.buf[start:start+n]
 

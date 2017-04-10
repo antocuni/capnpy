@@ -190,4 +190,4 @@ class Structor(object):
         if node.f.slot.hadExplicitDefault:
             ns.default_ = node.f.slot.defaultValue.as_pyobj()
             ns.w('{arg} ^= {default_}')
-        ns.w('builder.setbool({byteoffset}, {bitoffset}, {arg})')
+        ns.w('builder.write_bool({byteoffset}, {bitoffset}, {arg})')
