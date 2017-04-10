@@ -46,10 +46,10 @@ class SegmentBuilder(object):
     def write_uint64(self, i, value):
         struct.pack_into('Q', self.buf, i, value)
 
-    def write_float(self, i, value):
+    def write_float32(self, i, value):
         struct.pack_into('f', self.buf, i, value)
 
-    def write_double(self, i, value):
+    def write_float64(self, i, value):
         struct.pack_into('d', self.buf, i, value)
 
     def write_slice(self, i, src, start, n):

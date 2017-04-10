@@ -52,8 +52,8 @@ class TestSegmentBuilder(object):
         buf.write_uint32(10, 60)
         buf.write_int64(14, 70)
         buf.write_uint64(22, 80)
-        buf.write_float(30, 90)
-        buf.write_double(34, 100)
+        buf.write_float32(30, 90)
+        buf.write_float64(34, 100)
         s = buf.as_string()
         assert s == expected
 

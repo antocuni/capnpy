@@ -92,10 +92,10 @@ cdef class SegmentBuilder(object):
     cpdef void write_uint64(self, Py_ssize_t i, uint64_t value):
         (<uint64_t*>(self.cbuf+i))[0] = value
 
-    cpdef void write_float(self, Py_ssize_t i, float value):
+    cpdef void write_float32(self, Py_ssize_t i, float value):
         (<float*>(self.cbuf+i))[0] = value
 
-    cpdef void write_double(self, Py_ssize_t i, double value):
+    cpdef void write_float64(self, Py_ssize_t i, double value):
         (<double*>(self.cbuf+i))[0] = value
 
     cpdef void write_slice(self, Py_ssize_t i, BaseSegment src,
