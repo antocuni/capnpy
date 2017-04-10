@@ -165,6 +165,7 @@ cdef class SegmentBuilder(object):
     cpdef copy_from_struct(self, Py_ssize_t dst_pos, type structcls, Struct value):
         if value is None:
             self.write_int64(dst_pos, 0)
+            return
         if not isinstance(value, structcls):
             raise TypeError("Expected %s instance, got %s" %
                             (structcls.__class__.__name__, value))
