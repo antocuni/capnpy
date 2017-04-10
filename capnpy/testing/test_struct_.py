@@ -34,8 +34,8 @@ def test__as_pointer():
     buf = ('garbage0'
            '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
-    b1 = Struct.from_buffer(buf, 24, data_size=2, ptrs_size=0)
-    p = b1._as_pointer(offset=24) # arbitrary offset
+    b1 = Struct.from_buffer(buf, 8, data_size=2, ptrs_size=0)
+    p = b1._as_pointer(24) # arbitrary offset
     assert ptr.kind(p) == ptr.STRUCT
     assert ptr.deref(p, 24) == 8
     assert ptr.struct_data_size(p) == 2
