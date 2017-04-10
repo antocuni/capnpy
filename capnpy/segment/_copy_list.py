@@ -1,6 +1,10 @@
 from capnpy import ptr
 
 def copy_from_list(builder, pos, item_type, lst):
+    if lst is None:
+        builder.write_int64(pos, 0)
+        return
+    #
     item_length, size_tag = item_type.get_item_length()
     item_count = len(lst)
     body_length = item_length * item_count
