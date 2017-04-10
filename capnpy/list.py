@@ -117,7 +117,11 @@ class ItemType(object):
     def get_item_length(self):
         raise NotImplementedError
 
+    # XXX: kill this as soon as we kill builder.py
     def pack_item(self, listbuilder, i, item):
+        raise NotImplementedError
+
+    def write_item(self, builder, pos, item):
         raise NotImplementedError
 
 
@@ -141,6 +145,9 @@ class VoidItemType(ItemType):
     def pack_item(self, listbuilder, i, item):
         return ''
 
+    def write_item(self, builder, pos, item):
+        pass
+
 
 class BoolItemType(ItemType):
 
@@ -162,12 +169,9 @@ class BoolItemType(ItemType):
     def get_item_length(self):
         raise NotImplementedError
 
-    # XXX: kill this as soon as we kill builder.py
     def pack_item(self, listbuilder, i, item):
         raise NotImplementedError
 
-    def write_item(self, builder, pos, item):
-        raise NotImplementedError
 
 class PrimitiveItemType(ItemType):
 
@@ -318,6 +322,12 @@ class TextItemType(ItemType):
             ptr = listbuilder.alloc_text(offset, item)
         packed = pack_int64(ptr)
         return packed
+
+    def write_item(self, builder, pos, item):
+        if self.additional_size == 0:
+            builder.alloc_data(pos, item)
+        else:
+            builder.alloc_text(pos, item)
 
 
 class ListItemType(ItemType):
