@@ -71,7 +71,7 @@ class Structor(object):
             ns.ifmt  = 'ord(%r)' % Types.int16.fmt
             with ns.block('if {varname} is not _undefined:'):
                 ns.w('{union}__curtag = _check_tag({union}__curtag, {tagname!r})')
-                ns.w('builder.set({ifmt}, {offset}, {tagval})')
+                ns.w('builder.write_int16({offset}, {tagval})')
                 self._handle_node(node)
         else:
             self._handle_node(node)
@@ -104,8 +104,8 @@ class Structor(object):
         # def __init__(self, position, ...):
         #     ...
         #     position_x, position_y = position
-        #     builder.set(..., position_x)
-        #     builder.set(..., position_y)
+        #     builder.write_...(..., position_x)
+        #     builder.write_...(..., position_y)
         #     ...
         #
         # 1. unpack the tuple into various indepented variables
