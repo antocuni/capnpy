@@ -3,7 +3,7 @@ from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
                           uint32_t, int32_t, int64_t, uint64_t)
 from capnpy cimport ptr
 from capnpy.segment.base cimport BaseSegment
-
+from capnpy.struct_ cimport Struct
 
 @cython.final
 cdef class SegmentBuilder(object):
@@ -28,6 +28,7 @@ cdef class SegmentBuilder(object):
     cpdef void write_uint64(self, Py_ssize_t i, uint64_t value)
     cpdef void write_float32(self, Py_ssize_t i, float value)
     cpdef void write_float64(self, Py_ssize_t i, double value)
+    cpdef void write_bool(self, Py_ssize_t byteoffset, int bitoffset, bint value)
     cpdef void write_slice(self, Py_ssize_t i, BaseSegment src, Py_ssize_t start, Py_ssize_t n)
 
     cpdef Py_ssize_t allocate(self, Py_ssize_t length)
@@ -38,6 +39,7 @@ cdef class SegmentBuilder(object):
     cpdef Py_ssize_t alloc_data(self, Py_ssize_t pos, bytes s)
     cpdef copy_from_pointer(self, Py_ssize_t dst_pos, BaseSegment src, long p,
                             Py_ssize_t src_pos)
+    cpdef copy_from_struct(self, Py_ssize_t dst_pos, type structcls, Struct value)
     cpdef copy_from_struct_inline(self, Py_ssize_t dst_pos, BaseSegment src,
                                   long p, Py_ssize_t src_pos)
     cpdef copy_from_list(self, Py_ssize_t pos, item_type, lst)

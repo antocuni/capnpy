@@ -105,6 +105,14 @@ class SegmentBuilder(object):
     def alloc_data(self, pos, s):
         return self.alloc_text(pos, s, trailing_zero=0)
 
+    def copy_from_struct(self, dst_pos, structcls, value):
+        if value is None:
+            return
+        if not isinstance(value, structcls):
+            raise TypeError("Expected %s instance, got %s" %
+                            (structcls.__class__.__name__, value))
+        self.copy_from_pointer(dst_pos, value._seg, value._as_pointer(0), 0)
+
     def copy_from_pointer(self, dst_pos, src, p, src_pos):
         return copy_pointer(src, p, src_pos, self, dst_pos)
 

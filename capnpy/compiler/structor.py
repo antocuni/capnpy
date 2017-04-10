@@ -157,12 +157,12 @@ class Structor(object):
         ##     builder = _SegmentBuilder()
         ##     pos = builder.allocate(16)
         ##     ...
-        ##     builder.copy_from_pointer(pos+8, y._seg, y._as_pointer(0), 0)
+        ##     builder.copy_from_struct(pos+8, SomeStruct, y)
         ns = self.m.code.new_scope()
         ns.fname = node.varname
         ns.offset = self.slot_offset(node.f)
-        ns.w('builder.copy_from_pointer(pos + {offset}, {fname}._seg, '
-             '{fname}._as_pointer(0), 0)')
+        ns.structname = node.f.slot.type.runtime_name(self.m)
+        ns.w('builder.copy_from_struct(pos + {offset}, {structname}, {fname})')
 
     def handle_list(self, node):
         ns = self.m.code.new_scope()

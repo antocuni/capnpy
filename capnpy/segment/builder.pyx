@@ -5,6 +5,7 @@ from libc.string cimport memcpy, memset
 from cpython.string cimport (PyString_FromStringAndSize, PyString_GET_SIZE,
                              PyString_AS_STRING)
 from capnpy.segment.base cimport BaseSegment
+from capnpy.struct_ cimport Struct
 
 cdef extern from "Python.h":
     int PyByteArray_Resize(object o, Py_ssize_t len)
@@ -101,7 +102,7 @@ cdef class SegmentBuilder(object):
     cpdef void write_bool(self, Py_ssize_t byteoffset, int bitoffset, bint value):
         cdef uint8_t current = (<uint8_t*>(self.cbuf+byteoffset))[0]
         current |= (value << bitoffset)
-        (<uint8_t*>(self.cbuf+byteoffset)) = current
+        (<uint8_t*>(self.cbuf+byteoffset))[0] = current
 
     cpdef void write_slice(self, Py_ssize_t i, BaseSegment src,
                            Py_ssize_t start, Py_ssize_t n):
@@ -160,6 +161,14 @@ cdef class SegmentBuilder(object):
 
     cpdef Py_ssize_t alloc_data(self, Py_ssize_t pos, bytes s):
         return self.alloc_text(pos, s, trailing_zero=0)
+
+    cpdef copy_from_struct(self, Py_ssize_t dst_pos, type structcls, Struct value):
+        if value is None:
+            return
+        if not isinstance(value, structcls):
+            raise TypeError("Expected %s instance, got %s" %
+                            (structcls.__class__.__name__, value))
+        self.copy_from_pointer(dst_pos, value._seg, value._as_pointer(0), 0)
 
     cpdef copy_from_pointer(self, Py_ssize_t dst_pos, BaseSegment src, long p,
                             Py_ssize_t src_pos):
