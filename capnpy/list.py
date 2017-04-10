@@ -371,7 +371,8 @@ class ListItemType(ItemType):
         packed = pack_int64(ptr)
         return packed
 
-
+    def write_item(self, builder, pos, item):
+        builder.copy_from_list(pos, self.inner_item_type, item)
 
 if PYX:
     # on CPython, we use prebuilt ItemType instances, as it is costly to
