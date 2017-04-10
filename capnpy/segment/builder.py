@@ -117,7 +117,7 @@ class SegmentBuilder(object):
     def copy_from_pointer(self, dst_pos, src, p, src_pos):
         return copy_pointer(src, p, src_pos, self, dst_pos)
 
-    def copy_from_struct_inline(self, dst_pos, src, p, src_pos):
+    def copy_inline_struct(self, dst_pos, src, p, src_pos):
         """
         Similar to copy_from_pointer but:
           1. it assumes that p is a pointer to a struct

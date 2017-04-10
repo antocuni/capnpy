@@ -40,6 +40,6 @@ cdef class SegmentBuilder(object):
     cpdef copy_from_pointer(self, Py_ssize_t dst_pos, BaseSegment src, long p,
                             Py_ssize_t src_pos)
     cpdef copy_from_struct(self, Py_ssize_t dst_pos, type structcls, Struct value)
-    cpdef copy_from_struct_inline(self, Py_ssize_t dst_pos, BaseSegment src,
-                                  long p, Py_ssize_t src_pos)
+    cpdef copy_inline_struct(self, Py_ssize_t dst_pos, BaseSegment src,
+                             long p, Py_ssize_t src_pos)
     cpdef copy_from_list(self, Py_ssize_t pos, item_type, lst)

@@ -295,7 +295,7 @@ class StructItemType(ItemType):
             raise TypeError("Expected an object of type %s, got %s instead" %
                             (self.structcls.__name__, item.__class__.__name__))
         p = item._as_pointer(0)
-        builder.copy_from_struct_inline(pos, item._seg, p, 0)
+        builder.copy_inline_struct(pos, item._seg, p, 0)
 
 
 class TextItemType(ItemType):

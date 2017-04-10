@@ -174,8 +174,8 @@ cdef class SegmentBuilder(object):
                             Py_ssize_t src_pos):
         return copy_pointer(src, p, src_pos, self, dst_pos)
 
-    cpdef copy_from_struct_inline(self, Py_ssize_t dst_pos, BaseSegment src,
-                                  long p, Py_ssize_t src_pos):
+    cpdef copy_inline_struct(self, Py_ssize_t dst_pos, BaseSegment src,
+                             long p, Py_ssize_t src_pos):
         """
         Similar to copy_from_pointer but:
           1. it assumes that p is a pointer to a struct
