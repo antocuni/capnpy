@@ -245,37 +245,38 @@ class TestSegmentBuilder(object):
         assert s == expected_buf
 
 
-## def test_alloc_list_of_structs_with_pointers():
-##     class Person(Struct):
-##         __static_data_size__ = 1
-##         __static_ptrs_size__ = 1
+    def test_copy_from_list_of_structs_with_pointers(self):
+        class Person(Struct):
+            __static_data_size__ = 1
+            __static_ptrs_size__ = 1
 
-##     john =  ('\x20\x00\x00\x00\x00\x00\x00\x00'    # age=32
-##              '\x01\x00\x00\x00\x2a\x00\x00\x00'    # name=ptr
-##              'J' 'o' 'h' 'n' '\x00\x00\x00\x00')   # John
+        john =  ('\x20\x00\x00\x00\x00\x00\x00\x00'    # age=32
+                 '\x01\x00\x00\x00\x2a\x00\x00\x00'    # name=ptr
+                 'J' 'o' 'h' 'n' '\x00\x00\x00\x00')   # John
 
-##     # emily is a "split struct", with garbage between the body and the extra
-##     emily = ('garbage0'
-##              '\x18\x00\x00\x00\x00\x00\x00\x00'    # age=24
-##              '\x09\x00\x00\x00\x32\x00\x00\x00'    # name=ptr
-##              'garbage1'
-##              'garbage2'
-##              '\x45\x6d\x69\x6c\x79\x00\x00\x00'    # Emily
-##              'garbage3')
+        # emily is a "split struct", with garbage between the body and the extra
+        emily = ('garbage0'
+                 '\x18\x00\x00\x00\x00\x00\x00\x00'    # age=24
+                 '\x09\x00\x00\x00\x32\x00\x00\x00'    # name=ptr
+                 'garbage1'
+                 'garbage2'
+                 '\x45\x6d\x69\x6c\x79\x00\x00\x00'    # Emily
+                 'garbage3')
 
-##     john = Person.from_buffer(john, 0, 1, 1)
-##     emily = Person.from_buffer(emily, 8, 1, 1)
-##     #
-##     builder = Builder(0, 1)
-##     builder.alloc_list(0, StructItemType(Person), [john, emily])
-##     buf = builder.build()
-
-##     expected_buf = ('\x01\x00\x00\x00\x27\x00\x00\x00'    # ptrlist
-##                     '\x08\x00\x00\x00\x01\x00\x01\x00'    # list tag
-##                     '\x20\x00\x00\x00\x00\x00\x00\x00'    # age=32
-##                     '\x09\x00\x00\x00\x2a\x00\x00\x00'    # name=ptr
-##                     '\x18\x00\x00\x00\x00\x00\x00\x00'    # age=24
-##                     '\x05\x00\x00\x00\x32\x00\x00\x00'    # name=ptr
-##                     'J' 'o' 'h' 'n' '\x00\x00\x00\x00'    # John
-##                     'E' 'm' 'i' 'l' 'y' '\x00\x00\x00')   # Emily
-##     assert buf == expected_buf
+        john = Person.from_buffer(john, 0, 1, 1)
+        emily = Person.from_buffer(emily, 8, 1, 1)
+        #
+        buf = SegmentBuilder()
+        pos = buf.allocate(8)
+        item_type = StructItemType(Person)
+        buf.copy_from_list(pos, item_type, [john, emily])
+        s = buf.as_string()
+        expected_buf = ('\x01\x00\x00\x00\x27\x00\x00\x00'    # ptrlist
+                        '\x08\x00\x00\x00\x01\x00\x01\x00'    # list tag
+                        '\x20\x00\x00\x00\x00\x00\x00\x00'    # age=32
+                        '\x09\x00\x00\x00\x2a\x00\x00\x00'    # name=ptr
+                        '\x18\x00\x00\x00\x00\x00\x00\x00'    # age=24
+                        '\x05\x00\x00\x00\x32\x00\x00\x00'    # name=ptr
+                        'J' 'o' 'h' 'n' '\x00\x00\x00\x00'    # John
+                        'E' 'm' 'i' 'l' 'y' '\x00\x00\x00')   # Emily
+        assert s == expected_buf
