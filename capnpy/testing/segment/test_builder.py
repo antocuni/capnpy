@@ -5,7 +5,8 @@ from capnpy import ptr
 from capnpy.printer import print_buffer
 from capnpy.segment.segment import Segment
 from capnpy.segment.builder import SegmentBuilder
-from capnpy.list import PrimitiveItemType
+from capnpy.struct_ import Struct
+from capnpy.list import PrimitiveItemType, StructItemType
 from capnpy.type import Types
 
 class TestSegmentBuilder(object):
@@ -180,3 +181,38 @@ class TestSegmentBuilder(object):
             '\xc3\xf5\x28\x5c\x8f\xc2\x02\x40'   # 2.345
             '\xd9\xce\xf7\x53\xe3\xa5\x0b\x40'   # 3.456
             '\xf8\x53\xe3\xa5\x9b\x44\x12\x40')  # 4.567
+
+    def test_copy_from_list_of_structs(self):
+        class Point(Struct):
+            __static_data_size__ = 2
+            __static_ptrs_size__ = 0
+
+        buf1 = ('\x0a\x00\x00\x00\x00\x00\x00\x00'    # 10
+                '\x64\x00\x00\x00\x00\x00\x00\x00')   # 100
+        buf2 = ('\x14\x00\x00\x00\x00\x00\x00\x00'    # 20
+                '\xc8\x00\x00\x00\x00\x00\x00\x00')   # 200
+        buf3 = ('\x1e\x00\x00\x00\x00\x00\x00\x00'    # 30
+                '\x2c\x01\x00\x00\x00\x00\x00\x00')   # 300
+        buf4 = ('\x28\x00\x00\x00\x00\x00\x00\x00'    # 40
+                '\x90\x01\x00\x00\x00\x00\x00\x00')   # 400
+        p1 = Point.from_buffer(buf1, 0, 2, 0)
+        p2 = Point.from_buffer(buf2, 0, 2, 0)
+        p3 = Point.from_buffer(buf3, 0, 2, 0)
+        p4 = Point.from_buffer(buf4, 0, 2, 0)
+        #
+        buf = SegmentBuilder()
+        pos = buf.allocate(8)
+        item_type = StructItemType(Point)
+        buf.copy_from_list(pos, item_type, [p1, p2, p3, p4])
+        s = buf.as_string()
+        expected_buf = ('\x01\x00\x00\x00\x47\x00\x00\x00'    # ptrlist
+                        '\x10\x00\x00\x00\x02\x00\x00\x00'    # list tag
+                        '\x0a\x00\x00\x00\x00\x00\x00\x00'    # 10
+                        '\x64\x00\x00\x00\x00\x00\x00\x00'    # 100
+                        '\x14\x00\x00\x00\x00\x00\x00\x00'    # 20
+                        '\xc8\x00\x00\x00\x00\x00\x00\x00'    # 200
+                        '\x1e\x00\x00\x00\x00\x00\x00\x00'    # 30
+                        '\x2c\x01\x00\x00\x00\x00\x00\x00'    # 300
+                        '\x28\x00\x00\x00\x00\x00\x00\x00'    # 40
+                        '\x90\x01\x00\x00\x00\x00\x00\x00')   # 400
+        assert s == expected_buf
