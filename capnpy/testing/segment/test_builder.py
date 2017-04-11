@@ -6,7 +6,7 @@ from capnpy.printer import print_buffer
 from capnpy.segment.segment import Segment
 from capnpy.segment.builder import SegmentBuilder
 from capnpy.struct_ import Struct
-from capnpy.list import PrimitiveItemType, StructItemType
+from capnpy.list import PrimitiveItemType, StructItemType, TextItemType
 from capnpy.type import Types
 
 class TestSegmentBuilder(object):
@@ -226,3 +226,56 @@ class TestSegmentBuilder(object):
                         '\x28\x00\x00\x00\x00\x00\x00\x00'    # 40
                         '\x90\x01\x00\x00\x00\x00\x00\x00')   # 400
         assert s == expected_buf
+
+    def test_copy_from_list_of_text(self):
+        buf = SegmentBuilder()
+        pos = buf.allocate(8)
+        item_type = TextItemType(Types.text)
+        buf.copy_from_list(pos, item_type, ['A', 'BC', 'DEF', 'GHIJ'])
+        s = buf.as_string()
+        expected_buf = ('\x01\x00\x00\x00\x26\x00\x00\x00'   # ptrlist
+                        '\x0d\x00\x00\x00\x12\x00\x00\x00'   # ptr item 1
+                        '\x0d\x00\x00\x00\x1a\x00\x00\x00'   # ptr item 2
+                        '\x0d\x00\x00\x00\x22\x00\x00\x00'   # ptr item 3
+                        '\x0d\x00\x00\x00\x2a\x00\x00\x00'   # ptr item 4
+                        'A' '\x00\x00\x00\x00\x00\x00\x00'   # A
+                        'B' 'C' '\x00\x00\x00\x00\x00\x00'   # BC
+                        'D' 'E' 'F' '\x00\x00\x00\x00\x00'   # DEF
+                        'G' 'H' 'I' 'J' '\x00\x00\x00\x00')  # GHIJ
+        assert s == expected_buf
+
+
+## def test_alloc_list_of_structs_with_pointers():
+##     class Person(Struct):
+##         __static_data_size__ = 1
+##         __static_ptrs_size__ = 1
+
+##     john =  ('\x20\x00\x00\x00\x00\x00\x00\x00'    # age=32
+##              '\x01\x00\x00\x00\x2a\x00\x00\x00'    # name=ptr
+##              'J' 'o' 'h' 'n' '\x00\x00\x00\x00')   # John
+
+##     # emily is a "split struct", with garbage between the body and the extra
+##     emily = ('garbage0'
+##              '\x18\x00\x00\x00\x00\x00\x00\x00'    # age=24
+##              '\x09\x00\x00\x00\x32\x00\x00\x00'    # name=ptr
+##              'garbage1'
+##              'garbage2'
+##              '\x45\x6d\x69\x6c\x79\x00\x00\x00'    # Emily
+##              'garbage3')
+
+##     john = Person.from_buffer(john, 0, 1, 1)
+##     emily = Person.from_buffer(emily, 8, 1, 1)
+##     #
+##     builder = Builder(0, 1)
+##     builder.alloc_list(0, StructItemType(Person), [john, emily])
+##     buf = builder.build()
+
+##     expected_buf = ('\x01\x00\x00\x00\x27\x00\x00\x00'    # ptrlist
+##                     '\x08\x00\x00\x00\x01\x00\x01\x00'    # list tag
+##                     '\x20\x00\x00\x00\x00\x00\x00\x00'    # age=32
+##                     '\x09\x00\x00\x00\x2a\x00\x00\x00'    # name=ptr
+##                     '\x18\x00\x00\x00\x00\x00\x00\x00'    # age=24
+##                     '\x05\x00\x00\x00\x32\x00\x00\x00'    # name=ptr
+##                     'J' 'o' 'h' 'n' '\x00\x00\x00\x00'    # John
+##                     'E' 'm' 'i' 'l' 'y' '\x00\x00\x00')   # Emily
+##     assert buf == expected_buf
