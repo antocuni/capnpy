@@ -140,6 +140,16 @@ class TestSegmentBuilder(object):
         assert s == ('\x00\x00\x00\x00\x00\x00\x00\x00'
                      'foobar\x00\x00')
 
+    def test_null_pointers(self):
+        NULL = '\x00\x00\x00\x00\x00\x00\x00\x00' # NULL pointer
+        buf = SegmentBuilder()
+        pos = buf.allocate(24)
+        buf.copy_from_struct(0, Struct, None)
+        buf.alloc_text(8, None)
+        buf.copy_from_list(16, PrimitiveItemType(Types.int64), None)
+        s = buf.as_string()
+        assert s == NULL*3
+
     def test_copy_from_list_int64(self):
         buf = SegmentBuilder()
         buf.allocate(8) # allocate some garbage at the beginning
