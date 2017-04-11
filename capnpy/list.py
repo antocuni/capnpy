@@ -5,7 +5,6 @@ from capnpy.blob import Blob, PYX
 from capnpy import ptr
 from capnpy.util import text_repr, float32_repr, float64_repr
 from capnpy.visit import end_of
-from capnpy.packing import pack_int64
 
 class List(Blob):
 
@@ -114,13 +113,6 @@ class ItemType(object):
     def can_compare(self):
         return True
 
-    def get_size_tag(self):
-        raise NotImplementedError
-
-    # XXX: kill this as soon as we kill builder.py
-    def pack_item(self, listbuilder, i, item):
-        raise NotImplementedError
-
     def write_item(self, builder, pos, item):
         raise NotImplementedError
 
@@ -142,9 +134,6 @@ class VoidItemType(ItemType):
 
     def item_repr(self, item):
         return 'void'
-
-    def pack_item(self, listbuilder, i, item):
-        return ''
 
     def write_item(self, builder, pos, item):
         pass
@@ -170,9 +159,6 @@ class BoolItemType(ItemType):
 
     def item_repr(self, item):
         return ('false', 'true')[item]
-
-    def pack_item(self, listbuilder, i, item):
-        raise NotImplementedError
 
 
 class PrimitiveItemType(ItemType):
@@ -206,9 +192,6 @@ class PrimitiveItemType(ItemType):
             return float64_repr(item)
         else:
             return repr(item)
-
-    def pack_item(self, listbuilder, i, item):
-        return struct.pack('<'+self.t.fmt, item)
 
     def write_item(self, builder, pos, item):
         builder.write_generic(self.ifmt, pos, item)
@@ -253,38 +236,6 @@ class StructItemType(ItemType):
     def item_repr(self, item):
         return item.shortrepr()
 
-    def pack_item(self, listbuilder, i, item):
-        structcls = self.structcls
-        if not isinstance(item, structcls):
-            raise TypeError("Expected an object of type %s, got %s instead" %
-                            (self.structcls.__name__, item.__class__.__name__))
-        #
-        # This is the layout of the list:
-        #
-        # +-------+-------+...+-------+--------+--------+...+--------+
-        # | body0 | body1 |   | bodyN | extra0 | extra1 |   | extraN |
-        # +-------+-------+...+-------+--------+--------+...+--------+
-        # |               |                    |
-        # |- body_offset -|                    |
-        # |               |--- extra_offset ---|
-        # |                                    |
-        # +------- _total_length --------------+
-        #
-        # When i==1, self._total_length will contain the offset up to the end
-        # of extra0; extra1...extraN are not yet considered.
-        #
-        # The item body and extra are split by Struct._split, passing the
-        # correct extra_offset.
-        #
-        # Note that extra_offset is expressed in WORDS, while _total_length in
-        # BYTES
-        struct_item = item
-        body_offset = (self.static_data_size+self.static_ptrs_size) * (i+1)
-        extra_offset = listbuilder._total_length/8 - body_offset
-        body, extra = struct_item._split(extra_offset)
-        listbuilder._alloc(extra)
-        return body
-
     def write_item(self, builder, pos, item):
         structcls = self.structcls
         if not isinstance(item, structcls):
@@ -316,15 +267,6 @@ class TextItemType(ItemType):
 
     def item_repr(self, item):
         return text_repr(item)
-
-    def pack_item(self, listbuilder, i, item):
-        offset = i * listbuilder.item_length
-        if self.additional_size == 0:
-            ptr = listbuilder.alloc_data(offset, item)
-        else:
-            ptr = listbuilder.alloc_text(offset, item)
-        packed = pack_int64(ptr)
-        return packed
 
     def write_item(self, builder, pos, item):
         if self.additional_size == 0:
@@ -358,12 +300,6 @@ class ListItemType(ItemType):
 
     def item_repr(self, item):
         return item.shortrepr()
-
-    def pack_item(self, listbuilder, i, item):
-        offset = i * listbuilder.item_length
-        ptr = listbuilder.alloc_list(offset, self.inner_item_type, item)
-        packed = pack_int64(ptr)
-        return packed
 
     def write_item(self, builder, pos, item):
         builder.copy_from_list(pos, self.inner_item_type, item)
