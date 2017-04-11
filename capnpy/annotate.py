@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2017-03-29 12:05
+# generated on 2017-04-11 18:37
 
 from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
@@ -9,6 +9,7 @@ from capnpy.struct_ import undefined as _undefined
 from capnpy.enum import enum as _enum
 from capnpy.type import Types as _Types
 from capnpy.builder import Builder as _Builder
+from capnpy.segment.builder import SegmentBuilder as _SegmentBuilder
 from capnpy.list import List as _List
 from capnpy.list import PrimitiveItemType as _PrimitiveItemType
 from capnpy.list import BoolItemType as _BoolItemType
