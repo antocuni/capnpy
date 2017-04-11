@@ -1,5 +1,20 @@
-from capnpy import ptr
+"""
+Look at the docstring of _copy_pointer.py for an explanation of why we
+need fakecython/cython.compiled/etc.
+"""
 
+from pypytools import fakecython
+with fakecython:
+    import cython
+
+if not cython.compiled:
+    from capnpy.segment.builder import SegmentBuilder
+    from capnpy import ptr
+
+@cython.ccall
+@cython.locals(builder=SegmentBuilder, pos=long,
+               item_length=long, size_tag=long, item_count=long, body_length=long,
+               data_size=long, ptrs_size=long, total_words=long, tag=long)
 def copy_from_list(builder, pos, item_type, lst):
     if lst is None:
         builder.write_int64(pos, 0)
