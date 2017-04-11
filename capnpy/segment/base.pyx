@@ -22,7 +22,7 @@ cdef class BaseSegment(object):
         # *not* do the check.
         cdef Py_ssize_t buflen = PyString_GET_SIZE(self.buf)
         if offset < 0 or offset + size > buflen:
-            raise IndexError('Offset out of bounds: %d' % offset)
+            raise IndexError('Offset out of bounds: %d' % (offset+size))
 
     @cython.final
     cdef object read_primitive(self, Py_ssize_t offset, char ifmt):

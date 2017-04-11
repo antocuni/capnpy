@@ -36,20 +36,32 @@ enum _PTR_LIST_SIZE {
 #define PTR_DEREF(ptr, ofs) ((ofs) + (PTR_OFFSET(ptr)+1)*8)
 
 // struct pointer
-#define PTR_NEW_STRUCT(offset, data_size, ptrs_size) \
-    ((ptrs_size)<<48 | (data_size<<32) | (offset<<2) | PTR_STRUCT)
+#define PTR_NEW_STRUCT(offset, data_size, ptrs_size)   \
+    ((((long)ptrs_size) << 48)                  |      \
+     (((long)data_size) << 32 & 0xffff00000000) |      \
+     (((long)offset)    <<  2 & 0xfffffffc)     |      \
+     PTR_STRUCT)
+
 #define PTR_STRUCT_DATA_SIZE(ptr) ((ptr)>>32 & 0xffff)
 #define PTR_STRUCT_PTRS_SIZE(ptr) ((ptr)>>48 & 0xffff)
 
 // list pointer
-#define PTR_NEW_LIST(ptr_offset, size_tag, item_count) \
-    ((item_count)<<35 | ((long)size_tag)<<32 | (ptr_offset)<<2 | PTR_LIST)
+#define PTR_NEW_LIST(ptr_offset, size_tag, item_count)    \
+    ((((long)item_count) << 35)               |           \
+     (((long)size_tag)   << 32 & 0x700000000) |           \
+     (((long)ptr_offset) <<  2 & 0xfffffffc)  |           \
+     PTR_LIST)
+
 #define PTR_LIST_SIZE_TAG(ptr) ((ptr)>>32 & 0x7)
-#define PTR_LIST_ITEM_COUNT(ptr) ((ptr)>>35)
+#define PTR_LIST_ITEM_COUNT(ptr) ((ptr)>>35 & 0x1fffffff)
 
 // far pointer
-#define PTR_NEW_FAR(landing_pad, offset, target) \
-    ((target)<<32 | (offset)<<3 | (landing_pad)<<2 | PTR_FAR)
+#define PTR_NEW_FAR(landing_pad, offset, target)                  \
+    ((((long)target)      << 32)              |                   \
+     (((long)offset)      <<  3 & 0xfffffff8) |                   \
+     (((long)landing_pad) <<  2 & 0x4)        |                   \
+     PTR_FAR)
+
 #define PTR_FAR_LANDING_PAD(ptr) ((ptr)>>2 & 1)
 #define PTR_FAR_OFFSET(ptr) ((ptr)>>3 & 0x1fffffff)
-#define PTR_FAR_TARGET(ptr) ((ptr)>>32)
+#define PTR_FAR_TARGET(ptr) ((ptr)>>32 & 0xffffffff)

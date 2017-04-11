@@ -6,6 +6,7 @@ from capnpy cimport ptr
 from capnpy.visit cimport end_of
 from capnpy.builder cimport ListBuilder
 from capnpy.packing cimport pack_int64
+from capnpy.segment.builder cimport SegmentBuilder
 
 cdef class ItemType(object)
 
@@ -25,11 +26,15 @@ cdef class List(Blob):
     cpdef _getitem_fast(self, long i)
 
 cdef class ItemType(object):
+    cdef readonly long item_length
+    cdef readonly long size_tag
+
     cpdef get_type(self)
     cpdef read_item(self, List lst, long offset)
     cpdef long offset_for_item(self, List lst, long i)
     cpdef bint can_compare(self)
     cpdef pack_item(self, ListBuilder listbuilder, long i, object item)
+    cpdef write_item(self, SegmentBuilder builder, long post, object item)
 
 cdef class VoidItemType(ItemType):
     pass

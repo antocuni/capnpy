@@ -5,7 +5,6 @@ from capnpy.blob import Blob, PYX
 from capnpy import ptr
 from capnpy.util import text_repr, float32_repr, float64_repr
 from capnpy.visit import end_of
-from capnpy.packing import pack_int64
 
 class List(Blob):
 
@@ -114,14 +113,15 @@ class ItemType(object):
     def can_compare(self):
         return True
 
-    def get_item_length(self):
-        raise NotImplementedError
-
-    def pack_item(self, listbuilder, i, item):
+    def write_item(self, builder, pos, item):
         raise NotImplementedError
 
 
 class VoidItemType(ItemType):
+
+    def __init__(self):
+        self.item_length = 0
+        self.size_tag = ptr.LIST_SIZE_VOID
 
     def get_type(self):
         return Types.Void
@@ -135,14 +135,15 @@ class VoidItemType(ItemType):
     def item_repr(self, item):
         return 'void'
 
-    def get_item_length(self):
-        return 0, ptr.LIST_SIZE_VOID
-
-    def pack_item(self, listbuilder, i, item):
-        return ''
+    def write_item(self, builder, pos, item):
+        pass
 
 
 class BoolItemType(ItemType):
+
+    def __init__(self):
+        self.item_length = -1
+        self.size_tag = ptr.LIST_SIZE_BIT
 
     def get_type(self):
         return Types.Bool
@@ -159,18 +160,23 @@ class BoolItemType(ItemType):
     def item_repr(self, item):
         return ('false', 'true')[item]
 
-    def get_item_length(self):
-        raise NotImplementedError
-
-    def pack_item(self, listbuilder, i, item):
-        raise NotImplementedError
-
 
 class PrimitiveItemType(ItemType):
 
     def __init__(self, t):
         self.t = t
         self.ifmt = t.ifmt
+        self.item_length = self.t.calcsize()
+        if self.item_length == 1:
+            self.size_tag = ptr.LIST_SIZE_8
+        elif self.item_length == 2:
+            self.size_tag = ptr.LIST_SIZE_16
+        elif self.item_length == 4:
+            self.size_tag = ptr.LIST_SIZE_32
+        elif self.item_length == 8:
+            self.size_tag = ptr.LIST_SIZE_64
+        else:
+            raise ValueError('Unsupported size: %d' % self.item_length)
 
     def get_type(self):
         return self.t
@@ -187,21 +193,8 @@ class PrimitiveItemType(ItemType):
         else:
             return repr(item)
 
-    def get_item_length(self):
-        length = self.t.calcsize()
-        if length == 1:
-            return length, ptr.LIST_SIZE_8
-        elif length == 2:
-            return length, ptr.LIST_SIZE_16
-        elif length == 4:
-            return length, ptr.LIST_SIZE_32
-        elif length == 8:
-            return length, ptr.LIST_SIZE_64
-        else:
-            raise ValueError('Unsupported size: %d' % length)
-
-    def pack_item(self, listbuilder, i, item):
-        return struct.pack('<'+self.t.fmt, item)
+    def write_item(self, builder, pos, item):
+        builder.write_generic(self.ifmt, pos, item)
 
 
 class EnumItemType(PrimitiveItemType):
@@ -224,6 +217,8 @@ class StructItemType(ItemType):
         self.structcls = structcls
         self.static_data_size = structcls.__static_data_size__
         self.static_ptrs_size = structcls.__static_ptrs_size__
+        self.item_length = (self.static_data_size+self.static_ptrs_size)*8
+        self.size_tag = ptr.LIST_SIZE_COMPOSITE
 
     def get_type(self):
         return self.structcls
@@ -241,43 +236,13 @@ class StructItemType(ItemType):
     def item_repr(self, item):
         return item.shortrepr()
 
-    def get_item_length(self):
-        total_length = (self.static_data_size+self.static_ptrs_size)*8   # in bytes
-        if total_length > 8:
-            return total_length, ptr.LIST_SIZE_COMPOSITE
-        assert False, 'XXX'
-
-    def pack_item(self, listbuilder, i, item):
+    def write_item(self, builder, pos, item):
         structcls = self.structcls
         if not isinstance(item, structcls):
             raise TypeError("Expected an object of type %s, got %s instead" %
                             (self.structcls.__name__, item.__class__.__name__))
-        #
-        # This is the layout of the list:
-        #
-        # +-------+-------+...+-------+--------+--------+...+--------+
-        # | body0 | body1 |   | bodyN | extra0 | extra1 |   | extraN |
-        # +-------+-------+...+-------+--------+--------+...+--------+
-        # |               |                    |
-        # |- body_offset -|                    |
-        # |               |--- extra_offset ---|
-        # |                                    |
-        # +------- _total_length --------------+
-        #
-        # When i==1, self._total_length will contain the offset up to the end
-        # of extra0; extra1...extraN are not yet considered.
-        #
-        # The item body and extra are split by Struct._split, passing the
-        # correct extra_offset.
-        #
-        # Note that extra_offset is expressed in WORDS, while _total_length in
-        # BYTES
-        struct_item = item
-        body_offset = (self.static_data_size+self.static_ptrs_size) * (i+1)
-        extra_offset = listbuilder._total_length/8 - body_offset
-        body, extra = struct_item._split(extra_offset)
-        listbuilder._alloc(extra)
-        return body
+        p = item._as_pointer(0)
+        builder.copy_inline_struct(pos, item._seg, p, 0)
 
 
 class TextItemType(ItemType):
@@ -287,6 +252,8 @@ class TextItemType(ItemType):
         self.additional_size = 0
         if t == Types.text:
             self.additional_size = -1
+        self.item_length = 8
+        self.size_tag = ptr.LIST_SIZE_PTR
 
     def get_type(self):
         return self.t
@@ -301,23 +268,19 @@ class TextItemType(ItemType):
     def item_repr(self, item):
         return text_repr(item)
 
-    def get_item_length(self):
-        return 8, ptr.LIST_SIZE_PTR
-
-    def pack_item(self, listbuilder, i, item):
-        offset = i * listbuilder.item_length
+    def write_item(self, builder, pos, item):
         if self.additional_size == 0:
-            ptr = listbuilder.alloc_data(offset, item)
+            builder.alloc_data(pos, item)
         else:
-            ptr = listbuilder.alloc_text(offset, item)
-        packed = pack_int64(ptr)
-        return packed
+            builder.alloc_text(pos, item)
 
 
 class ListItemType(ItemType):
 
     def __init__(self, inner_item_type):
         self.inner_item_type = inner_item_type
+        self.item_length = 8
+        self.size_tag = ptr.LIST_SIZE_PTR
 
     def get_type(self):
         return ('list', self.inner_item_type)
@@ -338,16 +301,8 @@ class ListItemType(ItemType):
     def item_repr(self, item):
         return item.shortrepr()
 
-    def get_item_length(self):
-        return 8, ptr.LIST_SIZE_PTR
-
-    def pack_item(self, listbuilder, i, item):
-        offset = i * listbuilder.item_length
-        ptr = listbuilder.alloc_list(offset, self.inner_item_type, item)
-        packed = pack_int64(ptr)
-        return packed
-
-
+    def write_item(self, builder, pos, item):
+        builder.copy_from_list(pos, self.inner_item_type, item)
 
 if PYX:
     # on CPython, we use prebuilt ItemType instances, as it is costly to

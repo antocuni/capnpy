@@ -2,20 +2,19 @@ import pytest
 import struct
 from capnpy import ptr
 from capnpy.printer import print_buffer
-
-pytest.importorskip('capnpy.copy_pointer')
-from capnpy.copy_pointer import copy_pointer
-from capnpy.segment.builder import SegmentBuilder
+from capnpy.segment.segment import Segment
+from capnpy.segment.builder import SegmentBuilder, copy_pointer
 
 class TestCopyPointer(object):
 
     def copy_struct(self, src, offset, data_size, ptrs_size, bufsize=None):
+        src_seg = Segment(src)
         if bufsize is None:
             bufsize = len(src)+8
         dst = SegmentBuilder(bufsize)
         dst_pos = dst.allocate(8) # allocate the space to store the pointer p
         p = ptr.new_struct(0, data_size, ptrs_size)
-        copy_pointer(src, p, offset-8, dst, dst_pos)
+        dst.copy_from_pointer(dst_pos, src_seg, p, offset-8)
         return dst.as_string()
 
     def test_struct_data(self):
@@ -88,14 +87,14 @@ class TestCopyPointer(object):
         with pytest.raises(IndexError) as exc:
             self.copy_struct(cut_data, offset=0, data_size=1, ptrs_size=2,
                              bufsize=128)
-        assert exc.value.message.startswith('Invalid capnproto message: offset out of bound')
+        assert exc.value.message.startswith('Offset out of bounds')
         #
         cut_ptr = src[:8] # remove from "ptr to a" to the end, to trigger an
                            # out-of-bound in the ptrs section
         with pytest.raises(IndexError) as exc:
             self.copy_struct(cut_ptr, offset=0, data_size=1, ptrs_size=2,
                              bufsize=128)
-        assert exc.value.message.startswith('Invalid capnproto message: offset out of bound')
+        assert exc.value.message.startswith('Offset out of bounds')
 
     def test_struct_one_null_ptr(self):
         src = (
@@ -275,5 +274,4 @@ class TestCopyPointer(object):
                                                  # points[2].name MISSING
         with pytest.raises(IndexError) as exc:
             self.copy_struct(src, offset=0, data_size=0, ptrs_size=1, bufsize=128)
-        assert exc.value.message == ('Invalid capnproto message: '
-                                     'offset out of bound at position 16 (96 > 88)')
+        assert exc.value.message == ('Offset out of bounds: 96')

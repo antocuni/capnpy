@@ -34,11 +34,12 @@ class Structor(object):
         ## generate a constructor which looks like this
         ## @staticmethod
         ## def __new(x=0, y=0, z=None):
-        ##     builder = _Builder(24)
-        ##     builder.set(ord('q', 0, x)
-        ##     builder.set(ord('q', 8, y)
-        ##     builder.alloc_text(16, z)
-        ##     return builder.build()
+        ##     builder = _SegmentBuilder()
+        ##     pos = builder.allocate(24)
+        ##     builder.write_int64(pos + 0, x)
+        ##     builder.write_int64(pos + 8, y)
+        ##     builder.alloc_text(pos + 16, z)
+        ##     return builder.as_string()
         #
         # the parameters have the same order as fields
         code = self.m.code
@@ -48,16 +49,16 @@ class Structor(object):
         #
         code.w('@staticmethod')
         with code.cdef_('__new', self.params) as ns:
-            ns.data_size = self.data_size
-            ns.ptrs_size = self.ptrs_size
-            ns.cdef_var('_Builder', 'builder')
-            ns.w('builder = _Builder.__new__(_Builder)')
-            ns.w('builder._init({data_size}, {ptrs_size})')
+            ns.length = (self.data_size + self.ptrs_size)*8
+            ns.cdef_var('_SegmentBuilder', 'builder')
+            ns.cdef_var('long', 'pos')
+            ns.w('builder = _SegmentBuilder()')
+            ns.w('pos = builder.allocate({length})')
             for union in self.fieldtree.all_unions():
                 ns.w('{union}__curtag = None', union=union.varname)
             for node in self.fieldtree.children:
                 self.handle_node(node)
-            ns.w('return builder.build()')
+            ns.w('return builder.as_string()')
 
     def handle_node(self, node):
         if node.f.is_part_of_union():
@@ -70,7 +71,7 @@ class Structor(object):
             ns.ifmt  = 'ord(%r)' % Types.int16.fmt
             with ns.block('if {varname} is not _undefined:'):
                 ns.w('{union}__curtag = _check_tag({union}__curtag, {tagname!r})')
-                ns.w('builder.set({ifmt}, {offset}, {tagval})')
+                ns.w('builder.write_int16({offset}, {tagval})')
                 self._handle_node(node)
         else:
             self._handle_node(node)
@@ -103,8 +104,8 @@ class Structor(object):
         # def __init__(self, position, ...):
         #     ...
         #     position_x, position_y = position
-        #     builder.set(..., position_x)
-        #     builder.set(..., position_y)
+        #     builder.write_...(..., position_x)
+        #     builder.write_...(..., position_y)
         #     ...
         #
         # 1. unpack the tuple into various indepented variables
@@ -143,18 +144,25 @@ class Structor(object):
             self.handle_node(child)
 
     def handle_text(self, node):
-        self.m.code.w('builder.alloc_text({offset}, {arg})',
+        self.m.code.w('builder.alloc_text(pos + {offset}, {arg})',
                       arg=node.varname, offset=self.slot_offset(node.f))
 
     def handle_data(self, node):
-        self.m.code.w('builder.alloc_data({offset}, {arg})',
+        self.m.code.w('builder.alloc_data(pos + {offset}, {arg})',
                       arg=node.varname, offset=self.slot_offset(node.f))
 
     def handle_struct(self, node):
-        offset = self.slot_offset(node.f)
-        structname = node.f.slot.type.runtime_name(self.m)
-        self.m.code.w('builder.alloc_struct({offset}, {structname}, {arg})',
-                      arg=node.varname, offset=offset, structname=structname)
+        ## @staticmethod
+        ## def __new(x=0, y=<some struct>):
+        ##     builder = _SegmentBuilder()
+        ##     pos = builder.allocate(16)
+        ##     ...
+        ##     builder.copy_from_struct(pos+8, SomeStruct, y)
+        ns = self.m.code.new_scope()
+        ns.fname = node.varname
+        ns.offset = self.slot_offset(node.f)
+        ns.structname = node.f.slot.type.runtime_name(self.m)
+        ns.w('builder.copy_from_struct(pos + {offset}, {structname}, {fname})')
 
     def handle_list(self, node):
         ns = self.m.code.new_scope()
@@ -162,7 +170,7 @@ class Structor(object):
         ns.offset = self.slot_offset(node.f)
         t = node.f.slot.type.list.elementType
         ns.list_item_type = t.list_item_type(self.m)
-        ns.w('builder.alloc_list({offset}, {list_item_type}, {fname})')
+        ns.w('builder.copy_from_list(pos + {offset}, {list_item_type}, {fname})')
 
     def handle_primitive(self, node):
         ns = self.m.code.new_scope()
@@ -171,9 +179,9 @@ class Structor(object):
             ns.default_ = node.f.slot.defaultValue.as_pyobj()
             ns.w('{arg} ^= {default_}')
         #
-        ns.ifmt = "ord(%r)" % node.f.slot.get_fmt()
+        ns.type = node.f.slot.get_typename()
         ns.offset = self.slot_offset(node.f)
-        ns.w('builder.set({ifmt}, {offset}, {arg})')
+        ns.w('builder.write_{type}(pos + {offset}, {arg})')
 
     def handle_bool(self, node):
         ns = self.m.code.new_scope()
@@ -182,4 +190,4 @@ class Structor(object):
         if node.f.slot.hadExplicitDefault:
             ns.default_ = node.f.slot.defaultValue.as_pyobj()
             ns.w('{arg} ^= {default_}')
-        ns.w('builder.setbool({byteoffset}, {bitoffset}, {arg})')
+        ns.w('builder.write_bool({byteoffset}, {bitoffset}, {arg})')

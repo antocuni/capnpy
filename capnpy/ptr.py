@@ -81,8 +81,8 @@ def deref(ptr, ofs):
 def new_struct(offset, data_size, ptrs_size):
     p = 0
     p |= ptrs_size << 48
-    p |= data_size << 32
-    p |= offset << 2
+    p |= (data_size << 32 & 0xffff00000000)
+    p |= (offset << 2 & 0xfffffffc)
     p |= STRUCT
     return p
 
@@ -119,8 +119,8 @@ def struct_ptrs_size(ptr):
 def new_list(ptr_offset, size_tag, item_count):
     p = 0
     p |= item_count << 35
-    p |= size_tag << 32
-    p |= ptr_offset << 2
+    p |= (size_tag << 32 & 0x700000000)
+    p |= (ptr_offset << 2 & 0xfffffffc)
     p |= LIST
     return p
 
@@ -128,7 +128,7 @@ def list_size_tag(ptr):
     return ptr>>32 & 0x7
 
 def list_item_count(ptr):
-    return ptr>>35
+    return ptr>>35 & 0x1fffffff
 
 _LIST_SIZE_LENGTH = (0, -1, 1, 2, 4, 8, 8, -1) # -1 means "invalid"
 def list_item_length(size_tag):
@@ -155,8 +155,8 @@ def list_item_length(size_tag):
 def new_far(landing_pad, offset, target):
     p = 0
     p |= target << 32
-    p |= offset << 3
-    p |= landing_pad << 2
+    p |= (offset << 3 & 0xfffffff8)
+    p |= (landing_pad << 2 & 0x4)
     p |= FAR
     return p
 
@@ -167,4 +167,4 @@ def far_offset(ptr):
     return ptr>>3 & 0x1fffffff
 
 def far_target(ptr):
-    return ptr>>32
+    return ptr>>32 & 0xffffffff

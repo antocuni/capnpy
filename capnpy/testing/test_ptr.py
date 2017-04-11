@@ -35,7 +35,6 @@ def test_new_struct():
     assert ptr.struct_ptrs_size(p) == 4
     assert p == 0x0004000200000190
 
-
 def test_ListPtr():
     #       0000064          item_count<<1
     #              7         item_size
@@ -91,3 +90,45 @@ def test_new_far():
     assert ptr.far_offset(p) == 725
     assert ptr.far_target(p) == 1
     assert p == 0x00000001000016aa
+
+def test_new_struct_overflow():
+    def unpack(p):
+        assert ptr.kind(p) == ptr.STRUCT
+        return ptr.offset(p), ptr.struct_data_size(p), ptr.struct_ptrs_size(p)
+    #
+    p = ptr.new_struct(-1, 0, 0)
+    assert unpack(p) == (-1, 0, 0)
+    #
+    p = ptr.new_struct(0, -1, 0)
+    assert unpack(p) == (0, 2**16-1, 0)
+    #
+    p = ptr.new_struct(0, 0, -1)
+    assert unpack(p) == (0, 0, 2**16-1)
+
+def test_new_list_overflow():
+    def unpack(p):
+        assert ptr.kind(p) == ptr.LIST
+        return ptr.offset(p), ptr.list_size_tag(p), ptr.list_item_count(p)
+    #
+    p = ptr.new_list(-1, 0, 0)
+    assert unpack(p) == (-1, 0, 0)
+    #
+    p = ptr.new_list(0, -1, 0)
+    assert unpack(p) == (0, 7, 0)
+    #
+    p = ptr.new_list(0, 0, -1)
+    assert unpack(p) == (0, 0, 2**29-1)
+
+def test_new_far_overflow():
+    def unpack(p):
+        assert ptr.kind(p) == ptr.FAR
+        return ptr.far_landing_pad(p), ptr.far_offset(p), ptr.far_target(p)
+    #
+    p = ptr.new_far(-1, 0, 0)
+    assert unpack(p) == (1, 0, 0)
+    #
+    p = ptr.new_far(0, -1, 0)
+    assert unpack(p) == (0, 2**29-1, 0)
+    #
+    p = ptr.new_far(0, 0, -1)
+    assert unpack(p) == (0, 0, 2**32-1)
