@@ -125,10 +125,10 @@ class SegmentBuilder(object):
           2. it does NOT allocate a new struct in dst_pos: instead, it writes
              the struct directly into dst_pos
         """
-        return _copy_struct(src, p, src_pos, self, dst_pos, do_allocation=False)
+        return _copy_struct_inline(src, p, src_pos, self, dst_pos)
 
     def copy_from_list(self, pos, item_type, lst):
         return copy_from_list(self, pos, item_type, lst)
 
-from capnpy.segment._copy_pointer import copy_pointer, _copy_struct
+from capnpy.segment._copy_pointer import copy_pointer, _copy_struct_inline
 from capnpy.segment._copy_list import copy_from_list

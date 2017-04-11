@@ -102,14 +102,41 @@ def _copy_many_ptrs(n, src, src_pos, dst, dst_pos):
 ##@cython.returns(long)
 ##@cython.except_(-1)
 @cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
-               data_size=long, ptrs_size=long, ds=long, do_allocation=int)
-def _copy_struct(src, p, src_pos, dst, dst_pos, do_allocation=1):
+               data_size=long, ptrs_size=long, ds=long)
+def _copy_struct(src, p, src_pos, dst, dst_pos):
     src_pos = ptr.deref(p, src_pos)
     data_size = ptr.struct_data_size(p)
     ptrs_size = ptr.struct_ptrs_size(p)
     ds = data_size*8
-    if do_allocation:
-        dst_pos = dst.alloc_struct(dst_pos, data_size, ptrs_size)
+    dst_pos = dst.alloc_struct(dst_pos, data_size, ptrs_size)
+    check_bounds(src, ds, src_pos)
+    dst.write_slice(dst_pos, src, src_pos, ds) # copy data section
+    _copy_many_ptrs(ptrs_size, src, src_pos+ds, dst, dst_pos+ds)
+
+
+@cython.cfunc
+##@cython.returns(long)
+##@cython.except_(-1)
+@cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
+               data_size=long, ptrs_size=long, ds=long)
+def _copy_struct_inline(src, p, src_pos, dst, dst_pos):
+    # this does the same as _copy_struct, but instead of allocating space for
+    # it, it fills an already-allocated space (useful e.g. for writing structs
+    # into lists).
+    #
+    # I have tried several ways to reduce code duplication (such as adding a
+    # do_allocation param to determine whether to allocate or not), but it
+    # always caused a ~30% slowdown. Apparently, it seems to be related to the
+    # number of call-sites to _copy_struct: at the moment of writing is it
+    # called only from copy_pointer, but it seems enough to add another call
+    # site (even if it's never actually called!) to cause the slowdown. Maybe
+    # it's because this causes GCC not to inline it? Anyway, the only solution
+    # I found, was to duplicate some of the code :(
+    #
+    src_pos = ptr.deref(p, src_pos)
+    data_size = ptr.struct_data_size(p)
+    ptrs_size = ptr.struct_ptrs_size(p)
+    ds = data_size*8
     check_bounds(src, ds, src_pos)
     dst.write_slice(dst_pos, src, src_pos, ds) # copy data section
     _copy_many_ptrs(ptrs_size, src, src_pos+ds, dst, dst_pos+ds)

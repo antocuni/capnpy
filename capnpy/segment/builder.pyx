@@ -184,7 +184,7 @@ cdef class SegmentBuilder(object):
           2. it does NOT allocate a new struct in dst_pos: instead, it writes
              the struct directly into dst_pos
         """
-        return _copy_struct(src, p, src_pos, self, dst_pos, do_allocation=False)
+        return _copy_struct_inline(src, p, src_pos, self, dst_pos)
 
     cpdef copy_from_list(self, Py_ssize_t pos, item_type, lst):
         return copy_from_list(self, pos, item_type, lst)
