@@ -114,7 +114,7 @@ class ItemType(object):
     def can_compare(self):
         return True
 
-    def get_item_length(self):
+    def get_size_tag(self):
         raise NotImplementedError
 
     # XXX: kill this as soon as we kill builder.py
@@ -126,6 +126,10 @@ class ItemType(object):
 
 
 class VoidItemType(ItemType):
+
+    def __init__(self):
+        self.item_length = 0
+        self.size_tag = ptr.LIST_SIZE_VOID
 
     def get_type(self):
         return Types.Void
@@ -139,9 +143,6 @@ class VoidItemType(ItemType):
     def item_repr(self, item):
         return 'void'
 
-    def get_item_length(self):
-        return 0, ptr.LIST_SIZE_VOID
-
     def pack_item(self, listbuilder, i, item):
         return ''
 
@@ -150,6 +151,10 @@ class VoidItemType(ItemType):
 
 
 class BoolItemType(ItemType):
+
+    def __init__(self):
+        self.item_length = -1
+        self.size_tag = ptr.LIST_SIZE_BIT
 
     def get_type(self):
         return Types.Bool
@@ -166,9 +171,6 @@ class BoolItemType(ItemType):
     def item_repr(self, item):
         return ('false', 'true')[item]
 
-    def get_item_length(self):
-        raise NotImplementedError
-
     def pack_item(self, listbuilder, i, item):
         raise NotImplementedError
 
@@ -178,6 +180,17 @@ class PrimitiveItemType(ItemType):
     def __init__(self, t):
         self.t = t
         self.ifmt = t.ifmt
+        self.item_length = self.t.calcsize()
+        if self.item_length == 1:
+            self.size_tag = ptr.LIST_SIZE_8
+        elif self.item_length == 2:
+            self.size_tag = ptr.LIST_SIZE_16
+        elif self.item_length == 4:
+            self.size_tag = ptr.LIST_SIZE_32
+        elif self.item_length == 8:
+            self.size_tag = ptr.LIST_SIZE_64
+        else:
+            raise ValueError('Unsupported size: %d' % self.item_length)
 
     def get_type(self):
         return self.t
@@ -193,19 +206,6 @@ class PrimitiveItemType(ItemType):
             return float64_repr(item)
         else:
             return repr(item)
-
-    def get_item_length(self):
-        length = self.t.calcsize()
-        if length == 1:
-            return length, ptr.LIST_SIZE_8
-        elif length == 2:
-            return length, ptr.LIST_SIZE_16
-        elif length == 4:
-            return length, ptr.LIST_SIZE_32
-        elif length == 8:
-            return length, ptr.LIST_SIZE_64
-        else:
-            raise ValueError('Unsupported size: %d' % length)
 
     def pack_item(self, listbuilder, i, item):
         return struct.pack('<'+self.t.fmt, item)
@@ -234,6 +234,8 @@ class StructItemType(ItemType):
         self.structcls = structcls
         self.static_data_size = structcls.__static_data_size__
         self.static_ptrs_size = structcls.__static_ptrs_size__
+        self.item_length = (self.static_data_size+self.static_ptrs_size)*8
+        self.size_tag = ptr.LIST_SIZE_COMPOSITE
 
     def get_type(self):
         return self.structcls
@@ -250,12 +252,6 @@ class StructItemType(ItemType):
 
     def item_repr(self, item):
         return item.shortrepr()
-
-    def get_item_length(self):
-        total_length = (self.static_data_size+self.static_ptrs_size)*8   # in bytes
-        if total_length > 8:
-            return total_length, ptr.LIST_SIZE_COMPOSITE
-        assert False, 'XXX'
 
     def pack_item(self, listbuilder, i, item):
         structcls = self.structcls
@@ -305,6 +301,8 @@ class TextItemType(ItemType):
         self.additional_size = 0
         if t == Types.text:
             self.additional_size = -1
+        self.item_length = 8
+        self.size_tag = ptr.LIST_SIZE_PTR
 
     def get_type(self):
         return self.t
@@ -318,9 +316,6 @@ class TextItemType(ItemType):
 
     def item_repr(self, item):
         return text_repr(item)
-
-    def get_item_length(self):
-        return 8, ptr.LIST_SIZE_PTR
 
     def pack_item(self, listbuilder, i, item):
         offset = i * listbuilder.item_length
@@ -342,6 +337,8 @@ class ListItemType(ItemType):
 
     def __init__(self, inner_item_type):
         self.inner_item_type = inner_item_type
+        self.item_length = 8
+        self.size_tag = ptr.LIST_SIZE_PTR
 
     def get_type(self):
         return ('list', self.inner_item_type)
@@ -361,9 +358,6 @@ class ListItemType(ItemType):
 
     def item_repr(self, item):
         return item.shortrepr()
-
-    def get_item_length(self):
-        return 8, ptr.LIST_SIZE_PTR
 
     def pack_item(self, listbuilder, i, item):
         offset = i * listbuilder.item_length

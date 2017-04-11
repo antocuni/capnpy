@@ -22,7 +22,8 @@ def copy_from_list(builder, pos, item_type, lst):
         builder.write_int64(pos, 0)
         return
     #
-    item_length, size_tag = item_type.get_item_length()
+    item_length = item_type.item_length
+    size_tag = item_type.size_tag
     item_count = len(lst)
     body_length = item_length * item_count
     if size_tag == ptr.LIST_SIZE_COMPOSITE:

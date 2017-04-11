@@ -135,7 +135,8 @@ class ListBuilder(AbstractBuilder):
 
     def _init(self, item_type, item_count):
         self.item_type = item_type
-        self.item_length, self.size_tag = item_type.get_item_length()
+        self.item_length = item_type.item_length
+        self.size_tag = item_type.size_tag
         self.item_count = item_count
         self._items = []
         length = self.item_length * self.item_count

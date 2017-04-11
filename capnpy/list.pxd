@@ -26,6 +26,9 @@ cdef class List(Blob):
     cpdef _getitem_fast(self, long i)
 
 cdef class ItemType(object):
+    cdef readonly long item_length
+    cdef readonly long size_tag
+
     cpdef get_type(self)
     cpdef read_item(self, List lst, long offset)
     cpdef long offset_for_item(self, List lst, long i)
