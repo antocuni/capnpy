@@ -6,6 +6,7 @@ from cpython.string cimport (PyString_FromStringAndSize, PyString_GET_SIZE,
                              PyString_AS_STRING)
 from capnpy.segment.base cimport BaseSegment
 from capnpy.struct_ cimport Struct
+from capnpy.list cimport List, ItemType, StructItemType
 
 cdef extern from "Python.h":
     int PyByteArray_Resize(object o, Py_ssize_t len)

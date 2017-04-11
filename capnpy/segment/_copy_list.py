@@ -8,12 +8,14 @@ with fakecython:
     import cython
 
 if not cython.compiled:
-    from capnpy.segment.builder import SegmentBuilder
     from capnpy import ptr
+    from capnpy.segment.builder import SegmentBuilder
+    from capnpy.list import ItemType, StructItemType
 
 @cython.ccall
-@cython.locals(builder=SegmentBuilder, pos=long,
+@cython.locals(builder=SegmentBuilder, pos=long, item_type=ItemType,
                item_length=long, size_tag=long, item_count=long, body_length=long,
+               struct_item_type=StructItemType,
                data_size=long, ptrs_size=long, total_words=long, tag=long)
 def copy_from_list(builder, pos, item_type, lst):
     if lst is None:
