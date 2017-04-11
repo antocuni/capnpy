@@ -36,7 +36,6 @@ def get_cython_extensions():
              "capnpy/message.py",
              "capnpy/buffered.py",
              "capnpy/filelike.py",
-             "capnpy/builder.py",
              "capnpy/ptr.pyx",
              "capnpy/packing.pyx",
              "capnpy/_hash.pyx",
