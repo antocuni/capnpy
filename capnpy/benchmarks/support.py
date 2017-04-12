@@ -201,6 +201,8 @@ class PyCapnp(object):
     class Tree(object):
         @staticmethod
         def loads(s):
+            if pycapnp is None:
+                py.test.skip('cannot import pycapnp')
             # this tree/newtree dance it's needed because 'tree' has a message
             # traversal limit: since we read the same message again and again
             # in the benchmark, we construct a newtree, whose traversal limit
