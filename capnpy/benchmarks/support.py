@@ -64,6 +64,8 @@ class Instance(object):
         def __init__(self, items):
             self.items = items
 
+    MyInt64List = MyStructContainer
+
 
 # ============================================================
 # Namedtuple storage
@@ -94,6 +96,7 @@ class NamedTuple(object):
     StrPoint = namedtuple('StrPoint', ['x', 'y', 'z'])
     Rectangle = namedtuple('Rectangle', ['a', 'b'])
     MyStructContainer = namedtuple('MyStructContainer', ['items'])
+    MyInt64List = namedtuple('MyInt64List', ['items'])
 
 # ============================================================
 # capnpy storage
@@ -197,6 +200,13 @@ class PyCapnp(object):
         s.items = items
         return pycapnp_schema.MyStructContainer.from_bytes(s.to_bytes())
 
+    @staticmethod
+    def MyInt64List(items):
+        if pycapnp is None:
+            py.test.skip('cannot import pycapnp')
+        s = pycapnp_schema.MyInt64List.new_message()
+        s.items = items
+        return pycapnp_schema.MyInt64List.from_bytes(s.to_bytes())
 
     class Tree(object):
         @staticmethod

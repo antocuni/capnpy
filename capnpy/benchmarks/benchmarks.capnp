@@ -54,6 +54,10 @@ struct MyStructContainer {
     items @0 :List(MyStruct);
 }
 
+struct MyInt64List {
+    items @0 :List(Int64);
+}
+
 struct Rectangle {
     a @0 :Point;
     b @1 :Point;

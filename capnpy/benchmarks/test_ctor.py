@@ -123,3 +123,20 @@ class TestCtor(object):
         ##     vmprof.disable()
 
 
+    @pytest.mark.benchmark(group="ctor")
+    def test_list_of_ints(self, schema, benchmark):
+        code = Code()
+        code.global_scope.N = self.N
+        code.ww("""
+            def new_and_sum(MyInt64List, items):
+                res = 0
+                for i in range({N}):
+                    obj = MyInt64List(items)
+                    res += 1
+                return res
+        """)
+        code.compile()
+        new_and_sum = code['new_and_sum']
+        items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        res = benchmark(new_and_sum, schema.MyInt64List, items)
+        assert res == self.N
