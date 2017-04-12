@@ -196,3 +196,21 @@ class PyCapnp(object):
         s = pycapnp_schema.MyStructContainer.new_message()
         s.items = items
         return pycapnp_schema.MyStructContainer.from_bytes(s.to_bytes())
+
+
+    class Tree(object):
+        @staticmethod
+        def loads(s):
+            # this tree/newtree dance it's needed because 'tree' has a message
+            # traversal limit: since we read the same message again and again
+            # in the benchmark, we construct a newtree, whose traversal limit
+            # is not set
+            tree = pycapnp_schema.Tree.from_bytes(s)
+            newtree = pycapnp_schema.Tree.new_message()
+            newtree.root = tree.root
+            return newtree
+
+        def __new__(cls, root):
+            msg = pycapnp_schema.Tree.new_message()
+            msg.root = root
+            return msg

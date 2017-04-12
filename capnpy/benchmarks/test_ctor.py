@@ -1,3 +1,4 @@
+import py
 import pytest
 from pypytools.codegen import Code
 from capnpy.benchmarks.test_benchmarks import schema, get_obj
@@ -63,6 +64,40 @@ class TestCtor(object):
         res = benchmark(new_and_sum, schema.Rectangle, a, b)
         assert res == self.N
 
+    BIG_TREE = py.path.local(__file__).dirpath('bigtree.dump')
+    def _make_big_tree(self):
+        from capnpy.benchmarks.support import Capnpy as schema
+        def make(n):
+            if n == 0:
+                return None
+            child = make(n-1)
+            return schema.Node(x=9999, y=n, z=n,
+                               left=child, right=child)
+        tree = schema.Tree(make(12))
+        with self.BIG_TREE.open('w') as f:
+            tree.dump(f)
+        print 'big tree wrote to ', self.BIG_TREE
+
+    @pytest.mark.benchmark(group="ctor")
+    def test_copy_pointer(self, schema, benchmark):
+        # this is similar to test_struct, but the struct we set has a very
+        # deep structure, which means that we are effectively measuring the
+        # performance of copy_pointer
+        if schema.__name__ not in ('Capnpy', 'PyCapnp'):
+            pytest.skip('N/A')
+        #
+        #self._make_big_tree() # uncomment this if you want to regenerate the file
+        s = self.BIG_TREE.read()
+        tree = schema.Tree.loads(s)
+
+        def loop(oldtree):
+            for i in range(1000):
+                new_tree = schema.Tree(oldtree.root)
+            return new_tree
+
+        new_tree = benchmark(loop, tree)
+        assert new_tree.root.x == 9999
+
 
     @pytest.mark.benchmark(group="ctor")
     def test_list(self, schema, benchmark):
@@ -86,3 +121,5 @@ class TestCtor(object):
         ##     vmprof.enable(f.fileno(), native=True)
         ##     res = benchmark(new_and_sum, schema.MyStructContainer, items)
         ##     vmprof.disable()
+
+

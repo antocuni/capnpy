@@ -58,3 +58,16 @@ struct Rectangle {
     a @0 :Point;
     b @1 :Point;
 }
+
+
+struct Node {
+    x @0 :Int64;
+    y @1 :Int64;
+    z @2 :Int64;
+    left @3 :Node;
+    right @4 :Node;
+}
+
+struct Tree {
+    root @0 :Node;
+}
