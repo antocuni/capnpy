@@ -200,11 +200,12 @@ def test_compact():
     rect = Rect.from_buffer(buf, 8, data_size=1, ptrs_size=2)
     rect2 = rect.compact()
     assert rect2.__class__ is Rect
-    assert rect2._seg.buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
-                            '\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
-                            '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
-                            '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
-                            '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
+    buf = rect2._seg.buf[rect2._data_offset:]
+    assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+                   '\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+                   '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
+                   '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+                   '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
 
 def test_comparisons_fail():
     s = Struct.from_buffer('', 0, data_size=0, ptrs_size=0)

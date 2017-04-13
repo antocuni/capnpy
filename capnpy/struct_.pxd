@@ -4,6 +4,7 @@ from capnpy.visit cimport end_of, is_compact
 from capnpy cimport ptr
 from capnpy.list cimport List, ItemType
 from capnpy.packing cimport pack_int64
+from capnpy.segment.builder cimport SegmentBuilder
 
 cpdef str check_tag(str curtag, str newtag)
 
@@ -61,5 +62,6 @@ cdef class Struct(Blob):
                    j=long, data_size=long, old_extra_offset=long, additional_offset=long)
     cpdef object _split(self, long extra_offset)
 
+    @cython.locals(builder=SegmentBuilder, pos=long, buf=bytes, t=type, res=Struct)
     cpdef object compact(self)
     

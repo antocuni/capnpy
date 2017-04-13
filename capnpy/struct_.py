@@ -5,6 +5,7 @@ from capnpy.blob import Blob
 from capnpy.visit import end_of, is_compact
 from capnpy.list import List
 from capnpy.packing import pack_int64
+from capnpy.segment.builder import SegmentBuilder
 
 class Undefined(object):
     def __repr__(self):
@@ -305,13 +306,18 @@ class Struct(Blob):
 
     def compact(self):
         """
-        Return a compact version of the object, removing the garbage around the
-        body and the extra parts.
+        Return a compact version of the struct. In case the struct was inside a
+        bigger message, it "extracts" it into a new message which contains
+        only the needed pieces.
         """
-        body, extra = self._split(0)
-        buf = body+extra
-        return self.__class__.from_buffer(buf, 0, self._data_size, self._ptrs_size)
-
+        builder = SegmentBuilder()
+        pos = builder.allocate(8)
+        builder.copy_from_struct(pos, Struct, self)
+        buf = builder.as_string()
+        t = type(self)
+        res = t.__new__(t)
+        res._init_from_buffer(buf, 8, self._data_size, self._ptrs_size)
+        return res
 
     # ----------------------
     # hashing and equality
