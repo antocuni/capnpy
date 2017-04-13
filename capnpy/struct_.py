@@ -241,69 +241,6 @@ class Struct(Blob):
         p = ptr.new_struct(0, self._data_size, self._ptrs_size)
         return is_compact(self._seg, p, self._data_offset-8)
 
-    def _split(self, extra_offset):
-        """
-        Split the body and the extra part.  The extra part must be placed at the
-        specified offset, in words. The ptrs in the body will be adjusted
-        accordingly.
-        """
-        body_start = self._get_body_start()
-        body_end = self._get_body_end()
-        if self._ptrs_size == 0:
-            # easy case, just copy the body
-            return self._seg.buf[body_start:body_end], ''
-        #
-        # hard case. The layout of self._seg is like this:
-        # +----------+------+------+----------+-------------+
-        # | garbage0 | data | ptrs | garbage1 |    extra    |
-        # +----------+------+------+----------+-------------+
-        #                    |   |             ^     ^
-        #                    +-----------------+     |
-        #                        |                   |
-        #                        +-------------------+
-        #
-        # We recompute the pointers assumining len(garbage1) == extra_offset
-        #
-        # 1) the data section is copied verbatim
-        # 2) the offset of pointers in ptrs are adjusted
-        # 3) extra is copied verbatim
-        #
-        extra_start = self._get_extra_start()
-        extra_end = self._get_end()
-        #
-        # 1) data section
-        data_size = self._data_size
-        data_buf = self._seg.buf[body_start:body_start+data_size*8]
-        #
-        # 2) ptrs section
-        #    for each ptr:
-        #        ptr.offset += (extra_offset - old_extra_offset)/8
-        #
-        # NOTE: ptr.offset is in words, extra_start and body_end in bytes
-        old_extra_offset = (extra_start - body_end)/8
-        additional_offset = extra_offset - old_extra_offset
-        #
-        # iterate over and fix the pointers
-        parts = [data_buf]
-        j = 0
-        while j < self._ptrs_size:
-            # read pointer, update its offset, and pack it
-            p = self._read_fast_ptr(j*8)
-            if p != 0:
-                assert ptr.kind(p) != ptr.FAR
-                p = ptr.new_generic(ptr.kind(p),
-                                    ptr.offset(p)+additional_offset,
-                                    ptr.extra(p))
-            s = pack_int64(p)
-            parts.append(s)
-            j += 1
-        #
-        body_buf = ''.join(parts)
-        # 3) extra part
-        extra_buf = self._seg.buf[extra_start:extra_end]
-        #
-        return body_buf, extra_buf
-
     def compact(self):
         """
         Return a compact version of the struct. In case the struct was inside a

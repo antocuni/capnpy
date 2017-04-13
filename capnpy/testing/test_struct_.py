@@ -157,33 +157,6 @@ def test_union():
     shape._ensure_union(Shape.__tag__.square)
     py.test.raises(ValueError, "shape._ensure_union(Shape.__tag__.circle)")
 
-def test_split_no_ptrs():
-    buf = ('garbage0'
-           '\x01\x00\x00\x00\x00\x00\x00\x00'
-           '\x02\x00\x00\x00\x00\x00\x00\x00'
-           'garbage1')
-    p1 = Struct.from_buffer(buf, 8, data_size=2, ptrs_size=0)
-    body, extra = p1._split(0)
-    assert body == ('\x01\x00\x00\x00\x00\x00\x00\x00'
-                    '\x02\x00\x00\x00\x00\x00\x00\x00')
-    assert extra == ''
-
-def test_split_ptrs():
-    buf = ('garbage0'
-           '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
-           '\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
-           '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
-           '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
-           '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
-    rect = Struct.from_buffer(buf, 8, data_size=1, ptrs_size=2)
-    body, extra = rect._split(2)
-    assert body == ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
-                    '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
-                    '\x00\x00\x00\x00\x00\x00\x00\x00')   # ptr to b, NULL
-    #
-    assert extra == ('\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
-                     '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
-
 
 def test_compact():
     class Rect(Struct):
