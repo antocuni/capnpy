@@ -46,7 +46,7 @@ class Blob(object):
         if start is None:
             start = self._data_offset
         if end == 'auto':
-            end = self._get_body_end()
+            end = self._get_end()
         elif end is None:
             end = len(self._seg.buf)
         p = BufferPrinter(self._seg.buf)

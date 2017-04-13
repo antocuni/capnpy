@@ -213,26 +213,6 @@ class Struct(Blob):
                              "initialized. Expected %s, got %s" % (expected_tag, tag))
 
 
-    def _get_body_start(self):
-        return self._data_offset
-
-    def _get_body_end(self):
-        return self._data_offset + (self._data_size + self._ptrs_size) * 8
-
-    def _get_extra_start(self):
-        if self._ptrs_size == 0:
-            return self._get_body_end()
-        i = 0
-        while i < self._ptrs_size:
-            p = self._read_fast_ptr(i*8)
-            assert ptr.kind(p) != ptr.FAR
-            if p != 0:
-                return self._ptrs_offset + ptr.deref(p, i*8)
-            i += 1
-        #
-        # if we are here, it means that all ptrs are null
-        return self._get_body_end()
-
     def _get_end(self):
         p = ptr.new_struct(0, self._data_size, self._ptrs_size)
         return end_of(self._seg, p, self._data_offset-8)

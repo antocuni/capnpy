@@ -131,7 +131,7 @@ def dumps(obj):
     """
     if not obj._is_compact():
         obj = obj.compact()
-    a = obj._get_body_start()
+    a = obj._data_offset
     b = obj._get_end()
     buf = obj._seg.buf[a:b]
     p = ptr.new_struct(0, obj._data_size, obj._ptrs_size)
