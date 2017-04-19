@@ -139,13 +139,56 @@ Constructors
 This benchmark measure the time needed to create new objects. Because of the
 Cap'n Proto specs, this **has** to be more expensive than creating e.g. a new
 instance, as we need to do extra checks and pack all the objects inside a
-buffer.  However, we believe there is still room for improvement.
+buffer. However, as the following charts show, creating new ``capnpy`` objects
+is almost as fast as creating instances. As shown by the charts, the
+performances are different depending on the type of the fields of the target
+struct.
+
+List fields are special: normally, if you pass a list object to an instance or
+namedtuple, you store only a reference to it. However, if you need to
+construct a new Cap'n Proto object, you need to copy the whole content of the
+list into the new buffer. In particular, if it is a list of structs, you need
+to deeep-copy each item of the list, separately. This explains why
+``test_list`` looks slower than the rest.
 
 .. benchmark:: Constructors
    :foreach: b.python_implementation
    :filter: b.group == 'ctor'
    :series: b.params.schema
    :group:  charter.extract_test_name(b.name)
+
+
+Deep copy
+==========
+
+Sometimes we need to perform a deep-copy of a Cap'n Proto object. In
+particular, this is needed:
+
+  - if you construct a new object having a struct field
+
+  - if you construct a new object having a list of structs field
+
+  - if you ``dump()`` an object which is not "compact"
+
+``capnpy`` includes a generic, schema-less implementation which can
+recursively copy an arbritrary Capn'n Proto pointer into a new buffer. It is
+written in pure Python but compiled with Cython, and heavily optimized for
+speed. ``PyCapnp`` relies on the official capnproto implementation written in
+C++.
+
+The ``copy_pointer`` benchmarks repeatedly copies a big recursive tree so that
+the majority of the time is spent inside the deep-copy function and we can
+ignore the small amout of time spent outside. Thus, we are effetively
+benchmarking our Cython-based function against the heavily optimized C++
+one. The resulting speed is very good. On some machine, it has measured to be
+even **faster** than the C++ version.
+
+.. benchmark:: Deep copy
+   :foreach: b.python_implementation
+   :filter: b.group == 'copy_pointer'
+   :series: b.params.schema
+   :group:  charter.extract_test_name(b.name)
+
 
 
 Loading messages
