@@ -27,5 +27,10 @@ git config user.name "Travis CI"
 git pull # pull again and hope in a fast-forward, in case another travis job
          # committed in the meantime
 git add .
-git commit -m "add benchmark results for commit $SHA"
+git commit -m "add benchmark results:
+commit $SHA
+travis build number: $TRAVIS_BUILD_NUMBER
+travis job number: $TRAVIS_JOB_NUMBER
+travid build id: $TRAVIS_BUILD_ID
+travis job id: $TRAVIS_JOB_ID"
 git push $SSH_REPO $TARGET_BRANCH
