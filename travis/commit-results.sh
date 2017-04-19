@@ -28,9 +28,8 @@ git pull # pull again and hope in a fast-forward, in case another travis job
          # committed in the meantime
 git add .
 git commit -m "add benchmark results:
-commit $SHA
-travis build number: $TRAVIS_BUILD_NUMBER
-travis job number: $TRAVIS_JOB_NUMBER
-travid build id: $TRAVIS_BUILD_ID
-travis job id: $TRAVIS_JOB_ID"
+  - commit $SHA
+  - travis job $TRAVIS_JOB_NUMBER
+  - https://travis-ci.org/antocuni/capnpy/jobs/$TRAVIS_JOB_ID
+"
 git push $SSH_REPO $TARGET_BRANCH
