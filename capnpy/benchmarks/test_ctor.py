@@ -78,7 +78,7 @@ class TestCtor(object):
             tree.dump(f)
         print 'big tree wrote to ', self.BIG_TREE
 
-    @pytest.mark.benchmark(group="ctor")
+    @pytest.mark.benchmark(group="copy_pointer")
     def test_copy_pointer(self, schema, benchmark):
         # this is similar to test_struct, but the struct we set has a very
         # deep structure, which means that we are effectively measuring the
