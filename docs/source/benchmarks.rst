@@ -295,6 +295,12 @@ Evolution over time
    :filter: b.group == 'ctor' and b.params.schema == 'Capnpy'
    :series: charter.extract_test_name(b.name)
 
+.. benchmark:: Deep-copy
+   :timeline:
+   :foreach: b.python_implementation
+   :filter: b.group == 'copy_pointer' and b.params.schema == 'Capnpy'
+   :series: charter.extract_test_name(b.name)
+
 .. benchmark:: Loading messages
    :timeline:
    :foreach: b.python_implementation
