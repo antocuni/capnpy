@@ -119,6 +119,14 @@ class TimelineChart(object):
             points = [rev2point.get(rev) for rev in self.all_revisions]
             chart.add(name, points)
         #
+        #
+        # XXX: the old list benchmarks were so slow that make the Y axis of
+        # this benchmark so compressed that it's impossible to spot
+        # variations. So, we manually set the range to something which is
+        # "reasonable" at the time of writing :(
+        if self.title == 'Constructors [CPython]':
+            self.max = 0.027
+
         # try to compute a reasonable Y scale;
         chart.min_scale = 10 # make sure to have 10 horizontal bands
         estimate_max = self.min*2 # min+10% will cross one horizontal band
