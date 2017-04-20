@@ -1,7 +1,7 @@
 import struct
-from capnpy.packing import pack_message_header
 from capnpy.segment.base import unpack_uint32
 from capnpy.segment.segment import Segment, MultiSegment
+from capnpy.segment.builder import SegmentBuilder
 from capnpy.struct_ import Struct, struct_from_buffer
 from capnpy import ptr
 from capnpy.filelike import as_filelike
@@ -131,20 +131,23 @@ def dumps(obj):
     The message is encoded using the recommended capnp format for serializing
     messages over a stream. It always uses a single segment.
     """
-    if not obj._is_compact():
-        obj = obj.compact()
-    a = obj._data_offset
-    b = obj._get_end()
-    buf = obj._seg.buf[a:b]
-    p = ptr.new_struct(0, obj._data_size, obj._ptrs_size)
+    builder = SegmentBuilder()
+    builder.allocate(16) # reserve space for the segment header+the root pointer
+    builder.copy_from_struct(8, Struct, obj)
     #
+    # write the segment header
     segment_count = 1
-    if len(buf) % 8 != 0:
-        padding = 8 - (len(buf) % 8)
-        buf += '\x00' * padding
-    segment_size = len(buf)/8 + 1 # +1 is for the ptr
-    header = pack_message_header(segment_count, segment_size, p)
-    return header + buf
+    segment_size = (builder.get_length()-8) / 8 # subtract the segment header
+                                                # and convert to words
+    builder.write_uint32(0, segment_count - 1)
+    builder.write_uint32(4, segment_size)
+    return builder.as_string()
+    ## if not obj._is_compact():
+    ##     obj = obj.compact()
+    ## a = obj._data_offset
+    ## b = obj._get_end()
+    ## buf = obj._seg.buf[a:b]
+    ## p = ptr.new_struct(0, obj._data_size, obj._ptrs_size)
 
 def dump(obj, f):
     """

@@ -2,6 +2,7 @@ import cython
 from capnpy.packing cimport pack_message_header
 from capnpy.segment.base cimport unpack_uint32
 from capnpy.segment.segment cimport Segment
+from capnpy.segment.builder cimport SegmentBuilder
 from capnpy.struct_ cimport Struct, struct_from_buffer
 from capnpy cimport ptr
 from capnpy.filelike cimport FileLike, as_filelike
@@ -24,5 +25,5 @@ cpdef _load_buffer_single_segment(FileLike f)
                 padding=int, message_lenght=int, offset=int, size=int)
 cpdef _load_buffer_multiple_segments(FileLike f, int n)
 
-@cython.locals(buf=bytes, padding=int, a=long, b=long)
+@cython.locals(builder=SegmentBuilder, segment_size=long, segment_count=long)
 cpdef dumps(Struct obj)

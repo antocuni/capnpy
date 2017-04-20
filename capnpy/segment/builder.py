@@ -8,10 +8,11 @@ def round_to_word(pos):
 
 class SegmentBuilder(object):
 
-    WIP = True
-
     def __init__(self, length=None):
         self.buf = bytearray()
+
+    def get_length(self):
+        return len(self.buf)
 
     def as_string(self):
         return str(self.buf)

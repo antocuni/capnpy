@@ -15,6 +15,7 @@ cdef class SegmentBuilder(object):
                                      # this position
 
     cdef void _resize(self, Py_ssize_t minlen)
+    cpdef Py_ssize_t get_length(self)
     cpdef as_string(self)
 
     cpdef object write_generic(self, char ifmt, Py_ssize_t i, object value)

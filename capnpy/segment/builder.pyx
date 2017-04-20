@@ -43,6 +43,9 @@ cdef class SegmentBuilder(object):
         memset(self.cbuf + curlen, 0, newlen - curlen)
         self.length = newlen
 
+    cpdef Py_ssize_t get_length(self):
+        return self.end
+
     cpdef as_string(self):
         return PyString_FromStringAndSize(self.cbuf, self.end)
 
