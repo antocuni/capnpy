@@ -123,7 +123,6 @@ def _load_buffer_multiple_segments(f, n):
     # 5. we are finally done :)
     return MultiSegment(buf, tuple(segment_offsets))
 
-
 def dumps(obj):
     """
     Dump a struct into a message, returned as a string of bytes.
@@ -131,23 +130,25 @@ def dumps(obj):
     The message is encoded using the recommended capnp format for serializing
     messages over a stream. It always uses a single segment.
     """
-    builder = SegmentBuilder()
-    builder.allocate(16) # reserve space for the segment header+the root pointer
-    builder.copy_from_struct(8, Struct, obj)
-    #
-    # write the segment header
-    segment_count = 1
-    segment_size = (builder.get_length()-8) / 8 # subtract the segment header
-                                                # and convert to words
-    builder.write_uint32(0, segment_count - 1)
-    builder.write_uint32(4, segment_size)
-    return builder.as_string()
-    ## if not obj._is_compact():
-    ##     obj = obj.compact()
-    ## a = obj._data_offset
-    ## b = obj._get_end()
-    ## buf = obj._seg.buf[a:b]
-    ## p = ptr.new_struct(0, obj._data_size, obj._ptrs_size)
+    if obj._is_compact():
+        # fast path. On CPython, the real speedup comes from the fact that we
+        # do not create a temporary SegmentBuilder. The memcpy vs copy_pointer
+        # difference seems negligible, for small objects at least.
+        start = obj._data_offset
+        end = obj._get_end()
+        end = (end + (8 - 1)) & -8  # Round up to 8-byte boundary
+        p = ptr.new_struct(0, obj._data_size, obj._ptrs_size)
+        return obj._seg.dump_message(p, start, end)
+    else:
+        builder = SegmentBuilder()
+        builder.allocate(16) # reserve space for segment header+the root pointer
+        builder.copy_from_struct(8, Struct, obj)
+        segment_count = 1
+        segment_size = (builder.get_length()-8) / 8 # subtract the segment header
+                                                    # and convert to words
+        builder.write_uint32(0, segment_count - 1)
+        builder.write_uint32(4, segment_size)
+        return builder.as_string()
 
 def dump(obj, f):
     """

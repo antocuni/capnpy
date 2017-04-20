@@ -72,4 +72,11 @@ class BaseSegment(object):
     def read_float(self, offset):
         return self.read_primitive(offset, ord('f'))
 
+    def dump_message(self, p, start, end):
+        # XXX check start and end
+        segment_count = 1
+        length = end-start
+        header = struct.pack('IIq', (segment_count-1), length/8 + 1, p)
+        return header + self.buf[start:end]
+
 BaseSegmentForTests = BaseSegment

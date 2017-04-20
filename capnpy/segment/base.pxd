@@ -21,4 +21,4 @@ cdef class BaseSegment(object):
     cdef uint8_t read_uint8(self, Py_ssize_t offset) except? 0xff
     cdef double read_double(self, Py_ssize_t offset) except? -1
     cdef float read_float(self, Py_ssize_t offset) except? -1
-
+    cdef object dump_message(self, long p, Py_ssize_t start, Py_ssize_t end)

@@ -146,7 +146,7 @@ def test_dumps_alignment():
            'J' 'o' 'h' 'n' '\x00\x00\x00\x00')  # John
     assert msg == exp
 
-def test_dumps_compact():
+def test_dumps_not_compact():
     class Person(Struct):
         pass
 

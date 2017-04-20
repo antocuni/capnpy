@@ -1,7 +1,10 @@
 cimport cython
+from libc.string cimport memcpy
 from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
                           uint32_t, int32_t, int64_t, uint64_t, INT64_MAX)
-from cpython.string cimport PyString_AS_STRING, PyString_GET_SIZE
+from cpython.string cimport (PyString_AS_STRING, PyString_GET_SIZE,
+                             PyString_FromStringAndSize)
+
 from capnpy cimport ptr
 
 cpdef uint32_t unpack_uint32(bytes buf, Py_ssize_t offset) except? 0xffffffff:
@@ -10,6 +13,7 @@ cpdef uint32_t unpack_uint32(bytes buf, Py_ssize_t offset) except? 0xffffffff:
     if offset < 0 or offset + 4 > buflen:
         raise IndexError('Offset out of bounds: %d' % (offset+4))
     return (<uint32_t*>(cbuf+offset))[0]
+
 
 cdef class BaseSegment(object):
 
@@ -117,6 +121,19 @@ cdef class BaseSegment(object):
     cdef float read_float(self, Py_ssize_t offset) except? -1:
         self.check_bounds(4, offset)
         return (<float*>(self.cbuf+offset))[0]
+
+    @cython.final
+    cdef object dump_message(self, long p, Py_ssize_t start, Py_ssize_t end):
+        # XXX check start and end
+        cdef long segment_count = 1
+        cdef Py_ssize_t length = end-start
+        cdef bytes buf = PyString_FromStringAndSize(NULL, length + 16)
+        cdef char *cbuf = PyString_AS_STRING(buf)
+        (<int32_t*>(cbuf+0))[0] = segment_count-1
+        (<int32_t*>(cbuf+4))[0] = length/8 + 1 # in words
+        (<int64_t*>(cbuf+8))[0] = p
+        memcpy(cbuf+16, self.cbuf+start, end-start)
+        return buf
 
 
 cdef class BaseSegmentForTests(object):
