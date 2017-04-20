@@ -2,6 +2,7 @@ cimport cython
 from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
                           uint32_t, int32_t, int64_t, uint64_t)
 
+cpdef uint32_t unpack_uint32(bytes buf, Py_ssize_t offset) except? 0xffffffff
 
 cdef class BaseSegment(object):
     cdef readonly bytes buf

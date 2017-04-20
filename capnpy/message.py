@@ -1,10 +1,12 @@
 import struct
-from capnpy.packing import unpack_uint32, pack_message_header
+from capnpy.packing import pack_message_header
+from capnpy.segment.base import unpack_uint32
 from capnpy.segment.segment import Segment, MultiSegment
 from capnpy.struct_ import Struct, struct_from_buffer
 from capnpy import ptr
 from capnpy.filelike import as_filelike
 from capnpy.buffered import StringBuffer
+
 
 def load(f, payload_type):
     """

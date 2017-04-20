@@ -5,7 +5,17 @@ import math
 from pypytools import IS_PYPY
 from capnpy import ptr
 from capnpy.printer import print_buffer
-from capnpy.segment.base import BaseSegmentForTests as BaseSegment
+from capnpy.segment.base import BaseSegmentForTests as BaseSegment, unpack_uint32
+
+def test_unpack_uint32():
+    a = 12
+    b = 2**31 + 1
+    buf = struct.pack('II', a, b)
+    assert unpack_uint32(buf, 0) == a
+    assert unpack_uint32(buf, 4) == b
+    buf = 'abc'
+    pytest.raises(IndexError, "unpack_uint32(buf, 0)")
+
 
 class TestBaseSegment(object):
 

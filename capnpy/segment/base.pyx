@@ -4,6 +4,13 @@ from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
 from cpython.string cimport PyString_AS_STRING, PyString_GET_SIZE
 from capnpy cimport ptr
 
+cpdef uint32_t unpack_uint32(bytes buf, Py_ssize_t offset) except? 0xffffffff:
+    cdef const char *cbuf = PyString_AS_STRING(buf)
+    cdef Py_ssize_t buflen = PyString_GET_SIZE(buf)
+    if offset < 0 or offset + 4 > buflen:
+        raise IndexError('Offset out of bounds: %d' % (offset+4))
+    return (<uint32_t*>(cbuf+offset))[0]
+
 cdef class BaseSegment(object):
 
     # bah, we need to specify segment_offsets also here, even if it's used
@@ -158,3 +165,4 @@ cdef class BaseSegmentForTests(object):
 
     def read_float(self, Py_ssize_t offset):
         return self.s.read_float(offset)
+

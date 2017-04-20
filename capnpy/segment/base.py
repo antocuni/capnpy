@@ -21,6 +21,12 @@ else:
     mychr = chr
 
 
+def unpack_uint32(buf, offset):
+    if offset < 0 or offset + 4 > len(buf):
+        raise IndexError('Offset out of bounds: %d' % offset)
+    return struct.unpack_from('<I', buf, offset)[0]
+
+
 class BaseSegment(object):
 
     def __init__(self, buf):

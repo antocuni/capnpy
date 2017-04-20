@@ -1,9 +1,11 @@
 import cython
-from capnpy.packing cimport unpack_uint32, pack_message_header
+from capnpy.packing cimport pack_message_header
+from capnpy.segment.base cimport unpack_uint32
 from capnpy.segment.segment cimport Segment
 from capnpy.struct_ cimport Struct, struct_from_buffer
 from capnpy cimport ptr
 from capnpy.filelike cimport FileLike, as_filelike
+
 
 @cython.locals(msg=Struct, f2=FileLike)
 cpdef load(object f, object payload_type)
