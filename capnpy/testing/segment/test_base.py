@@ -115,3 +115,15 @@ class TestBaseSegment(object):
                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
         msg = s.dump_message(p, 8, 24)
         assert msg == exp
+
+    def test_dump_message_errors(self):
+        buf = ('garbage0'
+               '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00'  # 2
+               'garbage1')
+        s = BaseSegment(buf)
+        pytest.raises(ValueError, "s.dump_message(0, -1,  8)")
+        pytest.raises(ValueError, "s.dump_message(0, 32,  8)")
+        pytest.raises(ValueError, "s.dump_message(0,  8, -1)")
+        pytest.raises(ValueError, "s.dump_message(0,  8, 33)")
+        pytest.raises(ValueError, "s.dump_message(0, 16,  8)")

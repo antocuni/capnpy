@@ -73,7 +73,10 @@ class BaseSegment(object):
         return self.read_primitive(offset, ord('f'))
 
     def dump_message(self, p, start, end):
-        # XXX check start and end
+        maxlen = len(self.buf)
+        if start < 0 or start > end or end > maxlen:
+            raise ValueError("start:end values out of bounds: %s:%s" %
+                             (start, end))
         segment_count = 1
         length = end-start
         header = struct.pack('IIq', (segment_count-1), length/8 + 1, p)

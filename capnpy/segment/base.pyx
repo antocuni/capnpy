@@ -124,6 +124,10 @@ cdef class BaseSegment(object):
 
     @cython.final
     cdef object dump_message(self, long p, Py_ssize_t start, Py_ssize_t end):
+        cdef Py_ssize_t maxlen = PyString_GET_SIZE(self.buf)
+        if start < 0 or start > end or end > maxlen:
+            raise ValueError("start:end values out of bounds: %s:%s" %
+                             (start, end))
         # XXX check start and end
         cdef long segment_count = 1
         cdef Py_ssize_t length = end-start
