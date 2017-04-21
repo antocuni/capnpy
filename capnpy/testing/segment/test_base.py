@@ -99,4 +99,19 @@ class TestBaseSegment(object):
         #
         pytest.raises(IndexError, "s.read_int64(8)")
 
-
+    def test_dump_message(self):
+        buf = ('garbage0'
+               '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00'  # 2
+               'garbage1')
+        s = BaseSegment(buf)
+        p = 0x12345678
+        # segment header:
+        #     segment_count-1: 0
+        #     segment[0]_length: 3 (words)
+        exp = ('\x00\x00\x00\x00\x03\x00\x00\x00'  # segment header
+               '\x78\x56\x34\x12\x00\x00\x00\x00'  # p
+               '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        msg = s.dump_message(p, 8, 24)
+        assert msg == exp

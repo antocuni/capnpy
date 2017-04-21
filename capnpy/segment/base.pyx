@@ -183,3 +183,5 @@ cdef class BaseSegmentForTests(object):
     def read_float(self, Py_ssize_t offset):
         return self.s.read_float(offset)
 
+    def dump_message(self, long p, Py_ssize_t start, Py_ssize_t end):
+        return self.s.dump_message(p, start, end)
