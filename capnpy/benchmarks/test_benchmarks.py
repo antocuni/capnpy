@@ -101,6 +101,9 @@ class TestGetAttr(object):
 
     @pytest.mark.benchmark(group="getattr")
     def test_enum(self, schema, benchmark):
+        if schema.__name__ == 'PyCapnp':
+            py.test.skip('broken')
+
         benchmark.extra_info['attribute_type'] = 'enum'
         def count_enum(obj):
             myobjs = (obj, obj)
