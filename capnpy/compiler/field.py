@@ -85,10 +85,10 @@ class Field__Slot:
         ns.default_ = self.slot.defaultValue.as_pyobj()
         m.def_property(ns, name, """
             {ensure_union}
-            value = self._read_enum({offset}, {enumcls})
+            value = self._read_data_int16({offset})
             if {default_} != 0:
-                value = {enumcls}(value ^ {default_})
-            return value
+                value = (value ^ {default_})
+            return {enumcls}(value)
         """)
 
     def _emit_text(self, m, ns, name):

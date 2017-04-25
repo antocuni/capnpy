@@ -1,9 +1,5 @@
 class BaseEnum(int):
-
     __slots__ = ()
-    
-    def __new__(cls, value):
-        return int.__new__(cls, value)
 
     @property
     def name(self):
@@ -28,5 +24,4 @@ def enum(name, members):
     for i, member in enumerate(members):
         value = Enum(i)
         setattr(Enum, member, value)
-
     return Enum

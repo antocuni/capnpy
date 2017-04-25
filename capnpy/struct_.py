@@ -143,10 +143,6 @@ class Struct(Blob):
         val = self._read_data(offset, Types.uint8.ifmt)
         return bool(val & bitmask)
 
-    def _read_enum(self, offset, enumtype):
-        val = self._read_data(offset, Types.int16.ifmt)
-        return enumtype(val)
-
     def _read_struct(self, offset, structcls):
         """
         Read and dereference a struct pointer at the given offset.  It returns an
