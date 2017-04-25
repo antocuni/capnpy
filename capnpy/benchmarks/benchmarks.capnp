@@ -2,6 +2,14 @@
 
 using Py = import "/capnpy/annotate.capnp";
 
+enum Color {
+    red @0;
+    green @1;
+    blue @2;
+    yellow @3;
+    pink @4;
+}
+
 struct MyStruct {
     # the padding field is needed to ensure that we benchmark fields with offset >0
     padding @0 :Int64;
@@ -22,6 +30,7 @@ struct MyStruct {
     }
     inner @14 :MyInner;
     intlist @15 :List(Int64);
+    color @16 :Color;
 }
 
 struct MyInner {
