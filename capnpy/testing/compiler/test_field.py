@@ -171,6 +171,13 @@ class TestField(CompilerTest):
         f = mod.Foo.from_buffer(buf, 0, 1, 0)
         assert f.color == mod.Color.blue
         assert f.gender == mod.Gender.female
+        #
+        # check that we can read values even if they are not statically known
+        # at compile time
+        buf = '\x04\x00' '\x03\x00' '\x00\x00\x00\x00'
+        f = mod.Foo.from_buffer(buf, 0, 1, 0)
+        assert f.color == 4
+        assert f.gender == 3
 
     def test_enum_single_member(self):
         schema = """

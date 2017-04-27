@@ -105,7 +105,12 @@ class ModuleGenerator(object):
                 # statically known values
                 ns.w("@staticmethod")
                 with ns.block('cdef _new(long x, __prebuilt={prebuilt}):') as ns:
-                    ns.w('return __prebuilt[x]')
+                    ns.ww("""
+                        try:
+                            return __prebuilt[x]
+                        except IndexError:
+                            return {name}(x)
+                    """)
             else:
                 # on PyPy, always create a new object, so that the JIT will be
                 # able to make it virtual
