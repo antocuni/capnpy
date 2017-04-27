@@ -112,12 +112,15 @@ class Node__Struct:
         ns.w("__tag_offset__ = {tag_offset}")
         ns.w()
         if m.pyx:
-            # generate a specialized version of __which__, which does not need to
-            # do a lookup for __tag_offset__. Not needed on PyPy because the
-            # default __which__() implemented in struct_.py is already fast
+            # generate a specialized version of __which__() and which(), which
+            # do not not need to do a lookup for __tag_offset__. Not needed on
+            # PyPy because the default implementations defined in struct_.py
+            # are already fast
             ns.ww("""
                 cpdef long __which__(self) except -1:
                     return self._read_data_int16({tag_offset})
+                cpdef which(self):
+                    return {compile_name}._new(self.__which__())
             """)
             ns.w()
         #
