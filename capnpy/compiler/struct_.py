@@ -36,6 +36,7 @@ class Node__Struct:
             ns.w("class {name}(_Struct): pass")
             ns.w("{name}.__name__ = '{dotname}'")
         #
+        self._emit_union_tag_declaration(m)
         ns.w()
 
     def emit_definition(self, m):
@@ -83,17 +84,32 @@ class Node__Struct:
             m.w('{shortname} = {name}', shortname=self.shortname(m),
                 name=self.compile_name(m))
 
-    def _emit_union_tag(self, m):
-        # union tags are 16 bits, so *2
-        ns = m.code.new_scope()
-        ns.tag_offset = self.struct.discriminantOffset * 2
+    def _get_enum_items(self, m):
+        if self.struct.discriminantCount == 0:
+            return []
         enum_items = [None] * self.struct.discriminantCount
         for field in self.struct.fields:
             if field.is_part_of_union():
                 enum_items[field.discriminantValue] = m._field_name(field)
+        return enum_items
+
+    def _emit_union_tag_declaration(self, m):
+        enum_items = self._get_enum_items(m)
+        if not enum_items:
+            return
+        compile_name = self.compile_name(m) + '__tag__'
         enum_name = '%s.__tag__' % self.shortname(m)
+        m.declare_enum(compile_name, enum_name, enum_items)
+
+    def _emit_union_tag(self, m):
+        enum_items = self._get_enum_items(m)
+        if not enum_items:
+            return
+        ns = m.code.new_scope()
+        ns.compile_name = self.compile_name(m) + '__tag__'
+        ns.tag_offset = self.struct.discriminantOffset * 2  # tags are 16 bits
+        ns.w("__tag__ = {compile_name}")
         ns.w("__tag_offset__ = {tag_offset}")
-        m.declare_enum_legacy('__tag__', enum_name, enum_items)
         ns.w()
         if m.pyx:
             # generate a specialized version of __which__, which does not need to

@@ -85,19 +85,12 @@ class ModuleGenerator(object):
             return name + '_'
         return name
 
-    def declare_enum_legacy(self, var_name, enum_name, items):
-        # this method cannot go on Node__Enum because it's also called by
-        # Node__Struct (for __tag__)
-        items = map(repr, items)
-        decl = "%s = _enum(%r, [%s])" % (var_name, enum_name, ', '.join(items))
-        self.w(decl)
-
-    def declare_enum(self, var_name, enum_name, items):
+    def declare_enum(self, compile_name, name, items):
         # this method cannot go on Node__Enum because it's also called by
         # Node__Struct (for __tag__)
         items = map(repr, items)
         ns = self.code.new_scope()
-        ns.name = var_name
+        ns.name = compile_name
         ns.members = "[%s]" % (', '.join(items))
         with ns.block("{cdef class} {name}(_BaseEnum):"):
             ns.w("__members__ = {members}")
