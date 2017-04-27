@@ -1,0 +1,271 @@
+{
+    "benchmarks": [
+        {
+            "group": "buffered", 
+            "name": "test_BufferedSocket", 
+            "fullname": ".tox/py27-bench/lib/python2.7/site-packages/capnpy/benchmarks/test_buffered.py::TestBuffered::()::test_BufferedSocket", 
+            "param": null, 
+            "params": null, 
+            "extra_info": {}, 
+            "options": {
+                "warmup": false, 
+                "disable_gc": false, 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "timer": "time"
+            }, 
+            "stats": {
+                "q1": 0.3596827983856201, 
+                "q3": 0.3855593204498291, 
+                "min": 0.35758209228515625, 
+                "ld15iqr": 0.35758209228515625, 
+                "median": 0.36060309410095215, 
+                "stddev": 0.015321936417190212, 
+                "stddev_outliers": 1, 
+                "max": 0.390239953994751, 
+                "rounds": 5, 
+                "iqr": 0.025876522064208984, 
+                "outliers": "1;0", 
+                "hd15iqr": 0.390239953994751, 
+                "iterations": 1, 
+                "mean": 0.37056145668029783, 
+                "iqr_outliers": 0
+            }
+        }, 
+        {
+            "group": "buffered", 
+            "name": "test_BufferedStream", 
+            "fullname": ".tox/py27-bench/lib/python2.7/site-packages/capnpy/benchmarks/test_buffered.py::TestBuffered::()::test_BufferedStream", 
+            "param": null, 
+            "params": null, 
+            "extra_info": {}, 
+            "options": {
+                "warmup": false, 
+                "disable_gc": false, 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "timer": "time"
+            }, 
+            "stats": {
+                "q1": 0.377189040184021, 
+                "q3": 0.40277862548828125, 
+                "min": 0.37275195121765137, 
+                "ld15iqr": 0.37275195121765137, 
+                "median": 0.3874979019165039, 
+                "stddev": 0.017957050230800534, 
+                "stddev_outliers": 2, 
+                "max": 0.41837120056152344, 
+                "rounds": 5, 
+                "iqr": 0.025589585304260254, 
+                "outliers": "2;0", 
+                "hd15iqr": 0.41837120056152344, 
+                "iterations": 1, 
+                "mean": 0.3909740447998047, 
+                "iqr_outliers": 0
+            }
+        }, 
+        {
+            "group": "buffered", 
+            "name": "test_makefile", 
+            "fullname": ".tox/py27-bench/lib/python2.7/site-packages/capnpy/benchmarks/test_buffered.py::TestBuffered::()::test_makefile", 
+            "param": null, 
+            "params": null, 
+            "extra_info": {}, 
+            "options": {
+                "warmup": false, 
+                "disable_gc": false, 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "timer": "time"
+            }, 
+            "stats": {
+                "q1": 3.3337878584861755, 
+                "q3": 3.5403193831443787, 
+                "min": 3.2919888496398926, 
+                "ld15iqr": 3.2919888496398926, 
+                "median": 3.4983880519866943, 
+                "stddev": 0.14388503500943814, 
+                "stddev_outliers": 2, 
+                "max": 3.6569480895996094, 
+                "rounds": 5, 
+                "iqr": 0.20653152465820312, 
+                "outliers": "2;0", 
+                "hd15iqr": 3.6569480895996094, 
+                "iterations": 1, 
+                "mean": 3.459297800064087, 
+                "iqr_outliers": 0
+            }
+        }, 
+        {
+            "group": "unpack", 
+            "name": "test_unpack_primitive_int64[str]", 
+            "fullname": ".tox/py27-bench/lib/python2.7/site-packages/capnpy/benchmarks/test_unpack.py::TestUnpack::()::test_unpack_primitive_int64[str]", 
+            "param": "str", 
+            "params": {
+                "buftype": "str"
+            }, 
+            "extra_info": {}, 
+            "options": {
+                "warmup": false, 
+                "disable_gc": false, 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "timer": "time"
+            }, 
+            "stats": {
+                "q1": 0.000553131103515625, 
+                "q3": 0.0005565881729125977, 
+                "min": 0.0005497932434082031, 
+                "ld15iqr": 0.0005497932434082031, 
+                "median": 0.0005548000335693359, 
+                "stddev": 1.38808755394188e-05, 
+                "stddev_outliers": 206, 
+                "max": 0.0006198883056640625, 
+                "rounds": 1452, 
+                "iqr": 3.4570693969726562e-06, 
+                "outliers": "206;229", 
+                "hd15iqr": 0.0005619525909423828, 
+                "iterations": 1, 
+                "mean": 0.0005597892543172705, 
+                "iqr_outliers": 229
+            }
+        }, 
+        {
+            "group": "unpack", 
+            "name": "test_unpack_primitive_int64[bytearray]", 
+            "fullname": ".tox/py27-bench/lib/python2.7/site-packages/capnpy/benchmarks/test_unpack.py::TestUnpack::()::test_unpack_primitive_int64[bytearray]", 
+            "param": "bytearray", 
+            "params": {
+                "buftype": "bytearray"
+            }, 
+            "extra_info": {}, 
+            "options": {
+                "warmup": false, 
+                "disable_gc": false, 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "timer": "time"
+            }, 
+            "stats": {
+                "q1": 0.0005590915679931641, 
+                "q3": 0.0005621910095214844, 
+                "min": 0.00055694580078125, 
+                "ld15iqr": 0.00055694580078125, 
+                "median": 0.0005600452423095703, 
+                "stddev": 1.3004426692501074e-05, 
+                "stddev_outliers": 245, 
+                "max": 0.0006630420684814453, 
+                "rounds": 1739, 
+                "iqr": 3.0994415283203125e-06, 
+                "outliers": "245;275", 
+                "hd15iqr": 0.0005669593811035156, 
+                "iterations": 1, 
+                "mean": 0.0005652442480244123, 
+                "iqr_outliers": 275
+            }
+        }, 
+        {
+            "group": "unpack", 
+            "name": "test_unpack_int64[str]", 
+            "fullname": ".tox/py27-bench/lib/python2.7/site-packages/capnpy/benchmarks/test_unpack.py::TestUnpack::()::test_unpack_int64[str]", 
+            "param": "str", 
+            "params": {
+                "buftype": "str"
+            }, 
+            "extra_info": {}, 
+            "options": {
+                "warmup": false, 
+                "disable_gc": false, 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "timer": "time"
+            }, 
+            "stats": {
+                "q1": 0.0004489421844482422, 
+                "q3": 0.00045299530029296875, 
+                "min": 0.00044608116149902344, 
+                "ld15iqr": 0.00044608116149902344, 
+                "median": 0.00044989585876464844, 
+                "stddev": 1.1690142657357293e-05, 
+                "stddev_outliers": 249, 
+                "max": 0.0005438327789306641, 
+                "rounds": 2156, 
+                "iqr": 4.0531158447265625e-06, 
+                "outliers": "249;264", 
+                "hd15iqr": 0.0004591941833496094, 
+                "iterations": 1, 
+                "mean": 0.00045411982651323026, 
+                "iqr_outliers": 264
+            }
+        }, 
+        {
+            "group": "unpack", 
+            "name": "test_unpack_int64[bytearray]", 
+            "fullname": ".tox/py27-bench/lib/python2.7/site-packages/capnpy/benchmarks/test_unpack.py::TestUnpack::()::test_unpack_int64[bytearray]", 
+            "param": "bytearray", 
+            "params": {
+                "buftype": "bytearray"
+            }, 
+            "extra_info": {}, 
+            "options": {
+                "warmup": false, 
+                "disable_gc": false, 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "timer": "time"
+            }, 
+            "stats": {
+                "q1": 0.0004520416259765625, 
+                "q3": 0.00045609474182128906, 
+                "min": 0.00044989585876464844, 
+                "ld15iqr": 0.00044989585876464844, 
+                "median": 0.00045299530029296875, 
+                "stddev": 6.0207553587245355e-05, 
+                "stddev_outliers": 71, 
+                "max": 0.0012950897216796875, 
+                "rounds": 2156, 
+                "iqr": 4.0531158447265625e-06, 
+                "outliers": "71;327", 
+                "hd15iqr": 0.0004630088806152344, 
+                "iterations": 1, 
+                "mean": 0.000467424268846388, 
+                "iqr_outliers": 327
+            }
+        }
+    ], 
+    "version": "3.1.0a1", 
+    "commit_info": {
+        "dirty": false, 
+        "branch": "(detached head)", 
+        "project": "capnpy", 
+        "id": "5c491711d6123205afd7a9bdebf2a77fc86b9527"
+    }, 
+    "machine_info": {
+        "machine": "x86_64", 
+        "release": "4.8.12-040812-generic", 
+        "python_implementation": "CPython", 
+        "system": "Linux", 
+        "python_implementation_version": "2.7.9", 
+        "processor": "x86_64", 
+        "python_build": [
+            "default", 
+            "Feb  5 2015 15:48:42"
+        ], 
+        "python_version": "2.7.9", 
+        "node": "testing-docker-41b41f4f-0232-4f61-a2c1-53c2a3fcefea", 
+        "cpu": {
+            "hardware": "unknown", 
+            "brand": "Intel(R) Xeon(R) CPU E5-2680 v2 @ 2.80GHz", 
+            "vendor_id": "GenuineIntel"
+        }, 
+        "python_compiler": "GCC 4.6.3"
+    }, 
+    "datetime": "2017-04-27T16:45:05.209669"
+}
