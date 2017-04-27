@@ -29,6 +29,7 @@ def get_cython_extensions():
              "capnpy/segment/segment.py",
              "capnpy/segment/builder.pyx",
              "capnpy/blob.py",
+             "capnpy/enum.py",
              "capnpy/visit.py",
              "capnpy/struct_.py",
              "capnpy/list.py",

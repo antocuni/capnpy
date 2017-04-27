@@ -1,5 +1,8 @@
+from capnpy.util import magic_setattr
+
 class BaseEnum(int):
     __slots__ = ()
+    __members__ = ()
 
     @property
     def name(self):
@@ -14,14 +17,18 @@ class BaseEnum(int):
     def __str__(self):
         return self.name
 
+def fill_enum(cls):
+    for i, member in enumerate(cls.__members__):
+        value = cls(i)
+        magic_setattr(cls, member, value)
 
 def enum(name, members):
+    """
+    Create a new Enum type dynamically. Mostly used by tests
+    """
     class Enum(BaseEnum):
         __slots__ = ()
         __members__ = tuple(members)
-
     Enum.__name__ = name
-    for i, member in enumerate(members):
-        value = Enum(i)
-        setattr(Enum, member, value)
+    fill_enum(Enum)
     return Enum

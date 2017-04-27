@@ -93,7 +93,7 @@ class Node__Struct:
                 enum_items[field.discriminantValue] = m._field_name(field)
         enum_name = '%s.__tag__' % self.shortname(m)
         ns.w("__tag_offset__ = {tag_offset}")
-        m.declare_enum('__tag__', enum_name, enum_items)
+        m.declare_enum_legacy('__tag__', enum_name, enum_items)
         ns.w()
         if m.pyx:
             # generate a specialized version of __which__, which does not need to

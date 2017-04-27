@@ -146,7 +146,7 @@ class TestField(CompilerTest):
         assert r.b.x == 3
         assert r.b.y == 4
 
-    def test_enum(self):
+    def test_enum_simple(self):
         schema = """
         @0xbf5147cbbecf40c1;
         enum Color {
