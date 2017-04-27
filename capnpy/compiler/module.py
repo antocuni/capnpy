@@ -92,8 +92,26 @@ class ModuleGenerator(object):
         ns = self.code.new_scope()
         ns.name = compile_name
         ns.members = "[%s]" % (', '.join(items))
+        ns.prebuilt = [ns.format('{name}({i})', i=i)
+                    for i in range(len(items))]
+        ns.prebuilt = ', '.join(ns.prebuilt)
+        ns.prebuilt = ns.format('({prebuilt},)')
         with ns.block("{cdef class} {name}(_BaseEnum):"):
             ns.w("__members__ = {members}")
+            #
+            # define the _new staticmethod, to create new instances.
+            if self.pyx:
+                # on CPython, make a tuple of prebuilt instances for the
+                # statically known values
+                ns.w("@staticmethod")
+                with ns.block('cdef _new(long x, __prebuilt={prebuilt}):') as ns:
+                    ns.w('return __prebuilt[x]')
+            else:
+                # on PyPy, always create a new object, so that the JIT will be
+                # able to make it virtual
+                ns.w("@staticmethod")
+                with ns.block('def _new(x):') as ns:
+                    ns.w('return {name}(x)')
         ns.w("_fill_enum({name})")
 
     def def_property(self, ns, name, src):

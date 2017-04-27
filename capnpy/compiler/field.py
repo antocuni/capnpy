@@ -88,7 +88,7 @@ class Field__Slot:
             value = self._read_data_int16({offset})
             if {default_} != 0:
                 value = (value ^ {default_})
-            return {enumcls}.__new__({enumcls}, value)
+            return {enumcls}._new(value)
         """)
 
     def _emit_text(self, m, ns, name):
