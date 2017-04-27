@@ -1,12 +1,13 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2017-04-11 23:53
+# generated on 2017-04-27 19:02
 
 from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
 from capnpy.struct_ import check_tag as _check_tag
 from capnpy.struct_ import undefined as _undefined
-from capnpy.enum import enum as _enum
+from capnpy.enum import enum as _enum, fill_enum as _fill_enum
+from capnpy.enum import BaseEnum as _BaseEnum
 from capnpy.type import Types as _Types
 from capnpy.segment.builder import SegmentBuilder as _SegmentBuilder
 from capnpy.list import List as _List
@@ -39,7 +40,9 @@ Method.__name__ = 'Method'
 class Enumerant(_Struct): pass
 Enumerant.__name__ = 'Enumerant'
 
-ElementSize = _enum('ElementSize', ['empty', 'bit', 'byte', 'twoBytes', 'fourBytes', 'eightBytes', 'pointer', 'inlineComposite'])
+class ElementSize(_BaseEnum):
+    __members__ = ['empty', 'bit', 'byte', 'twoBytes', 'fourBytes', 'eightBytes', 'pointer', 'inlineComposite']
+_fill_enum(ElementSize)
 _ElementSize_list_item_type = _EnumItemType(ElementSize)
 
 class Type_anyPointer_parameter(_Struct): pass
@@ -50,6 +53,9 @@ Type_anyPointer_implicitMethodParameter.__name__ = 'Type.anyPointer.implicitMeth
 
 class Type_anyPointer(_Struct): pass
 Type_anyPointer.__name__ = 'Type.anyPointer'
+class Type_anyPointer__tag__(_BaseEnum):
+    __members__ = ['unconstrained', 'parameter', 'implicitMethodParameter']
+_fill_enum(Type_anyPointer__tag__)
 
 class Type_struct(_Struct): pass
 Type_struct.__name__ = 'Type.struct'
@@ -65,30 +71,48 @@ Type_list.__name__ = 'Type.list'
 
 class Type(_Struct): pass
 Type.__name__ = 'Type'
+class Type__tag__(_BaseEnum):
+    __members__ = ['void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer']
+_fill_enum(Type__tag__)
 
 class Field_group(_Struct): pass
 Field_group.__name__ = 'Field.group'
 
 class Field_ordinal(_Struct): pass
 Field_ordinal.__name__ = 'Field.ordinal'
+class Field_ordinal__tag__(_BaseEnum):
+    __members__ = ['implicit', 'explicit']
+_fill_enum(Field_ordinal__tag__)
 
 class Field_slot(_Struct): pass
 Field_slot.__name__ = 'Field.slot'
 
 class Field(_Struct): pass
 Field.__name__ = 'Field'
+class Field__tag__(_BaseEnum):
+    __members__ = ['slot', 'group']
+_fill_enum(Field__tag__)
 
 class Superclass(_Struct): pass
 Superclass.__name__ = 'Superclass'
 
 class Value(_Struct): pass
 Value.__name__ = 'Value'
+class Value__tag__(_BaseEnum):
+    __members__ = ['void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer']
+_fill_enum(Value__tag__)
 
 class Brand_Binding(_Struct): pass
 Brand_Binding.__name__ = 'Brand.Binding'
+class Brand_Binding__tag__(_BaseEnum):
+    __members__ = ['unbound', 'type']
+_fill_enum(Brand_Binding__tag__)
 
 class Brand_Scope(_Struct): pass
 Brand_Scope.__name__ = 'Brand.Scope'
+class Brand_Scope__tag__(_BaseEnum):
+    __members__ = ['bind', 'inherit']
+_fill_enum(Brand_Scope__tag__)
 
 class Brand(_Struct): pass
 Brand.__name__ = 'Brand'
@@ -119,6 +143,9 @@ Node_Parameter.__name__ = 'Node.Parameter'
 
 class Node(_Struct): pass
 Node.__name__ = 'Node'
+class Node__tag__(_BaseEnum):
+    __members__ = ['file', 'struct', 'enum', 'interface', 'const', 'annotation']
+_fill_enum(Node__tag__)
 
 
 #### DEFINITIONS ####
@@ -564,8 +591,8 @@ class Type_anyPointer(_Struct):
     __static_ptrs_size__ = 1
     
     
+    __tag__ = Type_anyPointer__tag__
     __tag_offset__ = 8
-    __tag__ = _enum('anyPointer.__tag__', ['unconstrained', 'parameter', 'implicitMethodParameter'])
     
     def is_unconstrained(self):
         return self._read_data_int16(8) == 0
@@ -797,8 +824,8 @@ class Type(_Struct):
     __static_ptrs_size__ = 1
     
     
+    __tag__ = Type__tag__
     __tag_offset__ = 0
-    __tag__ = _enum('Type.__tag__', ['void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer'])
     
     def is_void(self):
         return self._read_data_int16(0) == 0
@@ -1211,8 +1238,8 @@ class Field_ordinal(_Struct):
     __static_ptrs_size__ = 4
     
     
+    __tag__ = Field_ordinal__tag__
     __tag_offset__ = 10
-    __tag__ = _enum('ordinal.__tag__', ['implicit', 'explicit'])
     
     def is_implicit(self):
         return self._read_data_int16(10) == 0
@@ -1329,8 +1356,8 @@ class Field(_Struct):
     
     noDiscriminant = 65535
     
+    __tag__ = Field__tag__
     __tag_offset__ = 8
-    __tag__ = _enum('Field.__tag__', ['slot', 'group'])
     
     def is_slot(self):
         return self._read_data_int16(8) == 0
@@ -1542,8 +1569,8 @@ class Value(_Struct):
     __static_ptrs_size__ = 1
     
     
+    __tag__ = Value__tag__
     __tag_offset__ = 0
-    __tag__ = _enum('Value.__tag__', ['void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer'])
     
     def is_void(self):
         return self._read_data_int16(0) == 0
@@ -1968,8 +1995,8 @@ class Brand_Binding(_Struct):
     __static_ptrs_size__ = 1
     
     
+    __tag__ = Brand_Binding__tag__
     __tag_offset__ = 0
-    __tag__ = _enum('Binding.__tag__', ['unbound', 'type'])
     
     def is_unbound(self):
         return self._read_data_int16(0) == 0
@@ -2050,8 +2077,8 @@ class Brand_Scope(_Struct):
     __static_ptrs_size__ = 1
     
     
+    __tag__ = Brand_Scope__tag__
     __tag_offset__ = 8
-    __tag__ = _enum('Scope.__tag__', ['bind', 'inherit'])
     
     def is_bind(self):
         return self._read_data_int16(8) == 0
@@ -2386,10 +2413,10 @@ class Node_struct(_Struct):
     @property
     def preferredListEncoding(self):
         # no union check
-        value = self._read_enum(26, ElementSize)
+        value = self._read_data_int16(26)
         if 0 != 0:
-            value = ElementSize(value ^ 0)
-        return value
+            value = (value ^ 0)
+        return ElementSize.__new__(ElementSize, value)
     
     @property
     def isGroup(self):
@@ -2707,8 +2734,8 @@ class Node(_Struct):
     NestedNode = Node_NestedNode
     Parameter = Node_Parameter
     
+    __tag__ = Node__tag__
     __tag_offset__ = 12
-    __tag__ = _enum('Node.__tag__', ['file', 'struct', 'enum', 'interface', 'const', 'annotation'])
     
     def is_file(self):
         return self._read_data_int16(12) == 0
