@@ -1,4 +1,5 @@
 import py
+from capnpy.printer import print_buffer
 from capnpy.type import Types
 from capnpy.segment.segment import MultiSegment
 from capnpy import ptr
@@ -126,6 +127,21 @@ def test_Int8List():
 
 def test_list_of_strings():
     buf = ('\x01\x00\x00\x00\x26\x00\x00\x00'   # ptrlist
+           '\x0d\x00\x00\x00\x12\x00\x00\x00'   # ptr item 1
+           '\x0d\x00\x00\x00\x1a\x00\x00\x00'   # ptr item 2
+           '\x0d\x00\x00\x00\x22\x00\x00\x00'   # ptr item 3
+           '\x0d\x00\x00\x00\x2a\x00\x00\x00'   # ptr item 4
+           'A' '\x00\x00\x00\x00\x00\x00\x00'   # A
+           'B' 'C' '\x00\x00\x00\x00\x00\x00'   # BC
+           'D' 'E' 'F' '\x00\x00\x00\x00\x00'   # DEF
+           'G' 'H' 'I' 'J' '\x00\x00\x00\x00')  # GHIJ
+    blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
+    lst = blob._read_list(0, TextItemType(Types.text))
+    assert list(lst) == ['A', 'BC', 'DEF', 'GHIJ']
+
+def test_list_of_strings_composite():
+    buf = ('\x01\x00\x00\x00\x27\x00\x00\x00'   # ptr<cmp>
+           '\x10\x00\x00\x00\x00\x00\x01\x00'   # TAG: 4 items, data=0, ptrs=1
            '\x0d\x00\x00\x00\x12\x00\x00\x00'   # ptr item 1
            '\x0d\x00\x00\x00\x1a\x00\x00\x00'   # ptr item 2
            '\x0d\x00\x00\x00\x22\x00\x00\x00'   # ptr item 3

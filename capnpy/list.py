@@ -102,7 +102,7 @@ class ItemType(object):
         raise NotImplementedError
 
     def offset_for_item(self, lst, i):
-        return lst._item_offset + (i * lst._item_length)
+        return lst._offset + lst._item_offset + (i * lst._item_length)
 
     def read_item(self, lst, i):
         raise NotImplementedError
@@ -229,7 +229,7 @@ class StructItemType(ItemType):
     def read_item(self, lst, i):
         offset = self.offset_for_item(lst, i)
         return self.structcls.from_buffer(lst._seg,
-                                          lst._offset+offset,
+                                          offset,
                                           ptr.struct_data_size(lst._tag),
                                           ptr.struct_ptrs_size(lst._tag))
 
@@ -259,7 +259,7 @@ class TextItemType(ItemType):
         return self.t
 
     def read_item(self, lst, i):
-        offset = lst._offset + (i*8)
+        offset = self.offset_for_item(lst, i)
         p = lst._seg.read_ptr(offset)
         if ptr.kind(p) == ptr.FAR:
             raise NotImplementedError('FAR pointers not supported here')
