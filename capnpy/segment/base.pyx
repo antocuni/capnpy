@@ -24,6 +24,11 @@ cdef class BaseSegment(object):
         self.buf = buf
         self.cbuf = PyString_AS_STRING(self.buf)
 
+    def __init__(self, buf, segment_offsets=None):
+        # we need this empty init to silence this warning:
+        # DeprecationWarning: object.__init__() takes no parameters
+        pass
+
     @cython.final
     cdef inline check_bounds(self, Py_ssize_t size, Py_ssize_t offset):
         # the bound check seems to introduce a 5-10% overhead when calling
