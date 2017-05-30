@@ -273,7 +273,7 @@ class TestField(CompilerTest):
         #
         foo = mod.Foo.from_buffer('', 0, data_size=0, ptrs_size=0)
         exc = py.test.raises(TypeError, "foo.which()")
-        assert exc.value.message == 'Cannot call which() on a non-union type'
+        assert str(exc.value) == 'Cannot call which() on a non-union type'
 
     def test_is_union(self):
         schema = """

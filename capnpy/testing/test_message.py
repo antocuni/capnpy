@@ -67,14 +67,14 @@ def test_loads_not_whole_string():
            '\x02\x00\x00\x00\x00\x00\x00\x00'   # y == 2
            'garbage0')
     exc = py.test.raises(ValueError, "p = loads(buf, Struct)")
-    assert exc.value.message == 'Not all bytes were consumed: 8 bytes left'
+    assert str(exc.value) == 'Not all bytes were consumed: 8 bytes left'
 
 def test_truncated_header():
     buf = ('\x03\x00\x00\x00'  # 3+1 segments, but only two are specified
            '\x10\x00\x00\x00'  # size0: 16
            '\x20\x00\x00\x00') # size1: 32
     exc = py.test.raises(ValueError, "p = loads(buf, Struct)")
-    assert exc.value.message == 'Unexpected EOF when reading the header'
+    assert str(exc.value) == 'Unexpected EOF when reading the header'
 
 def test_wrong_size():
     buf = ('\x00\x00\x00\x00\x04\x00\x00\x00'   # message header: 1 segment, size 4 words
@@ -82,8 +82,8 @@ def test_wrong_size():
            '\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
            '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
     exc = py.test.raises(ValueError, "loads(buf, Struct)")
-    assert exc.value.message == ("Unexpected EOF: expected 32 bytes, got only 24. "
-                                 "Segment size: 4")
+    assert str(exc.value) == ("Unexpected EOF: expected 32 bytes, got only 24. "
+                              "Segment size: 4")
 
 def test_wrong_size_multiple_segments():
     buf = ('\x01\x00\x00\x00\x04\x00\x00\x00'   # message header: 2 segments: (4, 5)
@@ -92,8 +92,8 @@ def test_wrong_size_multiple_segments():
            '\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
            '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
     exc = py.test.raises(ValueError, "loads(buf, Struct)")
-    assert exc.value.message == ("Unexpected EOF: expected 72 bytes, got only 24. "
-                                 "Segments size: (4, 5)")
+    assert str(exc.value) == ("Unexpected EOF: expected 72 bytes, got only 24. "
+                              "Segments size: (4, 5)")
 
 def test_eof():
     buf = ''
