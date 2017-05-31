@@ -4,6 +4,8 @@ all:
 clean:
 	find capnpy '(' -name '*.c' -or -name '*.so' ')' -print -delete
 
-schema:
-	python -m capnpy compile capnpy/schema.capnp --no-pyx --no-convert-case
+annotate:
 	python -m capnpy compile capnpy/annotate.capnp --no-pyx
+
+schema: annotate
+	python -m capnpy compile capnpy/schema.capnp --no-pyx --no-convert-case
