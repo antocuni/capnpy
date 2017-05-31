@@ -36,12 +36,18 @@ annotation nullable(group) :Void;
 
 #annotation nullable(*): Nullable; # XXX: specify a better target than '*'
 
+
 # Override the field and treat it as a group.
 annotation group(field) :Text;
 
-struct Options {
-   convertCase :group $nullable {
-        isNull @0 :Bool = true;
-        value @1 :Bool;
-   }
+enum BoolOption {
+    false @0;
+    true @1;
+    notset @2;
 }
+
+struct Options {
+    convertCase @0 :BoolOption = notset;
+}
+
+annotation options(file, struct) :Options;
