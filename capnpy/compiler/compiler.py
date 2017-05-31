@@ -28,14 +28,7 @@ class BaseCompiler(object):
 
     def __init__(self, path):
         self.path = [py.path.local(dirname) for dirname in path]
-        self.modules = {}
-        self.add_module(annotate)
         self._tmpdir = None
-
-    def add_module(self, mod):
-        pyfile = py.path.local(mod.__file__)
-        capnpfile = pyfile.new(ext='capnp')
-        self.modules[str(capnpfile)] = mod
 
     @property
     def tmpdir(self):
@@ -124,6 +117,16 @@ class DynamicCompiler(BaseCompiler):
     """
 
     standalone = False
+
+    def __init__(self, path):
+        BaseCompiler.__init__(self, path)
+        self.modules = {}
+        self.add_module(annotate)
+
+    def add_module(self, mod):
+        pyfile = py.path.local(mod.__file__)
+        capnpfile = pyfile.new(ext='capnp')
+        self.modules[str(capnpfile)] = mod
 
     def parse_schema(self, modname=None, importname=None, filename=None):
         filename = self._get_filename(modname, importname, filename)
