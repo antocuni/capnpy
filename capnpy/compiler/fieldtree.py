@@ -109,18 +109,26 @@ class Node(AbstractNode):
     def _init_default(self, m):
         # self.default is a *string* containing a Python repr of the default
         # value
-        if self.f.is_part_of_union() and not self.force_default:
-            self.default = '_undefined'
-        elif self.f.is_slot():
-            default_val = self.f.slot.defaultValue.as_pyobj()
-            self.default = str(default_val)
-        else:
-            assert self.f.is_group()
-            if self.f.is_nullable(m):
-                self.default = 'None'
+        def get_default(f):
+            if f.is_part_of_union() and not self.force_default:
+                return '_undefined'
+            elif f.is_slot():
+                default_val = f.slot.defaultValue.as_pyobj()
+                return str(default_val)
+            elif f.is_nullable(m):
+                ann = f.is_nullable(m)
+                name, f_is_null, f_value = ann.check(m)
+                default_is_null = f_is_null.slot.defaultValue.as_pyobj()
+                if default_is_null:
+                    return 'None'
+                else:
+                    return get_default(f_value)
             else:
+                assert f.is_group()
                 items = [child.default for child in self.children]
-                self.default = '(%s,)' % ', '.join(items)
+                return '(%s,)' % ', '.join(items)
+
+        self.default = get_default(self.f)
 
     def __repr__(self):
         return '<Node %s: %s>' % (self.varname, self.f.which())
