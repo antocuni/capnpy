@@ -10,6 +10,7 @@ from capnpy import schema
 from capnpy.message import loads
 from capnpy.blob import PYX
 from capnpy.compiler.module import ModuleGenerator
+from capnpy import annotate
 
 PKGDIR = py.path.local(capnpy.__file__).dirpath()
 
@@ -25,7 +26,13 @@ class BaseCompiler(object):
     def __init__(self, path):
         self.path = [py.path.local(dirname) for dirname in path]
         self.modules = {}
+        self.add_module(annotate)
         self._tmpdir = None
+
+    def add_module(self, mod):
+        pyfile = py.path.local(mod.__file__)
+        capnpfile = pyfile.new(ext='capnp')
+        self.modules[str(capnpfile)] = mod
 
     @property
     def tmpdir(self):
