@@ -3,6 +3,8 @@ import keyword
 from collections import defaultdict
 from pypytools.codegen import Code
 from capnpy.convert_case import from_camel_case
+from capnpy.annotate import Options
+from capnpy.compiler.options import OptionStack
 
 # the following imports have side-effects, and augment the schema.* classes
 # with emit() methods
@@ -17,9 +19,9 @@ class ModuleGenerator(object):
     def __init__(self, request, convert_case, pyx, standalone):
         self.code = Code(pyx=pyx)
         self.request = request
-        self.convert_case = convert_case
         self.pyx = pyx
         self.standalone = standalone
+        self.options = OptionStack(Options(convert_case=convert_case))
         self.allnodes = {} # id -> node
         self.children = defaultdict(list) # nodeId -> nested nodes
         self.importnames = {} # filename -> import name
@@ -70,7 +72,7 @@ class ModuleGenerator(object):
         visit(node)
 
     def _convert_name(self, name):
-        if self.convert_case:
+        if self.options.convert_case:
             return from_camel_case(name)
         else:
             return name
