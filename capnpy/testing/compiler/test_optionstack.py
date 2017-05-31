@@ -46,3 +46,10 @@ class TestOptionStack(object):
         opt.push(a)
         opt.push(b)
         assert opt.convert_case == True
+
+    def test_push_None(self):
+        a = annotate.Options(convert_case=True)
+        opt = OptionStack()
+        opt.push(a)
+        opt.push(None)
+        assert opt.convert_case == True
