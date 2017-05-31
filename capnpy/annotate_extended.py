@@ -23,9 +23,19 @@ class nullable:
                   'Pointers are already nullable.')
         return name, f_is_null, f_value
 
+
 @extend(group)
 class group:
 
     def check(self, m):
         field = self.target
         assert field.is_void()
+
+
+@extend(BoolOption)
+class BoolOption:
+
+    def __nonzero__(self):
+        if self == BoolOption.notset:
+            raise ValueError("Cannot get the truth value of a 'notset'")
+        return bool(int(self))

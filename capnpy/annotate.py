@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2019-05-28 09:57
+# generated on 2019-05-28 10:03
 
 from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
@@ -29,36 +29,16 @@ __capnpy_version__ = '0.5.4.dev12+ngbc554c5.d20190405'
 
 #### FORWARD DECLARATIONS ####
 
-class group(object):
-    __id__ = 12694526166034528397
-    targets_file = False
+class options(object):
+    __id__ = 13670177934128632979
+    targets_file = True
     targets_const = False
     targets_enum = False
     targets_enumerant = False
-    targets_struct = False
-    targets_field = True
-    targets_union = False
-    targets_group = False
-    targets_interface = False
-    targets_method = False
-    targets_param = False
-    targets_annotation = False
-class Options_convertCase(_Struct): pass
-Options_convertCase.__name__ = 'Options.convertCase'
-
-class Options(_Struct): pass
-Options.__name__ = 'Options'
-
-class nullable(object):
-    __id__ = 11296117080722892765
-    targets_file = False
-    targets_const = False
-    targets_enum = False
-    targets_enumerant = False
-    targets_struct = False
+    targets_struct = True
     targets_field = False
     targets_union = False
-    targets_group = True
+    targets_group = False
     targets_interface = False
     targets_method = False
     targets_param = False
@@ -77,38 +57,47 @@ class key(object):
     targets_method = False
     targets_param = False
     targets_annotation = False
+class nullable(object):
+    __id__ = 11296117080722892765
+    targets_file = False
+    targets_const = False
+    targets_enum = False
+    targets_enumerant = False
+    targets_struct = False
+    targets_field = False
+    targets_union = False
+    targets_group = True
+    targets_interface = False
+    targets_method = False
+    targets_param = False
+    targets_annotation = False
+class BoolOption(_BaseEnum):
+    __members__ = ('false', 'true', 'notset',)
+    @staticmethod
+    def _new(x):
+        return BoolOption(x)
+_fill_enum(BoolOption)
+_BoolOption_list_item_type = _EnumItemType(BoolOption)
+
+class Options(_Struct): pass
+Options.__name__ = 'Options'
+
+class group(object):
+    __id__ = 12694526166034528397
+    targets_file = False
+    targets_const = False
+    targets_enum = False
+    targets_enumerant = False
+    targets_struct = False
+    targets_field = True
+    targets_union = False
+    targets_group = False
+    targets_interface = False
+    targets_method = False
+    targets_param = False
+    targets_annotation = False
 
 #### DEFINITIONS ####
-
-@Options_convertCase.__extend__
-class Options_convertCase(_Struct):
-    __static_data_size__ = 1
-    __static_ptrs_size__ = 0
-    
-    
-    @property
-    def is_null(self):
-        # no union check
-        value = self._read_bit(0, 1)
-        if True != 0:
-            value = value ^ True
-        return value
-    
-    @property
-    def value(self):
-        # no union check
-        value = self._read_bit(0, 2)
-        if False != 0:
-            value = value ^ False
-        return value
-    
-    def shortrepr(self):
-        parts = []
-        parts.append("is_null = %s" % str(self.is_null).lower())
-        parts.append("value = %s" % str(self.value).lower())
-        return "(%s)" % ", ".join(parts)
-
-_Options_convertCase_list_item_type = _StructItemType(Options_convertCase)
 
 @Options.__extend__
 class Options(_Struct):
@@ -118,41 +107,27 @@ class Options(_Struct):
     
     @property
     def convert_case(self):
-        g = self._convert_case
-        if g.is_null:
-            return None
-        return g.value
-    
-    @property
-    def _convert_case(self):
         # no union check
-        obj = Options_convertCase.__new__(Options_convertCase)
-        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
-                                  self._data_size, self._ptrs_size)
-        return obj
+        value = self._read_data_int16(0)
+        if 2 != 0:
+            value = (value ^ 2)
+        return BoolOption._new(value)
     
     @staticmethod
-    def __new(convert_case=None):
+    def __new(convert_case=2):
         builder = _SegmentBuilder()
         pos = builder.allocate(8)
-        if convert_case is None:
-            convert_case_is_null = 1
-            convert_case_value = False
-        else:
-            convert_case_is_null = 0
-            convert_case_value = convert_case
-        convert_case_is_null ^= True
-        builder.write_bool(0, 0, convert_case_is_null)
-        builder.write_bool(0, 1, convert_case_value)
+        convert_case ^= 2
+        builder.write_int16(pos + 0, convert_case)
         return builder.as_string()
     
-    def __init__(self, convert_case=None):
+    def __init__(self, convert_case=2):
         _buf = Options.__new(convert_case)
         self._init_from_buffer(_buf, 0, 1, 0)
     
     def shortrepr(self):
         parts = []
-        parts.append("convert_case = %s" % (str(self.convert_case).lower() if self.convert_case is not None else None))
+        parts.append("convert_case = %s" % self.convert_case)
         return "(%s)" % ", ".join(parts)
 
 _Options_list_item_type = _StructItemType(Options)
