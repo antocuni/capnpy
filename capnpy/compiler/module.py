@@ -7,7 +7,7 @@ from six import PY3
 
 from capnpy.util import ensure_unicode
 from capnpy.convert_case import from_camel_case
-from capnpy.annotate import Options
+from capnpy import annotate
 from capnpy.compiler.options import OptionStack
 
 # the following imports have side-effects, and augment the schema.* classes
@@ -26,7 +26,7 @@ class ModuleGenerator(object):
         self.pyx = pyx
         self.version_check = version_check
         self.standalone = standalone
-        self.options = OptionStack(Options(convert_case=convert_case))
+        self.options = OptionStack(annotate.Options(convert_case=convert_case))
         self.allnodes = {} # id -> node
         self.children = defaultdict(list) # nodeId -> nested nodes
         self.importnames = {} # filename -> import name
@@ -52,6 +52,19 @@ class ModuleGenerator(object):
                 res.target = obj
                 return res
         return None
+
+    def push_options(self, node):
+        ann = self.has_annotation(node, annotate.options)
+        if ann:
+            # if there is an 'options' annotation, fetch the value and push it
+            opt = ann.annotation.value.struct.as_struct(annotate.Options)
+            self.options.push(opt)
+        else:
+            # else push a None (so that we can pop() it later)
+            self.options.push(None)
+
+    def pop_options(self):
+        self.options.pop()
 
     def w(self, *args, **kwargs):
         self.code.w(*args, **kwargs)

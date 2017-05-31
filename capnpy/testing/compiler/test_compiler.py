@@ -210,8 +210,6 @@ class TestCompilerOptions(CompilerTest):
         assert mod.bar == 42
         assert mod.baz == b'baz'
 
-
-    @pytest.mark.skip("fix me")
     def test_global_options(self):
         schema = """
         @0xbf5147cbbecf40c1;

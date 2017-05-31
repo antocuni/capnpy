@@ -80,6 +80,7 @@ class RequestedFile:
         #
         filenode = m.allnodes[self.id]
         assert filenode.is_file()
+        m.push_options(filenode)
         m.current_scope = filenode
         m.w("# THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy")
         m.w("# do not edit by hand")
@@ -147,6 +148,7 @@ class RequestedFile:
             m.w('_extend_module_maybe(globals(), modname=__name__)')
         else:
             m.w('_extend_module_maybe(globals(), filename=__schema__)')
+        m.pop_options()
 
     def _declare_imports(self, m):
         for imp in self.imports:
