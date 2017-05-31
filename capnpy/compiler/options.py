@@ -18,8 +18,11 @@ class OptionStack(object):
     def __getattr__(self, name):
         for opt in reversed(self._stack):
             val = getattr(opt, name, None)
-            if val not in (None, BoolOption.notset):
-                return val
+            if val is None:
+                continue
+            if isinstance(val, BoolOption) and val == BoolOption.notset:
+                continue
+            return val
         else:
             raise AttributeError("Option %s does not exists or it is never set"
                                  % name)
