@@ -211,6 +211,25 @@ class TestCompilerOptions(CompilerTest):
         assert mod.baz == b'baz'
 
 
+    @pytest.mark.skip("fix me")
+    def test_global_options(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        $Py.options(convertCase=false);
+
+        struct MyStruct {
+            firstAttr @0 :Int64;
+            secondAttr @1 :Int64;
+        }
+        """
+        mod = self.compile(schema, convert_case=True)
+        # check that the $Py.options annotation has a greater precedence than
+        # the default options
+        assert hasattr(mod.MyStruct, 'firstAttr')
+        assert hasattr(mod.MyStruct, 'secondAttr')
+
+
 class TestCapnpExcecutable(CompilerTest):
 
     def test_capnp_not_found(self, monkeypatch):
