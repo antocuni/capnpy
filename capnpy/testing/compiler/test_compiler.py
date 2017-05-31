@@ -60,6 +60,28 @@ class TestCompilerOptions(CompilerTest):
         assert hasattr(mod.MyStruct, 'firstAttr')
         assert hasattr(mod.MyStruct, 'secondAttr')
 
+    @pytest.skip("implement me")
+    def test_struct_options(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        $Py.options(convertCase=false);
+
+        struct A $Py.options(convertCase=true) {
+            myAttr @0 :Int64;
+        }
+
+        struct B {
+            myAttr @0 :Int64;
+        }
+        """
+        mod = self.compile(schema, convert_case=True)
+        # check that the $Py.options annotation has a greater precedence than
+        # the default options
+        assert hasattr(mod.A, 'first_attr')
+        assert hasattr(mod.B, 'secondAttr')
+
+
     def test_name_clash(self):
         schema = """
         @0xbf5147cbbecf40c1;
