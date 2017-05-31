@@ -113,6 +113,15 @@ class Node(AbstractNode):
         elif self.f.is_slot():
             default_val = self.f.slot.defaultValue.as_pyobj()
             self.default = str(default_val)
+        elif self.f.is_nullable(m):
+            ann = self.f.is_nullable(m)
+            name, f_is_null, f_value = ann.check(m)
+            default_is_null = f_is_null.slot.defaultValue.as_pyobj()
+            default_val = f_value.slot.defaultValue.as_pyobj()
+            if default_is_null:
+                self.default = 'None'
+            else:
+                self.default = str(default_val)
         else:
             assert self.f.is_group()
             items = [child.default for child in self.children]
