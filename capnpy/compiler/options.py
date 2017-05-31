@@ -1,3 +1,5 @@
+from capnpy.annotate import BoolOption
+
 class OptionStack(object):
 
     def __init__(self, opt=None):
@@ -16,7 +18,8 @@ class OptionStack(object):
     def __getattr__(self, name):
         for opt in reversed(self._stack):
             val = getattr(opt, name, None)
-            if val is not None:
+            if val not in (None, BoolOption.notset):
                 return val
         else:
-            raise AttributeError(name)
+            raise AttributeError("Option %s does not exists or it is never set"
+                                 % name)
