@@ -131,10 +131,22 @@ class Field__Slot:
         # Outer.Inner.Point) might be slower in pyx mode, because it has to do
         # the lookup at runtime.
         ns.structcls = self.slot.type.runtime_name(m)
+        self._emit_struct_getter(m, ns, name, return_type='_Struct')
+        ns.ww("""
+            {cpdef} get_{name}(self):
+                res = self.{name}
+                if res is None:
+                    return {structcls}.from_buffer('', 0, data_size=0, ptrs_size=0)
+                return res
+        """)
+        ns.w()
+        self._emit_has_method(ns)
+
+    def _emit_struct_getter(self, m, ns, name, return_type):
         if m.pyx:
             ns.cdef_offset = 'cdef long offset'
             ns.cdef_p = 'cdef long p'
-            ns.cdef_obj = 'cdef _Struct obj'
+            ns.cdef_obj = 'cdef %s obj' % return_type
         else:
             ns.cdef_offset = 'offset'
             ns.cdef_p = 'p'
