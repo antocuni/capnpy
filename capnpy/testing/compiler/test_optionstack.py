@@ -1,5 +1,6 @@
 import pytest
 from capnpy.compiler.options import OptionStack
+from capnpy import annotate
 
 class Options(object):
 
@@ -37,3 +38,11 @@ class TestOptionStack(object):
         opt.push(b)
         assert opt.foo == 3
         assert opt.bar == 2
+
+    def test_notset(self):
+        a = annotate.Options(convert_case=True)
+        b = annotate.Options(convert_case=annotate.BoolOption.notset)
+        opt = OptionStack()
+        opt.push(a)
+        opt.push(b)
+        assert opt.convert_case == True
