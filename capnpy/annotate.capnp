@@ -40,13 +40,8 @@ annotation nullable(group) :Void;
 annotation group(field) :Text;
 
 struct Options {
-    pyx :group $nullable {
+   convertCase :group $nullable {
         isNull @0 :Bool = true;
         value @1 :Bool;
-   }
-
-   convertCase :group $nullable {
-        isNull @2 :Bool = true;
-        value @3 :Bool;
    }
 }
