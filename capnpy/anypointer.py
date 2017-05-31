@@ -4,6 +4,9 @@ from capnpy.blob import Blob
 class AnyPointer(Blob):
 
     def __init__(self, buf, offset, p):
+        self._init_from_pointer(buf, offset, p)
+
+    def _init_from_pointer(self, buf, offset, p):
         self._init_blob(buf)
         self._offset = offset
         self._p = p
@@ -20,3 +23,6 @@ class AnyPointer(Blob):
         res = cls.__new__(cls)
         res._init_from_pointer(self._seg, self._offset, self._p)
         return res
+
+    def as_list(self, itemtype):
+        raise NotImplementedError("implement me")

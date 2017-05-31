@@ -123,6 +123,18 @@ class Field__Slot:
         # Outer.Inner.Point) might be slower in pyx mode, because it has to do
         # the lookup at runtime.
         ns.structcls = self.slot.type.runtime_name(m)
+        self._emit_struct_getter(m, ns, name)
+        ns.ww("""
+            {cpdef} get_{name}(self):
+                res = self.{name}
+                if res is None:
+                    return {structcls}.from_buffer('', 0, data_size=0, ptrs_size=0)
+                return res
+        """)
+        ns.w()
+        self._emit_has_method(ns)
+
+    def _emit_struct_getter(self, m, ns, name):
         if m.pyx:
             ns.cdef_offset = 'cdef long offset'
             ns.cdef_p = 'cdef long p'
@@ -145,15 +157,6 @@ class Field__Slot:
             obj._init_from_pointer(self._seg, offset, p)
             return obj
         """)
-        ns.ww("""
-            {cpdef} get_{name}(self):
-                res = self.{name}
-                if res is None:
-                    return {structcls}.from_buffer('', 0, data_size=0, ptrs_size=0)
-                return res
-        """)
-        ns.w()
-        self._emit_has_method(ns)
 
     def _emit_list(self, m, ns, name):
         ns.name = name
@@ -175,12 +178,8 @@ class Field__Slot:
 
     def _emit_anyPointer(self, m, ns, name):
         ns.name = name
-        m.def_property(ns, name, """
-            {ensure_union}
-            if not self.has_{name}():
-                return None
-            raise ValueError("Cannot get fields of type AnyPointer")
-        """)
+        ns.structcls = '_AnyPointer'
+        self._emit_struct_getter(m, ns, name)
         self._emit_has_method(ns)
 
     def _emit_has_method(self, ns):
