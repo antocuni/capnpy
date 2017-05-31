@@ -1,11 +1,12 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2017-05-31 15:56
+# generated on 2017-05-31 17:43
 
 from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
 from capnpy.struct_ import check_tag as _check_tag
 from capnpy.struct_ import undefined as _undefined
+from capnpy.anypointer import AnyPointer as _AnyPointer
 from capnpy.enum import enum as _enum, fill_enum as _fill_enum
 from capnpy.enum import BaseEnum as _BaseEnum
 from capnpy.type import Types as _Types

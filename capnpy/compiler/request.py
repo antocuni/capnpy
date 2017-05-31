@@ -1,5 +1,6 @@
 import py
 from datetime import datetime
+from capnpy import annotate
 from capnpy import schema
 from capnpy.type import Types
 
