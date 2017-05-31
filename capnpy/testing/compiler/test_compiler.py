@@ -43,7 +43,6 @@ class TestCompilerOptions(CompilerTest):
         assert mod.Foo.first_item == 0
         assert mod.Foo.second_item == 1
 
-    @pytest.mark.skip("fix me")
     def test_global_options(self):
         schema = """
         @0xbf5147cbbecf40c1;
