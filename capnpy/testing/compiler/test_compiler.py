@@ -2,11 +2,10 @@ import py
 import pytest
 import capnpy
 from capnpy.testing.compiler.support import CompilerTest
-from capnpy.compiler.compiler import CompilerError
-
+from capnpy.compiler.compiler import CompilerError, DynamicCompiler
 
 class TestCompilerOptions(CompilerTest):
-    
+
     def test_convert_case_fields(self):
         schema = """
         @0xbf5147cbbecf40c1;
@@ -235,3 +234,21 @@ class TestCapnpExcecutable(CompilerTest):
         monkeypatch.setenv('PATH', str(self.tmpdir))
         exc = py.test.raises(CompilerError, "self.compile(schema)")
         assert str(exc.value).startswith('The capnp executable is too old')
+
+
+
+class TestDynamicCompiler(object):
+
+    def test_parse_schema(self, tmpdir):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        """
+        filename = tmpdir.join('foo.capnp')
+        filename.write(schema)
+        comp = DynamicCompiler([])
+        req = comp.parse_schema(filename=filename)
+        assert req.requestedFiles[0].filename == str(filename)

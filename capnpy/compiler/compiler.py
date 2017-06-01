@@ -42,10 +42,14 @@ class BaseCompiler(object):
                              'please run setup.py install')
         return pyx
 
-    def generate_py_source(self, filename, convert_case, pyx):
-        pyx = self.getpyx(pyx)
+    def _parse_schema_file(self, filename):
         data = self._capnp_compile(filename)
         request = loads(data, schema.CodeGeneratorRequest)
+        return request
+
+    def generate_py_source(self, filename, convert_case, pyx):
+        pyx = self.getpyx(pyx)
+        request = self._parse_schema_file(filename)
         m = ModuleGenerator(request, convert_case, pyx, self.standalone)
         src = m.generate()
         return m, py.code.Source(src)
@@ -109,6 +113,10 @@ class DynamicCompiler(BaseCompiler):
     """
 
     standalone = False
+
+    def parse_schema(self, modname=None, importname=None, filename=None):
+        filename = self._get_filename(modname, importname, filename)
+        return self._parse_schema_file(filename)
 
     def load_schema(self, modname=None, importname=None, filename=None,
                     convert_case=True, pyx='auto'):
