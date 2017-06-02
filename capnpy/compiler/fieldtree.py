@@ -102,7 +102,7 @@ class Node(AbstractNode):
         self.children = []
         if self.f.is_group():
             group = self.f.group.get_node(m)
-            self._add_children(m, group.struct.fields, prefix=self.varname,
+            self._add_children(m, group.get_struct_fields(), prefix=self.varname,
                                field_force_default=field_force_default)
             if group.struct.is_union():
                 self.union = Union(self.varname, group.struct.discriminantOffset*2)
