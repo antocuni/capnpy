@@ -240,7 +240,7 @@ class Field__Group:
         union_default = None
         if groupnode.struct.is_union():
             union_default = '_undefined'
-        tree = FieldTree(m, groupnode.struct)
+        tree = FieldTree(m, groupnode)
         argnames, params = tree.get_args_and_params()
         #
         ns.argnames = m.code.args(argnames)
