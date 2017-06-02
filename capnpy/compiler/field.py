@@ -11,7 +11,7 @@ class Field:
         m.compute_options_generic(self, parent_opt)
 
     def emit(self, m, node):
-        name = m._field_name(self)
+        name = m.field_name(self)
         ns = m.code.new_scope()
         if self.is_part_of_union():
             ns.ensure_union = 'self._ensure_union(%s)' % self.discriminantValue
