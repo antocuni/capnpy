@@ -60,7 +60,7 @@ class TestCompilerOptions(CompilerTest):
         assert hasattr(mod.MyStruct, 'firstAttr')
         assert hasattr(mod.MyStruct, 'secondAttr')
 
-    @pytest.skip("implement me")
+    @pytest.mark.skip("implement me")
     def test_struct_options(self):
         schema = """
         @0xbf5147cbbecf40c1;
