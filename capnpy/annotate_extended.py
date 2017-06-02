@@ -29,3 +29,22 @@ class BoolOption:
         if self == BoolOption.notset:
             raise ValueError("Cannot get the truth value of a 'notset'")
         return bool(int(self))
+
+@Options.__extend__
+class Options:
+
+    FIELDS = ('convert_case',)
+
+    def combine(self, other):
+        """
+        Combine the options of ``self`` and ``other``. ``other``'s options take
+        the precedence, if they are set.
+        """
+        values = {}
+        for fname in self.FIELDS:
+            values[fname] = getattr(self, fname)
+            otherval = getattr(other, fname)
+            assert isinstance(otherval, BoolOption), 'Only BoolOption supported for now'
+            if otherval != BoolOption.notset:
+                values[fname] = otherval
+            return self.__class__(**values)
