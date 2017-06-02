@@ -1,4 +1,5 @@
 from capnpy.schema import Node, Node__Enum, Node__Const, Node__Annotation
+from capnpy import annotate
 
 # The implementation of each node is divided in three parts:
 #     1. forward declaration
@@ -46,6 +47,18 @@ class Node:
         if self.scopeId == 0:
             return None
         return m.allnodes[self.scopeId]
+
+    def compute_options(self, m, parent_opt):
+        ann = m.has_annotation(self, annotate.options)
+        if ann:
+            # this node was annotated with options
+            opt = ann.annotation.value.struct.as_struct(annotate.Options)
+            opt = parent_opt.combine(opt)
+        else:
+            opt = parent_opt
+        m._options[self.id] = opt
+        for child in m.children[self.id]:
+            child.compute_options(m, opt)
 
     def is_nested(self, m):
         parent = self.get_parent(m)

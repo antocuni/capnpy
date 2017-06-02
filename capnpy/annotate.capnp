@@ -46,4 +46,4 @@ struct Options {
     convertCase @0 :BoolOption = notset;
 }
 
-annotation options(file, struct) :Options;
+annotation options(file, struct, field) :Options;

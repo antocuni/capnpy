@@ -45,8 +45,9 @@ class FieldTree(AbstractNode):
             self.struct = None
             fields = struct_or_fields
         else:
-            self.struct = struct_or_fields
-            fields = self.struct.fields
+            struct_node = struct_or_fields
+            self.struct = struct_node.struct
+            fields = struct_node.get_struct_fields()
         #
         if self.struct and self.struct.is_union():
             self.union = Union('anonymous', self.struct.discriminantOffset*2)

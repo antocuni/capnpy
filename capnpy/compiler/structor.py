@@ -16,12 +16,12 @@ class Structor(object):
       - params: [(argname, default)], for each argname in argnames
     """
 
-    def __init__(self, m, struct, fields):
+    def __init__(self, m, structnode, fields):
         self.m = m
-        self.struct = struct
-        self.data_size = struct.dataWordCount
-        self.ptrs_size = struct.pointerCount
-        self.fieldtree = FieldTree(m, self.struct)
+        self.struct = structnode.struct
+        self.data_size = self.struct.dataWordCount
+        self.ptrs_size = self.struct.pointerCount
+        self.fieldtree = FieldTree(m, structnode)
         self.argnames, self.params = self.fieldtree.get_args_and_params()
 
     def slot_offset(self, f):

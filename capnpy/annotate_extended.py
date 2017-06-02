@@ -48,3 +48,4 @@ class Options:
             if otherval != BoolOption.notset:
                 values[fname] = otherval
             return self.__class__(**values)
+
