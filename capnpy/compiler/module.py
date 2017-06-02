@@ -99,7 +99,7 @@ class ModuleGenerator(object):
                 visit(child, deep+2)
         visit(node)
 
-    def _field_name(self, field):
+    def field_name(self, field):
         name = field.name
         name = ensure_unicode(name) if PY3 else name
         if self.options(field).convert_case:
