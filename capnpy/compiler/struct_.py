@@ -17,8 +17,10 @@ class Node__Struct:
         super(schema.Node__Struct, self).compute_options(m, parent_opt)
         # and also for the fields
         opt = m.options(self)
-        for f in self.get_struct_fields():
-            f.compute_options(m, opt)
+        fields = self.get_struct_fields()
+        if fields:
+            for f in fields:
+                f.compute_options(m, opt)
 
     def emit_declaration(self, m):
         children = m.children[self.id]
