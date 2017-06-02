@@ -298,7 +298,7 @@ class Node__Struct:
 
     def _emit_fash_hash(self, m, fieldnames):
         # emit a specialized, fast __hash__.
-        fields = dict([(ensure_unicode(f.name), f) for f in self.struct.fields])
+        fields = dict([(ensure_unicode(f.name), f) for f in self.get_struct_fields()])
         m.w()
         with m.code.block('def __hash__(self):') as ns:
             ns.n = len(fieldnames)
@@ -306,7 +306,7 @@ class Node__Struct:
             # compute the hash of each field
             for ns.i, fname in enumerate(fieldnames):
                 f = fields[fname]
-                ns.fname = m._convert_name(fname)
+                ns.fname = m.field_name(f)
                 if f.is_text():
                     ns.offset = f.slot.offset * f.slot.get_size()
                     ns.w('h[{i}] = self._hash_str_text({offset})')
