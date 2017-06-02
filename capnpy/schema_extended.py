@@ -224,6 +224,19 @@ class Node:
             self.__class__ = Node__Annotation
         return self
 
+    def get_struct_fields(self):
+        """
+        This is equivalent to self.struct.fields, but additionally it attaches an
+        unique ID to each field
+        """
+        assert self.is_struct()
+        fields = self.struct.fields
+        if fields is None:
+            return None
+        fields = list(fields)
+        for f in fields:
+            f._id = (self.id, f.name)
+        return fields
 
 @Node_struct.__extend__
 class Node_struct:
@@ -265,3 +278,11 @@ class Field:
             self.__class__ = Field__Group
         return self
 
+    _id = None
+    @property
+    def id(self):
+        if self._id is None:
+            raise ValueError("no id for this field. Make sure that "
+                             "you get it by calling "
+                             "node.get_struct_fields() instead of "
+                             "node.struct.fields")

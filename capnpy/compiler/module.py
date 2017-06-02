@@ -8,7 +8,6 @@ from six import PY3
 from capnpy.util import ensure_unicode
 from capnpy.convert_case import from_camel_case
 from capnpy import annotate
-from capnpy.compiler.options import OptionStack
 
 # the following imports have side-effects, and augment the schema.* classes
 # with emit() methods
@@ -26,12 +25,16 @@ class ModuleGenerator(object):
         self.pyx = pyx
         self.version_check = version_check
         self.standalone = standalone
-        self.options = OptionStack(annotate.Options(convert_case=convert_case))
         self.allnodes = {} # id -> node
         self.children = defaultdict(list) # nodeId -> nested nodes
+        self._options = {} # node -> Options
         self.importnames = {} # filename -> import name
         self.extra_annotations = defaultdict(list) # obj -> [ann]
         self.field_override = {} # obj -> obj
+        self.default_opt = annotate.Options(convert_case=convert_case)
+
+    def options(self, node_or_field):
+        return self._options[node_or_field.id]
 
     def register_extra_annotation(self, obj, ann):
         self.extra_annotations[obj].append(ann.annotation)
@@ -52,19 +55,6 @@ class ModuleGenerator(object):
                 res.target = obj
                 return res
         return None
-
-    def push_options(self, node):
-        ann = self.has_annotation(node, annotate.options)
-        if ann:
-            # if there is an 'options' annotation, fetch the value and push it
-            opt = ann.annotation.value.struct.as_struct(annotate.Options)
-            self.options.push(opt)
-        else:
-            # else push a None (so that we can pop() it later)
-            self.options.push(None)
-
-    def pop_options(self):
-        self.options.pop()
 
     def w(self, *args, **kwargs):
         self.code.w(*args, **kwargs)
@@ -93,15 +83,11 @@ class ModuleGenerator(object):
                 visit(child, deep+2)
         visit(node)
 
-    def _convert_name(self, name):
-        name = ensure_unicode(name) if PY3 else name
-        if self.options.convert_case:
-            return from_camel_case(name)
-        else:
-            return name
-
     def _field_name(self, field):
-        name = self._convert_name(field.name)
+        name = field.name
+        name = ensure_unicode(name) if PY3 else name
+        if self.options(field).convert_case:
+            name = from_camel_case(name)
         name = self._mangle_name(name)
         return name
 
