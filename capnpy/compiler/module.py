@@ -90,12 +90,6 @@ class ModuleGenerator(object):
                 visit(child, deep+2)
         visit(node)
 
-    ## def _convert_name(self, name):
-    ##     if self.options.convert_case:
-    ##         return from_camel_case(name)
-    ##     else:
-    ##         return name
-
     def _field_name(self, field):
         name = field.name
         if self.options(field).convert_case:
