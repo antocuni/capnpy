@@ -21,3 +21,21 @@ def test_BoolOption():
     #
     f = BoolOption(False)
     assert f == BoolOption.false
+
+def test_FIELDS():
+    # make sure that we listed all the FIELDS
+    all_props = [name for name in dir(Options)
+                 if isinstance(getattr(Options, name), property)]
+    all_props.sort()
+    assert all_props == sorted(Options.FIELDS)
+
+def test_combine():
+    t = Options(convert_case=True)
+    f = Options(convert_case=False)
+    u = Options()
+    assert f.combine(t).convert_case == True
+    assert f.combine(u).convert_case == False
+    assert t.combine(f).convert_case == False
+    assert t.combine(u).convert_case == True
+    assert u.combine(t).convert_case == True
+    assert u.combine(f).convert_case == False
