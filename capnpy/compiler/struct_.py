@@ -100,7 +100,7 @@ class Node__Struct:
         enum_items = [None] * self.struct.discriminantCount
         for field in self.get_struct_fields():
             if field.is_part_of_union():
-                enum_items[field.discriminantValue] = m._field_name(field)
+                enum_items[field.discriminantValue] = m.field_name(field)
         return enum_items
 
     def _emit_union_tag_declaration(self, m):
@@ -175,7 +175,7 @@ class Node__Struct:
         ## def new_foo(cls, x=0, y=0):
         ##     buf = MyStruct.__new(x=x, y=y, foo=None)
         ##     return cls.from_buffer(buf, 0, ..., ...)
-        tag_name = m._field_name(tag_field)
+        tag_name = m.field_name(tag_field)
         name = 'new_' + tag_name
         fieldtree = FieldTree(m, fields, field_force_default=tag_field)
         argnames, params = fieldtree.get_args_and_params()
@@ -188,7 +188,7 @@ class Node__Struct:
         # pass a value for all fields which are not explicitly listed
         for f in self.get_struct_fields():
             if f not in fields:
-                argnames.append((m._field_name(f), '_undefined'))
+                argnames.append((m.field_name(f), '_undefined'))
         #
         ns.w('@classmethod')
         with ns.def_(name, ['cls'] + params):
@@ -209,7 +209,7 @@ class Node__Struct:
             fields = self.get_struct_fields() or []
             ns.w('parts = []')
             for f in fields:
-                ns.fname = m._field_name(f)
+                ns.fname = m.field_name(f)
                 ns.fieldrepr = self._shortrepr_for_field(ns, f)
                 ns.append = ns.format('parts.append("{fname} = %s" % {fieldrepr})')
                 ns.is_default_field = bool(f.discriminantValue == 0)
@@ -275,7 +275,7 @@ class Node__Struct:
         #
         ns = m.code.new_scope()
         fields = [fieldmap[fname] for fname in fieldnames]
-        ns.key = ', '.join(['self.%s' % m._field_name(f) for f in fields])
+        ns.key = ', '.join(['self.%s' % m.field_name(f) for f in fields])
         ns.w()
         ns.ww("""
             def _key(self):

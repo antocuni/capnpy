@@ -6,7 +6,7 @@ class nullable:
     def check(self, m):
         field = self.target
         assert field.is_group()
-        name = m._field_name(field)
+        name = m.field_name(field)
         def error():
             msg = '%s: nullable groups must have exactly two fields: "isNull" and "value"'
             raise ValueError(msg % name)
