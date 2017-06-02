@@ -15,6 +15,7 @@ import capnpy.compiler.request
 import capnpy.compiler.node
 import capnpy.compiler.struct_
 import capnpy.compiler.field
+import capnpy.compiler.enum
 import capnpy.compiler.misc
 
 class ModuleGenerator(object):
@@ -36,6 +37,16 @@ class ModuleGenerator(object):
     def options(self, node_or_field):
         return self._options[node_or_field.id]
 
+    def compute_options_generic(self, entity, parent_opt):
+        ann = self.has_annotation(entity, annotate.options)
+        if ann:
+            # this node was annotated with options
+            opt = ann.annotation.value.struct.as_struct(annotate.Options)
+            opt = parent_opt.combine(opt)
+        else:
+            opt = parent_opt
+        self._options[entity.id] = opt
+
     def register_extra_annotation(self, obj, ann):
         self.extra_annotations[obj].append(ann.annotation)
 
@@ -43,7 +54,12 @@ class ModuleGenerator(object):
         self.field_override[origin] = target
 
     def has_annotation(self, obj, anncls):
-        annotations = self.extra_annotations.get(obj, [])
+        try:
+            annotations = self.extra_annotations.get(obj, [])
+        except TypeError:
+            # obj is not hashable, so we don't have extra_annotations
+            annotations = []
+        #
         if obj.annotations is not None:
             annotations += obj.annotations
         for ann in annotations:
