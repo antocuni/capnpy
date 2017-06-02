@@ -270,7 +270,8 @@ class Node__Struct:
         if ann is None:
             return
         assert ann.annotation.value.is_text()
-        allfields = [ensure_unicode(f.name) for f in self.struct.fields]
+        fieldmap = {ensure_unicode(f.name): f for f in self.get_struct_fields()}
+        allfields = [ensure_unicode(f.name) for f in self.get_struct_fields()]
         # we expect keyfields to be something like "x, y, z" or "*"
         txt = ensure_unicode(ann.annotation.value.text.strip())
         if txt == '*':
@@ -285,7 +286,8 @@ class Node__Struct:
                 raise ValueError("Error in $Py.key: the field '%s' does not exist" % f)
         #
         ns = m.code.new_scope()
-        ns.key = ', '.join(['self.%s' % m._convert_name(f) for f in fieldnames])
+        fields = [fieldmap[fname] for fname in fieldnames]
+        ns.key = ', '.join(['self.%s' % m._field_name(f) for f in fields])
         ns.w()
         ns.ww("""
             def _key(self):
