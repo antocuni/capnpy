@@ -102,7 +102,7 @@ class Node__Struct:
         if self.struct.discriminantCount == 0:
             return []
         enum_items = [None] * self.struct.discriminantCount
-        for field in self.struct.fields:
+        for field in self.get_struct_fields():
             if field.is_part_of_union():
                 enum_items[field.discriminantValue] = m._field_name(field)
         return enum_items
@@ -168,10 +168,10 @@ class Node__Struct:
         ns.w()
 
     def _emit_ctors_union(self, m, ns):
-        for f in self.struct.fields:
+        for f in self.get_struct_fields():
             if f.is_part_of_union():
                 tag_field = f
-                fields = [f for f in self.struct.fields
+                fields = [f for f in self.get_struct_fields()
                           if not f.is_part_of_union() or f == tag_field]
                 self._emit_one_ctor_union(m, ns, fields, tag_field)
 
@@ -181,7 +181,7 @@ class Node__Struct:
         ##     return cls.from_buffer(buf, 0, ..., ...)
         tag_name = m._field_name(tag_field)
         name = 'new_' + tag_name
-        fieldtree = FieldTree(m, XXX, fields, field_force_default=tag_field)
+        fieldtree = FieldTree(m, fields, field_force_default=tag_field)
         argnames, params = fieldtree.get_args_and_params()
         argnames = [(arg, arg) for arg in argnames]
         #
@@ -190,7 +190,7 @@ class Node__Struct:
         # apparently, Cython complains if I don't pass a value for all the
         # parameters, even if they have a default value; thus, we explicitly
         # pass a value for all fields which are not explicitly listed
-        for f in self.struct.fields:
+        for f in self.get_struct_fields():
             if f not in fields:
                 argnames.append((m._field_name(f), '_undefined'))
         #
