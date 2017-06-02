@@ -13,6 +13,14 @@ except ImportError:
 @schema.Node__Struct.__extend__
 class Node__Struct:
 
+    def compute_options(self, m, parent_opt):
+        # compute the options for the children nodes
+        super(schema.Node__Struct, self).compute_options(m, parent_opt)
+        # and also for the fields
+        opt = m.options(self)
+        for f in self.get_struct_fields():
+            f.compute_options(m, opt)
+
     def emit_declaration(self, m):
         children = m.children[self.id]
         for child in children:
@@ -71,7 +79,7 @@ class Node__Struct:
             if self.struct.discriminantCount:
                 self._emit_union_tag(m)
             if self.struct.fields is not None:
-                for field in self.struct.fields:
+                for field in self.get_struct_fields():
                     field.emit(m, self)
                 self._emit_ctors(m)
             self._emit_repr(m)
@@ -147,7 +155,7 @@ class Node__Struct:
         self._emit_ctors_union(m, ns)
 
     def _emit_init(self, m, ns):
-        ctor = Structor(m, self.struct, self.struct.fields)
+        ctor = Structor(m, self, self.struct.fields)
         ctor.emit()
         ns.w()
         with ns.def_('__init__', ['self'] + ctor.params):
@@ -171,7 +179,7 @@ class Node__Struct:
         ##     return cls.from_buffer(buf, 0, ..., ...)
         tag_name = m._field_name(tag_field)
         name = 'new_' + tag_name
-        fieldtree = FieldTree(m, fields, field_force_default=tag_field)
+        fieldtree = FieldTree(m, XXX, fields, field_force_default=tag_field)
         argnames, params = fieldtree.get_args_and_params()
         argnames = [(arg, arg) for arg in argnames]
         #
@@ -200,7 +208,7 @@ class Node__Struct:
         #     return "(%s)" % ", ".join(parts)
         #
         with m.block('{cpdef} shortrepr(self):') as ns:
-            fields = self.struct.fields or []
+            fields = self.get_struct_fields() or []
             ns.w('parts = []')
             for f in fields:
                 ns.fname = m._field_name(f)
