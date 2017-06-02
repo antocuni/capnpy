@@ -8,14 +8,7 @@ from capnpy import annotate
 class Field:
 
     def compute_options(self, m, parent_opt):
-        ann = m.has_annotation(self, annotate.options)
-        if ann:
-            # this node was annotated with options
-            opt = ann.annotation.value.struct.as_struct(annotate.Options)
-            opt = parent_opt.combine(opt)
-        else:
-            opt = parent_opt
-        m._options[self.id] = opt
+        m.compute_options_generic(self, parent_opt)
 
     def emit(self, m, node):
         name = m._field_name(self)

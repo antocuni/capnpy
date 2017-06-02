@@ -238,6 +238,20 @@ class Node:
             f._id = (self.id, f.name)
         return fields
 
+    def get_enum_enumerants(self):
+        """
+        Like get_struct_fields(), but for enum.enumerants
+        """
+        assert self.is_enum()
+        enums = self.enum.enumerants
+        if enums is None:
+            return None
+        enums = list(enums)
+        for e in enums:
+            e._id = (self.id, e.name)
+        return enums
+
+
 @Node_struct.__extend__
 class Node_struct:
 
@@ -282,7 +296,21 @@ class Field:
     @property
     def id(self):
         if self._id is None:
-            raise ValueError("no id for this field. Make sure that "
+            raise ValueError("no id for this Field. Make sure that "
                              "you get it by calling "
                              "node.get_struct_fields() instead of "
                              "node.struct.fields")
+        return self._id
+
+@Enumerant.__extend__
+class Enumerant:
+
+    _id = None
+    @property
+    def id(self):
+        if self._id is None:
+            raise ValueError("no id for this Enumerant. Make sure that "
+                             "you get it by calling "
+                             "node.get_enum_enumerants() instead of "
+                             "node.enum.enumerants")
+        return self._id
