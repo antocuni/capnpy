@@ -38,6 +38,7 @@ class RequestedFile:
         #
         filenode = m.allnodes[self.id]
         assert filenode.is_file()
+        filenode.compute_options(m, m.default_opt)
         m.current_scope = filenode
         m.w("# THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy")
         m.w("# do not edit by hand")
@@ -47,6 +48,7 @@ class RequestedFile:
         m.w("from capnpy.struct_ {cimport} Struct as _Struct")
         m.w("from capnpy.struct_ {cimport} check_tag as _check_tag")
         m.w("from capnpy.struct_ import undefined as _undefined")
+        m.w("from capnpy.anypointer import AnyPointer as _AnyPointer")
         m.w("from capnpy.enum import enum as _enum, fill_enum as _fill_enum")
         m.w("from capnpy.enum {cimport} BaseEnum as _BaseEnum")
         m.w("from capnpy.type import Types as _Types")

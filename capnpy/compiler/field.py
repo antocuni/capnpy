@@ -1,12 +1,16 @@
 from capnpy import schema
+from capnpy import annotate
 from capnpy.type import Types
 from capnpy.compiler.fieldtree import FieldTree
 
 @schema.Field.__extend__
 class Field:
 
+    def compute_options(self, m, parent_opt):
+        m.compute_options_generic(self, parent_opt)
+
     def emit(self, m, node):
-        name = m._field_name(self)
+        name = m.field_name(self)
         ns = m.code.new_scope()
         if self.is_part_of_union():
             ns.ensure_union = 'self._ensure_union(%s)' % self.discriminantValue
@@ -123,10 +127,22 @@ class Field__Slot:
         # Outer.Inner.Point) might be slower in pyx mode, because it has to do
         # the lookup at runtime.
         ns.structcls = self.slot.type.runtime_name(m)
+        self._emit_struct_getter(m, ns, name, return_type='_Struct')
+        ns.ww("""
+            {cpdef} get_{name}(self):
+                res = self.{name}
+                if res is None:
+                    return {structcls}.from_buffer('', 0, data_size=0, ptrs_size=0)
+                return res
+        """)
+        ns.w()
+        self._emit_has_method(ns)
+
+    def _emit_struct_getter(self, m, ns, name, return_type):
         if m.pyx:
             ns.cdef_offset = 'cdef long offset'
             ns.cdef_p = 'cdef long p'
-            ns.cdef_obj = 'cdef _Struct obj'
+            ns.cdef_obj = 'cdef %s obj' % return_type
         else:
             ns.cdef_offset = 'offset'
             ns.cdef_p = 'p'
@@ -145,15 +161,6 @@ class Field__Slot:
             obj._init_from_pointer(self._seg, offset, p)
             return obj
         """)
-        ns.ww("""
-            {cpdef} get_{name}(self):
-                res = self.{name}
-                if res is None:
-                    return {structcls}.from_buffer('', 0, data_size=0, ptrs_size=0)
-                return res
-        """)
-        ns.w()
-        self._emit_has_method(ns)
 
     def _emit_list(self, m, ns, name):
         ns.name = name
@@ -175,12 +182,8 @@ class Field__Slot:
 
     def _emit_anyPointer(self, m, ns, name):
         ns.name = name
-        m.def_property(ns, name, """
-            {ensure_union}
-            if not self.has_{name}():
-                return None
-            raise ValueError("Cannot get fields of type AnyPointer")
-        """)
+        ns.structcls = '_AnyPointer'
+        self._emit_struct_getter(m, ns, name, return_type='object')
         self._emit_has_method(ns)
 
     def _emit_has_method(self, ns):
@@ -237,7 +240,7 @@ class Field__Group:
         union_default = None
         if groupnode.struct.is_union():
             union_default = '_undefined'
-        tree = FieldTree(m, groupnode.struct)
+        tree = FieldTree(m, groupnode)
         argnames, params = tree.get_args_and_params()
         #
         ns.argnames = m.code.args(argnames)

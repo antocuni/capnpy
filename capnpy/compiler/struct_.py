@@ -12,6 +12,16 @@ except ImportError:
 @schema.Node__Struct.__extend__
 class Node__Struct:
 
+    def compute_options(self, m, parent_opt):
+        # compute the options for the children nodes
+        super(schema.Node__Struct, self).compute_options(m, parent_opt)
+        # and also for the fields
+        opt = m.options(self)
+        fields = self.get_struct_fields()
+        if fields:
+            for f in fields:
+                f.compute_options(m, opt)
+
     def emit_declaration(self, m):
         children = m.children[self.id]
         for child in children:
@@ -67,7 +77,7 @@ class Node__Struct:
             if self.struct.discriminantCount:
                 self._emit_union_tag(m)
             if self.struct.fields is not None:
-                for field in self.struct.fields:
+                for field in self.get_struct_fields():
                     field.emit(m, self)
                 self._emit_ctors(m)
             self._emit_repr(m)
@@ -88,9 +98,9 @@ class Node__Struct:
         if self.struct.discriminantCount == 0:
             return []
         enum_items = [None] * self.struct.discriminantCount
-        for field in self.struct.fields:
+        for field in self.get_struct_fields():
             if field.is_part_of_union():
-                enum_items[field.discriminantValue] = m._field_name(field)
+                enum_items[field.discriminantValue] = m.field_name(field)
         return enum_items
 
     def _emit_union_tag_declaration(self, m):
@@ -143,7 +153,7 @@ class Node__Struct:
         self._emit_ctors_union(m, ns)
 
     def _emit_init(self, m, ns):
-        ctor = Structor(m, self.struct, self.struct.fields)
+        ctor = Structor(m, self, self.struct.fields)
         ctor.emit()
         ns.w()
         with ns.def_('__init__', ['self'] + ctor.params):
@@ -154,10 +164,10 @@ class Node__Struct:
         ns.w()
 
     def _emit_ctors_union(self, m, ns):
-        for f in self.struct.fields:
+        for f in self.get_struct_fields():
             if f.is_part_of_union():
                 tag_field = f
-                fields = [f for f in self.struct.fields
+                fields = [f for f in self.get_struct_fields()
                           if not f.is_part_of_union() or f == tag_field]
                 self._emit_one_ctor_union(m, ns, fields, tag_field)
 
@@ -165,7 +175,7 @@ class Node__Struct:
         ## def new_foo(cls, x=0, y=0):
         ##     buf = MyStruct.__new(x=x, y=y, foo=None)
         ##     return cls.from_buffer(buf, 0, ..., ...)
-        tag_name = m._field_name(tag_field)
+        tag_name = m.field_name(tag_field)
         name = 'new_' + tag_name
         fieldtree = FieldTree(m, fields, field_force_default=tag_field)
         argnames, params = fieldtree.get_args_and_params()
@@ -176,9 +186,9 @@ class Node__Struct:
         # apparently, Cython complains if I don't pass a value for all the
         # parameters, even if they have a default value; thus, we explicitly
         # pass a value for all fields which are not explicitly listed
-        for f in self.struct.fields:
+        for f in self.get_struct_fields():
             if f not in fields:
-                argnames.append((m._field_name(f), '_undefined'))
+                argnames.append((m.field_name(f), '_undefined'))
         #
         ns.w('@classmethod')
         with ns.def_(name, ['cls'] + params):
@@ -196,10 +206,10 @@ class Node__Struct:
         #     return "(%s)" % ", ".join(parts)
         #
         with m.block('{cpdef} shortrepr(self):') as ns:
-            fields = self.struct.fields or []
+            fields = self.get_struct_fields() or []
             ns.w('parts = []')
             for f in fields:
-                ns.fname = m._field_name(f)
+                ns.fname = m.field_name(f)
                 ns.fieldrepr = self._shortrepr_for_field(ns, f)
                 ns.append = ns.format('parts.append("{fname} = %s" % {fieldrepr})')
                 ns.is_default_field = bool(f.discriminantValue == 0)
@@ -249,6 +259,7 @@ class Node__Struct:
         if ann is None:
             return
         assert ann.annotation.value.is_text()
+        fieldmap = {f.name: f for f in self.get_struct_fields()}
         allfields = [f.name for f in self.struct.fields]
         # we expect keyfields to be something like "x, y, z" or "*"
         txt = ann.annotation.value.text.strip()
@@ -263,7 +274,8 @@ class Node__Struct:
                 raise ValueError("Error in $Py.key: the field '%s' does not exist" % f)
         #
         ns = m.code.new_scope()
-        ns.key = ', '.join(['self.%s' % m._convert_name(f) for f in fieldnames])
+        fields = [fieldmap[fname] for fname in fieldnames]
+        ns.key = ', '.join(['self.%s' % m.field_name(f) for f in fields])
         ns.w()
         ns.ww("""
             def _key(self):
@@ -275,7 +287,7 @@ class Node__Struct:
 
     def _emit_fash_hash(self, m, fieldnames):
         # emit a specialized, fast __hash__.
-        fields = dict([(f.name, f) for f in self.struct.fields])
+        fields = dict([(f.name, f) for f in self.get_struct_fields()])
         m.w()
         with m.code.block('def __hash__(self):') as ns:
             ns.n = len(fieldnames)
@@ -283,7 +295,7 @@ class Node__Struct:
             # compute the hash of each field
             for ns.i, fname in enumerate(fieldnames):
                 f = fields[fname]
-                ns.fname = m._convert_name(fname)
+                ns.fname = m.field_name(f)
                 if f.is_text():
                     ns.offset = f.slot.offset * f.slot.get_size()
                     ns.w('h[{i}] = self._hash_str_text({offset})')

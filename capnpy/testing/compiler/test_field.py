@@ -370,13 +370,23 @@ class TestField(CompilerTest):
     def test_anyPointer(self):
         schema = """
         @0xbf5147cbbecf40c1;
-        struct Foo {
-            x @0 :AnyPointer;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        struct Value {
+            val @0 :AnyPointer;
         }
         """
         mod = self.compile(schema)
-        f = mod.Foo.from_buffer('somedata', 0, 0, 1)
-        py.test.raises(ValueError, "f.x")
+        buf = ('\x00\x00\x00\x00\x02\x00\x00\x00'   # ptr to 8
+               '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00')  # 2
+        obj = mod.Value.from_buffer(buf, 0, 0, 1)
+        assert obj.val.is_struct()
+        p = obj.val.as_struct(mod.Point)
+        assert p.x == 1
+        assert p.y == 2
 
     def test_anyPointer_null(self):
         schema = """

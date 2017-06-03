@@ -45,8 +45,9 @@ class FieldTree(AbstractNode):
             self.struct = None
             fields = struct_or_fields
         else:
-            self.struct = struct_or_fields
-            fields = self.struct.fields
+            struct_node = struct_or_fields
+            self.struct = struct_node.struct
+            fields = struct_node.get_struct_fields()
         #
         if self.struct and self.struct.is_union():
             self.union = Union('anonymous', self.struct.discriminantOffset*2)
@@ -90,7 +91,7 @@ class Node(AbstractNode):
     def __init__(self, m, f, prefix, field_force_default):
         self.f = f
         self.force_default = (field_force_default and f == field_force_default)
-        self.varname = m._field_name(f)
+        self.varname = m.field_name(f)
         if prefix:
             self.varname = '%s_%s' % (prefix, self.varname)
         self._init_children(m, field_force_default)
@@ -100,7 +101,7 @@ class Node(AbstractNode):
         self.children = []
         if self.f.is_group():
             group = m.allnodes[self.f.group.typeId]
-            self._add_children(m, group.struct.fields, prefix=self.varname,
+            self._add_children(m, group.get_struct_fields(), prefix=self.varname,
                                field_force_default=field_force_default)
             if group.struct.is_union():
                 self.union = Union(self.varname, group.struct.discriminantOffset*2)
@@ -113,6 +114,15 @@ class Node(AbstractNode):
         elif self.f.is_slot():
             default_val = self.f.slot.defaultValue.as_pyobj()
             self.default = str(default_val)
+        elif self.f.is_nullable(m):
+            ann = self.f.is_nullable(m)
+            name, f_is_null, f_value = ann.check(m)
+            default_is_null = f_is_null.slot.defaultValue.as_pyobj()
+            default_val = f_value.slot.defaultValue.as_pyobj()
+            if default_is_null:
+                self.default = 'None'
+            else:
+                self.default = str(default_val)
         else:
             assert self.f.is_group()
             items = [child.default for child in self.children]

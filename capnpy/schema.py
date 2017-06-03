@@ -1,11 +1,12 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2017-04-27 19:02
+# generated on 2017-05-31 17:43
 
 from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
 from capnpy.struct_ import check_tag as _check_tag
 from capnpy.struct_ import undefined as _undefined
+from capnpy.anypointer import AnyPointer as _AnyPointer
 from capnpy.enum import enum as _enum, fill_enum as _fill_enum
 from capnpy.enum import BaseEnum as _BaseEnum
 from capnpy.type import Types as _Types
@@ -40,10 +41,32 @@ Method.__name__ = 'Method'
 class Enumerant(_Struct): pass
 Enumerant.__name__ = 'Enumerant'
 
-class ElementSize(_BaseEnum):
-    __members__ = ['empty', 'bit', 'byte', 'twoBytes', 'fourBytes', 'eightBytes', 'pointer', 'inlineComposite']
-_fill_enum(ElementSize)
-_ElementSize_list_item_type = _EnumItemType(ElementSize)
+class Superclass(_Struct): pass
+Superclass.__name__ = 'Superclass'
+
+class Field_group(_Struct): pass
+Field_group.__name__ = 'Field.group'
+
+class Field_ordinal(_Struct): pass
+Field_ordinal.__name__ = 'Field.ordinal'
+class Field_ordinal__tag__(_BaseEnum):
+    __members__ = ['implicit', 'explicit']
+    @staticmethod
+    def _new(x):
+        return Field_ordinal__tag__(x)
+_fill_enum(Field_ordinal__tag__)
+
+class Field_slot(_Struct): pass
+Field_slot.__name__ = 'Field.slot'
+
+class Field(_Struct): pass
+Field.__name__ = 'Field'
+class Field__tag__(_BaseEnum):
+    __members__ = ['slot', 'group']
+    @staticmethod
+    def _new(x):
+        return Field__tag__(x)
+_fill_enum(Field__tag__)
 
 class Type_anyPointer_parameter(_Struct): pass
 Type_anyPointer_parameter.__name__ = 'Type.anyPointer.parameter'
@@ -55,6 +78,9 @@ class Type_anyPointer(_Struct): pass
 Type_anyPointer.__name__ = 'Type.anyPointer'
 class Type_anyPointer__tag__(_BaseEnum):
     __members__ = ['unconstrained', 'parameter', 'implicitMethodParameter']
+    @staticmethod
+    def _new(x):
+        return Type_anyPointer__tag__(x)
 _fill_enum(Type_anyPointer__tag__)
 
 class Type_struct(_Struct): pass
@@ -73,49 +99,48 @@ class Type(_Struct): pass
 Type.__name__ = 'Type'
 class Type__tag__(_BaseEnum):
     __members__ = ['void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer']
+    @staticmethod
+    def _new(x):
+        return Type__tag__(x)
 _fill_enum(Type__tag__)
-
-class Field_group(_Struct): pass
-Field_group.__name__ = 'Field.group'
-
-class Field_ordinal(_Struct): pass
-Field_ordinal.__name__ = 'Field.ordinal'
-class Field_ordinal__tag__(_BaseEnum):
-    __members__ = ['implicit', 'explicit']
-_fill_enum(Field_ordinal__tag__)
-
-class Field_slot(_Struct): pass
-Field_slot.__name__ = 'Field.slot'
-
-class Field(_Struct): pass
-Field.__name__ = 'Field'
-class Field__tag__(_BaseEnum):
-    __members__ = ['slot', 'group']
-_fill_enum(Field__tag__)
-
-class Superclass(_Struct): pass
-Superclass.__name__ = 'Superclass'
-
-class Value(_Struct): pass
-Value.__name__ = 'Value'
-class Value__tag__(_BaseEnum):
-    __members__ = ['void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer']
-_fill_enum(Value__tag__)
 
 class Brand_Binding(_Struct): pass
 Brand_Binding.__name__ = 'Brand.Binding'
 class Brand_Binding__tag__(_BaseEnum):
     __members__ = ['unbound', 'type']
+    @staticmethod
+    def _new(x):
+        return Brand_Binding__tag__(x)
 _fill_enum(Brand_Binding__tag__)
 
 class Brand_Scope(_Struct): pass
 Brand_Scope.__name__ = 'Brand.Scope'
 class Brand_Scope__tag__(_BaseEnum):
     __members__ = ['bind', 'inherit']
+    @staticmethod
+    def _new(x):
+        return Brand_Scope__tag__(x)
 _fill_enum(Brand_Scope__tag__)
 
 class Brand(_Struct): pass
 Brand.__name__ = 'Brand'
+
+class Value(_Struct): pass
+Value.__name__ = 'Value'
+class Value__tag__(_BaseEnum):
+    __members__ = ['void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer']
+    @staticmethod
+    def _new(x):
+        return Value__tag__(x)
+_fill_enum(Value__tag__)
+
+class ElementSize(_BaseEnum):
+    __members__ = ['empty', 'bit', 'byte', 'twoBytes', 'fourBytes', 'eightBytes', 'pointer', 'inlineComposite']
+    @staticmethod
+    def _new(x):
+        return ElementSize(x)
+_fill_enum(ElementSize)
+_ElementSize_list_item_type = _EnumItemType(ElementSize)
 
 class Annotation(_Struct): pass
 Annotation.__name__ = 'Annotation'
@@ -145,6 +170,9 @@ class Node(_Struct): pass
 Node.__name__ = 'Node'
 class Node__tag__(_BaseEnum):
     __members__ = ['file', 'struct', 'enum', 'interface', 'const', 'annotation']
+    @staticmethod
+    def _new(x):
+        return Node__tag__(x)
 _fill_enum(Node__tag__)
 
 
@@ -533,6 +561,358 @@ class Enumerant(_Struct):
         return "(%s)" % ", ".join(parts)
 
 _Enumerant_list_item_type = _StructItemType(Enumerant)
+
+@Superclass.__extend__
+class Superclass(_Struct):
+    __static_data_size__ = 1
+    __static_ptrs_size__ = 1
+    
+    
+    @property
+    def id(self):
+        # no union check
+        value = self._read_data(0, ord('Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def brand(self):
+        # no union check
+        offset = 0
+        p = self._read_fast_ptr(offset)
+        if _ptr.kind(p) == _ptr.FAR:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset += self._ptrs_offset
+        if p == 0:
+            return None
+        obj = Brand.__new__(Brand)
+        obj._init_from_pointer(self._seg, offset, p)
+        return obj
+    
+    def get_brand(self):
+        res = self.brand
+        if res is None:
+            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
+        return res
+    
+    def has_brand(self):
+        ptr = self._read_fast_ptr(0)
+        return ptr != 0
+    
+    @staticmethod
+    def __new(id=0, brand=None):
+        builder = _SegmentBuilder()
+        pos = builder.allocate(16)
+        builder.write_uint64(pos + 0, id)
+        builder.copy_from_struct(pos + 8, Brand, brand)
+        return builder.as_string()
+    
+    def __init__(self, id=0, brand=None):
+        _buf = Superclass.__new(id, brand)
+        self._init_from_buffer(_buf, 0, 1, 1)
+    
+    def shortrepr(self):
+        parts = []
+        parts.append("id = %s" % self.id)
+        if self.has_brand(): parts.append("brand = %s" % self.get_brand().shortrepr())
+        return "(%s)" % ", ".join(parts)
+
+_Superclass_list_item_type = _StructItemType(Superclass)
+
+@Field_group.__extend__
+class Field_group(_Struct):
+    __static_data_size__ = 3
+    __static_ptrs_size__ = 4
+    
+    
+    @property
+    def typeId(self):
+        # no union check
+        value = self._read_data(16, ord('Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    def shortrepr(self):
+        parts = []
+        parts.append("typeId = %s" % self.typeId)
+        return "(%s)" % ", ".join(parts)
+
+_Field_group_list_item_type = _StructItemType(Field_group)
+
+@Field_ordinal.__extend__
+class Field_ordinal(_Struct):
+    __static_data_size__ = 3
+    __static_ptrs_size__ = 4
+    
+    
+    __tag__ = Field_ordinal__tag__
+    __tag_offset__ = 10
+    
+    def is_implicit(self):
+        return self._read_data_int16(10) == 0
+    def is_explicit(self):
+        return self._read_data_int16(10) == 1
+    
+    @property
+    def implicit(self):
+        self._ensure_union(0)
+        return None
+    
+    @property
+    def explicit(self):
+        self._ensure_union(1)
+        value = self._read_data(12, ord('H'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    def shortrepr(self):
+        parts = []
+        if self.is_implicit(): parts.append("implicit = %s" % "void")
+        if self.is_explicit(): parts.append("explicit = %s" % self.explicit)
+        return "(%s)" % ", ".join(parts)
+
+_Field_ordinal_list_item_type = _StructItemType(Field_ordinal)
+
+@Field_slot.__extend__
+class Field_slot(_Struct):
+    __static_data_size__ = 3
+    __static_ptrs_size__ = 4
+    
+    
+    @property
+    def offset(self):
+        # no union check
+        value = self._read_data(4, ord('I'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def type(self):
+        # no union check
+        offset = 16
+        p = self._read_fast_ptr(offset)
+        if _ptr.kind(p) == _ptr.FAR:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset += self._ptrs_offset
+        if p == 0:
+            return None
+        obj = Type.__new__(Type)
+        obj._init_from_pointer(self._seg, offset, p)
+        return obj
+    
+    def get_type(self):
+        res = self.type
+        if res is None:
+            return Type.from_buffer('', 0, data_size=0, ptrs_size=0)
+        return res
+    
+    def has_type(self):
+        ptr = self._read_fast_ptr(16)
+        return ptr != 0
+    
+    @property
+    def defaultValue(self):
+        # no union check
+        offset = 24
+        p = self._read_fast_ptr(offset)
+        if _ptr.kind(p) == _ptr.FAR:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset += self._ptrs_offset
+        if p == 0:
+            return None
+        obj = Value.__new__(Value)
+        obj._init_from_pointer(self._seg, offset, p)
+        return obj
+    
+    def get_defaultValue(self):
+        res = self.defaultValue
+        if res is None:
+            return Value.from_buffer('', 0, data_size=0, ptrs_size=0)
+        return res
+    
+    def has_defaultValue(self):
+        ptr = self._read_fast_ptr(24)
+        return ptr != 0
+    
+    @property
+    def hadExplicitDefault(self):
+        # no union check
+        value = self._read_bit(16, 1)
+        if False != 0:
+            value = value ^ False
+        return value
+    
+    def shortrepr(self):
+        parts = []
+        parts.append("offset = %s" % self.offset)
+        if self.has_type(): parts.append("type = %s" % self.get_type().shortrepr())
+        if self.has_defaultValue(): parts.append("defaultValue = %s" % self.get_defaultValue().shortrepr())
+        parts.append("hadExplicitDefault = %s" % str(self.hadExplicitDefault).lower())
+        return "(%s)" % ", ".join(parts)
+
+_Field_slot_list_item_type = _StructItemType(Field_slot)
+
+@Field.__extend__
+class Field(_Struct):
+    __static_data_size__ = 3
+    __static_ptrs_size__ = 4
+    
+    noDiscriminant = 65535
+    
+    __tag__ = Field__tag__
+    __tag_offset__ = 8
+    
+    def is_slot(self):
+        return self._read_data_int16(8) == 0
+    def is_group(self):
+        return self._read_data_int16(8) == 1
+    
+    @property
+    def name(self):
+        # no union check
+        return self._read_str_text(0)
+    
+    def get_name(self):
+        return self._read_str_text(0, default_="")
+    
+    def has_name(self):
+        ptr = self._read_fast_ptr(0)
+        return ptr != 0
+    
+    @property
+    def codeOrder(self):
+        # no union check
+        value = self._read_data(0, ord('H'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def annotations(self):
+        # no union check
+        return self._read_list(8, _Annotation_list_item_type)
+    
+    def get_annotations(self):
+        res = self.annotations
+        if res is None:
+            return _List.from_buffer('', 0, 0, 0, _Annotation_list_item_type)
+        return res
+    
+    def has_annotations(self):
+        ptr = self._read_fast_ptr(8)
+        return ptr != 0
+    
+    @property
+    def discriminantValue(self):
+        # no union check
+        value = self._read_data(2, ord('H'))
+        if 65535 != 0:
+            value = value ^ 65535
+        return value
+    
+    @property
+    def slot(self):
+        self._ensure_union(0)
+        obj = Field_slot.__new__(Field_slot)
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
+    
+    @staticmethod
+    def Slot(offset=0, type=None, defaultValue=None, hadExplicitDefault=False):
+        return offset, type, defaultValue, hadExplicitDefault,
+    
+    @property
+    def group(self):
+        self._ensure_union(1)
+        obj = Field_group.__new__(Field_group)
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
+    
+    @staticmethod
+    def Group(typeId=0):
+        return typeId,
+    
+    @property
+    def ordinal(self):
+        # no union check
+        obj = Field_ordinal.__new__(Field_ordinal)
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
+    
+    @staticmethod
+    def Ordinal(implicit=_undefined, explicit=_undefined):
+        return implicit, explicit,
+    
+    @staticmethod
+    def __new(name=None, codeOrder=0, annotations=None, discriminantValue=65535, slot=_undefined, group=_undefined, ordinal=(_undefined, _undefined,)):
+        builder = _SegmentBuilder()
+        pos = builder.allocate(56)
+        anonymous__curtag = None
+        ordinal__curtag = None
+        builder.alloc_text(pos + 24, name)
+        builder.write_uint16(pos + 0, codeOrder)
+        builder.copy_from_list(pos + 32, _Annotation_list_item_type, annotations)
+        discriminantValue ^= 65535
+        builder.write_uint16(pos + 2, discriminantValue)
+        if slot is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'slot')
+            builder.write_int16(8, 0)
+            slot_offset, slot_type, slot_defaultValue, slot_hadExplicitDefault, = slot
+            builder.write_uint32(pos + 4, slot_offset)
+            builder.copy_from_struct(pos + 40, Type, slot_type)
+            builder.copy_from_struct(pos + 48, Value, slot_defaultValue)
+            builder.write_bool(16, 0, slot_hadExplicitDefault)
+        if group is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'group')
+            builder.write_int16(8, 1)
+            group_typeId, = group
+            builder.write_uint64(pos + 16, group_typeId)
+        ordinal_implicit, ordinal_explicit, = ordinal
+        if ordinal_implicit is not _undefined:
+            ordinal__curtag = _check_tag(ordinal__curtag, 'implicit')
+            builder.write_int16(10, 0)
+        if ordinal_explicit is not _undefined:
+            ordinal__curtag = _check_tag(ordinal__curtag, 'explicit')
+            builder.write_int16(10, 1)
+            builder.write_uint16(pos + 12, ordinal_explicit)
+        return builder.as_string()
+    
+    def __init__(self, name=None, codeOrder=0, annotations=None, discriminantValue=65535, slot=_undefined, group=_undefined, ordinal=(_undefined, _undefined,)):
+        _buf = Field.__new(name, codeOrder, annotations, discriminantValue, slot, group, ordinal)
+        self._init_from_buffer(_buf, 0, 3, 4)
+    
+    @classmethod
+    def new_slot(cls, name=None, codeOrder=0, annotations=None, discriminantValue=65535, slot=(0, None, None, False,), ordinal=(_undefined, _undefined,)):
+        buf = Field.__new(name=name, codeOrder=codeOrder, annotations=annotations, discriminantValue=discriminantValue, slot=slot, ordinal=ordinal, group=_undefined)
+        return cls.from_buffer(buf, 0, 3, 4)
+    
+    @classmethod
+    def new_group(cls, name=None, codeOrder=0, annotations=None, discriminantValue=65535, group=(0,), ordinal=(_undefined, _undefined,)):
+        buf = Field.__new(name=name, codeOrder=codeOrder, annotations=annotations, discriminantValue=discriminantValue, group=group, ordinal=ordinal, slot=_undefined)
+        return cls.from_buffer(buf, 0, 3, 4)
+    
+    def shortrepr(self):
+        parts = []
+        if self.has_name(): parts.append("name = %s" % _text_repr(self.get_name()))
+        parts.append("codeOrder = %s" % self.codeOrder)
+        if self.has_annotations(): parts.append("annotations = %s" % self.get_annotations().shortrepr())
+        parts.append("discriminantValue = %s" % self.discriminantValue)
+        if self.is_slot(): parts.append("slot = %s" % self.slot.shortrepr())
+        if self.is_group(): parts.append("group = %s" % self.group.shortrepr())
+        parts.append("ordinal = %s" % self.ordinal.shortrepr())
+        return "(%s)" % ", ".join(parts)
+
+_Field_list_item_type = _StructItemType(Field)
 
 @Type_anyPointer_parameter.__extend__
 class Type_anyPointer_parameter(_Struct):
@@ -1211,80 +1591,29 @@ class Type(_Struct):
 
 _Type_list_item_type = _StructItemType(Type)
 
-@Field_group.__extend__
-class Field_group(_Struct):
-    __static_data_size__ = 3
-    __static_ptrs_size__ = 4
+@Brand_Binding.__extend__
+class Brand_Binding(_Struct):
+    __static_data_size__ = 1
+    __static_ptrs_size__ = 1
     
     
-    @property
-    def typeId(self):
-        # no union check
-        value = self._read_data(16, ord('Q'))
-        if 0 != 0:
-            value = value ^ 0
-        return value
+    __tag__ = Brand_Binding__tag__
+    __tag_offset__ = 0
     
-    def shortrepr(self):
-        parts = []
-        parts.append("typeId = %s" % self.typeId)
-        return "(%s)" % ", ".join(parts)
-
-_Field_group_list_item_type = _StructItemType(Field_group)
-
-@Field_ordinal.__extend__
-class Field_ordinal(_Struct):
-    __static_data_size__ = 3
-    __static_ptrs_size__ = 4
-    
-    
-    __tag__ = Field_ordinal__tag__
-    __tag_offset__ = 10
-    
-    def is_implicit(self):
-        return self._read_data_int16(10) == 0
-    def is_explicit(self):
-        return self._read_data_int16(10) == 1
+    def is_unbound(self):
+        return self._read_data_int16(0) == 0
+    def is_type(self):
+        return self._read_data_int16(0) == 1
     
     @property
-    def implicit(self):
+    def unbound(self):
         self._ensure_union(0)
         return None
     
     @property
-    def explicit(self):
-        self._ensure_union(1)
-        value = self._read_data(12, ord('H'))
-        if 0 != 0:
-            value = value ^ 0
-        return value
-    
-    def shortrepr(self):
-        parts = []
-        if self.is_implicit(): parts.append("implicit = %s" % "void")
-        if self.is_explicit(): parts.append("explicit = %s" % self.explicit)
-        return "(%s)" % ", ".join(parts)
-
-_Field_ordinal_list_item_type = _StructItemType(Field_ordinal)
-
-@Field_slot.__extend__
-class Field_slot(_Struct):
-    __static_data_size__ = 3
-    __static_ptrs_size__ = 4
-    
-    
-    @property
-    def offset(self):
-        # no union check
-        value = self._read_data(4, ord('I'))
-        if 0 != 0:
-            value = value ^ 0
-        return value
-    
-    @property
     def type(self):
-        # no union check
-        offset = 16
+        self._ensure_union(1)
+        offset = 0
         p = self._read_fast_ptr(offset)
         if _ptr.kind(p) == _ptr.FAR:
             offset, p = self._read_far_ptr(offset)
@@ -1303,215 +1632,63 @@ class Field_slot(_Struct):
         return res
     
     def has_type(self):
-        ptr = self._read_fast_ptr(16)
-        return ptr != 0
-    
-    @property
-    def defaultValue(self):
-        # no union check
-        offset = 24
-        p = self._read_fast_ptr(offset)
-        if _ptr.kind(p) == _ptr.FAR:
-            offset, p = self._read_far_ptr(offset)
-        else:
-            offset += self._ptrs_offset
-        if p == 0:
-            return None
-        obj = Value.__new__(Value)
-        obj._init_from_pointer(self._seg, offset, p)
-        return obj
-    
-    def get_defaultValue(self):
-        res = self.defaultValue
-        if res is None:
-            return Value.from_buffer('', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_defaultValue(self):
-        ptr = self._read_fast_ptr(24)
-        return ptr != 0
-    
-    @property
-    def hadExplicitDefault(self):
-        # no union check
-        value = self._read_bit(16, 1)
-        if False != 0:
-            value = value ^ False
-        return value
-    
-    def shortrepr(self):
-        parts = []
-        parts.append("offset = %s" % self.offset)
-        if self.has_type(): parts.append("type = %s" % self.get_type().shortrepr())
-        if self.has_defaultValue(): parts.append("defaultValue = %s" % self.get_defaultValue().shortrepr())
-        parts.append("hadExplicitDefault = %s" % str(self.hadExplicitDefault).lower())
-        return "(%s)" % ", ".join(parts)
-
-_Field_slot_list_item_type = _StructItemType(Field_slot)
-
-@Field.__extend__
-class Field(_Struct):
-    __static_data_size__ = 3
-    __static_ptrs_size__ = 4
-    
-    noDiscriminant = 65535
-    
-    __tag__ = Field__tag__
-    __tag_offset__ = 8
-    
-    def is_slot(self):
-        return self._read_data_int16(8) == 0
-    def is_group(self):
-        return self._read_data_int16(8) == 1
-    
-    @property
-    def name(self):
-        # no union check
-        return self._read_str_text(0)
-    
-    def get_name(self):
-        return self._read_str_text(0, default_="")
-    
-    def has_name(self):
         ptr = self._read_fast_ptr(0)
         return ptr != 0
     
-    @property
-    def codeOrder(self):
-        # no union check
-        value = self._read_data(0, ord('H'))
-        if 0 != 0:
-            value = value ^ 0
-        return value
-    
-    @property
-    def annotations(self):
-        # no union check
-        return self._read_list(8, _Annotation_list_item_type)
-    
-    def get_annotations(self):
-        res = self.annotations
-        if res is None:
-            return _List.from_buffer('', 0, 0, 0, _Annotation_list_item_type)
-        return res
-    
-    def has_annotations(self):
-        ptr = self._read_fast_ptr(8)
-        return ptr != 0
-    
-    @property
-    def discriminantValue(self):
-        # no union check
-        value = self._read_data(2, ord('H'))
-        if 65535 != 0:
-            value = value ^ 65535
-        return value
-    
-    @property
-    def slot(self):
-        self._ensure_union(0)
-        obj = Field_slot.__new__(Field_slot)
-        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
-                                  self._data_size, self._ptrs_size)
-        return obj
-    
     @staticmethod
-    def Slot(offset=0, type=None, defaultValue=None, hadExplicitDefault=False):
-        return offset, type, defaultValue, hadExplicitDefault,
-    
-    @property
-    def group(self):
-        self._ensure_union(1)
-        obj = Field_group.__new__(Field_group)
-        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
-                                  self._data_size, self._ptrs_size)
-        return obj
-    
-    @staticmethod
-    def Group(typeId=0):
-        return typeId,
-    
-    @property
-    def ordinal(self):
-        # no union check
-        obj = Field_ordinal.__new__(Field_ordinal)
-        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
-                                  self._data_size, self._ptrs_size)
-        return obj
-    
-    @staticmethod
-    def Ordinal(implicit=_undefined, explicit=_undefined):
-        return implicit, explicit,
-    
-    @staticmethod
-    def __new(name=None, codeOrder=0, annotations=None, discriminantValue=65535, slot=_undefined, group=_undefined, ordinal=(_undefined, _undefined,)):
+    def __new(unbound=_undefined, type=_undefined):
         builder = _SegmentBuilder()
-        pos = builder.allocate(56)
+        pos = builder.allocate(16)
         anonymous__curtag = None
-        ordinal__curtag = None
-        builder.alloc_text(pos + 24, name)
-        builder.write_uint16(pos + 0, codeOrder)
-        builder.copy_from_list(pos + 32, _Annotation_list_item_type, annotations)
-        discriminantValue ^= 65535
-        builder.write_uint16(pos + 2, discriminantValue)
-        if slot is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'slot')
-            builder.write_int16(8, 0)
-            slot_offset, slot_type, slot_defaultValue, slot_hadExplicitDefault, = slot
-            builder.write_uint32(pos + 4, slot_offset)
-            builder.copy_from_struct(pos + 40, Type, slot_type)
-            builder.copy_from_struct(pos + 48, Value, slot_defaultValue)
-            builder.write_bool(16, 0, slot_hadExplicitDefault)
-        if group is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'group')
-            builder.write_int16(8, 1)
-            group_typeId, = group
-            builder.write_uint64(pos + 16, group_typeId)
-        ordinal_implicit, ordinal_explicit, = ordinal
-        if ordinal_implicit is not _undefined:
-            ordinal__curtag = _check_tag(ordinal__curtag, 'implicit')
-            builder.write_int16(10, 0)
-        if ordinal_explicit is not _undefined:
-            ordinal__curtag = _check_tag(ordinal__curtag, 'explicit')
-            builder.write_int16(10, 1)
-            builder.write_uint16(pos + 12, ordinal_explicit)
+        if unbound is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'unbound')
+            builder.write_int16(0, 0)
+        if type is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'type')
+            builder.write_int16(0, 1)
+            builder.copy_from_struct(pos + 8, Type, type)
         return builder.as_string()
     
-    def __init__(self, name=None, codeOrder=0, annotations=None, discriminantValue=65535, slot=_undefined, group=_undefined, ordinal=(_undefined, _undefined,)):
-        _buf = Field.__new(name, codeOrder, annotations, discriminantValue, slot, group, ordinal)
-        self._init_from_buffer(_buf, 0, 3, 4)
+    def __init__(self, unbound=_undefined, type=_undefined):
+        _buf = Brand_Binding.__new(unbound, type)
+        self._init_from_buffer(_buf, 0, 1, 1)
     
     @classmethod
-    def new_slot(cls, name=None, codeOrder=0, annotations=None, discriminantValue=65535, slot=(0, None, None, False,), ordinal=(_undefined, _undefined,)):
-        buf = Field.__new(name=name, codeOrder=codeOrder, annotations=annotations, discriminantValue=discriminantValue, slot=slot, ordinal=ordinal, group=_undefined)
-        return cls.from_buffer(buf, 0, 3, 4)
+    def new_unbound(cls, unbound=None):
+        buf = Brand_Binding.__new(unbound=unbound, type=_undefined)
+        return cls.from_buffer(buf, 0, 1, 1)
     
     @classmethod
-    def new_group(cls, name=None, codeOrder=0, annotations=None, discriminantValue=65535, group=(0,), ordinal=(_undefined, _undefined,)):
-        buf = Field.__new(name=name, codeOrder=codeOrder, annotations=annotations, discriminantValue=discriminantValue, group=group, ordinal=ordinal, slot=_undefined)
-        return cls.from_buffer(buf, 0, 3, 4)
+    def new_type(cls, type=None):
+        buf = Brand_Binding.__new(type=type, unbound=_undefined)
+        return cls.from_buffer(buf, 0, 1, 1)
     
     def shortrepr(self):
         parts = []
-        if self.has_name(): parts.append("name = %s" % _text_repr(self.get_name()))
-        parts.append("codeOrder = %s" % self.codeOrder)
-        if self.has_annotations(): parts.append("annotations = %s" % self.get_annotations().shortrepr())
-        parts.append("discriminantValue = %s" % self.discriminantValue)
-        if self.is_slot(): parts.append("slot = %s" % self.slot.shortrepr())
-        if self.is_group(): parts.append("group = %s" % self.group.shortrepr())
-        parts.append("ordinal = %s" % self.ordinal.shortrepr())
+        if self.is_unbound(): parts.append("unbound = %s" % "void")
+        if self.is_type() and (self.has_type() or
+                                  not False):
+            parts.append("type = %s" % self.get_type().shortrepr())
         return "(%s)" % ", ".join(parts)
 
-_Field_list_item_type = _StructItemType(Field)
+_Brand_Binding_list_item_type = _StructItemType(Brand_Binding)
 
-@Superclass.__extend__
-class Superclass(_Struct):
-    __static_data_size__ = 1
+@Brand_Scope.__extend__
+class Brand_Scope(_Struct):
+    __static_data_size__ = 2
     __static_ptrs_size__ = 1
     
     
+    __tag__ = Brand_Scope__tag__
+    __tag_offset__ = 8
+    
+    def is_bind(self):
+        return self._read_data_int16(8) == 0
+    def is_inherit(self):
+        return self._read_data_int16(8) == 1
+    
     @property
-    def id(self):
+    def scopeId(self):
         # no union check
         value = self._read_data(0, ord('Q'))
         if 0 != 0:
@@ -1519,49 +1696,105 @@ class Superclass(_Struct):
         return value
     
     @property
-    def brand(self):
-        # no union check
-        offset = 0
-        p = self._read_fast_ptr(offset)
-        if _ptr.kind(p) == _ptr.FAR:
-            offset, p = self._read_far_ptr(offset)
-        else:
-            offset += self._ptrs_offset
-        if p == 0:
-            return None
-        obj = Brand.__new__(Brand)
-        obj._init_from_pointer(self._seg, offset, p)
-        return obj
+    def bind(self):
+        self._ensure_union(0)
+        return self._read_list(0, _Brand_Binding_list_item_type)
     
-    def get_brand(self):
-        res = self.brand
+    def get_bind(self):
+        res = self.bind
         if res is None:
-            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
+            return _List.from_buffer('', 0, 0, 0, _Brand_Binding_list_item_type)
         return res
     
-    def has_brand(self):
+    def has_bind(self):
+        ptr = self._read_fast_ptr(0)
+        return ptr != 0
+    
+    @property
+    def inherit(self):
+        self._ensure_union(1)
+        return None
+    
+    @staticmethod
+    def __new(scopeId=0, bind=_undefined, inherit=_undefined):
+        builder = _SegmentBuilder()
+        pos = builder.allocate(24)
+        anonymous__curtag = None
+        builder.write_uint64(pos + 0, scopeId)
+        if bind is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'bind')
+            builder.write_int16(8, 0)
+            builder.copy_from_list(pos + 16, _Brand_Binding_list_item_type, bind)
+        if inherit is not _undefined:
+            anonymous__curtag = _check_tag(anonymous__curtag, 'inherit')
+            builder.write_int16(8, 1)
+        return builder.as_string()
+    
+    def __init__(self, scopeId=0, bind=_undefined, inherit=_undefined):
+        _buf = Brand_Scope.__new(scopeId, bind, inherit)
+        self._init_from_buffer(_buf, 0, 2, 1)
+    
+    @classmethod
+    def new_bind(cls, scopeId=0, bind=None):
+        buf = Brand_Scope.__new(scopeId=scopeId, bind=bind, inherit=_undefined)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    @classmethod
+    def new_inherit(cls, scopeId=0, inherit=None):
+        buf = Brand_Scope.__new(scopeId=scopeId, inherit=inherit, bind=_undefined)
+        return cls.from_buffer(buf, 0, 2, 1)
+    
+    def shortrepr(self):
+        parts = []
+        parts.append("scopeId = %s" % self.scopeId)
+        if self.is_bind() and (self.has_bind() or
+                                  not True):
+            parts.append("bind = %s" % self.get_bind().shortrepr())
+        if self.is_inherit(): parts.append("inherit = %s" % "void")
+        return "(%s)" % ", ".join(parts)
+
+_Brand_Scope_list_item_type = _StructItemType(Brand_Scope)
+
+@Brand.__extend__
+class Brand(_Struct):
+    __static_data_size__ = 0
+    __static_ptrs_size__ = 1
+    
+    Binding = Brand_Binding
+    Scope = Brand_Scope
+    
+    @property
+    def scopes(self):
+        # no union check
+        return self._read_list(0, _Brand_Scope_list_item_type)
+    
+    def get_scopes(self):
+        res = self.scopes
+        if res is None:
+            return _List.from_buffer('', 0, 0, 0, _Brand_Scope_list_item_type)
+        return res
+    
+    def has_scopes(self):
         ptr = self._read_fast_ptr(0)
         return ptr != 0
     
     @staticmethod
-    def __new(id=0, brand=None):
+    def __new(scopes=None):
         builder = _SegmentBuilder()
-        pos = builder.allocate(16)
-        builder.write_uint64(pos + 0, id)
-        builder.copy_from_struct(pos + 8, Brand, brand)
+        pos = builder.allocate(8)
+        builder.copy_from_list(pos + 0, _Brand_Scope_list_item_type, scopes)
         return builder.as_string()
     
-    def __init__(self, id=0, brand=None):
-        _buf = Superclass.__new(id, brand)
-        self._init_from_buffer(_buf, 0, 1, 1)
+    def __init__(self, scopes=None):
+        _buf = Brand.__new(scopes)
+        self._init_from_buffer(_buf, 0, 0, 1)
     
     def shortrepr(self):
         parts = []
-        parts.append("id = %s" % self.id)
-        if self.has_brand(): parts.append("brand = %s" % self.get_brand().shortrepr())
+        if self.has_scopes(): parts.append("scopes = %s" % self.get_scopes().shortrepr())
         return "(%s)" % ", ".join(parts)
 
-_Superclass_list_item_type = _StructItemType(Superclass)
+_Brand_list_item_type = _StructItemType(Brand)
 
 @Value.__extend__
 class Value(_Struct):
@@ -1731,9 +1964,17 @@ class Value(_Struct):
     @property
     def list(self):
         self._ensure_union(14)
-        if not self.has_list():
+        offset = 0
+        p = self._read_fast_ptr(offset)
+        if _ptr.kind(p) == _ptr.FAR:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset += self._ptrs_offset
+        if p == 0:
             return None
-        raise ValueError("Cannot get fields of type AnyPointer")
+        obj = _AnyPointer.__new__(_AnyPointer)
+        obj._init_from_pointer(self._seg, offset, p)
+        return obj
     
     def has_list(self):
         ptr = self._read_fast_ptr(0)
@@ -1750,9 +1991,17 @@ class Value(_Struct):
     @property
     def struct(self):
         self._ensure_union(16)
-        if not self.has_struct():
+        offset = 0
+        p = self._read_fast_ptr(offset)
+        if _ptr.kind(p) == _ptr.FAR:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset += self._ptrs_offset
+        if p == 0:
             return None
-        raise ValueError("Cannot get fields of type AnyPointer")
+        obj = _AnyPointer.__new__(_AnyPointer)
+        obj._init_from_pointer(self._seg, offset, p)
+        return obj
     
     def has_struct(self):
         ptr = self._read_fast_ptr(0)
@@ -1766,9 +2015,17 @@ class Value(_Struct):
     @property
     def anyPointer(self):
         self._ensure_union(18)
-        if not self.has_anyPointer():
+        offset = 0
+        p = self._read_fast_ptr(offset)
+        if _ptr.kind(p) == _ptr.FAR:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset += self._ptrs_offset
+        if p == 0:
             return None
-        raise ValueError("Cannot get fields of type AnyPointer")
+        obj = _AnyPointer.__new__(_AnyPointer)
+        obj._init_from_pointer(self._seg, offset, p)
+        return obj
     
     def has_anyPointer(self):
         ptr = self._read_fast_ptr(0)
@@ -1988,211 +2245,6 @@ class Value(_Struct):
         return "(%s)" % ", ".join(parts)
 
 _Value_list_item_type = _StructItemType(Value)
-
-@Brand_Binding.__extend__
-class Brand_Binding(_Struct):
-    __static_data_size__ = 1
-    __static_ptrs_size__ = 1
-    
-    
-    __tag__ = Brand_Binding__tag__
-    __tag_offset__ = 0
-    
-    def is_unbound(self):
-        return self._read_data_int16(0) == 0
-    def is_type(self):
-        return self._read_data_int16(0) == 1
-    
-    @property
-    def unbound(self):
-        self._ensure_union(0)
-        return None
-    
-    @property
-    def type(self):
-        self._ensure_union(1)
-        offset = 0
-        p = self._read_fast_ptr(offset)
-        if _ptr.kind(p) == _ptr.FAR:
-            offset, p = self._read_far_ptr(offset)
-        else:
-            offset += self._ptrs_offset
-        if p == 0:
-            return None
-        obj = Type.__new__(Type)
-        obj._init_from_pointer(self._seg, offset, p)
-        return obj
-    
-    def get_type(self):
-        res = self.type
-        if res is None:
-            return Type.from_buffer('', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_type(self):
-        ptr = self._read_fast_ptr(0)
-        return ptr != 0
-    
-    @staticmethod
-    def __new(unbound=_undefined, type=_undefined):
-        builder = _SegmentBuilder()
-        pos = builder.allocate(16)
-        anonymous__curtag = None
-        if unbound is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'unbound')
-            builder.write_int16(0, 0)
-        if type is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'type')
-            builder.write_int16(0, 1)
-            builder.copy_from_struct(pos + 8, Type, type)
-        return builder.as_string()
-    
-    def __init__(self, unbound=_undefined, type=_undefined):
-        _buf = Brand_Binding.__new(unbound, type)
-        self._init_from_buffer(_buf, 0, 1, 1)
-    
-    @classmethod
-    def new_unbound(cls, unbound=None):
-        buf = Brand_Binding.__new(unbound=unbound, type=_undefined)
-        return cls.from_buffer(buf, 0, 1, 1)
-    
-    @classmethod
-    def new_type(cls, type=None):
-        buf = Brand_Binding.__new(type=type, unbound=_undefined)
-        return cls.from_buffer(buf, 0, 1, 1)
-    
-    def shortrepr(self):
-        parts = []
-        if self.is_unbound(): parts.append("unbound = %s" % "void")
-        if self.is_type() and (self.has_type() or
-                                  not False):
-            parts.append("type = %s" % self.get_type().shortrepr())
-        return "(%s)" % ", ".join(parts)
-
-_Brand_Binding_list_item_type = _StructItemType(Brand_Binding)
-
-@Brand_Scope.__extend__
-class Brand_Scope(_Struct):
-    __static_data_size__ = 2
-    __static_ptrs_size__ = 1
-    
-    
-    __tag__ = Brand_Scope__tag__
-    __tag_offset__ = 8
-    
-    def is_bind(self):
-        return self._read_data_int16(8) == 0
-    def is_inherit(self):
-        return self._read_data_int16(8) == 1
-    
-    @property
-    def scopeId(self):
-        # no union check
-        value = self._read_data(0, ord('Q'))
-        if 0 != 0:
-            value = value ^ 0
-        return value
-    
-    @property
-    def bind(self):
-        self._ensure_union(0)
-        return self._read_list(0, _Brand_Binding_list_item_type)
-    
-    def get_bind(self):
-        res = self.bind
-        if res is None:
-            return _List.from_buffer('', 0, 0, 0, _Brand_Binding_list_item_type)
-        return res
-    
-    def has_bind(self):
-        ptr = self._read_fast_ptr(0)
-        return ptr != 0
-    
-    @property
-    def inherit(self):
-        self._ensure_union(1)
-        return None
-    
-    @staticmethod
-    def __new(scopeId=0, bind=_undefined, inherit=_undefined):
-        builder = _SegmentBuilder()
-        pos = builder.allocate(24)
-        anonymous__curtag = None
-        builder.write_uint64(pos + 0, scopeId)
-        if bind is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'bind')
-            builder.write_int16(8, 0)
-            builder.copy_from_list(pos + 16, _Brand_Binding_list_item_type, bind)
-        if inherit is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'inherit')
-            builder.write_int16(8, 1)
-        return builder.as_string()
-    
-    def __init__(self, scopeId=0, bind=_undefined, inherit=_undefined):
-        _buf = Brand_Scope.__new(scopeId, bind, inherit)
-        self._init_from_buffer(_buf, 0, 2, 1)
-    
-    @classmethod
-    def new_bind(cls, scopeId=0, bind=None):
-        buf = Brand_Scope.__new(scopeId=scopeId, bind=bind, inherit=_undefined)
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    @classmethod
-    def new_inherit(cls, scopeId=0, inherit=None):
-        buf = Brand_Scope.__new(scopeId=scopeId, inherit=inherit, bind=_undefined)
-        return cls.from_buffer(buf, 0, 2, 1)
-    
-    def shortrepr(self):
-        parts = []
-        parts.append("scopeId = %s" % self.scopeId)
-        if self.is_bind() and (self.has_bind() or
-                                  not True):
-            parts.append("bind = %s" % self.get_bind().shortrepr())
-        if self.is_inherit(): parts.append("inherit = %s" % "void")
-        return "(%s)" % ", ".join(parts)
-
-_Brand_Scope_list_item_type = _StructItemType(Brand_Scope)
-
-@Brand.__extend__
-class Brand(_Struct):
-    __static_data_size__ = 0
-    __static_ptrs_size__ = 1
-    
-    Binding = Brand_Binding
-    Scope = Brand_Scope
-    
-    @property
-    def scopes(self):
-        # no union check
-        return self._read_list(0, _Brand_Scope_list_item_type)
-    
-    def get_scopes(self):
-        res = self.scopes
-        if res is None:
-            return _List.from_buffer('', 0, 0, 0, _Brand_Scope_list_item_type)
-        return res
-    
-    def has_scopes(self):
-        ptr = self._read_fast_ptr(0)
-        return ptr != 0
-    
-    @staticmethod
-    def __new(scopes=None):
-        builder = _SegmentBuilder()
-        pos = builder.allocate(8)
-        builder.copy_from_list(pos + 0, _Brand_Scope_list_item_type, scopes)
-        return builder.as_string()
-    
-    def __init__(self, scopes=None):
-        _buf = Brand.__new(scopes)
-        self._init_from_buffer(_buf, 0, 0, 1)
-    
-    def shortrepr(self):
-        parts = []
-        if self.has_scopes(): parts.append("scopes = %s" % self.get_scopes().shortrepr())
-        return "(%s)" % ", ".join(parts)
-
-_Brand_list_item_type = _StructItemType(Brand)
 
 @Annotation.__extend__
 class Annotation(_Struct):
@@ -2416,7 +2468,7 @@ class Node_struct(_Struct):
         value = self._read_data_int16(26)
         if 0 != 0:
             value = (value ^ 0)
-        return ElementSize.__new__(ElementSize, value)
+        return ElementSize._new(value)
     
     @property
     def isGroup(self):
