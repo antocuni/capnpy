@@ -42,8 +42,20 @@ enum BoolOption {
     notset @2;
 }
 
+# To add a new option:
+#
+#   1. add the field here
+#
+#   2. add it to Options.FIELDS in annotate_extended.py
+#
+#   3. make sure to pass a default value when you create self.default_opt in
+#      compiler/module.py
+#
+#   4. if you add an option of type different than BoolOption, make sure that
+#      Options.combine knows about it
 struct Options {
     convertCase @0 :BoolOption = notset;
+    canBeRoot @1 :BoolOption = notset;
 }
 
 annotation options(file, struct, field) :Options;

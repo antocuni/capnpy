@@ -33,7 +33,7 @@ class BoolOption:
 @Options.__extend__
 class Options:
 
-    FIELDS = ('convert_case',)
+    FIELDS = ('convert_case', 'can_be_root')
 
     def combine(self, other):
         """

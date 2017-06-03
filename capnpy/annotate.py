@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2017-05-31 17:43
+# generated on 2017-06-03 11:37
 
 from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
@@ -33,7 +33,7 @@ class options(object):
     targets_enum = False
     targets_enumerant = False
     targets_struct = True
-    targets_field = False
+    targets_field = True
     targets_union = False
     targets_group = False
     targets_interface = False
@@ -57,6 +57,14 @@ class nullable(object):
     targets_method = False
     targets_param = False
     targets_annotation = False
+class BoolOption(_BaseEnum):
+    __members__ = ['false', 'true', 'notset']
+    @staticmethod
+    def _new(x):
+        return BoolOption(x)
+_fill_enum(BoolOption)
+_BoolOption_list_item_type = _EnumItemType(BoolOption)
+
 class key(object):
     __id__ = 14658097673689429382
     targets_file = False
@@ -71,14 +79,6 @@ class key(object):
     targets_method = False
     targets_param = False
     targets_annotation = False
-class BoolOption(_BaseEnum):
-    __members__ = ['false', 'true', 'notset']
-    @staticmethod
-    def _new(x):
-        return BoolOption(x)
-_fill_enum(BoolOption)
-_BoolOption_list_item_type = _EnumItemType(BoolOption)
-
 
 #### DEFINITIONS ####
 
@@ -96,21 +96,32 @@ class Options(_Struct):
             value = (value ^ 2)
         return BoolOption._new(value)
     
+    @property
+    def can_be_root(self):
+        # no union check
+        value = self._read_data_int16(2)
+        if 2 != 0:
+            value = (value ^ 2)
+        return BoolOption._new(value)
+    
     @staticmethod
-    def __new(convert_case=2):
+    def __new(convert_case=2, can_be_root=2):
         builder = _SegmentBuilder()
         pos = builder.allocate(8)
         convert_case ^= 2
         builder.write_int16(pos + 0, convert_case)
+        can_be_root ^= 2
+        builder.write_int16(pos + 2, can_be_root)
         return builder.as_string()
     
-    def __init__(self, convert_case=2):
-        _buf = Options.__new(convert_case)
+    def __init__(self, convert_case=2, can_be_root=2):
+        _buf = Options.__new(convert_case, can_be_root)
         self._init_from_buffer(_buf, 0, 1, 0)
     
     def shortrepr(self):
         parts = []
         parts.append("convert_case = %s" % self.convert_case)
+        parts.append("can_be_root = %s" % self.can_be_root)
         return "(%s)" % ", ".join(parts)
 
 _Options_list_item_type = _StructItemType(Options)

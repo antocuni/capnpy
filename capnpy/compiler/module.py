@@ -26,7 +26,10 @@ class ModuleGenerator(object):
         self._options = {} # node -> Options
         self.importnames = {} # filename -> import name
         self.extra_annotations = defaultdict(list) # obj -> [ann]
-        self.default_opt = annotate.Options(convert_case=convert_case)
+        self.default_opt = annotate.Options(
+            convert_case=convert_case,
+            can_be_root=True,
+        )
 
     def options(self, node_or_field):
         return self._options[node_or_field.id]
