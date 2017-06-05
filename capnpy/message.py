@@ -130,7 +130,9 @@ def dumps(obj):
     The message is encoded using the recommended capnp format for serializing
     messages over a stream. It always uses a single segment.
     """
-    if obj._is_compact():
+    # disable the fast path for now, it is buggy if the message is not in
+    # pre-order
+    if False and obj._is_compact():
         # fast path. On CPython, the real speedup comes from the fact that we
         # do not create a temporary SegmentBuilder. The memcpy vs copy_pointer
         # difference seems negligible, for small objects at least.
