@@ -51,8 +51,19 @@ class Visitor(object):
 
 class EndOf(Visitor):
     """
-    Find the end boundary of the object pointed by p.
-    This assumes that the buffer is in pre-order.
+    Check whether the given object is compact, and in that case compute its
+    end boundary.
+
+    An object is compact if:
+
+      1. its pointers are ordered (i.e., the offsets of its children increase
+         monotonically)
+
+      2. there is no gap between its data section and its ptrs section
+
+      3. there is no gap between children
+
+      4. its children are compact
     """
 
     def visit_ptrs(self, buf, offset, ptrs_size):
