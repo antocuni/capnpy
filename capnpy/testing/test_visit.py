@@ -67,25 +67,29 @@ class TestEndOf(object):
         end = self.end_of(buf, 8, data_size=1, ptrs_size=2)
         assert end == -1 # not compact
 
-
-    def test_struct_one_null_ptr(self):
+    def test_struct_first_null_ptr(self):
         buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
-               '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+               '\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
                '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
-               'garbage1'
-               'garbage2'
                '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
                '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
         end = self.end_of(buf, 0, data_size=1, ptrs_size=2)
-        #assert start == 40  # XXX
-        assert end == 56
+        assert end == 40
+
+    def test_struct_second_null_ptr(self):
+        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+               '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to a, NULL
+               '\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
+               '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
+        end = self.end_of(buf, 0, data_size=1, ptrs_size=2)
+        assert end == 40
 
     def test_struct_all_null_ptrs(self):
         buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
                '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to a, NULL
                '\x00\x00\x00\x00\x00\x00\x00\x00')   # ptr to b, NULL
         end = self.end_of(buf, 0, data_size=1, ptrs_size=2)
-        #assert start == 24 # XXX
         assert end == 24
 
     def test_children_out_of_order(self):
