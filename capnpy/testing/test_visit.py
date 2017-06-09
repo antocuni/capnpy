@@ -93,7 +93,16 @@ class TestEndOf(object):
         assert end == 24
 
     def test_children_out_of_order(self):
-        XXX # write me
+        buf = ('garbage0'
+               '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+               '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+               '\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
+               '\x01\x00\x00\x00\x00\x00\x00\x00'    # b.x == 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00'    # b.y == 2
+               '\x03\x00\x00\x00\x00\x00\x00\x00'    # a.x == 3
+               '\x04\x00\x00\x00\x00\x00\x00\x00')   # a.y == 4
+        end = self.end_of(buf, 8, data_size=1, ptrs_size=2)
+        assert end == -1
 
     def test_list_primitive(self):
         buf = ('\x0d\x00\x00\x00\x1a\x00\x00\x00'   #  0: ptr list<8>  to a
