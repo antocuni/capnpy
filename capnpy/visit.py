@@ -48,22 +48,21 @@ class Visitor(object):
     def visit_list_bit(self, buf, p, offset, count):
         raise NotImplementedError
 
+class NotCompact(Exception):
+    pass
 
 class EndOf(Visitor):
     """
     Check whether the given object is compact, and in that case compute its
-    end boundary.
+    end boundary. If it's not compact, return -1.
 
     An object is compact if:
 
-      1. its pointers are ordered (i.e., the offsets of its children increase
-         monotonically)
+      1. there is no gap between its data section and its ptrs section
 
-      2. there is no gap between its data section and its ptrs section
+      2. there is no gap between children
 
-      3. there is no gap between children
-
-      4. its children are compact
+      3. its children are compact
     """
 
     def visit_ptrs(self, buf, offset, ptrs_size):
@@ -76,12 +75,25 @@ class EndOf(Visitor):
                 return self.visit(buf, p2, p2_offset)
         return -1
 
+    def visit_ptrs(self, buf, offset, ptrs_size):
+        current_end = offset + (ptrs_size*8)
+        i = 0
+        while i < ptrs_size:
+            p_offset = offset + i*8
+            i += 1
+            p = buf.read_ptr(p_offset)
+            if not p:
+                continue
+            new_start = ptr.deref(p, p_offset)
+            if new_start != current_end:
+                raise NotCompact
+            current_end = self.visit(buf, p, p_offset)
+        #
+        return current_end
+
     def visit_struct(self, buf, p, offset, data_size, ptrs_size):
         offset += data_size*8
-        end = self.visit_ptrs(buf, offset, ptrs_size)
-        if end != -1:
-            return end
-        return offset + (ptrs_size*8)
+        return self.visit_ptrs(buf, offset, ptrs_size)
 
     def visit_list_composite(self, buf, p, offset, count, data_size, ptrs_size):
         item_size = (data_size+ptrs_size)*8
@@ -170,7 +182,10 @@ class IsCompact(Visitor):
 
 
 def end_of(buf, p, offset):
-    return _end_of.visit(buf, p, offset)
+    try:
+        return _end_of.visit(buf, p, offset)
+    except NotCompact:
+        return -1
 
 def is_compact(buf, p, offset):
     return _is_compact.visit(buf, p, offset)

@@ -18,7 +18,7 @@ class TestEndOf(object):
         end = self.end_of(buf, 16, data_size=2, ptrs_size=0)
         assert end == 32
 
-    def test_struct_ptrs_not_compact(self):
+    def test_struct_ptrs_compact(self):
         ## struct Point {
         ##   x @0 :Int64;
         ##   y @1 :Int64;
@@ -31,6 +31,18 @@ class TestEndOf(object):
         ## }
         buf = ('garbage0'
                '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+               '\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+               '\x08\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
+               '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
+               '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
+               '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
+        end = self.end_of(buf, 8, data_size=1, ptrs_size=2)
+        assert end == 64
+
+    def test_struct_gap_before_children(self):
+        buf = ('garbage0'
+               '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
                '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
                '\x10\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
                'garbage1'
@@ -40,20 +52,21 @@ class TestEndOf(object):
                '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
                '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
         end = self.end_of(buf, 8, data_size=1, ptrs_size=2)
-        #assert start == 48
-        assert end == 80
+        assert end == -1 # not compact
 
-    def test_struct_ptrs_compact(self):
+    def test_struct_gap_between_children(self):
         buf = ('garbage0'
                '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
                '\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
-               '\x08\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
+               '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
                '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
                '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
+               'garbage1'
                '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
                '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
-        is_compact = self.is_compact(buf, 8, ptr.STRUCT, data_size=1, ptrs_size=2)
-        assert is_compact
+        end = self.end_of(buf, 8, data_size=1, ptrs_size=2)
+        assert end == -1 # not compact
+
 
     def test_struct_one_null_ptr(self):
         buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
