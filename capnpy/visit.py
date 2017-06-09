@@ -66,16 +66,6 @@ class EndOf(Visitor):
     """
 
     def visit_ptrs(self, buf, offset, ptrs_size):
-        i = ptrs_size
-        while i > 0:
-            i -= 1
-            p2_offset = offset + i*8
-            p2 = buf.read_ptr(p2_offset)
-            if p2:
-                return self.visit(buf, p2, p2_offset)
-        return -1
-
-    def visit_ptrs(self, buf, offset, ptrs_size):
         current_end = offset + (ptrs_size*8)
         i = 0
         while i < ptrs_size:
