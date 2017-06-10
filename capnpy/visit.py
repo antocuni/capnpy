@@ -90,7 +90,7 @@ class EndOf(Visitor):
         offset += 8 # skip the tag
         end = offset + (item_size)*count
         if ptrs_size == 0:
-            return current_end
+            return end
         #
         i = 0
         while i < count:

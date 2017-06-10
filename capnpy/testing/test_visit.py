@@ -169,6 +169,7 @@ class TestEndOf(object):
         ##   name @2 :Text;
         ## }
         buf = ('garbage0'
+               '\x01\x00\x00\x00\x4f\x00\x00\x00'   # ptr to list
                '\x0c\x00\x00\x00\x02\x00\x01\x00'   # list tag
                '\x01\x00\x00\x00\x00\x00\x00\x00'   # points[0].x == 1
                '\x02\x00\x00\x00\x00\x00\x00\x00'   # points[0].y == 2
@@ -184,10 +185,8 @@ class TestEndOf(object):
                'P' 'o' 'i' 'n' 't' ' ' 'B' '\x00'
                'P' 'o' 'i' 'n' 't' ' ' 'C' '\x00'
                'garbage2')
-        is_compact = self.is_compact(buf, 8, ptr.LIST,
-                                     size_tag=ptr.LIST_SIZE_COMPOSITE,
-                                     item_count=3)
-        assert not is_compact
+        end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
+        assert end == -1 # not compact
 
     def test_list_composite_one_null_ptr(self):
         ## struct Point {
@@ -211,7 +210,6 @@ class TestEndOf(object):
                'P' 'o' 'i' 'n' 't' ' ' 'B' '\x00'
                'garbage1')
         end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
-        #assert start == 16  # XXX
         assert end == 112
         assert buf[end:] == 'garbage1'
 
@@ -235,7 +233,6 @@ class TestEndOf(object):
                '\x00\x00\x00\x00\x00\x00\x00\x00'   # points[2].name == NULL
                'garbage1')
         end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
-        #assert start == 16  # XXX
         assert end == 96
         assert buf[end:] == 'garbage1'
 
@@ -250,7 +247,6 @@ class TestEndOf(object):
                'garbage1'
                'garbage2')
         end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
-        #assert start == 16  # XXX
         assert end == 56
         assert buf[end:] == 'garbage1garbage2'
 
