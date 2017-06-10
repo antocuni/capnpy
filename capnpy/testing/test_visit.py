@@ -1,6 +1,6 @@
 from capnpy import ptr
 from capnpy.printer import print_buffer
-from capnpy.visit import end_of, is_compact
+from capnpy.visit import end_of
 from capnpy.segment.segment import Segment
 
 class TestEndOf(object):
