@@ -65,8 +65,7 @@ class EndOf(Visitor):
       3. its children are compact
     """
 
-    def visit_ptrs(self, buf, offset, ptrs_size):
-        current_end = offset + (ptrs_size*8)
+    def visit_ptrs(self, buf, offset, ptrs_size, current_end):
         i = 0
         while i < ptrs_size:
             p_offset = offset + i*8
@@ -83,21 +82,23 @@ class EndOf(Visitor):
 
     def visit_struct(self, buf, p, offset, data_size, ptrs_size):
         offset += data_size*8
-        return self.visit_ptrs(buf, offset, ptrs_size)
+        current_end = offset + (ptrs_size*8)
+        return self.visit_ptrs(buf, offset, ptrs_size, current_end)
 
     def visit_list_composite(self, buf, p, offset, count, data_size, ptrs_size):
         item_size = (data_size+ptrs_size)*8
-        offset += 8
-        if ptrs_size:
-            i = count
-            while i > 0:
-                i -= 1
-                item_offset = offset + (item_size)*i + (data_size*8)
-                end = self.visit_ptrs(buf, item_offset, ptrs_size)
-                if end != -1:
-                    return end
-        # no ptr found
-        return offset + (item_size)*count
+        offset += 8 # skip the tag
+        end = offset + (item_size)*count
+        if ptrs_size == 0:
+            return current_end
+        #
+        i = 0
+        while i < count:
+            item_offset = offset + (item_size)*i + (data_size*8)
+            end = self.visit_ptrs(buf, item_offset, ptrs_size, end)
+            i += 1
+        #
+        return end
 
     def visit_list_ptr(self, buf, p, offset, count):
         end = self.visit_ptrs(buf, offset, count)

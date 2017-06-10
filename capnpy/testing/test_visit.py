@@ -159,7 +159,6 @@ class TestEndOf(object):
                'P' 'o' 'i' 'n' 't' ' ' 'C' '\x00'
                'garbage1')
         end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
-        #assert start == 16  # XXX
         assert end == 120
         assert buf[end:] == 'garbage1'
 
