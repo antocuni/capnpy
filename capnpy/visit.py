@@ -119,59 +119,6 @@ class EndOf(Visitor):
         return offset + bytes_length
 
 
-class IsCompact(Visitor):
-    """
-    Determines whether the object pointed by p is "compact", i.e. when its
-    first children starts immediately after its body. This assumes the buffer
-    is in pre-order.
-    """
-
-    def start_of_ptrs(self, buf, offset, ptrs_size):
-        i = 0
-        while i < ptrs_size:
-            p2_offset = offset + i*8
-            p2 = buf.read_ptr(p2_offset)
-            if p2:
-                return ptr.deref(p2, p2_offset)
-            i += 1
-        return -1
-
-    def visit_struct(self, buf, p, offset, data_size, ptrs_size):
-        """
-        A struct is compact if its first non-null pointer points immediately after
-        the end of its body.
-        """
-        end_of_body = offset + (data_size+ptrs_size)*8
-        offset += data_size*8
-        start_of_children = self.start_of_ptrs(buf, offset, ptrs_size)
-        return start_of_children == -1 or start_of_children == end_of_body
-
-    def visit_list_primitive(self, buf, p, offset, item_size, count):
-        return True
-
-    def visit_list_bit(self, buf, p, offset, count):
-        return True
-
-    def visit_list_composite(self, buf, p, offset, count, data_size, ptrs_size):
-        offset += 8
-        item_size = (data_size+ptrs_size)*8
-        end_of_items = offset + item_size*count
-        if ptrs_size:
-            i = 0
-            while i < count:
-                item_offset = offset + (item_size)*i + (data_size*8)
-                start_of_children = self.start_of_ptrs(buf, item_offset, ptrs_size)
-                if start_of_children != -1:
-                    return start_of_children == end_of_items
-                i += 1
-        # no ptr found
-        return True
-
-    def visit_list_ptr(self, buf, p, offset, count):
-        end_of_items = offset + count*8
-        start_of_children = self.start_of_ptrs(buf, offset, count)
-        return start_of_children == -1 or start_of_children == end_of_items
-
 
 def end_of(buf, p, offset):
     try:
@@ -179,8 +126,5 @@ def end_of(buf, p, offset):
     except NotCompact:
         return -1
 
-def is_compact(buf, p, offset):
-    return _is_compact.visit(buf, p, offset)
 
 _end_of = EndOf()
-_is_compact = IsCompact()
