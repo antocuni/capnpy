@@ -124,10 +124,10 @@ class TestEndOf(object):
         end_b = self.end_of(buf, 16, data_size=0, ptrs_size=1)
         end_c = self.end_of(buf, 32, data_size=0, ptrs_size=1)
         end_d = self.end_of(buf, 56, data_size=0, ptrs_size=1)
-        assert end_a == 8 + 3
-        assert end_b == 24 + (3*2)
-        assert end_c == 40 + (3*4)
-        assert end_d == 64 + (3*8)
+        assert end_a == 16 # 8 + 3      rounded to word boundary
+        assert end_b == 32 # 24 + (3*2) rounded to word boundary
+        assert end_c == 56 # 40 + (3*4) rounded to word boundary
+        assert end_d == 88 # 64 + (3*8) rounded to word boundary
 
     def test_list_of_bool(self):
         buf = ('garbage1'
@@ -263,11 +263,7 @@ class TestEndOf(object):
                'a' ' ' 'l' 'o' 'n' 'g' ' ' 's'
                't' 'r' 'i' 'n' 'g' '\x00\x00\x00')
         end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
-        #assert start == 16  # XXX
-        # note that the end if 88, not 86: the last two \x00\x00 are not counted,
-        # because they are padding, not actual data
-        assert end == 86
-        assert buf[end:] == '\x00\x00'
+        assert end == 88
 
     def test_list_of_pointers_not_compact(self):
         buf = ('garbage0'
