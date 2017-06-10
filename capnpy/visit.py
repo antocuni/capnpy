@@ -1,8 +1,5 @@
 from capnpy import ptr
 
-def round_to_word(pos):
-    return (pos + (8 - 1)) & -8  # Round up to 8-byte boundary
-
 class Visitor(object):
     """
     Generic logic for visiting an arbitrary capnp object.
@@ -109,7 +106,7 @@ class EndOf(Visitor):
 
     def visit_list_primitive(self, buf, p, offset, item_size, count):
         item_size = ptr.list_item_length(item_size)
-        return round_to_word(offset + item_size*count)
+        return ptr.round_up_to_word(offset + item_size*count)
 
     def visit_list_bit(self, buf, p, offset, count):
         bytes_length = count / 8

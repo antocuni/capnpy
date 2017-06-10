@@ -138,7 +138,6 @@ def dumps(obj):
         # difference seems negligible, for small objects at least.
         start = obj._data_offset
         end = obj._get_end()
-        end = (end + (8 - 1)) & -8  # Round up to 8-byte boundary
         p = ptr.new_struct(0, obj._data_size, obj._ptrs_size)
         return obj._seg.dump_message(p, start, end)
     else:

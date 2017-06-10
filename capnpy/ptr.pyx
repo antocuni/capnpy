@@ -109,3 +109,6 @@ def _far_offset(ptr):
 def _far_target(ptr):
     return far_target(ptr)
 
+@remove_underscore
+def _round_up_to_word(i):
+    return round_up_to_word(i)
