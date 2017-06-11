@@ -134,7 +134,7 @@ class TestEndOf(object):
                '\x01\x00\x00\x00\x19\x00\x00\x00'    # ptrlist
                '\x03\x00\x00\x00\x00\x00\x00\x00')   # [True, True, False]
         end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
-        assert end == 17
+        assert end == 24
 
     def test_list_composite_compact(self):
         ## struct Point {
