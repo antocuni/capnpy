@@ -547,7 +547,7 @@ the ``name`` field (because we are using an older schema):
 
     >>> hasattr(p2, 'name')
     False
-    >>> 'this is my name' in p2._buf.s
+    >>> 'this is my name' in p2._seg.buf
     True
 
 So, what should ``p1 == p2`` return? We might choose to simply ignore the
