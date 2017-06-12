@@ -84,11 +84,11 @@ class Struct(Blob):
     def load_all(cls, f):
         return capnpy.message.load_all(f, cls)
 
-    def dumps(self):
-        return capnpy.message.dumps(self)
+    def dumps(self, fastpath=True):
+        return capnpy.message.dumps(self, fastpath)
 
-    def dump(self, f):
-        capnpy.message.dump(self, f)
+    def dump(self, f, fastpath=True):
+        capnpy.message.dump(self, f, fastpath)
 
     def shortrepr(self):
         return '(no shortrepr)'
