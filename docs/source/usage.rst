@@ -494,16 +494,22 @@ You can check for compactness by calling the ``_is_compact`` method:
     >>> p._is_compact()
     True
 
-Note that if you have a Cap'n Proto *list*, its items are **not** compact,
-even if the list itself is. This happens because of the gap between the "body"
-of each items (which are next to each other in the list) and their children
-(which starts after the list).
+
+List items
+----------
+
+Cap'n Proto lists are implemented in such a way that items are placed one next
+to the other, and the children of the items are placed at the end of the list
+body.  This means that, if the items have children, surely there will be a gap.
+
+Hence, as soon as you have a Cap'n Proto list whose items have pointers, the
+items are **not** compact, even if the list as a whole is.
 
 .. doctest::
 
     >>> mod = capnpy.load_schema('example_compact')
-    >>> p0 = mod.Point(1, 2)
-    >>> p1 = mod.Point(3, 4)
+    >>> p0 = mod.Point(1, 2, name='p0')
+    >>> p1 = mod.Point(3, 4, name='p1')
     >>> poly = mod.Polygon(points=[p0, p1])
     >>> poly._is_compact()
     True
@@ -526,17 +532,17 @@ suggests, the newly created message is guaranteed to be compact:
 .. doctest::
 
     >>> mod = capnpy.load_schema('example_compact')
-    >>> poly = mod.Polygon([mod.Point(1, 2), mod.Point(3, 4)])
+    >>> poly = mod.Polygon([mod.Point(1, 2, 'p0'), mod.Point(3, 4, 'p1')])
     >>> len(poly._seg.buf)
-    48
+    80
     >>> p0 = poly.points[0]
     >>> len(p0._seg.buf)   # p0 keeps the whole segment alive
-    48
+    80
     >>> p0._is_compact()
     False
     >>> pnew = p0.compact()
     >>> len(pnew._seg.buf) # pnew keeps only a subset alive
-    24
+    40
     >>> pnew._is_compact()
     True
 
