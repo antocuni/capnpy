@@ -315,7 +315,7 @@ union.
     >>> mod = capnpy.load_schema('example_union')
     >>> Shape, Type = mod.Shape, mod.Type
     >>> Shape.__tag__
-    <class 'capnpy.enum.Shape.__tag__'>
+    <class 'example_union.Shape__tag__'>
     >>> Shape.__tag__.__members__
     ('circle', 'square')
     >>> Type.__tag__.__members__
@@ -326,7 +326,7 @@ the ``is_*()`` methods which are automatically generated:
 
     >>> s = Shape(area=16, square=4)
     >>> s.which()
-    <Shape.__tag__.square: 1>
+    <Shape__tag__.square: 1>
     >>> s.__which__()
     1
     >>> s.is_circle()
@@ -373,7 +373,7 @@ field:
 
     >>> t = Type.new_int64()
     >>> t.which()
-    <Type.__tag__.int64: 2>
+    <Type__tag__.int64: 2>
     >>> t.is_int64()
     True
 
@@ -443,7 +443,7 @@ use ``None``:
 Reading named unions is the same as anonymous ones:
 
     >>> p1.job.which()
-    <job.__tag__.unemployed: 0>
+    <Person_job__tag__.unemployed: 0>
     >>> p1.job.is_unemployed()
     True
     >>> p2.job.employer
@@ -635,7 +635,7 @@ the ``name`` field (because we are using an older schema):
 
     >>> hasattr(p2, 'name')
     False
-    >>> 'this is my name' in p2._buf.s
+    >>> 'this is my name' in p2._seg.buf
     True
 
 So, what should ``p1 == p2`` return? We might choose to simply ignore the

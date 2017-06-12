@@ -227,6 +227,7 @@ class TestCharter(object):
             group = lambda b: None)
         #
         assert chart.title == 'My title'
+        chart.raw_series.sort(key=lambda s:s[1]['title'])
         assert chart.raw_series == [
             ([{'value': 1}, {'value': 2}], {'title': 'capnpy'}),
             ([{'value': 3}, {'value': 4}], {'title': 'instance'})
@@ -257,6 +258,7 @@ class TestCharter(object):
             group = lambda b: None)
         #
         assert chart.title == 'My title'
+        chart.raw_series.sort(key=lambda s:s[1]['title'])
         assert chart.raw_series == [
             ([{'value': 1}, {'value': 2}, None, {'value': 4}], {'title': 'capnpy'}),
             ([None, {'value': 2}, {'value': 3}, {'value': 4}], {'title': 'instance'})
