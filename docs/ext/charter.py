@@ -10,6 +10,12 @@ import py
 from dotmap import DotMap
 import pygal
 
+try:
+    # see GroupedBarChart.get_point for why it's needed
+    import scipy
+except ImportError:
+    scipy = None
+
 class SecondsFormatter(pygal.formatters.HumanReadable):
 
     def __call__(self, val):
@@ -49,14 +55,15 @@ class GroupedBarChart(object):
         self.data = {} # [(series_name, group)] -> point
 
     def get_point(self, b):
-        point = {
-            'value': b.stats.mean,
-            'ci': {
+        point = {'value': b.stats.mean}
+        if scipy:
+            # scipy is needed to compute confidence intervals; however, if
+            # it's not installed we don't want pygal to crash.
+            point['ci'] = {
                 'type': 'continuous',
                 'sample_size': b.stats.rounds,
                 'stddev': b.stats.stddev
             }
-        }
         return format_point(b, point)
 
     def add(self, series_name, group, b):

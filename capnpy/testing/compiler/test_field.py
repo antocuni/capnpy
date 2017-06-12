@@ -166,6 +166,7 @@ class TestField(CompilerTest):
         }
         """
         mod = self.compile(schema)
+        assert mod.Color.__members__ == ('red', 'green', 'blue', 'yellow')
         #      color      gender     padding
         buf = '\x02\x00' '\x01\x00' '\x00\x00\x00\x00'
         f = mod.Foo.from_buffer(buf, 0, 1, 0)

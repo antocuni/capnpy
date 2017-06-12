@@ -91,7 +91,7 @@ class ModuleGenerator(object):
         items = map(repr, items)
         ns = self.code.new_scope()
         ns.name = compile_name
-        ns.members = "[%s]" % (', '.join(items))
+        ns.members = "(%s,)" % (', '.join(items))
         ns.prebuilt = [ns.format('{name}({i})', i=i)
                     for i in range(len(items))]
         ns.prebuilt = ', '.join(ns.prebuilt)
