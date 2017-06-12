@@ -50,12 +50,10 @@ install:
   - bash ./travis/install_capnp.sh
   - pip install -U pip # so that we can use wheels
   - pip install tox-travis
-  - pip install pygal dotmap
 
 script:
   - bash ./travis/clone-benchmarks-repo.sh
   - tox
-  - py.test docs/ext
   - bash ./travis/commit-results.sh
 
 notifications:
