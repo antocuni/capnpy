@@ -123,22 +123,34 @@ def _load_buffer_multiple_segments(f, n):
     # 5. we are finally done :)
     return MultiSegment(buf, tuple(segment_offsets))
 
-def dumps(obj):
+def dumps(obj, fastpath=True):
     """
     Dump a struct into a message, returned as a string of bytes.
 
     The message is encoded using the recommended capnp format for serializing
     messages over a stream. It always uses a single segment.
+
+    By default, it tries to follow a fast path: it checks if the object is
+    "compact" (as defined by capnpy/visit.py) and, is so, uses a fast memcpy
+    to dump the whole message.
+
+    If the fast path can be taken, it is approximately 5x faster on CPython
+    and 10x faster on PyPy. However, if the object is **not** compact, the
+    fast path check makes it ~2x slower. If you are sure that the object is
+    not compact, you can disable the check by passing ``fastpath=False``.
     """
-    # disable the fast path for now, it is buggy if the message is not in
-    # pre-order
-    if False and obj._is_compact():
+    if fastpath:
+        # try the fast path: if the object is compact, we can dump the
+        # object with a fast memcpy
+        end = obj._get_end()
+    else:
+        end = -1
+    #
+    if end != -1:
         # fast path. On CPython, the real speedup comes from the fact that we
         # do not create a temporary SegmentBuilder. The memcpy vs copy_pointer
         # difference seems negligible, for small objects at least.
         start = obj._data_offset
-        end = obj._get_end()
-        end = (end + (8 - 1)) & -8  # Round up to 8-byte boundary
         p = ptr.new_struct(0, obj._data_size, obj._ptrs_size)
         return obj._seg.dump_message(p, start, end)
     else:
@@ -152,9 +164,9 @@ def dumps(obj):
         builder.write_uint32(4, segment_size)
         return builder.as_string()
 
-def dump(obj, f):
+def dump(obj, f, fastpath=True):
     """
     Same as dumps, but write to the specified file instead of returning a
     string
     """
-    f.write(dumps(obj))
+    f.write(dumps(obj, fastpath))

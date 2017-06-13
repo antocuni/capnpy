@@ -3,9 +3,6 @@ from capnpy import ptr
 from capnpy.packing import mychr
 from capnpy.printer import print_buffer
 
-def round_to_word(pos):
-    return (pos + (8 - 1)) & -8  # Round up to 8-byte boundary
-
 class SegmentBuilder(object):
 
     def __init__(self, length=None):
@@ -84,7 +81,7 @@ class SegmentBuilder(object):
         Allocate a new list of the given size, and write the resulting pointer
         at position i. Return the newly allocated position.
         """
-        body_length = round_to_word(body_length)
+        body_length = ptr.round_up_to_word(body_length)
         result = self.allocate(body_length)
         offet = result - (pos+8)
         p = ptr.new_list(offet/8, size_tag, item_count)

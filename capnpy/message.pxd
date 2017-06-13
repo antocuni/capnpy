@@ -26,4 +26,4 @@ cpdef _load_buffer_multiple_segments(FileLike f, int n)
 
 @cython.locals(builder=SegmentBuilder, segment_size=long, segment_count=long,
                p=long, start=long, end=long)
-cpdef dumps(Struct obj)
+cpdef dumps(Struct obj, bint fastpath=*)

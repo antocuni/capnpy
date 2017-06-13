@@ -48,121 +48,77 @@ class Visitor(object):
     def visit_list_bit(self, buf, p, offset, count):
         raise NotImplementedError
 
+class NotCompact(Exception):
+    pass
 
 class EndOf(Visitor):
     """
-    Find the end boundary of the object pointed by p.
-    This assumes that the buffer is in pre-order.
+    Check whether the given object is compact, and in that case compute its
+    end boundary. If it's not compact, return -1.
+
+    An object is compact if:
+
+      1. there is no gap between its data section and its ptrs section
+
+      2. there is no gap between children
+
+      3. its children are compact
     """
 
-    def visit_ptrs(self, buf, offset, ptrs_size):
-        i = ptrs_size
-        while i > 0:
-            i -= 1
-            p2_offset = offset + i*8
-            p2 = buf.read_ptr(p2_offset)
-            if p2:
-                return self.visit(buf, p2, p2_offset)
-        return -1
+    def visit_ptrs(self, buf, offset, ptrs_size, current_end):
+        i = 0
+        while i < ptrs_size:
+            p_offset = offset + i*8
+            i += 1
+            p = buf.read_ptr(p_offset)
+            if not p:
+                continue
+            new_start = ptr.deref(p, p_offset)
+            if new_start != current_end:
+                raise NotCompact
+            current_end = self.visit(buf, p, p_offset)
+        #
+        return current_end
 
     def visit_struct(self, buf, p, offset, data_size, ptrs_size):
         offset += data_size*8
-        end = self.visit_ptrs(buf, offset, ptrs_size)
-        if end != -1:
-            return end
-        return offset + (ptrs_size*8)
+        current_end = offset + (ptrs_size*8)
+        return self.visit_ptrs(buf, offset, ptrs_size, current_end)
 
     def visit_list_composite(self, buf, p, offset, count, data_size, ptrs_size):
         item_size = (data_size+ptrs_size)*8
-        offset += 8
-        if ptrs_size:
-            i = count
-            while i > 0:
-                i -= 1
-                item_offset = offset + (item_size)*i + (data_size*8)
-                end = self.visit_ptrs(buf, item_offset, ptrs_size)
-                if end != -1:
-                    return end
-        # no ptr found
-        return offset + (item_size)*count
+        offset += 8 # skip the tag
+        end = offset + (item_size)*count
+        if ptrs_size == 0:
+            return end
+        #
+        i = 0
+        while i < count:
+            item_offset = offset + (item_size)*i + (data_size*8)
+            end = self.visit_ptrs(buf, item_offset, ptrs_size, end)
+            i += 1
+        #
+        return end
 
     def visit_list_ptr(self, buf, p, offset, count):
-        end = self.visit_ptrs(buf, offset, count)
-        if end != -1:
-            return end
-        return offset + 8*count
+        end = offset + 8*count
+        return self.visit_ptrs(buf, offset, count, end)
 
     def visit_list_primitive(self, buf, p, offset, item_size, count):
         item_size = ptr.list_item_length(item_size)
-        return offset + item_size*count
+        return ptr.round_up_to_word(offset + item_size*count)
 
     def visit_list_bit(self, buf, p, offset, count):
-        bytes_length = count / 8
-        extra_bits = count % 8
-        if extra_bits:
-            bytes_length += 1
-        return offset + bytes_length
+        bytes_length = ptr.round_up_to_word(count) / 8
+        return ptr.round_up_to_word(offset + bytes_length)
 
-
-class IsCompact(Visitor):
-    """
-    Determines whether the object pointed by p is "compact", i.e. when its
-    first children starts immediately after its body. This assumes the buffer
-    is in pre-order.
-    """
-
-    def start_of_ptrs(self, buf, offset, ptrs_size):
-        i = 0
-        while i < ptrs_size:
-            p2_offset = offset + i*8
-            p2 = buf.read_ptr(p2_offset)
-            if p2:
-                return ptr.deref(p2, p2_offset)
-            i += 1
-        return -1
-
-    def visit_struct(self, buf, p, offset, data_size, ptrs_size):
-        """
-        A struct is compact if its first non-null pointer points immediately after
-        the end of its body.
-        """
-        end_of_body = offset + (data_size+ptrs_size)*8
-        offset += data_size*8
-        start_of_children = self.start_of_ptrs(buf, offset, ptrs_size)
-        return start_of_children == -1 or start_of_children == end_of_body
-
-    def visit_list_primitive(self, buf, p, offset, item_size, count):
-        return True
-
-    def visit_list_bit(self, buf, p, offset, count):
-        return True
-
-    def visit_list_composite(self, buf, p, offset, count, data_size, ptrs_size):
-        offset += 8
-        item_size = (data_size+ptrs_size)*8
-        end_of_items = offset + item_size*count
-        if ptrs_size:
-            i = 0
-            while i < count:
-                item_offset = offset + (item_size)*i + (data_size*8)
-                start_of_children = self.start_of_ptrs(buf, item_offset, ptrs_size)
-                if start_of_children != -1:
-                    return start_of_children == end_of_items
-                i += 1
-        # no ptr found
-        return True
-
-    def visit_list_ptr(self, buf, p, offset, count):
-        end_of_items = offset + count*8
-        start_of_children = self.start_of_ptrs(buf, offset, count)
-        return start_of_children == -1 or start_of_children == end_of_items
 
 
 def end_of(buf, p, offset):
-    return _end_of.visit(buf, p, offset)
+    try:
+        return _end_of.visit(buf, p, offset)
+    except NotCompact:
+        return -1
 
-def is_compact(buf, p, offset):
-    return _is_compact.visit(buf, p, offset)
 
 _end_of = EndOf()
-_is_compact = IsCompact()

@@ -184,7 +184,7 @@ You can specify additional options by using ``capnpy_options``::
 
 
 
-Loading a dumping messages
+Loading and dumping messages
 =============================
 
 The API to read and write capnproto messages is inspired by the ones offered
@@ -221,6 +221,15 @@ Alternatively, you can call ``load``/``loads`` directly on the class, and
     >>> p2 = example.Point.loads(mybuf)
     >>> print p2.x, p2.y
     100 200
+
+By default, ``dump`` and ``dumps`` try to use a fast path which is faster if
+you pass an object which is compact_. If the fast path can be taken, it is
+approximately 5x faster on CPython and 10x faster on PyPy. However, if the
+object is **not** compact, the fast path check makes it ~2x slower. If you are
+sure that the object is not compact, you can disable the check by passing
+``fastpath=False``:
+
+    >>> mybuf = p.dumps(fastpath=False)
 
 
 Loading from sockets
@@ -451,6 +460,91 @@ Reading named unions is the same as anonymous ones:
           (None, <undefined>, <undefined>)
           >>> Person.Job(employer='Capnpy corporation')
           (<undefined>, 'Capnpy corporation', <undefined>)
+
+
+.. _compact:
+
+"Compact" structs
+==================
+
+A struct object is said to be "compact" if:
+
+  1. there is no gap between the data and pointers sections
+
+  2. there is no gap between the children
+
+  3. the pointers to the children are ordered
+
+  4. the children are recursively compact
+
+The compactness of a message depends on the implementation which generates it.
+The most natural way to generate Cap'n Proto messages is to write them in
+pre-order (i.e., you write first the root, then its children in order,
+recursively). If the messages are generated this way and without introducing
+gaps, it is automatically compact.
+
+Messages created by ``capnpy`` are always compact.
+
+You can check for compactness by calling the ``_is_compact`` method:
+
+.. doctest::
+
+    >>> mod = capnpy.load_schema('example_compact')
+    >>> p = mod.Point(1, 2)
+    >>> p._is_compact()
+    True
+
+
+List items
+----------
+
+Cap'n Proto lists are implemented in such a way that items are placed one next
+to the other, and the children of the items are placed at the end of the list
+body.  This means that, if the items have children, surely there will be a gap.
+
+Hence, as soon as you have a Cap'n Proto list whose items have pointers, the
+items are **not** compact, even if the list as a whole is.
+
+.. doctest::
+
+    >>> mod = capnpy.load_schema('example_compact')
+    >>> p0 = mod.Point(1, 2, name='p0')
+    >>> p1 = mod.Point(3, 4, name='p1')
+    >>> poly = mod.Polygon(points=[p0, p1])
+    >>> poly._is_compact()
+    True
+    >>> poly.points[0]._is_compact()
+    False
+
+
+The ``compact()`` method
+-------------------------
+
+Cap'n Proto message can be arbitrarly large and occupy a big amount of memory;
+moreover, when you access a struct field or a list item, the resulting object
+keeps alive the whole message.
+
+However, sometimes you are interested in keeping alive only a smaller part it:
+you can accomplish this by calling the ``compact()`` method, which creates a
+new, smaller message containing only the desired subset. Also, as the name
+suggests, the newly created message is guaranteed to be compact:
+
+.. doctest::
+
+    >>> mod = capnpy.load_schema('example_compact')
+    >>> poly = mod.Polygon([mod.Point(1, 2, 'p0'), mod.Point(3, 4, 'p1')])
+    >>> len(poly._seg.buf)
+    80
+    >>> p0 = poly.points[0]
+    >>> len(p0._seg.buf)   # p0 keeps the whole segment alive
+    80
+    >>> p0._is_compact()
+    False
+    >>> pnew = p0.compact()
+    >>> len(pnew._seg.buf) # pnew keeps only a subset alive
+    40
+    >>> pnew._is_compact()
+    True
 
 
 Equality and hashing

@@ -168,3 +168,6 @@ def far_offset(ptr):
 
 def far_target(ptr):
     return ptr>>32 & 0xffffffff
+
+def round_up_to_word(pos):
+    return (pos + (8 - 1)) & -8  # Round up to 8-byte boundary

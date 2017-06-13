@@ -65,3 +65,5 @@ enum _PTR_LIST_SIZE {
 #define PTR_FAR_LANDING_PAD(ptr) ((ptr)>>2 & 1)
 #define PTR_FAR_OFFSET(ptr) ((ptr)>>3 & 0x1fffffff)
 #define PTR_FAR_TARGET(ptr) ((ptr)>>32 & 0xffffffff)
+
+#define ROUND_UP_TO_WORD(i) (((i) + (8 - 1)) & -8)

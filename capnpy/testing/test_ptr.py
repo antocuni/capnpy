@@ -132,3 +132,10 @@ def test_new_far_overflow():
     #
     p = ptr.new_far(0, 0, -1)
     assert unpack(p) == (0, 0, 2**32-1)
+
+def test_round_up_to_word():
+    assert ptr.round_up_to_word(0) == 0
+    assert ptr.round_up_to_word(5) == 8
+    assert ptr.round_up_to_word(7) == 8
+    assert ptr.round_up_to_word(8) == 8
+    assert ptr.round_up_to_word(9) == 16

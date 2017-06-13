@@ -2,10 +2,11 @@ import capnpy
 from capnpy import ptr
 from capnpy.type import Types
 from capnpy.blob import Blob
-from capnpy.visit import end_of, is_compact
+from capnpy.visit import end_of
 from capnpy.list import List
 from capnpy.packing import pack_int64
 from capnpy.segment.builder import SegmentBuilder
+from capnpy.util import magic_setattr
 
 class Undefined(object):
     def __repr__(self):
@@ -83,12 +84,6 @@ class Struct(Blob):
     @classmethod
     def load_all(cls, f):
         return capnpy.message.load_all(f, cls)
-
-    def dumps(self):
-        return capnpy.message.dumps(self)
-
-    def dump(self, f):
-        capnpy.message.dump(self, f)
 
     def shortrepr(self):
         return '(no shortrepr)'
@@ -214,8 +209,7 @@ class Struct(Blob):
         return end_of(self._seg, p, self._data_offset-8)
 
     def _is_compact(self):
-        p = ptr.new_struct(0, self._data_size, self._ptrs_size)
-        return is_compact(self._seg, p, self._data_offset-8)
+        return self._get_end() != -1
 
     def compact(self):
         """
@@ -258,3 +252,14 @@ class Struct(Blob):
     # redeclare it here, Cython won't use it
     def __richcmp__(self, other, op):
         return self._richcmp(other, op)
+
+
+# Attach the dump[s] methods to Struct. This is the only way I found to make
+# sure that Struct.dumps is implemented in C (on CPython). The obvious
+# alternative is to implement dumps directly in the class body and to declare
+# it as cpdef in struct_.pxd: however, this cannot work because there are
+# circular dependencies between struct_.pxd and message.pxd. This gives a ~20%
+# improvement.
+import capnpy.message
+magic_setattr(Struct, 'dump', capnpy.message.dump)
+magic_setattr(Struct, 'dumps', capnpy.message.dumps)

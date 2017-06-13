@@ -1,6 +1,6 @@
 import cython
 from capnpy.blob cimport Blob
-from capnpy.visit cimport end_of, is_compact
+from capnpy.visit cimport end_of
 from capnpy cimport ptr
 from capnpy.list cimport List, ItemType
 from capnpy.packing cimport pack_int64
