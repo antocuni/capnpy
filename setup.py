@@ -9,11 +9,11 @@ try:
 except ImportError:
     HAS_CYTHON = False
 else:
-    if Cython.__version__ >= '0.23':
+    if Cython.__version__ >= '0.25':
         HAS_CYTHON = True
     else:
         HAS_CYTHON = False
-        print 'WARNING: disabling Cython support, needed Cython >= 0.23'
+        print 'WARNING: disabling Cython support, needed Cython >= 0.25'
 
 
 USE_CYTHON = os.environ.get('USE_CYTHON', 'auto')
