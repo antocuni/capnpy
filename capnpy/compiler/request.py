@@ -1,5 +1,6 @@
 import py
 from datetime import datetime
+import capnpy
 from capnpy import schema
 from capnpy.type import Types
 
@@ -74,6 +75,7 @@ class RequestedFile:
             # _compile_pyx for a detailed explanation
             m.w('from %s import __compiler, __schema__' % m.tmpname)
         #
+        m.w('__capnpy_version__ = {version!r}', version=capnpy.__version__)
         self._declare_imports(m)
         m.w("")
         #

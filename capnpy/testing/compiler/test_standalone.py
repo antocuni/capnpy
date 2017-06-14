@@ -1,5 +1,6 @@
 import py
 import sys
+import capnpy
 from capnpy.testing.compiler.support import CompilerTest
 from capnpy.compiler.compiler import StandaloneCompiler
 
@@ -126,3 +127,15 @@ class TestStandalone(CompilerTest):
         #
         for proto in (0, pickle.HIGHEST_PROTOCOL):
             py.test.raises(TypeError, "pickle.dumps(f.ints, proto)")
+
+    def test_version(self, monkeypatch):
+        monkeypatch.setattr(capnpy, '__version__', 'fake 1.0')
+        self.compile("example.capnp", """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0: Int64;
+            y @1: Int64;
+        }
+        """)
+        example = self.import_('example')
+        assert example.__capnpy_version__ == 'fake 1.0'
