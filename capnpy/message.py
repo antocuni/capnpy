@@ -93,7 +93,7 @@ def _load_buffer_multiple_segments(f, n):
     #
     # 1. read the size of each segment
     segments = []
-    fmt = '<I'
+    fmt = b'<I'
     size = struct.calcsize(fmt)
     for i in xrange(n):
         buf = f.read(size)
