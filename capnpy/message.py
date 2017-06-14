@@ -92,12 +92,14 @@ def _load_buffer_multiple_segments(f, n):
     # slow path for the multiple-segments case
     #
     # 1. read the size of each segment
-    fmt = '<'+'I'*n
+    segments = []
+    fmt = '<I'
     size = struct.calcsize(fmt)
-    buf = f.read(size)
-    if len(buf) < size:
-        raise ValueError("Unexpected EOF when reading the header")
-    segments = struct.unpack(fmt, buf)
+    for i in xrange(n):
+        buf = f.read(size)
+        if len(buf) < size:
+            raise ValueError("Unexpected EOF when reading the header")
+        segments.append(struct.unpack(fmt, buf))
     #
     # 2. add enough padding so that the message starts at word boundary
     bytes_read = 4 + n*4 # 4 bytes for the n, plus 4 bytes for each segment

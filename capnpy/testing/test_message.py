@@ -76,6 +76,11 @@ def test_truncated_header():
     exc = py.test.raises(ValueError, "p = loads(buf, Struct)")
     assert str(exc.value) == 'Unexpected EOF when reading the header'
 
+def test_huge_number_of_segments():
+    buf = 'hello' # this corresponds to 1819043177 segments
+    exc = py.test.raises(ValueError, "loads(buf, Struct)")
+    assert str(exc.value) == 'Unexpected EOF when reading the header'
+
 def test_wrong_size():
     buf = ('\x00\x00\x00\x00\x04\x00\x00\x00'   # message header: 1 segment, size 4 words
            '\x00\x00\x00\x00\x02\x00\x01\x00'   # ptr to payload (Point {x, y})
