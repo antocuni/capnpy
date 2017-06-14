@@ -11,7 +11,7 @@ try:
     from capnpy.floatrepr._floatrepr import ffi, lib
 except ImportError:
     raise ImportError("floatrepr not compiled: "
-                      "try to run python -m capnpy.floatrepr.build")
+                      "try to run python capnpy/floatrepr/build.py")
 
 
 # In practice, doubles should never need more than 24 bytes and floats
