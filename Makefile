@@ -3,6 +3,7 @@ all:
 
 clean:
 	find capnpy '(' -name '*.c' -or -name '*.so' ')' -print -delete
+	rm -rf build dist
 
 schema:
 	python -m capnpy compile capnpy/schema.capnp --no-pyx --no-convert-case
