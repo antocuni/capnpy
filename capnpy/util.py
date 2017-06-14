@@ -1,6 +1,7 @@
 import sys
 import py
 import imp
+import capnpy
 try:
     from capnpy._util import setattr_builtin
 except ImportError:
@@ -61,6 +62,13 @@ def extend_module_maybe(globals, filename=None, modname=None):
     src = extmod.read()
     code = compile(src, str(extmod), 'exec')
     exec code in globals
+
+def check_version(version):
+    if version != capnpy.__version__:
+        msg = ('Version mismatch: the module has been compiled with capnpy '
+               '{v1}, but the current version of capnpy is {v2}. '
+               'Please recompile.').format(v1=version, v2=capnpy.__version__)
+        raise ImportError(msg)
 
 def text_repr(s):
     # abuse the python string repr algo: make sure that the string contains at
