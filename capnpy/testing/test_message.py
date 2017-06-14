@@ -98,7 +98,7 @@ def test_wrong_size_multiple_segments():
            '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
     exc = py.test.raises(ValueError, "loads(buf, Struct)")
     assert str(exc.value) == ("Unexpected EOF: expected 72 bytes, got only 24. "
-                              "Segments size: (4, 5)")
+                              "Segments size: [4, 5]")
 
 def test_eof():
     buf = ''

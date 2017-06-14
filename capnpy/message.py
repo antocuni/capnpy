@@ -99,7 +99,7 @@ def _load_buffer_multiple_segments(f, n):
         buf = f.read(size)
         if len(buf) < size:
             raise ValueError("Unexpected EOF when reading the header")
-        segments.append(struct.unpack(fmt, buf))
+        segments.append(struct.unpack(fmt, buf)[0])
     #
     # 2. add enough padding so that the message starts at word boundary
     bytes_read = 4 + n*4 # 4 bytes for the n, plus 4 bytes for each segment
