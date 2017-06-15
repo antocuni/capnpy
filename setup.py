@@ -66,16 +66,18 @@ def get_cython_extensions():
 
 if hasattr(sys, 'pypy_version_info'):
     # on PyPy
-    ext_modules = []
-    extra_install_requires = []
+    USE_CYTHON = False
 else:
+    # on CPython
     USE_CYTHON = os.environ.get('USE_CYTHON', '1')
     USE_CYTHON = int(USE_CYTHON)
-    if USE_CYTHON:
-        ext_modules = get_cython_extensions()
-        extra_install_requires = ['cython>=0.25']
-    else:
-        ext_modules = []
+
+if USE_CYTHON:
+    ext_modules = get_cython_extensions()
+    extra_install_requires = ['cython>=0.25']
+else:
+    ext_modules = []
+    extra_install_requires = []
 
 setup(name="capnpy",
       author='Antonio Cuni',
