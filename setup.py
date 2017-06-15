@@ -67,11 +67,13 @@ def get_cython_extensions():
 if hasattr(sys, 'pypy_version_info'):
     # on PyPy
     ext_modules = []
+    extra_install_requires = []
 else:
     USE_CYTHON = os.environ.get('USE_CYTHON', '1')
     USE_CYTHON = int(USE_CYTHON)
     if USE_CYTHON:
         ext_modules = get_cython_extensions()
+        extra_install_requires = ['cython>=0.25']
     else:
         ext_modules = []
 
@@ -83,7 +85,7 @@ setup(name="capnpy",
       include_package_data=True,
       packages = find_packages(),
       ext_modules = ext_modules,
-      install_requires=['pypytools>=0.3.2', 'docopt'],
+      install_requires=['pypytools>=0.3.2', 'docopt'] + extra_install_requires,
       setup_requires=['setuptools_scm'],
       zip_safe=False,
       entry_points = {
