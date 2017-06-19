@@ -2,29 +2,33 @@ import sys
 import os
 from setuptools import setup, find_packages, Extension
 
-DEBUG = False
-
 try:
     import Cython
+    if Cython.__version__ < '0.25':
+        print ('WARNING: required cython>0.25, found %s. The .c files will '
+               'NOT be regenerated' % Cython.__version__)
+        raise ImportError
+    from Cython.Build import cythonize
 except ImportError:
-    HAS_CYTHON = False
-else:
-    if Cython.__version__ >= '0.25':
-        HAS_CYTHON = True
-    else:
-        HAS_CYTHON = False
-        print 'WARNING: disabling Cython support, needed Cython >= 0.25'
-
-
-USE_CYTHON = os.environ.get('USE_CYTHON', 'auto')
-if USE_CYTHON == 'auto':
-    is_pypy = hasattr(sys, 'pypy_version_info')
-    USE_CYTHON = not is_pypy
-else:
-    USE_CYTHON = int(USE_CYTHON)
+    def cythonize(extensions, **kwargs):
+        # dummy version of cythonize, for when Cython is not installed. This
+        # works only if you install from an sdist package, which contains the
+        # already-converted C files
+        def cname(fname):
+            fname = fname.replace('.pyx', '.c').replace('.py', '.c')
+            if not os.path.exists(fname):
+                print ('%s does not exist and Cython is not installed. '
+                       'Please install Cython to regenerate it '
+                       'automatically.' % fname)
+                sys.exit(1)
+            return fname
+        #
+        for ext in extensions:
+            ext.sources = [cname(s) for s in ext.sources]
+        return extensions
 
 def get_cython_extensions():
-    from Cython.Build import cythonize
+    DEBUG = False # whether to compile files with -g
     files = ["capnpy/segment/base.pyx",
              "capnpy/segment/segment.py",
              "capnpy/segment/builder.pyx",
@@ -60,20 +64,20 @@ def get_cython_extensions():
         )
     return cythonize(map(getext, files), gdb_debug=DEBUG)
 
-# we try to cythonize() the files even if USE_CYTHON is False; this way, we
-# make sure that the *.c files will be included in the sdist. This is needed
-# so that people (and tox!) can download the sdist and build the extensions
-# *without* having cython installed
-if HAS_CYTHON:
-    cython_modules = get_cython_extensions()
+if hasattr(sys, 'pypy_version_info'):
+    # on PyPy
+    USE_CYTHON = False
 else:
-    cython_modules = []
-#
+    # on CPython
+    USE_CYTHON = os.environ.get('USE_CYTHON', '1')
+    USE_CYTHON = int(USE_CYTHON)
+
 if USE_CYTHON:
-    ext_modules = cython_modules
+    ext_modules = get_cython_extensions()
+    extra_install_requires = ['cython>=0.25']
 else:
     ext_modules = []
-
+    extra_install_requires = []
 
 setup(name="capnpy",
       author='Antonio Cuni',
@@ -83,7 +87,7 @@ setup(name="capnpy",
       include_package_data=True,
       packages = find_packages(),
       ext_modules = ext_modules,
-      install_requires=['pypytools>=0.3.2', 'docopt'],
+      install_requires=['pypytools>=0.3.2', 'docopt'] + extra_install_requires,
       setup_requires=['setuptools_scm'],
       zip_safe=False,
       entry_points = {

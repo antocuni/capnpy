@@ -53,6 +53,9 @@ install:
   - bash ./travis/install_capnp.sh
   - pip install -U pip # so that we can use wheels
   - pip install tox-travis
+  - # tox creates the sdist: we need cython to be installed in the env which
+  - # creates the sdist, to generate the .c files
+  - pip install cython>=0.25
 
 script:
   - bash ./travis/clone-benchmarks-repo.sh
