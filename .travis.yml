@@ -4,23 +4,23 @@ language: python
 matrix:
   fast_finish: true
   include:
-    - python: '2.7'
-      env: TOXENV=nopyx-test
+    # - python: '2.7'
+    #   env: TOXENV=nopyx-test
 
-    - python: '2.7'
-      env: TOXENV=py27-test
+    # - python: '2.7'
+    #   env: TOXENV=py27-test
 
-    - python: '2.7'
-      env: TOXENV=py27-bench
+    # - python: '2.7'
+    #   env: TOXENV=py27-bench
 
-    - python: 'pypy-5.4'
-      env: TOXENV=pypy-test
+    # - python: 'pypy-5.4'
+    #   env: TOXENV=pypy-test
 
-    - python: 'pypy-5.4'
-      env: TOXENV=pypy-bench
+    # - python: 'pypy-5.4'
+    #   env: TOXENV=pypy-bench
 
-    - python: '2.7'
-      env: TOXENV=docs
+    # - python: '2.7'
+    #   env: TOXENV=docs
 
     - stage: deploy
       sudo: required
