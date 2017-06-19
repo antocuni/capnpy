@@ -1,8 +1,11 @@
 import sys
 import os
 from setuptools import setup, find_packages, Extension
-from distutils.command.build_ext import build_ext
-from distutils.command.sdist import sdist
+from setuptools.command.sdist import sdist
+try:
+    from Cython.Distutils import build_ext
+except ImportError:
+    from setuptools.command.build_ext import build_ext
 
 """
 In the following, we speak about Cython being required or not: we are
