@@ -172,7 +172,7 @@ else:
 setup(name="capnpy",
       author='Antonio Cuni',
       author_email='anto.cuni@gmail.com',
-      url='https://bitbucket.org/antocuni/capnpy',
+      url='https://github.com/antocuni/capnpy',
       use_scm_version=True,
       include_package_data=True,
       cmdclass={
