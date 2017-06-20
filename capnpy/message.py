@@ -8,7 +8,7 @@ from capnpy.filelike import as_filelike
 from capnpy.buffered import StringBuffer
 
 
-def load(f, payload_type):
+def load(f, payload_type, force=False):
     """
     Load a message of type ``payload_type`` from f.
 
@@ -23,6 +23,10 @@ def load(f, payload_type):
       - (0 or 4 bytes) Padding up to the next word boundary.
 
       - The content of each segment, in order.
+
+    You can load messages only if payload_type has been marked with the option
+    ``canBeRoot=true`` (which is the default). You can force to load a message
+    anyway by passing ``force=True``
     """
     f2 = as_filelike(f)
     msg = _load_message(f2)
