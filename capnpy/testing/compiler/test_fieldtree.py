@@ -24,7 +24,7 @@ class TestFieldTree(CompilerTest):
     """
 
     def find_struct(self, m, name):
-        for node in m.allnodes.values():
+        for node in list(m.allnodes.values()):
             if node.is_struct() and node.shortname(m) == name:
                 return node
         raise KeyError("Cannot find node %s" % name)

@@ -1,5 +1,7 @@
 import py
 import pytest
+from six import b
+
 from capnpy.schema import Field, Type, Value
 from capnpy.compiler.structor import Structor, FieldTree
 from capnpy.testing.compiler.support import CompilerTest
@@ -15,8 +17,8 @@ class TestConstructors(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+                 '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
         #
         p = mod.Point(1, 2)
         assert p.x == 1
@@ -44,9 +46,9 @@ class TestConstructors(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00'  # 2
-               '\x03\x00\x00\x00\x00\x00\x00\x00') # yellow
+        buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+                 '\x02\x00\x00\x00\x00\x00\x00\x00'  # 2
+                 '\x03\x00\x00\x00\x00\x00\x00\x00') # yellow
         #
         p = mod.Point(1, 2, mod.Color.yellow)
         assert p.x == 1
@@ -82,8 +84,8 @@ class TestConstructors(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+                 '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
         #
         p = mod.Point(1, 2)
         assert p.x == 1
@@ -100,11 +102,11 @@ class TestConstructors(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        foo = mod.Foo(1, 'hello capnp')
-        assert foo._seg.buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'
-                              '\x01\x00\x00\x00\x62\x00\x00\x00'
-                              'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
-                              'p' 'n' 'p' '\x00\x00\x00\x00\x00')
+        foo = mod.Foo(1, b'hello capnp')
+        assert foo._seg.buf == b('\x01\x00\x00\x00\x00\x00\x00\x00'
+                               '\x01\x00\x00\x00\x62\x00\x00\x00'
+                               'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
+                               'p' 'n' 'p' '\x00\x00\x00\x00\x00')
 
     def test_data(self):
         schema = """
@@ -115,11 +117,11 @@ class TestConstructors(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        foo = mod.Foo(1, 'hello capnp')
-        assert foo._seg.buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'
-                              '\x01\x00\x00\x00\x5a\x00\x00\x00'
-                              'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
-                              'p' 'n' 'p' '\x00\x00\x00\x00\x00')
+        foo = mod.Foo(1, b'hello capnp')
+        assert foo._seg.buf == b('\x01\x00\x00\x00\x00\x00\x00\x00'
+                               '\x01\x00\x00\x00\x5a\x00\x00\x00'
+                               'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
+                               'p' 'n' 'p' '\x00\x00\x00\x00\x00')
 
     def test_struct(self):
         schema = """
@@ -135,9 +137,9 @@ class TestConstructors(CompilerTest):
         mod = self.compile(schema)
         p = mod.Point(1, 2)
         foo = mod.Foo(p)
-        assert foo._seg.buf == ('\x00\x00\x00\x00\x02\x00\x00\x00'  # ptr to point
-                                '\x01\x00\x00\x00\x00\x00\x00\x00'  # p.x == 1
-                                '\x02\x00\x00\x00\x00\x00\x00\x00') # p.y == 2
+        assert foo._seg.buf == b('\x00\x00\x00\x00\x02\x00\x00\x00'  # ptr to point
+                                 '\x01\x00\x00\x00\x00\x00\x00\x00'  # p.x == 1
+                                 '\x02\x00\x00\x00\x00\x00\x00\x00') # p.y == 2
 
 
     def test_list(self):
@@ -149,8 +151,8 @@ class TestConstructors(CompilerTest):
         """
         mod = self.compile(schema)
         foo = mod.Foo([1, 2, 3, 4])
-        assert foo._seg.buf == ('\x01\x00\x00\x00\x22\x00\x00\x00'   # ptrlist
-                              '\x01\x02\x03\x04\x00\x00\x00\x00')  # 1,2,3,4 + padding
+        assert foo._seg.buf == b('\x01\x00\x00\x00\x22\x00\x00\x00'   # ptrlist
+                                '\x01\x02\x03\x04\x00\x00\x00\x00')  # 1,2,3,4 + padding
 
     def test_list_of_void(self):
         schema = """
@@ -161,7 +163,7 @@ class TestConstructors(CompilerTest):
         """
         mod = self.compile(schema)
         foo = mod.Foo([None]*4)
-        assert foo._seg.buf == ('\x01\x00\x00\x00\x20\x00\x00\x00')  # ptrlist
+        assert foo._seg.buf == b('\x01\x00\x00\x00\x20\x00\x00\x00')  # ptrlist
 
     def test_list_of_text(self):
         schema = """
@@ -171,14 +173,14 @@ class TestConstructors(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        foo = mod.Foo(['foo', 'bar', 'baz'])
-        expected = ('\x01\x00\x00\x00\x1e\x00\x00\x00'    # ptrlist
-                    '\x09\x00\x00\x00\x22\x00\x00\x00'
-                    '\x09\x00\x00\x00\x22\x00\x00\x00'
-                    '\x09\x00\x00\x00\x22\x00\x00\x00'
-                    'foo\x00\x00\x00\x00\x00'
-                    'bar\x00\x00\x00\x00\x00'
-                    'baz\x00\x00\x00\x00\x00')
+        foo = mod.Foo([b'foo', b'bar', b'baz'])
+        expected = b('\x01\x00\x00\x00\x1e\x00\x00\x00'    # ptrlist
+                     '\x09\x00\x00\x00\x22\x00\x00\x00'
+                     '\x09\x00\x00\x00\x22\x00\x00\x00'
+                     '\x09\x00\x00\x00\x22\x00\x00\x00'
+                     'foo\x00\x00\x00\x00\x00'
+                     'bar\x00\x00\x00\x00\x00'
+                     'baz\x00\x00\x00\x00\x00')
         assert foo._seg.buf == expected
 
     def test_list_of_data(self):
@@ -189,14 +191,14 @@ class TestConstructors(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        foo = mod.Foo(['foo', 'bar', 'baz'])
-        expected = ('\x01\x00\x00\x00\x1e\x00\x00\x00'    # ptrlist
-                    '\x09\x00\x00\x00\x1a\x00\x00\x00'
-                    '\x09\x00\x00\x00\x1a\x00\x00\x00'
-                    '\x09\x00\x00\x00\x1a\x00\x00\x00'
-                    'foo\x00\x00\x00\x00\x00'
-                    'bar\x00\x00\x00\x00\x00'
-                    'baz\x00\x00\x00\x00\x00')
+        foo = mod.Foo([b'foo', b'bar', b'baz'])
+        expected = b('\x01\x00\x00\x00\x1e\x00\x00\x00'    # ptrlist
+                     '\x09\x00\x00\x00\x1a\x00\x00\x00'
+                     '\x09\x00\x00\x00\x1a\x00\x00\x00'
+                     '\x09\x00\x00\x00\x1a\x00\x00\x00'
+                     'foo\x00\x00\x00\x00\x00'
+                     'bar\x00\x00\x00\x00\x00'
+                     'baz\x00\x00\x00\x00\x00')
         assert foo._seg.buf == expected
 
     def test_list_of_structs(self):
@@ -228,13 +230,13 @@ class TestConstructors(CompilerTest):
         """
         mod = self.compile(schema)
         foo = mod.Foo([[1, 2, 3], [4, 5], [6, 7, 8, 9]])
-        expected = ('\x01\x00\x00\x00\x1e\x00\x00\x00'  # list<ptr> (3 items)
-                    '\x09\x00\x00\x00\x1a\x00\x00\x00'  # list<8> (3 items)
-                    '\x09\x00\x00\x00\x12\x00\x00\x00'  # list<8> (2 items)
-                    '\x09\x00\x00\x00\x22\x00\x00\x00'  # list<8> (4 items)
-                    '\x01\x02\x03\x00\x00\x00\x00\x00'
-                    '\x04\x05\x00\x00\x00\x00\x00\x00'
-                    '\x06\x07\x08\x09\x00\x00\x00\x00')
+        expected = b('\x01\x00\x00\x00\x1e\x00\x00\x00'  # list<ptr> (3 items)
+                     '\x09\x00\x00\x00\x1a\x00\x00\x00'  # list<8> (3 items)
+                     '\x09\x00\x00\x00\x12\x00\x00\x00'  # list<8> (2 items)
+                     '\x09\x00\x00\x00\x22\x00\x00\x00'  # list<8> (4 items)
+                     '\x01\x02\x03\x00\x00\x00\x00\x00'
+                     '\x04\x05\x00\x00\x00\x00\x00\x00'
+                     '\x06\x07\x08\x09\x00\x00\x00\x00')
         assert foo._seg.buf == expected
 
 

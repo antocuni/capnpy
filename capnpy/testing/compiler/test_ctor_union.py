@@ -1,5 +1,7 @@
 import py
 import pytest
+from six import b
+
 from capnpy.testing.compiler.support import CompilerTest
 
 class BaseTestUnionConstructors(CompilerTest):
@@ -30,10 +32,10 @@ class TestSpecificCtors(BaseTestUnionConstructors):
         assert s.area == 1
         assert s.circle == 2
         assert s.perimeter == 3
-        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'   # area == 1
-               '\x03\x00\x00\x00\x00\x00\x00\x00'   # perimeter == 3
-               '\x02\x00\x00\x00\x00\x00\x00\x00'   # circle == 2
-               '\x00\x00\x00\x00\x00\x00\x00\x00')  # __tag__ == 0 (circle)
+        buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'   # area == 1
+                '\x03\x00\x00\x00\x00\x00\x00\x00'   # perimeter == 3
+                '\x02\x00\x00\x00\x00\x00\x00\x00'   # circle == 2
+                '\x00\x00\x00\x00\x00\x00\x00\x00')  # __tag__ == 0 (circle)
         assert s._seg.buf == buf
         #
         s = mod.Shape.new_square(area=1, square=2, perimeter=3)
@@ -41,10 +43,10 @@ class TestSpecificCtors(BaseTestUnionConstructors):
         assert s.area == 1
         assert s.square == 2
         assert s.perimeter == 3
-        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'   # area == 1
-               '\x03\x00\x00\x00\x00\x00\x00\x00'   # perimeter == 3
-               '\x02\x00\x00\x00\x00\x00\x00\x00'   # squadre == 2
-               '\x01\x00\x00\x00\x00\x00\x00\x00')  # __tag__ == 1 (square)
+        buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'   # area == 1
+                '\x03\x00\x00\x00\x00\x00\x00\x00'   # perimeter == 3
+                '\x02\x00\x00\x00\x00\x00\x00\x00'   # squadre == 2
+                '\x01\x00\x00\x00\x00\x00\x00\x00')  # __tag__ == 1 (square)
         assert s._seg.buf == buf
 
     def test_default(self, mod):

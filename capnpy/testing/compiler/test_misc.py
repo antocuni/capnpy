@@ -3,6 +3,8 @@ Integration tests which don't fit anywhere else :)
 """
 
 import py
+from six import b
+
 from capnpy.testing.compiler.support import CompilerTest
 
 class TestIntegration(CompilerTest):
@@ -62,17 +64,17 @@ class TestIntegration(CompilerTest):
             }
         """
         mod = self.compile(schema)
-        buf = ('garbage0'
-               '\x05\x00\x00\x00\x32\x00\x00\x00'  # ptr to name
-               'garbage1'
-               'dummy\x00\x00\x00')
+        buf = b('garbage0'
+                '\x05\x00\x00\x00\x32\x00\x00\x00'  # ptr to name
+                'garbage1'
+                'dummy\x00\x00\x00')
         p = mod.Person.from_buffer(buf, 8, 0, 1)
         foo = mod.Foo(p)
         assert foo.key.name == 'dummy'
         # we check that the structure has been packed
         assert foo.key._data_offset == 8
-        assert foo.key._seg.buf[8:] == ('\x01\x00\x00\x00\x32\x00\x00\x00'  # ptr to dummy
-                                      'dummy\x00\x00\x00')
+        assert foo.key._seg.buf[8:] == b('\x01\x00\x00\x00\x32\x00\x00\x00'  # ptr to dummy
+                                         'dummy\x00\x00\x00')
 
     def test_compact_struct_inside_list(self):
         schema = """
@@ -103,8 +105,8 @@ class TestIntegration(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x01\x00\x00\x00\x19\x00\x00\x00'    # ptrlist
-               '\x03\x00\x00\x00\x00\x00\x00\x00')
+        buf = b('\x01\x00\x00\x00\x19\x00\x00\x00'    # ptrlist
+                '\x03\x00\x00\x00\x00\x00\x00\x00')
         f1 = mod.Foo.from_buffer(buf, 0, 0, 1)
         f2 = mod.Foo.loads(f1.dumps())
         assert list(f1.items) == list(f2.items) == [True, True, False]

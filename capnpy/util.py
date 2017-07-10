@@ -1,11 +1,15 @@
 import sys
 import py
 import imp
+import six
+
 import capnpy
 try:
     from capnpy._util import setattr_builtin
 except ImportError:
     setattr_builtin = None
+
+PY3 = sys.version_info >= (3, 0)
 
 Py_TPFLAGS_HEAPTYPE = (1<<9)  # from object.h
 
@@ -20,15 +24,23 @@ def magic_setattr(cls, attr, value):
             raise TypeError("Cannot set attributes on C types. "
                             "Run setup.py to compile capnpy._utils and enable the hack")
 
+def ensure_unicode(s):
+    if isinstance(s, six.binary_type):
+        return s.decode("utf8")
+    return s
+
+def ensure_bytes(b):
+    if isinstance(b, six.text_type):
+        return b.encode("utf8")
+    return b
 
 def extend(cls):
     def decorator(new_class):
-        for key, value in new_class.__dict__.iteritems():
+        for key, value in new_class.__dict__.items():
             if key not in ('__dict__', '__doc__', '__module__', '__weakref__'):
                 magic_setattr(cls, key, value)
         return cls
     return decorator
-
 
 def find_module(path, modname, extension='.py'):
     """
@@ -61,7 +73,7 @@ def extend_module_maybe(globals, filename=None, modname=None):
     #
     src = extmod.read()
     code = compile(src, str(extmod), 'exec')
-    exec code in globals
+    exec(code, globals)
 
 def check_version(version):
     if version != capnpy.__version__:
@@ -77,11 +89,15 @@ def text_repr(s):
     # non-ascii chars and single quotes. Then, we manually escape the double
     # quotes and put everything inside double quotes
     #
+    if PY3:
+        s = ensure_unicode(s)
+
     s = s + "'" + '"'
     s = repr(s)[1:-4] # remove the single quotes around the string, plus the
                       # extra quotes we added above
     s = s.replace('"', r'\"')
     return '"%s"' % s
+
 
 try:
     from capnpy.floatrepr import float32_repr, float64_repr

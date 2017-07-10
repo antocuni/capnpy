@@ -93,3 +93,5 @@ class TestExtendModuleMaybe(object):
         assert foo() == 42
         src = inspect.getsource(foo)
         assert src.strip() == 'def foo(): return 42'
+
+    # TODO add tests for costas `ensure_unicode` and `ensure_bytes`

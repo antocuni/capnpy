@@ -109,7 +109,7 @@ class TestFashHash(CompilerTest):
         self.only_fasthash(mod.Point)
         p1 = mod.Point(1, 2, "p1")
         exc = py.test.raises(ValueError, "hash(p1)")
-        assert str(exc.value) == "slow hash not allowed"
+        assert exc.value.message == "slow hash not allowed"
 
     def test_fasthash_int_long(self):
         schema = """
@@ -123,8 +123,8 @@ class TestFashHash(CompilerTest):
         """
         mod = self.compile(schema)
         self.only_fasthash(mod.Point)
-        p1 = mod.Point(1, sys.maxint+1, "p1")
-        assert hash(p1) == hash((1, sys.maxint+1))
+        p1 = mod.Point(1, sys.maxsize+1, "p1")
+        assert hash(p1) == hash((1, sys.maxsize+1))
 
     def test_fasthash_string(self):
         schema = """

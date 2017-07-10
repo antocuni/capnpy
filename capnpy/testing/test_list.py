@@ -1,4 +1,6 @@
 import py
+from six import b
+
 from capnpy.printer import print_buffer
 from capnpy.type import Types
 from capnpy.segment.segment import MultiSegment
@@ -7,7 +9,7 @@ from capnpy.list import List, StructItemType, PrimitiveItemType, TextItemType
 from capnpy.struct_ import Struct
 
 def test_read_list():
-    buf = ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
+    buf = b('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
            '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
            '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
@@ -25,7 +27,7 @@ def test_read_list():
     assert lst._getitem_fast(3) == 4
 
 def test_read_list_offset():
-    buf = ('abcd'                               # random garbage
+    buf = b('abcd'                               # random garbage
            '\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
            '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
            '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
@@ -48,7 +50,7 @@ def test_list_of_structs():
         __static_ptrs_size__ = 0
 
     # list of Point {x: Int64, y: Int64}
-    buf = ('\x01\x00\x00\x00\x47\x00\x00\x00'    # ptrlist
+    buf = b('\x01\x00\x00\x00\x47\x00\x00\x00'    # ptrlist
            '\x10\x00\x00\x00\x02\x00\x00\x00'    # list tag
            '\x0a\x00\x00\x00\x00\x00\x00\x00'    # 10
            '\x64\x00\x00\x00\x00\x00\x00\x00'    # 100
@@ -83,30 +85,30 @@ def test_list_of_structs():
 
 
 def test_string():
-    buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
-           'hello capnproto\0')                 # string
+    buf = (b'\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
+           b'hello capnproto\0')                 # string
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     s = blob._read_str_text(0)
-    assert s == 'hello capnproto'
+    assert s == b'hello capnproto'
 
 def test_string_with_offset():
-    buf = ('abcd'                               # some random garbage
-           '\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
-           'hello capnproto\0')                 # string
+    buf = (b'abcd'                               # some random garbage
+           b'\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
+           b'hello capnproto\0')                 # string
     blob = Struct.from_buffer(buf, 4, data_size=0, ptrs_size=1)
     s = blob._read_str_text(0)
-    assert s == 'hello capnproto'
+    assert s == b'hello capnproto'
 
 def test_data_string():
-    buf = ('\x01\x00\x00\x00\x42\x00\x00\x00'   # ptrlist
+    buf = b('\x01\x00\x00\x00\x42\x00\x00\x00'   # ptrlist
            'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H')     # data
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     s = blob._read_str_data(0)
-    assert s == 'ABCDEFGH'
+    assert s == b'ABCDEFGH'
     
 
 def test_Float64List():
-    buf = ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
+    buf = b('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
            '\x58\x39\xb4\xc8\x76\xbe\xf3\x3f'   # 1.234
            '\xc3\xf5\x28\x5c\x8f\xc2\x02\x40'   # 2.345
            '\xd9\xce\xf7\x53\xe3\xa5\x0b\x40'   # 3.456
@@ -117,16 +119,16 @@ def test_Float64List():
 
 
 def test_Int8List():
-    buf = ('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
+    buf = b('\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
            'hello capnproto\0')                 # string
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     lst = blob._read_list(0, PrimitiveItemType(Types.int8))
     assert len(lst) == 16
-    assert list(lst) == map(ord, 'hello capnproto\0')
+    assert list(lst) == list(map(ord, 'hello capnproto\0'))
 
 
 def test_list_of_strings():
-    buf = ('\x01\x00\x00\x00\x26\x00\x00\x00'   # ptrlist
+    buf = b('\x01\x00\x00\x00\x26\x00\x00\x00'   # ptrlist
            '\x0d\x00\x00\x00\x12\x00\x00\x00'   # ptr item 1
            '\x0d\x00\x00\x00\x1a\x00\x00\x00'   # ptr item 2
            '\x0d\x00\x00\x00\x22\x00\x00\x00'   # ptr item 3
@@ -137,10 +139,10 @@ def test_list_of_strings():
            'G' 'H' 'I' 'J' '\x00\x00\x00\x00')  # GHIJ
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     lst = blob._read_list(0, TextItemType(Types.text))
-    assert list(lst) == ['A', 'BC', 'DEF', 'GHIJ']
+    assert list(lst) == [b'A', b'BC', b'DEF', b'GHIJ']
 
 def test_list_of_strings_composite():
-    buf = ('\x01\x00\x00\x00\x27\x00\x00\x00'   # ptr<cmp>
+    buf = b('\x01\x00\x00\x00\x27\x00\x00\x00'   # ptr<cmp>
            '\x10\x00\x00\x00\x00\x00\x01\x00'   # TAG: 4 items, data=0, ptrs=1
            '\x0d\x00\x00\x00\x12\x00\x00\x00'   # ptr item 1
            '\x0d\x00\x00\x00\x1a\x00\x00\x00'   # ptr item 2
@@ -152,14 +154,14 @@ def test_list_of_strings_composite():
            'G' 'H' 'I' 'J' '\x00\x00\x00\x00')  # GHIJ
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     lst = blob._read_list(0, TextItemType(Types.text))
-    assert list(lst) == ['A', 'BC', 'DEF', 'GHIJ']
+    assert list(lst) == [b'A', b'BC', b'DEF', b'GHIJ']
 
 def test_list_comparisons():
-    buf1 = ('\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
+    buf1 = b('\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
             '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
             '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
             '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
-    buf2 = 'garbage0' + buf1
+    buf2 = b'garbage0' + buf1
     #
     lst1 = List.from_buffer(buf1, 0, ptr.LIST_SIZE_64, 4, PrimitiveItemType(Types.int64))
     lst2 = List.from_buffer(buf2, 8, ptr.LIST_SIZE_64, 4, PrimitiveItemType(Types.int64))
@@ -177,7 +179,7 @@ def test_list_comparisons():
     py.test.raises(TypeError, "lst1 >= lst2")
 
 def test_compare_with_py_list():
-    buf = ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
+    buf = b('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
            '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
            '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
            '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
@@ -188,9 +190,9 @@ def test_compare_with_py_list():
 
 def test_far_pointer():
     # see also test_blob.test_far_pointer
-    seg0 = ('\x00\x00\x00\x00\x00\x00\x00\x00'    # some garbage
+    seg0 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # some garbage
             '\x0a\x00\x00\x00\x01\x00\x00\x00')   # far pointer: segment=1, offset=1
-    seg1 = ('\x00\x00\x00\x00\x00\x00\x00\x00'    # random data
+    seg1 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # random data
             '\x01\x00\x00\x00\x25\x00\x00\x00'    # ptrlist
             '\x01\x00\x00\x00\x00\x00\x00\x00'    # 1
             '\x02\x00\x00\x00\x00\x00\x00\x00'    # 2
@@ -206,7 +208,7 @@ class TestPythonicInterface(object):
 
     @py.test.fixture
     def mylist(self):
-        buf = ('\x01\x00\x00\x00\x2D\x00\x00\x00'   # ptrlist
+        buf = b('\x01\x00\x00\x00\x2D\x00\x00\x00'   # ptrlist
                '\x00\x00\x00\x00\x00\x00\x00\x00'   # 0
                '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
                '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2

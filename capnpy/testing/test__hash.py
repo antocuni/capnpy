@@ -1,6 +1,10 @@
 import py
 import sys
 from pypytools import IS_PYPY
+# TODO change back to costa's
+# from capnpy.util import PY3
+from six import PY3
+#
 from capnpy import _hash
 
 def test_inthash():
@@ -8,19 +12,21 @@ def test_inthash():
     assert h(42) == hash(42)
     assert h(-1) == hash(-1)
     assert h(-2) == hash(-2)
-    assert h(sys.maxint) == hash(sys.maxint)
-    assert h(-sys.maxint-1) == hash(-sys.maxint-1)
+    assert h(sys.maxsize) == hash(sys.maxsize)
+    assert h(-sys.maxsize-1) == hash(-sys.maxsize-1)
 
 def test_longhash():
     h = _hash.longhash
     # these are easy
     assert h(42) == hash(42)
-    assert h(sys.maxint) == hash(sys.maxint)
+    assert h(sys.maxsize) == hash(sys.maxsize)
     #
     # these are real longs
-    assert h(sys.maxint+1) == hash(sys.maxint+1)
-    maxulong = sys.maxint*2 + 1
-    assert h(maxulong) == hash(maxulong) == hash(-1)
+    assert h(sys.maxsize+1) == hash(sys.maxsize+1)
+    maxulong = sys.maxsize*2 + 1
+    assert h(maxulong) == hash(maxulong)
+    if not PY3:
+        assert hash(maxulong) == hash(-1)
 
 def test_strhash():
     expected_hash_empty_string = 0

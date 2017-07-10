@@ -3,6 +3,8 @@ import pytest
 import sys
 import struct
 import math
+
+import six
 from pypytools import IS_PYPY
 from capnpy.packing import (unpack_primitive, pack_message_header, pack_into)
 
@@ -10,7 +12,7 @@ from capnpy.packing import (unpack_primitive, pack_message_header, pack_into)
 class TestUnpack(object):
 
     def test_unpack_primitive_ints(self):
-        buf = '\xff' * 8
+        buf = b'\xff' * 8
         assert unpack_primitive(ord('b'), buf, 0) == -1
         assert unpack_primitive(ord('h'), buf, 0) == -1
         assert unpack_primitive(ord('i'), buf, 0) == -1
@@ -29,20 +31,23 @@ class TestUnpack(object):
         assert unpack_primitive(ord('d'), buf, 0) == struct.unpack('d', buf)[0]
 
     def test_uint64(self):
-        if sys.maxint != (1 << 63)-1:
+        if sys.maxsize != (1 << 63)-1:
             py.test.skip('64 bit only')
         if IS_PYPY and sys.pypy_version_info < (5, 6):
             py.test.skip('Broken on PyPy<5.6')
         #
-        buf = struct.pack('Q', sys.maxint)
+        buf = struct.pack('Q', sys.maxsize)
         val = unpack_primitive(ord('Q'), buf, 0)
-        assert val == sys.maxint
+        assert val == sys.maxsize
         assert type(val) is int
         #
-        buf = struct.pack('Q', sys.maxint+1)
+        buf = struct.pack('Q', sys.maxsize+1)
         val = unpack_primitive(ord('Q'), buf, 0)
-        assert val == sys.maxint+1
-        assert type(val) is long
+        assert val == sys.maxsize+1
+        if six.PY3:
+            assert type(val) is int
+        else:
+            assert type(val) is long
 
     def test_bytearray(self):
         buf = bytearray(struct.pack('q', 42))
@@ -64,8 +69,8 @@ class TestPack(object):
         #   1) that we correctly write the bytes we expect
         #   2) that we do NOT write outside the bounds
         #
-        pattern = [chr(randrange(256)) for _ in range(256)]
-        pattern = ''.join(pattern)
+        pattern = [six.int2byte(randrange(256)) for _ in range(256)]
+        pattern = b''.join(pattern)
         buf = bytearray(pattern)
         buf2 = bytearray(pattern)
         offset = 16
@@ -92,6 +97,6 @@ class TestPack(object):
 
 def test_pack_message_header():
     header = pack_message_header(1, 0xAA, 0xBBCCDD)
-    assert header == ('\x00\x00\x00\x00'
-                      '\xaa\x00\x00\x00'
-                      '\xdd\xcc\xbb\x00\x00\x00\x00\x00')
+    assert header == six.b('\x00\x00\x00\x00'
+                           '\xaa\x00\x00\x00'
+                           '\xdd\xcc\xbb\x00\x00\x00\x00\x00')

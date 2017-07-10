@@ -1,3 +1,4 @@
+# TODO File not yet moved to costa's
 from cStringIO import StringIO
 from capnpy.blob import PYX
 from capnpy.filelike import as_filelike, FileLike

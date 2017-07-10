@@ -1,4 +1,6 @@
 import py
+from six import b
+
 from capnpy import ptr
 from capnpy.type import Types
 from capnpy.segment.segment import MultiSegment
@@ -16,24 +18,24 @@ from capnpy.printer import print_buffer
 ##   a @1 :Point;
 ##   b @2 :Point;
 ## }
-BUF = ('garbage0'
-       '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
-       '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
-       '\x10\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
-       'garbage1'
-       'garbage2'
-       '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
-       '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
-       '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
-       '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
+BUF = b('garbage0'
+        '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+        '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+        '\x10\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
+        'garbage1'
+        'garbage2'
+        '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+        '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
+        '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
+        '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
 
 def test_undefined():
     assert repr(undefined) == '<undefined>'
 
 def test__as_pointer():
-    buf = ('garbage0'
-           '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
-           '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+    buf = b('garbage0'
+            '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
     b1 = Struct.from_buffer(buf, 8, data_size=2, ptrs_size=0)
     p = b1._as_pointer(24) # arbitrary offset
     assert ptr.kind(p) == ptr.STRUCT
@@ -42,8 +44,8 @@ def test__as_pointer():
     assert ptr.struct_ptrs_size(p) == 0
 
 def test__read_data():
-    buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
-           '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+    buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
     b1 = Struct.from_buffer(buf, 0, data_size=2, ptrs_size=0)
     assert b1._read_data(0, Types.int64.ifmt) == 1
     assert b1._read_data(8, Types.int64.ifmt) == 2
@@ -54,9 +56,9 @@ def test__read_struct():
     ##   x @0 :Int64;
     ##   y @1 :Int64;
     ## }
-    buf = ('\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
-           '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
-           '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
+    buf = b('\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
+            '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
     s = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     p = s._read_struct(0, Struct)
     assert p._seg is s._seg
@@ -72,9 +74,9 @@ def test__read_struct_with_offset():
     ##   y @1 :Int64;
     ## }
     buf = ('abcd'                                # garbage
-           '\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
-           '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
-           '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
+            '\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
+            '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
     s = Struct.from_buffer(buf, 4, data_size=0, ptrs_size=1)
     p = s._read_struct(0, Struct)
     assert p._seg is s._seg
@@ -90,12 +92,12 @@ def test_nested_struct():
     ##   a @0 :Point;
     ##   b @1 :Point;
     ## }
-    buf = ('\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
-           '\x08\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
-           '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
-           '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
-           '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
-           '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
+    buf = b('\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+            '\x08\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
+            '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
+            '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
+            '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
     rect = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=2)
     p1 = rect._read_struct(0, Struct)
     p2 = rect._read_struct(8, Struct)
@@ -105,12 +107,13 @@ def test_nested_struct():
     assert p2._read_data(8, Types.int64.ifmt) == 4
 
 def test_null_pointers():
-    buf = '\x00\x00\x00\x00\x00\x00\x00\x00'    # NULL pointer
+    buf = b'\x00\x00\x00\x00\x00\x00\x00\x00'    # NULL pointer
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     assert blob._read_list(0, None, None) is None
     assert blob._read_str_text(0) is None
     assert blob._read_struct(0, Struct) is None
     #
+    # TODO should be unicode?
     val = 'dummy default value'
     assert blob._read_list(0, None, default_=val) is val
     assert blob._read_str_text(0, default_=val) is val
@@ -118,12 +121,12 @@ def test_null_pointers():
 
 def test_far_pointer():
     # see also test_list.test_far_pointer
-    seg0 = ('\x00\x00\x00\x00\x00\x00\x00\x00'    # some garbage
-            '\x0a\x00\x00\x00\x01\x00\x00\x00')   # far pointer: segment=1, offset=1
-    seg1 = ('\x00\x00\x00\x00\x00\x00\x00\x00'    # random data
-            '\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
-            '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
-            '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
+    seg0 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # some garbage
+             '\x0a\x00\x00\x00\x01\x00\x00\x00')   # far pointer: segment=1, offset=1
+    seg1 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # random data
+             '\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
+             '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
+             '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
     #
     buf = MultiSegment(seg0+seg1, segment_offsets=(0, 16))
     blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
@@ -143,9 +146,9 @@ def test_union():
         __tag_offset__ = 16
         __tag__ = enum('Shape.__tag__', ('circle', 'square'))
     
-    buf = ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
-           '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
-           '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
+    buf = b('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
+            '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
+            '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
     shape = Shape.from_buffer(buf, 0, data_size=3, ptrs_size=0)
     w = shape.which()
     assert type(w) is Shape.__tag__
@@ -162,26 +165,26 @@ def test_compact():
     class Rect(Struct):
         pass
 
-    buf = ('garbage0'
-           '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
-           '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
-           '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
-           'garbage1'
-           'garbage2'
-           '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
-           '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
+    buf = b('garbage0'
+            '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+            '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+            '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
+            'garbage1'
+            'garbage2'
+            '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
     rect = Rect.from_buffer(buf, 8, data_size=1, ptrs_size=2)
     rect2 = rect.compact()
     assert rect2.__class__ is Rect
     buf = rect2._seg.buf[rect2._data_offset:]
-    assert buf == ('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
-                   '\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
-                   '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
-                   '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
-                   '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
+    assert buf == b('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+                    '\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+                    '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
+                    '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+                    '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
 
 def test_comparisons_fail():
-    s = Struct.from_buffer('', 0, data_size=0, ptrs_size=0)
+    s = Struct.from_buffer(b'', 0, data_size=0, ptrs_size=0)
     py.test.raises(TypeError, "hash(s)")
     py.test.raises(TypeError, "s == s")
     py.test.raises(TypeError, "s != s")
@@ -199,9 +202,9 @@ def test_comparisons_succeed():
             # dummy, random implementation
             return self._seg.buf == other._seg.buf
     #
-    s1 = MyStruct.from_buffer('', 0, data_size=0, ptrs_size=0)
-    s2 = MyStruct.from_buffer('', 0, data_size=0, ptrs_size=0)
-    s3 = MyStruct.from_buffer('x', 0, data_size=0, ptrs_size=0)
+    s1 = MyStruct.from_buffer(b'', 0, data_size=0, ptrs_size=0)
+    s2 = MyStruct.from_buffer(b'', 0, data_size=0, ptrs_size=0)
+    s3 = MyStruct.from_buffer(b'x', 0, data_size=0, ptrs_size=0)
     assert hash(s1) == 1234
     assert s1 == s2
     assert s1 != s3

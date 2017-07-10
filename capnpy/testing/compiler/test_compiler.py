@@ -1,8 +1,12 @@
 import py
 import pytest
+from six import b
+
 import capnpy
 from capnpy.testing.compiler.support import CompilerTest
+# TODO                                      possibly remove DynComp
 from capnpy.compiler.compiler import CompilerError, DynamicCompiler
+
 
 class TestCompilerOptions(CompilerTest):
 
@@ -42,7 +46,6 @@ class TestCompilerOptions(CompilerTest):
         assert mod.Foo.first_item == 0
         assert mod.Foo.second_item == 1
 
-
     def test_name_clash(self):
         schema = """
         @0xbf5147cbbecf40c1;
@@ -55,8 +58,8 @@ class TestCompilerOptions(CompilerTest):
         """
         mod = self.compile(schema)
         #
-        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
         p = mod.Point.from_buffer(buf, 0, 2, 0)
         assert p.x == 1
         assert p.y == 2
@@ -71,8 +74,8 @@ class TestCompilerOptions(CompilerTest):
         """
         mod = self.compile(schema)
         #
-        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
         p = mod.P.from_buffer(buf, 0, 2, 0)
         assert p.def_ == 1
         assert p.if_ == 2
@@ -88,8 +91,8 @@ class TestCompilerOptions(CompilerTest):
         """
         mod = self.compile(schema)
         #
-        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
         p = mod.P.from_buffer(buf, 0, 2, 0)
         assert p.void == 1
         assert p.int == 2
@@ -107,8 +110,8 @@ class TestCompilerOptions(CompilerTest):
         """
         mod = self.compile(schema)
         #
-        buf = ('\x2a\x00\x00\x00\x00\x00\x00\x00'  # 42
-               '\x01\x00\x00\x00\x00\x00\x00\x00') # tag == int
+        buf = b('\x2a\x00\x00\x00\x00\x00\x00\x00'  # 42
+                '\x01\x00\x00\x00\x00\x00\x00\x00') # tag == int
         p = mod.P.from_buffer(buf, 0, 2, 0)
         assert p.is_int()
         assert p.int == 42
@@ -125,8 +128,8 @@ class TestCompilerOptions(CompilerTest):
         """
         mod = self.compile(schema)
         #
-        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
         p = mod.Outer.Point.from_buffer(buf, 0, 2, 0)
         assert p.x == 1
         assert p.y == 2
@@ -155,7 +158,7 @@ class TestCompilerOptions(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = '\x02\x00' '\x01\x00' '\x00\x00\x00\x00'
+        buf = b('\x02\x00' '\x01\x00' '\x00\x00\x00\x00')
         f = mod.Foo.from_buffer(buf, 0, 1, 0)
         assert f.color == mod.Foo.Color.blue
         assert f.gender == mod.Foo.Gender.female
@@ -180,7 +183,7 @@ class TestCompilerOptions(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = '\x01\x00' '\x00\x00\x00\x00\x00\x00'
+        buf = b('\x01\x00' '\x00\x00\x00\x00\x00\x00')
         foo = mod.Foo.from_buffer(buf, 0, 1, 0)
         assert foo.color == mod.Foo.Color.green
         bar = mod.Bar.from_buffer(buf, 0, 1, 0)
@@ -226,7 +229,7 @@ class TestCapnpExcecutable(CompilerTest):
             echo "Error: the only allowed option is --version, got $*"
             #exit 1
         fi
-        """).chmod(0755)
+        """).chmod(0o755)
         #
         schema = """
         @0xbf5147cbbecf40c1;
