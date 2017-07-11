@@ -75,6 +75,7 @@ install:
   - # tox creates the sdist: we need cython to be installed in the env which
   - # creates the sdist, to generate the .c files
   - pip install cython>=0.25
+  - pip install six
 
 script:
 # - bash ./travis/clone-benchmarks-repo.sh
