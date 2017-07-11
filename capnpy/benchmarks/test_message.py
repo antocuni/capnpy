@@ -1,6 +1,8 @@
 import pytest
 import socket
 import contextlib
+import six
+
 from capnpy.buffered import BufferedSocket
 from capnpy.benchmarks import support
 from capnpy.benchmarks.test_benchmarks import get_obj, schema
@@ -24,8 +26,8 @@ class TestLoad(object):
         return tmpfile
 
     def load_N(self, schema, open_connection):
-        f = open_connection()
-        for i in xrange(self.N):
+        f = open_connection('rb')
+        for i in range(self.N):
             obj = schema.MyStruct.load(f)
         f.close()
         return obj
@@ -45,7 +47,7 @@ class TestLoad(object):
         #
         host = TcpServer.host
         port = TcpServer.port
-        def open_connection():
+        def open_connection(*args):
             sock = socket.create_connection((host, port))
             if schema.__name__ == 'Capnpy':
                 sock = BufferedSocket(sock)
@@ -77,7 +79,7 @@ class TestDump(object):
         #
         obj = get_obj(schema)
         res = benchmark(dumps_N, obj)
-        assert type(res) is str
+        assert type(res) is six.binary_type
 
     @pytest.mark.benchmark(group="dumps")
     def test_dumps(self, schema, benchmark):
@@ -94,7 +96,7 @@ class TestDump(object):
         #
         obj = get_obj(schema)
         res = benchmark(dumps_N, obj)
-        assert type(res) is str
+        assert type(res) is six.binary_type
 
     @pytest.mark.benchmark(group="dumps")
     def test_dumps_not_compact(self, schema, benchmark):
@@ -114,7 +116,7 @@ class TestDump(object):
         obj0 = container.items[0]
         assert not obj0._is_compact()
         res = benchmark(dumps_N, obj0)
-        assert type(res) is str
+        assert type(res) is six.binary_type
 
     @pytest.mark.benchmark(group="dumps")
     def test_dumps_not_compact_no_fastpath(self, schema, benchmark):
@@ -134,4 +136,4 @@ class TestDump(object):
         obj0 = container.items[0]
         assert not obj0._is_compact()
         res = benchmark(dumps_N, obj0)
-        assert type(res) is str
+        assert type(res) is six.binary_type

@@ -3,7 +3,8 @@ import socket
 import random
 import subprocess
 import time
-from cStringIO import StringIO
+import six
+
 from capnpy.buffered import BufferedStream, BufferedSocket
 
 class TcpServer(object):
@@ -46,8 +47,8 @@ class TestBuffered(object):
         tmpdir = tmpdir_factory.mktemp('buffered')
         resp = tmpdir.join('myresponse')
         with resp.open('wb') as f:
-            for i in xrange(self.SIZE):
-                ch = chr(random.randrange(255))
+            for i in range(self.SIZE):
+                ch = six.int2byte(random.randrange(255))
                 f.write(ch)
         #
         tcpserver = TcpServer(resp)
@@ -62,7 +63,7 @@ class TestBuffered(object):
             tot = 0
             while True:
                 s = f.read(1)
-                if s == '':
+                if s == b'':
                     break
                 tot += len(s)
             return tot
@@ -101,5 +102,5 @@ class TestBuffered(object):
         def open_connection():
             host, port = server.host, server.port
             sock = socket.create_connection((host, port))
-            return sock.makefile()
+            return sock.makefile("rb")
         self.do_benchmark(benchmark, open_connection)
