@@ -1,7 +1,15 @@
 from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
                           uint32_t, int32_t, int64_t, uint64_t, INT64_MAX)
-from cpython.string cimport (PyString_GET_SIZE, PyString_AS_STRING,
-                             PyString_CheckExact, PyString_FromStringAndSize)
+from six import PY2
+
+if PY2:
+    from cpython.string cimport (PyString_GET_SIZE, PyString_AS_STRING,
+                                 PyString_CheckExact, PyString_FromStringAndSize)
+else:
+    from cpython.bytes cimport (PyBytes_GET_SIZE as PyString_GET_SIZE,
+                                PyBytes_AS_STRING as PyString_AS_STRING,
+                                PyBytes_CheckExact as PyString_CheckExact,
+                                PyBytes_FromStringAndSize as PyString_FromStringAndSize)
 
 mychr = chr
 

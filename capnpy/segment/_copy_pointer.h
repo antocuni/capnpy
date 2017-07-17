@@ -2,6 +2,7 @@
 #define RAISE_OUT_OF_BOUNDS __pyx_f_6capnpy_7segment_7builder_raise_out_of_bounds
 static PyObject* RAISE_OUT_OF_BOUNDS(Py_ssize_t, Py_ssize_t);
 
+#if PY_MAJOR_VERSION < 3
 #define CHECK_BOUNDS(src, size, offset)                                 \
     (Py_INCREF(Py_None), Py_None);                                      \
     {                                                                   \
@@ -10,3 +11,13 @@ static PyObject* RAISE_OUT_OF_BOUNDS(Py_ssize_t, Py_ssize_t);
             return RAISE_OUT_OF_BOUNDS(size, offset);                   \
         }                                                               \
     }
+#else
+#define CHECK_BOUNDS(src, size, offset)                                 \
+    (Py_INCREF(Py_None), Py_None);                                      \
+    {                                                                   \
+        if ((offset)+(size) > (PyBytes_GET_SIZE(src->buf))) {           \
+            /* raise and return error */                                \
+            return RAISE_OUT_OF_BOUNDS(size, offset);                   \
+        }                                                               \
+    }
+#endif

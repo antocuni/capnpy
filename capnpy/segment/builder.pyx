@@ -2,8 +2,15 @@ cimport cython
 from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
                           uint32_t, int32_t, int64_t, uint64_t, INT64_MAX)
 from libc.string cimport memcpy, memset
-from cpython.string cimport (PyString_FromStringAndSize, PyString_GET_SIZE,
-                             PyString_AS_STRING)
+from six import PY2
+if PY2:
+    from cpython.string cimport (PyString_FromStringAndSize, PyString_GET_SIZE,
+                                 PyString_AS_STRING)
+else:
+    from cpython.bytes cimport (PyBytes_FromStringAndSize as PyString_FromStringAndSize,
+                                PyBytes_GET_SIZE as PyString_GET_SIZE,
+                                PyBytes_AS_STRING as PyString_AS_STRING)
+
 from capnpy.segment.base cimport BaseSegment
 from capnpy.struct_ cimport Struct
 from capnpy.list cimport List, ItemType, StructItemType
