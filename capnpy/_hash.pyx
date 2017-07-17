@@ -19,7 +19,10 @@ cpdef long inthash(long v):
 cpdef long longhash(unsigned long v):
     return inthash(<long>v)
 
-
+# FIXME Replacing hash function with a placeholder because of py3
+cpdef long strhash(bytes a, long start, long size):
+    return 0
+'''
 # string hashing algorithm. Copied from CPython's 2.7 stringobject.c. Note
 # that in Python 3 the hash function is different.
 # The invariant is: strhash(s, i, n) == hash(s[i:i+n]) (assuming size>=0)
@@ -48,6 +51,7 @@ cpdef long strhash(bytes a, long start, long size):
     if x == -1:
         x = -2
     return x
+'''
 
 # tuple hashing algorithm. The magic numbers and the algorithm itself are
 # taken from python/Objects/tupleobject.c:tuplehash
