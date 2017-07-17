@@ -162,7 +162,7 @@ class TestEndOf(object):
                 'garbage1')
         end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
         assert end == 120
-        assert buf[end:] == 'garbage1'
+        assert buf[end:] == b'garbage1'
 
     def test_list_composite_not_compact(self):
         ## struct Point {
@@ -213,7 +213,7 @@ class TestEndOf(object):
                 'garbage1')
         end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
         assert end == 112
-        assert buf[end:] == 'garbage1'
+        assert buf[end:] == b'garbage1'
 
     def test_list_composite_all_null_ptrs(self):
         ## struct Point {
@@ -236,7 +236,7 @@ class TestEndOf(object):
                 'garbage1')
         end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
         assert end == 96
-        assert buf[end:] == 'garbage1'
+        assert buf[end:] == b'garbage1'
 
     def test_list_composite_no_ptr(self):
         buf = b('garbage0'
@@ -250,7 +250,7 @@ class TestEndOf(object):
                 'garbage2')
         end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
         assert end == 56
-        assert buf[end:] == 'garbage1garbage2'
+        assert buf[end:] == b'garbage1garbage2'
 
     def test_list_of_pointers_compact(self):
         buf = b('garbage0'
@@ -292,4 +292,4 @@ class TestEndOf(object):
                 'garbage1')
         end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
         assert end == 40
-        assert buf[end:] == 'garbage1'
+        assert buf[end:] == b'garbage1'

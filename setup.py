@@ -54,7 +54,7 @@ will be handled transparently also in the remaining cases. However:
     will be forced to wait for setuptools to compile cython, instead of doing
     a fast install from a wheel.
 
-So, we chose to speep up the common cases, at the cost of requiring an
+So, we chose to speed up the common cases, at the cost of requiring an
 explicit installation of Cython in the non common cases (1) and (3).
 """
 
@@ -62,7 +62,7 @@ explicit installation of Cython in the non common cases (1) and (3).
 ###############################################################################
 # Custom distutils commands
 
-DEBUG = False # whether to compile files with -g
+DEBUG = int(os.environ.get('DEBUG', False)) # whether to compile files with -g
 
 def my_cythonize(extensions):
     try:
@@ -158,8 +158,7 @@ if hasattr(sys, 'pypy_version_info'):
     USE_CYTHON = False
 else:
     # on CPython
-    USE_CYTHON = os.environ.get('USE_CYTHON', '1')
-    USE_CYTHON = int(USE_CYTHON)
+    USE_CYTHON = int(os.environ.get('USE_CYTHON', True))
 
 if USE_CYTHON:
     ext_modules = get_cython_extensions()
@@ -181,7 +180,7 @@ setup(name="capnpy",
       },
       packages = find_packages(),
       ext_modules = ext_modules,
-      install_requires=['pypytools>=0.3.2', 'docopt'] + extra_install_requires,
+      install_requires=['pypytools>=0.3.2', 'docopt', 'six'] + extra_install_requires,
       setup_requires=['setuptools_scm'],
       zip_safe=False,
       entry_points = {
@@ -190,4 +189,4 @@ setup(name="capnpy",
               "capnpy_schemas = capnpy.compiler.distutils:capnpy_schemas",
           ],
       }
-)
+      )

@@ -1,4 +1,3 @@
-# TODO import future print?
 import py
 import pytest
 from pypytools.codegen import Code
@@ -77,7 +76,6 @@ class TestCtor(object):
         tree = schema.Tree(make(12))
         with self.BIG_TREE.open('w') as f:
             tree.dump(f)
-        print('big tree wrote to ', self.BIG_TREE)
 
     @pytest.mark.benchmark(group="copy_pointer")
     def test_copy_pointer(self, schema, benchmark):
@@ -88,7 +86,6 @@ class TestCtor(object):
             pytest.skip('N/A')
         #
         #self._make_big_tree() # uncomment this if you want to regenerate the file
-        # TODO is rb ok for py2?
         s = self.BIG_TREE.read("rb")
         tree = schema.Tree.loads(s)
 

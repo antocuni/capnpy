@@ -1,10 +1,8 @@
 import py
 import sys
 from pypytools import IS_PYPY
-# TODO change back to costa's
-# from capnpy.util import PY3
 from six import PY3
-#
+
 from capnpy import _hash
 
 def test_inthash():
@@ -31,7 +29,10 @@ def test_longhash():
 def test_strhash():
     expected_hash_empty_string = 0
     if IS_PYPY:
-        expected_hash_empty_string = -2
+        if sys.pypy_version_info[:2] < (5,4):
+            expected_hash_empty_string = -1
+        else:
+            expected_hash_empty_string = -2
     #
     h = _hash.strhash
     assert h('', 0, 0) == hash('') == expected_hash_empty_string

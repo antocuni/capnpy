@@ -73,7 +73,7 @@ def test__read_struct_with_offset():
     ##   x @0 :Int64;
     ##   y @1 :Int64;
     ## }
-    buf = ('abcd'                                # garbage
+    buf = b('abcd'                                # garbage
             '\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
             '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
             '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2

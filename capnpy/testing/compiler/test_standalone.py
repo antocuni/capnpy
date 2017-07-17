@@ -155,5 +155,3 @@ class TestStandalone(CompilerTest):
                     'Fake 1.0, but the current version of capnpy is Fake 2.0. '
                     'Please recompile.')
         assert str(exc.value) == expected
-
-

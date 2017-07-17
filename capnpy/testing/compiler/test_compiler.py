@@ -4,7 +4,6 @@ from six import b
 
 import capnpy
 from capnpy.testing.compiler.support import CompilerTest
-# TODO                                      possibly remove DynComp
 from capnpy.compiler.compiler import CompilerError, DynamicCompiler
 
 
