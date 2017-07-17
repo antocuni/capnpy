@@ -85,8 +85,9 @@ script:
 # - bash ./travis/commit-results.sh
 
 notifications:
-  webhooks:
-    urls:
-      - https://readthedocs.org/build/capnpy # trigger docs build
-    on_success: always
-    on_failure: never
+#  webhooks:
+#    urls:
+#      - https://readthedocs.org/build/capnpy # trigger docs build
+#    on_success: always
+#    on_failure: never
+  email: false
