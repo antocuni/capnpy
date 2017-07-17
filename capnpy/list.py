@@ -55,7 +55,7 @@ class List(Blob):
 
     def __getitem__(self, i):
         if isinstance(i, slice):
-            idx = xrange(*i.indices(len(self)))
+            idx = range(*i.indices(len(self)))
             return [self._getitem_fast(j) for j in idx]
         if i < 0:
             i += self._item_count

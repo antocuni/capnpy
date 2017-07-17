@@ -18,7 +18,7 @@ Cython-only declarations that cannot be expressed in pure-python mode.
 On the other hand, when we are on PyPy, this is a normal Python module, which
 is imported by builder.py
 """
-
+       # TODO uncomment all @cython.locals
 from pypytools import fakecython
 with fakecython:
     import cython
@@ -61,8 +61,8 @@ if not cython.compiled:
 @cython.ccall
 ##@cython.returns(long)
 ##@cython.except_(-1)
-@cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
-               kind=long)
+#@cython.locals(src=BaseSegment, p=int, src_pos=int, dst=SegmentBuilder, dst_pos=int,
+#               kind=int)
 def copy_pointer(src, p, src_pos, dst, dst_pos):
     """
     Copy from: BaseSegment src, pointer p living at the src_pos offset
@@ -87,8 +87,8 @@ def copy_pointer(src, p, src_pos, dst, dst_pos):
 @cython.cfunc
 ##@cython.returns(long)
 ##@cython.except_(-1)
-@cython.locals(n=long, src=BaseSegment, src_pos=long, dst=SegmentBuilder, dst_pos=long,
-               i=long, p=long, offset=long)
+#@cython.locals(n=int, src=BaseSegment, src_pos=int, dst=SegmentBuilder, dst_pos=int,
+#               i=int, p=int, offset=int)
 def _copy_many_ptrs(n, src, src_pos, dst, dst_pos):
     check_bounds(src, n*8, src_pos)
     for i in range(n):
@@ -101,8 +101,8 @@ def _copy_many_ptrs(n, src, src_pos, dst, dst_pos):
 @cython.cfunc
 ##@cython.returns(long)
 ##@cython.except_(-1)
-@cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
-               data_size=long, ptrs_size=long, ds=long)
+#@cython.locals(src=BaseSegment, p=int, src_pos=int, dst=SegmentBuilder, dst_pos=int,
+#               data_size=int, ptrs_size=int, ds=int)
 def _copy_struct(src, p, src_pos, dst, dst_pos):
     src_pos = ptr.deref(p, src_pos)
     data_size = ptr.struct_data_size(p)
@@ -117,8 +117,8 @@ def _copy_struct(src, p, src_pos, dst, dst_pos):
 @cython.cfunc
 ##@cython.returns(long)
 ##@cython.except_(-1)
-@cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
-               data_size=long, ptrs_size=long, ds=long)
+#@cython.locals(src=BaseSegment, p=int, src_pos=int, dst=SegmentBuilder, dst_pos=int,
+#               data_size=int, ptrs_size=int, ds=int)
 def _copy_struct_inline(src, p, src_pos, dst, dst_pos):
     # this does the same as _copy_struct, but instead of allocating space for
     # it, it fills an already-allocated space (useful e.g. for writing structs
@@ -145,15 +145,15 @@ def _copy_struct_inline(src, p, src_pos, dst, dst_pos):
 @cython.cfunc
 ##@cython.returns(long)
 ##@cython.except_(-1)
-@cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
-               count=long, size_tag=long, body_length=long)
+#@cython.locals(src=BaseSegment, p=int, src_pos=int, dst=SegmentBuilder, dst_pos=int,
+#               count=int, size_tag=int, body_length=int)
 def _copy_list_primitive(src, p, src_pos, dst, dst_pos):
     src_pos = ptr.deref(p, src_pos)
     count = ptr.list_item_count(p)
     size_tag = ptr.list_size_tag(p)
     body_length = 0
     if size_tag == ptr.LIST_SIZE_BIT:
-        body_length = (count + 8 - 1) / 8 # divide by 8 and round up
+        body_length = (count + 8 - 1) // 8 # divide by 8 and round up
     else:
         body_length = count * ptr.list_item_length(size_tag)
     #
@@ -165,8 +165,8 @@ def _copy_list_primitive(src, p, src_pos, dst, dst_pos):
 @cython.cfunc
 ##@cython.returns(long)
 ##@cython.except_(-1)
-@cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
-               count=long, body_length=long)
+#@cython.locals(src=BaseSegment, p=int, src_pos=int, dst=SegmentBuilder, dst_pos=int,
+#               count=int, body_length=int)
 def _copy_list_ptr(src, p, src_pos, dst, dst_pos):
     src_pos = ptr.deref(p, src_pos)
     count = ptr.list_item_count(p)
@@ -179,10 +179,10 @@ def _copy_list_ptr(src, p, src_pos, dst, dst_pos):
 @cython.cfunc
 ##@cython.returns(long)
 ##@cython.except_(-1)
-@cython.locals(src=BaseSegment, p=long, src_pos=long, dst=SegmentBuilder, dst_pos=long,
-               total_words=long, body_length=long,
-               tag=long, count=long, data_size=long, ptrs_size=long,
-               i=long, item_length=long, ptrs_section_offset=long)
+#@cython.locals(src=BaseSegment, p=int, src_pos=int, dst=SegmentBuilder, dst_pos=int,
+#               total_words=int, body_length=int,
+#               tag=int, count=int, data_size=int, ptrs_size=int,
+#               i=int, item_length=int, ptrs_section_offset=int)
 def _copy_list_composite(src, p, src_pos, dst, dst_pos):
     src_pos = ptr.deref(p, src_pos)
     total_words = ptr.list_item_count(p) # n of words NOT including the tag

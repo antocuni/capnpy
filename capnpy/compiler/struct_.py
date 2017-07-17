@@ -255,7 +255,7 @@ class Node__Struct:
         if txt == '*':
             fieldnames = allfields
         else:
-            fieldnames = map(str.strip, txt.split(','))
+            fieldnames = list(map(str.strip, txt.split(',')))
         #
         # sanity check
         for f in fieldnames:

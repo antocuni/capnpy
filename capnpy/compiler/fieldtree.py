@@ -1,3 +1,4 @@
+from __future__ import print_function
 from collections import namedtuple
 
 Union = namedtuple('Union', ['varname', 'offset'])
@@ -10,7 +11,7 @@ class AbstractNode(object):
 
     def pprint(self, level=0):
         indent = (level*4) * ' '
-        print '%s%s' % (indent, self)
+        print('%s%s' % (indent, self))
         for child in self.children:
             child.pprint(level+1)
 

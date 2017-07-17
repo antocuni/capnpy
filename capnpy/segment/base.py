@@ -1,4 +1,6 @@
 import struct
+
+import six
 from pypytools import IS_PYPY
 
 if IS_PYPY:
@@ -13,18 +15,18 @@ if IS_PYPY:
     # is not a tracing-time constant (it becomes constant later, during
     # optimizeopt). The work around is to use mychr, which pyjitpl.py is smart
     # enough to detect as a tracing-time constant.
-    _CHR = tuple(map(chr, range(256)))
+    _CHR = tuple(map(six.int2byte, range(256)))
     def mychr(i):
         return _CHR[i]
 
 else:
-    mychr = chr
+    mychr = six.int2byte
 
 
 def unpack_uint32(buf, offset):
     if offset < 0 or offset + 4 > len(buf):
         raise IndexError('Offset out of bounds: %d' % offset)
-    return struct.unpack_from('<I', buf, offset)[0]
+    return struct.unpack_from(b'<I', buf, offset)[0]
 
 
 class BaseSegment(object):
@@ -34,7 +36,7 @@ class BaseSegment(object):
         self.buf = buf
 
     def read_primitive(self, offset, ifmt):
-        fmt = '<' + mychr(ifmt)
+        fmt = b'<' + mychr(ifmt)
         if offset < 0 or offset + struct.calcsize(fmt) > len(self.buf):
             raise IndexError('Offset out of bounds: %d' % offset)
         return struct.unpack_from(fmt, self.buf, offset)[0]
@@ -79,7 +81,7 @@ class BaseSegment(object):
                              (start, end))
         segment_count = 1
         length = end-start
-        header = struct.pack('IIq', (segment_count-1), length/8 + 1, p)
+        header = struct.pack(b'IIq', (segment_count-1), length//8 + 1, p)
         return header + self.buf[start:end]
 
 BaseSegmentForTests = BaseSegment

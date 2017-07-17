@@ -115,7 +115,7 @@ class BufferedSocket(BufferedStream):
         self.wbuf.append(data)
 
     def flush(self):
-        data = ''.join(self.wbuf)
+        data = b''.join(self.wbuf)
         self.sock.sendall(data)
         self.wbuf = []
 
@@ -146,7 +146,7 @@ class StringBuffer(FileLike):
 
     def readline(self):
         i = self.i
-        j = self.s.find('\n', self.i)+1
+        j = self.s.find(b'\n', self.i)+1
         if j == 0:
             self.i = len(self.s)
             return self.s[i:]

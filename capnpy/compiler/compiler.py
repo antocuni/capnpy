@@ -1,15 +1,18 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import py
 import sys
 import os
 import types
 import subprocess
 from distutils.version import LooseVersion
+
 import capnpy
 from capnpy import schema
 from capnpy.message import loads
 from capnpy.blob import PYX
 from capnpy.compiler.module import ModuleGenerator
+from capnpy.util import ensure_unicode, PY3
+
 
 PKGDIR = py.path.local(capnpy.__file__).dirpath()
 
@@ -89,6 +92,8 @@ class BaseCompiler(object):
 
     def _capnp_check_version(self):
         version = self._exec('capnp', '--version')
+        if PY3:
+            version = ensure_unicode(version)
         version = version.strip()
         if not version.startswith("Cap'n Proto version"):
             raise CompilerError("capnp version string not recognized: %s" % version)
@@ -172,7 +177,7 @@ class DynamicCompiler(BaseCompiler):
         mod.__schema__ = str(filename)
         mod.__source__ = str(src)
         mod.__dict__['__compiler'] = self
-        exec src.compile() in mod.__dict__
+        exec(src.compile(), mod.__dict__)
         return mod
 
     def _compile_pyx(self, filename, m, src):
@@ -277,7 +282,7 @@ class DistutilsCompiler(BaseCompiler):
             # already compiled
             return outfile
         cwd = py.path.local('.')
-        print '[capnpy] Compiling', infile.relto(cwd)
+        print('[capnpy] Compiling', infile.relto(cwd))
         m, src = self.generate_py_source(infile, convert_case=convert_case,
                                          pyx=pyx)
         outfile.write(src)
