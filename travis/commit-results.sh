@@ -33,3 +33,7 @@ git commit -m "add benchmark results:
   - https://travis-ci.org/antocuni/capnpy/jobs/$TRAVIS_JOB_ID
 "
 git push $SSH_REPO $TARGET_BRANCH
+
+# workaround for this travis bug:
+# https://github.com/travis-ci/travis-ci/issues/8082
+ssh-agent -k
