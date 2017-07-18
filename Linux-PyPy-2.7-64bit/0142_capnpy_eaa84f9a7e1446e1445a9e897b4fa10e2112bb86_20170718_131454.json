@@ -1,0 +1,3459 @@
+{
+    "machine_info": {
+        "node": "testing-docker-c6575bee-96ac-446c-a1d6-abd7986523c2", 
+        "processor": "x86_64", 
+        "machine": "x86_64", 
+        "python_compiler": "", 
+        "python_implementation": "PyPy", 
+        "python_implementation_version": "5.4.0", 
+        "python_version": "2.7.10", 
+        "python_build": [
+            "77392ad26350", 
+            "Aug 28 2016"
+        ], 
+        "release": "4.8.12-040812-generic", 
+        "system": "Linux", 
+        "cpu": {
+            "vendor_id": "GenuineIntel", 
+            "hardware": "unknown", 
+            "brand": "Intel(R) Xeon(R) CPU E5-2680 v2 @ 2.80GHz"
+        }
+    }, 
+    "commit_info": {
+        "id": "eaa84f9a7e1446e1445a9e897b4fa10e2112bb86", 
+        "dirty": false, 
+        "project": "capnpy", 
+        "branch": "(detached head)"
+    }, 
+    "benchmarks": [
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Instance-int64]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Instance-int64]", 
+            "params": {
+                "schema": "Instance", 
+                "numeric_type": "int64"
+            }, 
+            "param": "Instance-int64", 
+            "extra_info": {
+                "attribute_type": "int64"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.2481992598623037e-05, 
+                "max": 0.008128482004394755, 
+                "mean": 2.570153603867304e-05, 
+                "stddev": 6.295733972051721e-05, 
+                "rounds": 62555, 
+                "median": 2.6980997063219547e-05, 
+                "iqr": 6.1937462305650115e-06, 
+                "q1": 2.154725370928645e-05, 
+                "q3": 2.7740999939851463e-05, 
+                "iqr_outliers": 628, 
+                "stddev_outliers": 195, 
+                "outliers": "195;628", 
+                "ld15iqr": 1.2481992598623037e-05, 
+                "hd15iqr": 3.794899384956807e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Instance-int8]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Instance-int8]", 
+            "params": {
+                "schema": "Instance", 
+                "numeric_type": "int8"
+            }, 
+            "param": "Instance-int8", 
+            "extra_info": {
+                "attribute_type": "int8"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.3138997019268572e-05, 
+                "max": 0.004104153995285742, 
+                "mean": 2.690992577412653e-05, 
+                "stddev": 2.8422235868601204e-05, 
+                "rounds": 63068, 
+                "median": 2.598899300210178e-05, 
+                "iqr": 7.870112312957644e-07, 
+                "q1": 2.5632994947955012e-05, 
+                "q3": 2.6420006179250777e-05, 
+                "iqr_outliers": 7842, 
+                "stddev_outliers": 521, 
+                "outliers": "521;7842", 
+                "ld15iqr": 2.4452994694001973e-05, 
+                "hd15iqr": 2.7600995963439345e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Instance-int16]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Instance-int16]", 
+            "params": {
+                "schema": "Instance", 
+                "numeric_type": "int16"
+            }, 
+            "param": "Instance-int16", 
+            "extra_info": {
+                "attribute_type": "int16"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.2810996850021183e-05, 
+                "max": 0.004103945000679232, 
+                "mean": 2.4611311468288476e-05, 
+                "stddev": 2.5437024729722648e-05, 
+                "rounds": 80000, 
+                "median": 2.5554996682330966e-05, 
+                "iqr": 2.5839981390163302e-06, 
+                "q1": 2.3560001864098012e-05, 
+                "q3": 2.6144000003114343e-05, 
+                "iqr_outliers": 10885, 
+                "stddev_outliers": 712, 
+                "outliers": "712;10885", 
+                "ld15iqr": 1.9686005543917418e-05, 
+                "hd15iqr": 3.002100856974721e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Instance-int32]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Instance-int32]", 
+            "params": {
+                "schema": "Instance", 
+                "numeric_type": "int32"
+            }, 
+            "param": "Instance-int32", 
+            "extra_info": {
+                "attribute_type": "int32"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.2403004802763462e-05, 
+                "max": 0.001224940991960466, 
+                "mean": 1.7031616573961006e-05, 
+                "stddev": 1.0862116947135251e-05, 
+                "rounds": 58398, 
+                "median": 1.3411001418717206e-05, 
+                "iqr": 8.667018846608698e-06, 
+                "q1": 1.2904987670481205e-05, 
+                "q3": 2.1572006517089903e-05, 
+                "iqr_outliers": 778, 
+                "stddev_outliers": 1101, 
+                "outliers": "1101;778", 
+                "ld15iqr": 1.2403004802763462e-05, 
+                "hd15iqr": 3.4864991903305054e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Instance-uint8]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Instance-uint8]", 
+            "params": {
+                "schema": "Instance", 
+                "numeric_type": "uint8"
+            }, 
+            "param": "Instance-uint8", 
+            "extra_info": {
+                "attribute_type": "uint8"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.2411997886374593e-05, 
+                "max": 0.0007165810093283653, 
+                "mean": 1.4465159728182966e-05, 
+                "stddev": 5.843109814331908e-06, 
+                "rounds": 81553, 
+                "median": 1.2857999536208808e-05, 
+                "iqr": 7.10992026142776e-07, 
+                "q1": 1.2607008102349937e-05, 
+                "q3": 1.3318000128492713e-05, 
+                "iqr_outliers": 12204, 
+                "stddev_outliers": 10289, 
+                "outliers": "10289;12204", 
+                "ld15iqr": 1.2411997886374593e-05, 
+                "hd15iqr": 1.4385994290933013e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Instance-uint16]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Instance-uint16]", 
+            "params": {
+                "schema": "Instance", 
+                "numeric_type": "uint16"
+            }, 
+            "param": "Instance-uint16", 
+            "extra_info": {
+                "attribute_type": "uint16"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.2674005120061338e-05, 
+                "max": 0.0008826190023683012, 
+                "mean": 1.3323825971336226e-05, 
+                "stddev": 4.713782901924082e-06, 
+                "rounds": 80789, 
+                "median": 1.3023993233218789e-05, 
+                "iqr": 4.050089046359062e-07, 
+                "q1": 1.2899996363557875e-05, 
+                "q3": 1.3305005268193781e-05, 
+                "iqr_outliers": 1556, 
+                "stddev_outliers": 741, 
+                "outliers": "741;1556", 
+                "ld15iqr": 1.2674005120061338e-05, 
+                "hd15iqr": 1.3912998838350177e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Instance-uint32]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Instance-uint32]", 
+            "params": {
+                "schema": "Instance", 
+                "numeric_type": "uint32"
+            }, 
+            "param": "Instance-uint32", 
+            "extra_info": {
+                "attribute_type": "uint32"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.276799594052136e-05, 
+                "max": 0.0010845000069821253, 
+                "mean": 1.3352733222438022e-05, 
+                "stddev": 4.913391093935112e-06, 
+                "rounds": 80302, 
+                "median": 1.3076991308480501e-05, 
+                "iqr": 4.3401087168604136e-07, 
+                "q1": 1.2921998859383166e-05, 
+                "q3": 1.3356009731069207e-05, 
+                "iqr_outliers": 1344, 
+                "stddev_outliers": 705, 
+                "outliers": "705;1344", 
+                "ld15iqr": 1.276799594052136e-05, 
+                "hd15iqr": 1.4007993740960956e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Instance-uint64]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Instance-uint64]", 
+            "params": {
+                "schema": "Instance", 
+                "numeric_type": "uint64"
+            }, 
+            "param": "Instance-uint64", 
+            "extra_info": {
+                "attribute_type": "uint64"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.266899926122278e-05, 
+                "max": 0.0006752420013071969, 
+                "mean": 1.3309216370189897e-05, 
+                "stddev": 3.7853837871119735e-06, 
+                "rounds": 80920, 
+                "median": 1.3051001587882638e-05, 
+                "iqr": 3.4600088838487864e-07, 
+                "q1": 1.292499655392021e-05, 
+                "q3": 1.3270997442305088e-05, 
+                "iqr_outliers": 2519, 
+                "stddev_outliers": 733, 
+                "outliers": "733;2519", 
+                "ld15iqr": 1.266899926122278e-05, 
+                "hd15iqr": 1.379000605084002e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Instance-float32]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Instance-float32]", 
+            "params": {
+                "schema": "Instance", 
+                "numeric_type": "float32"
+            }, 
+            "param": "Instance-float32", 
+            "extra_info": {
+                "attribute_type": "float32"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.2793010682798922e-05, 
+                "max": 0.0007073999877320603, 
+                "mean": 1.3325002559502098e-05, 
+                "stddev": 3.855183852206263e-06, 
+                "rounds": 81123, 
+                "median": 1.3069002307020128e-05, 
+                "iqr": 3.9998849388211966e-07, 
+                "q1": 1.2921009329147637e-05, 
+                "q3": 1.3320997823029757e-05, 
+                "iqr_outliers": 1573, 
+                "stddev_outliers": 751, 
+                "outliers": "751;1573", 
+                "ld15iqr": 1.2793010682798922e-05, 
+                "hd15iqr": 1.392098783981055e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Instance-float64]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Instance-float64]", 
+            "params": {
+                "schema": "Instance", 
+                "numeric_type": "float64"
+            }, 
+            "param": "Instance-float64", 
+            "extra_info": {
+                "attribute_type": "float64"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.2593998690135777e-05, 
+                "max": 0.0008658430015202612, 
+                "mean": 1.3327755541309988e-05, 
+                "stddev": 4.726054939839524e-06, 
+                "rounds": 79873, 
+                "median": 1.3026001397520304e-05, 
+                "iqr": 4.0399027056992054e-07, 
+                "q1": 1.2912001693621278e-05, 
+                "q3": 1.3315991964191198e-05, 
+                "iqr_outliers": 1530, 
+                "stddev_outliers": 708, 
+                "outliers": "708;1530", 
+                "ld15iqr": 1.2593998690135777e-05, 
+                "hd15iqr": 1.3921991921961308e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Instance-group.field]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Instance-group.field]", 
+            "params": {
+                "schema": "Instance", 
+                "numeric_type": "group.field"
+            }, 
+            "param": "Instance-group.field", 
+            "extra_info": {
+                "attribute_type": "group.field"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.4921010006219149e-05, 
+                "max": 0.0007741349982097745, 
+                "mean": 1.5810308036213178e-05, 
+                "stddev": 5.150574997762552e-06, 
+                "rounds": 68102, 
+                "median": 1.546899147797376e-05, 
+                "iqr": 3.799941623583436e-07, 
+                "q1": 1.530699955765158e-05, 
+                "q3": 1.5686993720009923e-05, 
+                "iqr_outliers": 2115, 
+                "stddev_outliers": 1076, 
+                "outliers": "1076;2115", 
+                "ld15iqr": 1.4921010006219149e-05, 
+                "hd15iqr": 1.6256992239505053e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[NamedTuple-int64]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[NamedTuple-int64]", 
+            "params": {
+                "schema": "NamedTuple", 
+                "numeric_type": "int64"
+            }, 
+            "param": "NamedTuple-int64", 
+            "extra_info": {
+                "attribute_type": "int64"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.4743010979145765e-05, 
+                "max": 0.000839301006635651, 
+                "mean": 1.555100222590402e-05, 
+                "stddev": 5.142716722931131e-06, 
+                "rounds": 68335, 
+                "median": 1.5258003259077668e-05, 
+                "iqr": 4.850007826462388e-07, 
+                "q1": 1.5035999240353703e-05, 
+                "q3": 1.5521000022999942e-05, 
+                "iqr_outliers": 1865, 
+                "stddev_outliers": 729, 
+                "outliers": "729;1865", 
+                "ld15iqr": 1.4743010979145765e-05, 
+                "hd15iqr": 1.624898868612945e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[NamedTuple-int8]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[NamedTuple-int8]", 
+            "params": {
+                "schema": "NamedTuple", 
+                "numeric_type": "int8"
+            }, 
+            "param": "NamedTuple-int8", 
+            "extra_info": {
+                "attribute_type": "int8"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.4650999219156802e-05, 
+                "max": 0.0008105430024443194, 
+                "mean": 1.5636484199699277e-05, 
+                "stddev": 4.979196899619912e-06, 
+                "rounds": 69296, 
+                "median": 1.53299915837124e-05, 
+                "iqr": 4.850007826462388e-07, 
+                "q1": 1.5108002116903663e-05, 
+                "q3": 1.55930028995499e-05, 
+                "iqr_outliers": 1922, 
+                "stddev_outliers": 770, 
+                "outliers": "770;1922", 
+                "ld15iqr": 1.4650999219156802e-05, 
+                "hd15iqr": 1.632099156267941e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[NamedTuple-int16]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[NamedTuple-int16]", 
+            "params": {
+                "schema": "NamedTuple", 
+                "numeric_type": "int16"
+            }, 
+            "param": "NamedTuple-int16", 
+            "extra_info": {
+                "attribute_type": "int16"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.4118995750322938e-05, 
+                "max": 0.0009460119908908382, 
+                "mean": 1.4860288414200457e-05, 
+                "stddev": 5.495174709061617e-06, 
+                "rounds": 71226, 
+                "median": 1.4541001291945577e-05, 
+                "iqr": 4.1400198824703693e-07, 
+                "q1": 1.4367004041559994e-05, 
+                "q3": 1.4781006029807031e-05, 
+                "iqr_outliers": 1651, 
+                "stddev_outliers": 768, 
+                "outliers": "768;1651", 
+                "ld15iqr": 1.4118995750322938e-05, 
+                "hd15iqr": 1.5402998542413116e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[NamedTuple-int32]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[NamedTuple-int32]", 
+            "params": {
+                "schema": "NamedTuple", 
+                "numeric_type": "int32"
+            }, 
+            "param": "NamedTuple-int32", 
+            "extra_info": {
+                "attribute_type": "int32"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.432400313206017e-05, 
+                "max": 0.0008225269993999973, 
+                "mean": 1.5038214508005465e-05, 
+                "stddev": 4.881180996132169e-06, 
+                "rounds": 69464, 
+                "median": 1.4703997294418514e-05, 
+                "iqr": 4.0899612940847874e-07, 
+                "q1": 1.4559002011083066e-05, 
+                "q3": 1.4967998140491545e-05, 
+                "iqr_outliers": 1735, 
+                "stddev_outliers": 753, 
+                "outliers": "753;1735", 
+                "ld15iqr": 1.432400313206017e-05, 
+                "hd15iqr": 1.5581987099722028e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[NamedTuple-uint8]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[NamedTuple-uint8]", 
+            "params": {
+                "schema": "NamedTuple", 
+                "numeric_type": "uint8"
+            }, 
+            "param": "NamedTuple-uint8", 
+            "extra_info": {
+                "attribute_type": "uint8"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.4692996046505868e-05, 
+                "max": 0.0008315589948324487, 
+                "mean": 1.549168126497623e-05, 
+                "stddev": 4.8408870733542975e-06, 
+                "rounds": 68227, 
+                "median": 1.5187004464678466e-05, 
+                "iqr": 4.67000063508749e-07, 
+                "q1": 1.497899938840419e-05, 
+                "q3": 1.544599945191294e-05, 
+                "iqr_outliers": 1664, 
+                "stddev_outliers": 700, 
+                "outliers": "700;1664", 
+                "ld15iqr": 1.4692996046505868e-05, 
+                "hd15iqr": 1.6146994312293828e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[NamedTuple-uint16]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[NamedTuple-uint16]", 
+            "params": {
+                "schema": "NamedTuple", 
+                "numeric_type": "uint16"
+            }, 
+            "param": "NamedTuple-uint16", 
+            "extra_info": {
+                "attribute_type": "uint16"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.4119010302238166e-05, 
+                "max": 0.0008174060058081523, 
+                "mean": 1.5213699378899234e-05, 
+                "stddev": 5.058525922058565e-06, 
+                "rounds": 69267, 
+                "median": 1.4881006791256368e-05, 
+                "iqr": 4.0601298678666353e-07, 
+                "q1": 1.4716992154717445e-05, 
+                "q3": 1.5123005141504109e-05, 
+                "iqr_outliers": 2445, 
+                "stddev_outliers": 728, 
+                "outliers": "728;2445", 
+                "ld15iqr": 1.4119010302238166e-05, 
+                "hd15iqr": 1.573299232404679e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[NamedTuple-uint32]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[NamedTuple-uint32]", 
+            "params": {
+                "schema": "NamedTuple", 
+                "numeric_type": "uint32"
+            }, 
+            "param": "NamedTuple-uint32", 
+            "extra_info": {
+                "attribute_type": "uint32"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.4830002328380942e-05, 
+                "max": 0.0008782340009929612, 
+                "mean": 1.546285664627404e-05, 
+                "stddev": 5.020670556762581e-06, 
+                "rounds": 70677, 
+                "median": 1.5157987945713103e-05, 
+                "iqr": 4.659959813579917e-07, 
+                "q1": 1.4951001503504813e-05, 
+                "q3": 1.5416997484862804e-05, 
+                "iqr_outliers": 1858, 
+                "stddev_outliers": 714, 
+                "outliers": "714;1858", 
+                "ld15iqr": 1.4830002328380942e-05, 
+                "hd15iqr": 1.6115998732857406e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[NamedTuple-uint64]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[NamedTuple-uint64]", 
+            "params": {
+                "schema": "NamedTuple", 
+                "numeric_type": "uint64"
+            }, 
+            "param": "NamedTuple-uint64", 
+            "extra_info": {
+                "attribute_type": "uint64"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.5644996892660856e-05, 
+                "max": 0.0008242840121965855, 
+                "mean": 1.6405178701024613e-05, 
+                "stddev": 5.126350296238247e-06, 
+                "rounds": 65864, 
+                "median": 1.6061007045209408e-05, 
+                "iqr": 4.019966581836343e-07, 
+                "q1": 1.591200998518616e-05, 
+                "q3": 1.6314006643369794e-05, 
+                "iqr_outliers": 1800, 
+                "stddev_outliers": 718, 
+                "outliers": "718;1800", 
+                "ld15iqr": 1.5644996892660856e-05, 
+                "hd15iqr": 1.691700890660286e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[NamedTuple-float32]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[NamedTuple-float32]", 
+            "params": {
+                "schema": "NamedTuple", 
+                "numeric_type": "float32"
+            }, 
+            "param": "NamedTuple-float32", 
+            "extra_info": {
+                "attribute_type": "float32"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.5694997273385525e-05, 
+                "max": 0.0008160269935615361, 
+                "mean": 1.6364160508544404e-05, 
+                "stddev": 4.9541400567581285e-06, 
+                "rounds": 67119, 
+                "median": 1.6035002772696316e-05, 
+                "iqr": 3.9998849388211966e-07, 
+                "q1": 1.5901008737273514e-05, 
+                "q3": 1.6300997231155634e-05, 
+                "iqr_outliers": 1612, 
+                "stddev_outliers": 717, 
+                "outliers": "717;1612", 
+                "ld15iqr": 1.5694997273385525e-05, 
+                "hd15iqr": 1.6901991330087185e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[NamedTuple-float64]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[NamedTuple-float64]", 
+            "params": {
+                "schema": "NamedTuple", 
+                "numeric_type": "float64"
+            }, 
+            "param": "NamedTuple-float64", 
+            "extra_info": {
+                "attribute_type": "float64"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.5623008948750794e-05, 
+                "max": 0.0008262519986601546, 
+                "mean": 1.6459028944525978e-05, 
+                "stddev": 4.976569937225038e-06, 
+                "rounds": 67025, 
+                "median": 1.6115998732857406e-05, 
+                "iqr": 4.5099295675754547e-07, 
+                "q1": 1.5945013728924096e-05, 
+                "q3": 1.639600668568164e-05, 
+                "iqr_outliers": 1873, 
+                "stddev_outliers": 719, 
+                "outliers": "719;1873", 
+                "ld15iqr": 1.5623008948750794e-05, 
+                "hd15iqr": 1.7072990885935724e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[NamedTuple-group.field]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[NamedTuple-group.field]", 
+            "params": {
+                "schema": "NamedTuple", 
+                "numeric_type": "group.field"
+            }, 
+            "param": "NamedTuple-group.field", 
+            "extra_info": {
+                "attribute_type": "group.field"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.6788995708338916e-05, 
+                "max": 0.0009190779965138063, 
+                "mean": 1.753842082885129e-05, 
+                "stddev": 5.995739941785925e-06, 
+                "rounds": 60391, 
+                "median": 1.7112994100898504e-05, 
+                "iqr": 5.070032784715295e-07, 
+                "q1": 1.69080012710765e-05, 
+                "q3": 1.741500454954803e-05, 
+                "iqr_outliers": 2221, 
+                "stddev_outliers": 746, 
+                "outliers": "746;2221", 
+                "ld15iqr": 1.6788995708338916e-05, 
+                "hd15iqr": 1.8175996956415474e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Capnpy-int64]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Capnpy-int64]", 
+            "params": {
+                "schema": "Capnpy", 
+                "numeric_type": "int64"
+            }, 
+            "param": "Capnpy-int64", 
+            "extra_info": {
+                "attribute_type": "int64"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.3887987481430173e-05, 
+                "max": 0.0019151140004396439, 
+                "mean": 2.473568444882347e-05, 
+                "stddev": 1.2937198523943871e-05, 
+                "rounds": 42321, 
+                "median": 2.4125009076669812e-05, 
+                "iqr": 3.8200232665985823e-07, 
+                "q1": 2.3997999960556626e-05, 
+                "q3": 2.4380002287216485e-05, 
+                "iqr_outliers": 1914, 
+                "stddev_outliers": 525, 
+                "outliers": "525;1914", 
+                "ld15iqr": 2.3887987481430173e-05, 
+                "hd15iqr": 2.4954002583399415e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Capnpy-int8]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Capnpy-int8]", 
+            "params": {
+                "schema": "Capnpy", 
+                "numeric_type": "int8"
+            }, 
+            "param": "Capnpy-int8", 
+            "extra_info": {
+                "attribute_type": "int8"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.341299841646105e-05, 
+                "max": 0.0018411259952699766, 
+                "mean": 2.445339560240337e-05, 
+                "stddev": 1.2596360812340362e-05, 
+                "rounds": 42447, 
+                "median": 2.3859000066295266e-05, 
+                "iqr": 4.4998887460678816e-07, 
+                "q1": 2.3679996957071126e-05, 
+                "q3": 2.4129985831677914e-05, 
+                "iqr_outliers": 1949, 
+                "stddev_outliers": 497, 
+                "outliers": "497;1949", 
+                "ld15iqr": 2.341299841646105e-05, 
+                "hd15iqr": 2.4805995053611696e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Capnpy-int16]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Capnpy-int16]", 
+            "params": {
+                "schema": "Capnpy", 
+                "numeric_type": "int16"
+            }, 
+            "param": "Capnpy-int16", 
+            "extra_info": {
+                "attribute_type": "int16"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.3836008040234447e-05, 
+                "max": 0.0018855179951060563, 
+                "mean": 2.4971539263218046e-05, 
+                "stddev": 1.4316816880980376e-05, 
+                "rounds": 42257, 
+                "median": 2.436499926261604e-05, 
+                "iqr": 6.220070645213127e-07, 
+                "q1": 2.4088993086479604e-05, 
+                "q3": 2.4711000151000917e-05, 
+                "iqr_outliers": 1505, 
+                "stddev_outliers": 302, 
+                "outliers": "302;1505", 
+                "ld15iqr": 2.3836008040234447e-05, 
+                "hd15iqr": 2.5645000278018415e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Capnpy-int32]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Capnpy-int32]", 
+            "params": {
+                "schema": "Capnpy", 
+                "numeric_type": "int32"
+            }, 
+            "param": "Capnpy-int32", 
+            "extra_info": {
+                "attribute_type": "int32"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.3786007659509778e-05, 
+                "max": 0.0018692299927351996, 
+                "mean": 2.4756694974371764e-05, 
+                "stddev": 1.2726420383188141e-05, 
+                "rounds": 41833, 
+                "median": 2.422499528620392e-05, 
+                "iqr": 4.080102371517569e-07, 
+                "q1": 2.4069988285191357e-05, 
+                "q3": 2.4477998522343114e-05, 
+                "iqr_outliers": 1746, 
+                "stddev_outliers": 483, 
+                "outliers": "483;1746", 
+                "ld15iqr": 2.3786007659509778e-05, 
+                "hd15iqr": 2.509099431335926e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Capnpy-uint8]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Capnpy-uint8]", 
+            "params": {
+                "schema": "Capnpy", 
+                "numeric_type": "uint8"
+            }, 
+            "param": "Capnpy-uint8", 
+            "extra_info": {
+                "attribute_type": "uint8"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.361000224482268e-05, 
+                "max": 0.0019122100056847557, 
+                "mean": 2.471842379452863e-05, 
+                "stddev": 1.3039333571918231e-05, 
+                "rounds": 42586, 
+                "median": 2.410900196991861e-05, 
+                "iqr": 5.629990482702851e-07, 
+                "q1": 2.386100823059678e-05, 
+                "q3": 2.4424007278867066e-05, 
+                "iqr_outliers": 1848, 
+                "stddev_outliers": 512, 
+                "outliers": "512;1848", 
+                "ld15iqr": 2.361000224482268e-05, 
+                "hd15iqr": 2.5268993340432644e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Capnpy-uint16]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Capnpy-uint16]", 
+            "params": {
+                "schema": "Capnpy", 
+                "numeric_type": "uint16"
+            }, 
+            "param": "Capnpy-uint16", 
+            "extra_info": {
+                "attribute_type": "uint16"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.3811007849872112e-05, 
+                "max": 0.001857802999438718, 
+                "mean": 2.504921669973196e-05, 
+                "stddev": 1.3052145837924337e-05, 
+                "rounds": 42053, 
+                "median": 2.4354987544938922e-05, 
+                "iqr": 4.780013114213943e-07, 
+                "q1": 2.4152002879418433e-05, 
+                "q3": 2.4630004190839827e-05, 
+                "iqr_outliers": 2227, 
+                "stddev_outliers": 721, 
+                "outliers": "721;2227", 
+                "ld15iqr": 2.3811007849872112e-05, 
+                "hd15iqr": 2.5347995688207448e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Capnpy-uint32]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Capnpy-uint32]", 
+            "params": {
+                "schema": "Capnpy", 
+                "numeric_type": "uint32"
+            }, 
+            "param": "Capnpy-uint32", 
+            "extra_info": {
+                "attribute_type": "uint32"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.4020991986617446e-05, 
+                "max": 0.0024451869976473972, 
+                "mean": 2.5319982631183567e-05, 
+                "stddev": 1.5741953043986574e-05, 
+                "rounds": 42069, 
+                "median": 2.439199306536466e-05, 
+                "iqr": 4.479952622205019e-07, 
+                "q1": 2.4205000954680145e-05, 
+                "q3": 2.4652996216900647e-05, 
+                "iqr_outliers": 2487, 
+                "stddev_outliers": 787, 
+                "outliers": "787;2487", 
+                "ld15iqr": 2.4020991986617446e-05, 
+                "hd15iqr": 2.5325993192382157e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Capnpy-uint64]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Capnpy-uint64]", 
+            "params": {
+                "schema": "Capnpy", 
+                "numeric_type": "uint64"
+            }, 
+            "param": "Capnpy-uint64", 
+            "extra_info": {
+                "attribute_type": "uint64"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 9.779099491424859e-05, 
+                "max": 0.0018872249929700047, 
+                "mean": 0.00010553848573255738, 
+                "stddev": 2.7968109416209627e-05, 
+                "rounds": 10265, 
+                "median": 0.00010159400699194521, 
+                "iqr": 4.393266863189638e-06, 
+                "q1": 0.00010012098937295377, 
+                "q3": 0.00010451425623614341, 
+                "iqr_outliers": 1121, 
+                "stddev_outliers": 339, 
+                "outliers": "339;1121", 
+                "ld15iqr": 9.779099491424859e-05, 
+                "hd15iqr": 0.00011110800551250577, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Capnpy-float32]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Capnpy-float32]", 
+            "params": {
+                "schema": "Capnpy", 
+                "numeric_type": "float32"
+            }, 
+            "param": "Capnpy-float32", 
+            "extra_info": {
+                "attribute_type": "float32"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.384799881838262e-05, 
+                "max": 0.0019360080041224137, 
+                "mean": 2.5506468437789212e-05, 
+                "stddev": 1.3796611450378385e-05, 
+                "rounds": 42067, 
+                "median": 2.4321998353116214e-05, 
+                "iqr": 4.820030881091952e-07, 
+                "q1": 2.413999754935503e-05, 
+                "q3": 2.4622000637464225e-05, 
+                "iqr_outliers": 3160, 
+                "stddev_outliers": 1807, 
+                "outliers": "1807;3160", 
+                "ld15iqr": 2.384799881838262e-05, 
+                "hd15iqr": 2.5345987523905933e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Capnpy-float64]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Capnpy-float64]", 
+            "params": {
+                "schema": "Capnpy", 
+                "numeric_type": "float64"
+            }, 
+            "param": "Capnpy-float64", 
+            "extra_info": {
+                "attribute_type": "float64"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.4080989533104002e-05, 
+                "max": 0.0019972769950982183, 
+                "mean": 2.5641878733156058e-05, 
+                "stddev": 1.4143257782368158e-05, 
+                "rounds": 41859, 
+                "median": 2.506800228729844e-05, 
+                "iqr": 5.160109139978886e-07, 
+                "q1": 2.484499418642372e-05, 
+                "q3": 2.5361005100421607e-05, 
+                "iqr_outliers": 1895, 
+                "stddev_outliers": 451, 
+                "outliers": "451;1895", 
+                "ld15iqr": 2.4080989533104002e-05, 
+                "hd15iqr": 2.613599644973874e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_numeric[Capnpy-group.field]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_numeric[Capnpy-group.field]", 
+            "params": {
+                "schema": "Capnpy", 
+                "numeric_type": "group.field"
+            }, 
+            "param": "Capnpy-group.field", 
+            "extra_info": {
+                "attribute_type": "group.field"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.9884002287872136e-05, 
+                "max": 0.003153711004415527, 
+                "mean": 3.132711096665477e-05, 
+                "stddev": 2.37933116219764e-05, 
+                "rounds": 33573, 
+                "median": 3.056899004150182e-05, 
+                "iqr": 4.77986759506166e-07, 
+                "q1": 3.034400288015604e-05, 
+                "q3": 3.0821989639662206e-05, 
+                "iqr_outliers": 1790, 
+                "stddev_outliers": 229, 
+                "outliers": "229;1790", 
+                "ld15iqr": 2.9884002287872136e-05, 
+                "hd15iqr": 3.1539006158709526e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_text[Instance]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_text[Instance]", 
+            "params": {
+                "schema": "Instance"
+            }, 
+            "param": "Instance", 
+            "extra_info": {
+                "attribute_type": "text"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 3.739701060112566e-05, 
+                "max": 0.000986225000815466, 
+                "mean": 3.90378378668383e-05, 
+                "stddev": 7.390329098158749e-06, 
+                "rounds": 26761, 
+                "median": 3.844300226774067e-05, 
+                "iqr": 5.350011633709073e-07, 
+                "q1": 3.819999983534217e-05, 
+                "q3": 3.8735000998713076e-05, 
+                "iqr_outliers": 979, 
+                "stddev_outliers": 404, 
+                "outliers": "404;979", 
+                "ld15iqr": 3.741800901480019e-05, 
+                "hd15iqr": 3.953799023292959e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_text[NamedTuple]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_text[NamedTuple]", 
+            "params": {
+                "schema": "NamedTuple"
+            }, 
+            "param": "NamedTuple", 
+            "extra_info": {
+                "attribute_type": "text"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 5.1812996389344335e-05, 
+                "max": 0.0009232559968950227, 
+                "mean": 5.3651393935681423e-05, 
+                "stddev": 1.117279333292873e-05, 
+                "rounds": 19435, 
+                "median": 5.215599958319217e-05, 
+                "iqr": 5.290057742968202e-07, 
+                "q1": 5.199799488764256e-05, 
+                "q3": 5.252700066193938e-05, 
+                "iqr_outliers": 2546, 
+                "stddev_outliers": 544, 
+                "outliers": "544;2546", 
+                "ld15iqr": 5.1812996389344335e-05, 
+                "hd15iqr": 5.332300497684628e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_text[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_text[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {
+                "attribute_type": "text"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 5.9928992413915694e-05, 
+                "max": 0.004714447000878863, 
+                "mean": 6.208691025002931e-05, 
+                "stddev": 4.965766609798832e-05, 
+                "rounds": 16685, 
+                "median": 6.036899867467582e-05, 
+                "iqr": 5.310139385983348e-07, 
+                "q1": 6.013999518472701e-05, 
+                "q3": 6.067100912332535e-05, 
+                "iqr_outliers": 1116, 
+                "stddev_outliers": 25, 
+                "outliers": "25;1116", 
+                "ld15iqr": 5.9928992413915694e-05, 
+                "hd15iqr": 6.146798841655254e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_struct[Instance]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_struct[Instance]", 
+            "params": {
+                "schema": "Instance"
+            }, 
+            "param": "Instance", 
+            "extra_info": {
+                "attribute_type": "struct"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.4923003618605435e-05, 
+                "max": 0.0007776040001772344, 
+                "mean": 1.588803181628834e-05, 
+                "stddev": 5.143371570602504e-06, 
+                "rounds": 67742, 
+                "median": 1.553099718876183e-05, 
+                "iqr": 4.43993485532701e-07, 
+                "q1": 1.5331999748013914e-05, 
+                "q3": 1.5775993233546615e-05, 
+                "iqr_outliers": 1857, 
+                "stddev_outliers": 833, 
+                "outliers": "833;1857", 
+                "ld15iqr": 1.4923003618605435e-05, 
+                "hd15iqr": 1.644199073780328e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_struct[NamedTuple]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_struct[NamedTuple]", 
+            "params": {
+                "schema": "NamedTuple"
+            }, 
+            "param": "NamedTuple", 
+            "extra_info": {
+                "attribute_type": "struct"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 3.222300438210368e-05, 
+                "max": 0.0009851659997366369, 
+                "mean": 3.348310140040985e-05, 
+                "stddev": 9.617750355559906e-06, 
+                "rounds": 31107, 
+                "median": 3.2512994948774576e-05, 
+                "iqr": 3.4598633646965027e-07, 
+                "q1": 3.2378011383116245e-05, 
+                "q3": 3.2723997719585896e-05, 
+                "iqr_outliers": 3559, 
+                "stddev_outliers": 579, 
+                "outliers": "579;3559", 
+                "ld15iqr": 3.222300438210368e-05, 
+                "hd15iqr": 3.324300632812083e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_struct[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_struct[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {
+                "attribute_type": "struct"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 4.425000224728137e-05, 
+                "max": 0.005990624995320104, 
+                "mean": 4.597156886019767e-05, 
+                "stddev": 5.5189319778992636e-05, 
+                "rounds": 22716, 
+                "median": 4.48039936600253e-05, 
+                "iqr": 4.309986252337694e-07, 
+                "q1": 4.462299693841487e-05, 
+                "q3": 4.505399556364864e-05, 
+                "iqr_outliers": 1130, 
+                "stddev_outliers": 30, 
+                "outliers": "30;1130", 
+                "ld15iqr": 4.425000224728137e-05, 
+                "hd15iqr": 4.570100281853229e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_list[Instance]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_list[Instance]", 
+            "params": {
+                "schema": "Instance"
+            }, 
+            "param": "Instance", 
+            "extra_info": {
+                "attribute_type": "list"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.3887009117752314e-05, 
+                "max": 0.0007956649933476001, 
+                "mean": 1.4668026271909135e-05, 
+                "stddev": 4.561929445015507e-06, 
+                "rounds": 73828, 
+                "median": 1.4357996406033635e-05, 
+                "iqr": 4.0701706893742085e-07, 
+                "q1": 1.4214994735084474e-05, 
+                "q3": 1.4622011804021895e-05, 
+                "iqr_outliers": 1533, 
+                "stddev_outliers": 704, 
+                "outliers": "704;1533", 
+                "ld15iqr": 1.3887009117752314e-05, 
+                "hd15iqr": 1.5233003068715334e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_list[NamedTuple]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_list[NamedTuple]", 
+            "params": {
+                "schema": "NamedTuple"
+            }, 
+            "param": "NamedTuple", 
+            "extra_info": {
+                "attribute_type": "list"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 3.093700797762722e-05, 
+                "max": 0.0008956620004028082, 
+                "mean": 3.204280446495775e-05, 
+                "stddev": 8.193915698612548e-06, 
+                "rounds": 32535, 
+                "median": 3.1144008971750736e-05, 
+                "iqr": 2.5099143385887146e-07, 
+                "q1": 3.104700590483844e-05, 
+                "q3": 3.1297997338697314e-05, 
+                "iqr_outliers": 3535, 
+                "stddev_outliers": 843, 
+                "outliers": "843;3535", 
+                "ld15iqr": 3.093700797762722e-05, 
+                "hd15iqr": 3.1674993806518614e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_list[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_list[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {
+                "attribute_type": "list"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 3.858600393868983e-05, 
+                "max": 0.0057141410070471466, 
+                "mean": 3.989268666728854e-05, 
+                "stddev": 4.949030951116318e-05, 
+                "rounds": 25970, 
+                "median": 3.894401015713811e-05, 
+                "iqr": 3.079912858083844e-07, 
+                "q1": 3.881500742863864e-05, 
+                "q3": 3.912299871444702e-05, 
+                "iqr_outliers": 1382, 
+                "stddev_outliers": 24, 
+                "outliers": "24;1382", 
+                "ld15iqr": 3.858600393868983e-05, 
+                "hd15iqr": 3.958499291911721e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_enum[Instance]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_enum[Instance]", 
+            "params": {
+                "schema": "Instance"
+            }, 
+            "param": "Instance", 
+            "extra_info": {
+                "attribute_type": "enum"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.3375989510677755e-05, 
+                "max": 0.000733348002540879, 
+                "mean": 1.4282827274510333e-05, 
+                "stddev": 4.612552178772203e-06, 
+                "rounds": 77448, 
+                "median": 1.4017001376487315e-05, 
+                "iqr": 3.949971869587898e-07, 
+                "q1": 1.3879005564376712e-05, 
+                "q3": 1.4274002751335502e-05, 
+                "iqr_outliers": 1481, 
+                "stddev_outliers": 724, 
+                "outliers": "724;1481", 
+                "ld15iqr": 1.3375989510677755e-05, 
+                "hd15iqr": 1.486700784880668e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_enum[NamedTuple]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_enum[NamedTuple]", 
+            "params": {
+                "schema": "NamedTuple"
+            }, 
+            "param": "NamedTuple", 
+            "extra_info": {
+                "attribute_type": "enum"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.960801066365093e-05, 
+                "max": 0.0014134980010567233, 
+                "mean": 3.0746076910516963e-05, 
+                "stddev": 1.064583848011919e-05, 
+                "rounds": 33725, 
+                "median": 2.9861999792046845e-05, 
+                "iqr": 2.3799657355993986e-07, 
+                "q1": 2.976499672513455e-05, 
+                "q3": 3.000299329869449e-05, 
+                "iqr_outliers": 3512, 
+                "stddev_outliers": 625, 
+                "outliers": "625;3512", 
+                "ld15iqr": 2.960801066365093e-05, 
+                "hd15iqr": 3.0359995434992015e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr", 
+            "name": "test_enum[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttr::()::test_enum[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {
+                "attribute_type": "enum"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 3.299000672996044e-05, 
+                "max": 0.002249236000352539, 
+                "mean": 3.444061325870917e-05, 
+                "stddev": 1.7338524044031648e-05, 
+                "rounds": 30895, 
+                "median": 3.349300823174417e-05, 
+                "iqr": 4.7576031647622585e-07, 
+                "q1": 3.329999162815511e-05, 
+                "q3": 3.377575194463134e-05, 
+                "iqr_outliers": 2701, 
+                "stddev_outliers": 311, 
+                "outliers": "311;2701", 
+                "ld15iqr": 3.299000672996044e-05, 
+                "hd15iqr": 3.4491997212171555e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr_special", 
+            "name": "test_which[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttrSpecial::()::test_which[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.4313005269505084e-05, 
+                "max": 0.0023209899954963475, 
+                "mean": 2.5227029531587093e-05, 
+                "stddev": 1.5558971215124612e-05, 
+                "rounds": 42284, 
+                "median": 2.4672990548424423e-05, 
+                "iqr": 4.189787432551384e-07, 
+                "q1": 2.4528009817004204e-05, 
+                "q3": 2.4946988560259342e-05, 
+                "iqr_outliers": 1121, 
+                "stddev_outliers": 324, 
+                "outliers": "324;1121", 
+                "ld15iqr": 2.4313005269505084e-05, 
+                "hd15iqr": 2.55759950960055e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr_special", 
+            "name": "test___which__[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttrSpecial::()::test___which__[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.3917004000395536e-05, 
+                "max": 0.0019995589973405004, 
+                "mean": 2.4915287977833408e-05, 
+                "stddev": 1.3861990035865799e-05, 
+                "rounds": 42111, 
+                "median": 2.4488006602041423e-05, 
+                "iqr": 2.9099464882165194e-07, 
+                "q1": 2.4339999072253704e-05, 
+                "q3": 2.4630993721075356e-05, 
+                "iqr_outliers": 1453, 
+                "stddev_outliers": 290, 
+                "outliers": "290;1453", 
+                "ld15iqr": 2.3917004000395536e-05, 
+                "hd15iqr": 2.506800228729844e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "getattr_special", 
+            "name": "test_is_union[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestGetAttrSpecial::()::test_is_union[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.5424000341445208e-05, 
+                "max": 0.002001533008296974, 
+                "mean": 2.6598913788092345e-05, 
+                "stddev": 1.4392380929900994e-05, 
+                "rounds": 40200, 
+                "median": 2.6013003662228584e-05, 
+                "iqr": 3.8200232665985823e-07, 
+                "q1": 2.586700429674238e-05, 
+                "q3": 2.6249006623402238e-05, 
+                "iqr_outliers": 1405, 
+                "stddev_outliers": 293, 
+                "outliers": "293;1405", 
+                "ld15iqr": 2.5424000341445208e-05, 
+                "hd15iqr": 2.682300691958517e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "hash_int", 
+            "name": "test_hash_ints[Instance]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestHash::()::test_hash_ints[Instance]", 
+            "params": {
+                "schema": "Instance"
+            }, 
+            "param": "Instance", 
+            "extra_info": {
+                "schema": "Instance", 
+                "type": "int64"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.4232998839579523e-05, 
+                "max": 0.0011582750012166798, 
+                "mean": 2.5108933348035504e-05, 
+                "stddev": 8.404163704782668e-06, 
+                "rounds": 41892, 
+                "median": 2.4708002456463873e-05, 
+                "iqr": 4.329922376200557e-07, 
+                "q1": 2.4540000595152378e-05, 
+                "q3": 2.4972992832772434e-05, 
+                "iqr_outliers": 1410, 
+                "stddev_outliers": 329, 
+                "outliers": "329;1410", 
+                "ld15iqr": 2.4232998839579523e-05, 
+                "hd15iqr": 2.5622997782193124e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "hash_int", 
+            "name": "test_hash_ints[NamedTuple]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestHash::()::test_hash_ints[NamedTuple]", 
+            "params": {
+                "schema": "NamedTuple"
+            }, 
+            "param": "NamedTuple", 
+            "extra_info": {
+                "schema": "NamedTuple", 
+                "type": "int64"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 7.996101339813322e-05, 
+                "max": 0.0008516969974152744, 
+                "mean": 9.606302414580466e-05, 
+                "stddev": 1.5737468450091582e-05, 
+                "rounds": 12007, 
+                "median": 9.337700612377375e-05, 
+                "iqr": 9.228500857716426e-06, 
+                "q1": 8.92412499524653e-05, 
+                "q3": 9.846975081018172e-05, 
+                "iqr_outliers": 933, 
+                "stddev_outliers": 961, 
+                "outliers": "961;933", 
+                "ld15iqr": 7.996101339813322e-05, 
+                "hd15iqr": 0.00011231600365135819, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "hash_int", 
+            "name": "test_hash_ints[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestHash::()::test_hash_ints[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {
+                "schema": "Capnpy", 
+                "type": "int64"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 4.282999725546688e-05, 
+                "max": 0.00921786499384325, 
+                "mean": 6.179841014805437e-05, 
+                "stddev": 8.515701219167673e-05, 
+                "rounds": 23413, 
+                "median": 4.708601045422256e-05, 
+                "iqr": 3.22265004797373e-05, 
+                "q1": 4.3437001295387745e-05, 
+                "q3": 7.566350177512504e-05, 
+                "iqr_outliers": 181, 
+                "stddev_outliers": 41, 
+                "outliers": "41;181", 
+                "ld15iqr": 4.282999725546688e-05, 
+                "hd15iqr": 0.00012408899783622473, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "hash_int", 
+            "name": "test_hash_ints_tuple", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestHash::()::test_hash_ints_tuple", 
+            "params": null, 
+            "param": null, 
+            "extra_info": {
+                "schema": "tuple", 
+                "type": "int64"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 8.393300231546164e-05, 
+                "max": 0.0009519029990769923, 
+                "mean": 0.00010991387810940241, 
+                "stddev": 2.1453927043183283e-05, 
+                "rounds": 11265, 
+                "median": 0.00010705100430641323, 
+                "iqr": 1.2779259122908115e-05, 
+                "q1": 0.00010116475095856003, 
+                "q3": 0.00011394401008146815, 
+                "iqr_outliers": 764, 
+                "stddev_outliers": 1756, 
+                "outliers": "1756;764", 
+                "ld15iqr": 8.393300231546164e-05, 
+                "hd15iqr": 0.00013316600234247744, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "hash_str", 
+            "name": "test_hash_str[Instance]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestHash::()::test_hash_str[Instance]", 
+            "params": {
+                "schema": "Instance"
+            }, 
+            "param": "Instance", 
+            "extra_info": {
+                "schema": "Instance", 
+                "type": "str"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 4.622500273399055e-05, 
+                "max": 0.0010272799991071224, 
+                "mean": 4.830994148426217e-05, 
+                "stddev": 1.1373387775040796e-05, 
+                "rounds": 21928, 
+                "median": 4.668699693866074e-05, 
+                "iqr": 3.9301812648773193e-07, 
+                "q1": 4.653599171433598e-05, 
+                "q3": 4.692900984082371e-05, 
+                "iqr_outliers": 1720, 
+                "stddev_outliers": 830, 
+                "outliers": "830;1720", 
+                "ld15iqr": 4.622500273399055e-05, 
+                "hd15iqr": 4.752101085614413e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "hash_str", 
+            "name": "test_hash_str[NamedTuple]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestHash::()::test_hash_str[NamedTuple]", 
+            "params": {
+                "schema": "NamedTuple"
+            }, 
+            "param": "NamedTuple", 
+            "extra_info": {
+                "schema": "NamedTuple", 
+                "type": "str"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 9.653800225351006e-05, 
+                "max": 0.0008547869947506115, 
+                "mean": 0.00011184488961823289, 
+                "stddev": 1.633552943110303e-05, 
+                "rounds": 9960, 
+                "median": 0.00010815499990712851, 
+                "iqr": 8.158502168953419e-06, 
+                "q1": 0.00010503049998078495, 
+                "q3": 0.00011318900214973837, 
+                "iqr_outliers": 961, 
+                "stddev_outliers": 772, 
+                "outliers": "772;961", 
+                "ld15iqr": 9.653800225351006e-05, 
+                "hd15iqr": 0.00012543400225695223, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "hash_str", 
+            "name": "test_hash_str[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestHash::()::test_hash_str[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {
+                "schema": "Capnpy", 
+                "type": "str"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 0.0004949419962940738, 
+                "max": 0.002101574995322153, 
+                "mean": 0.0006769181173054709, 
+                "stddev": 0.00012630337259264782, 
+                "rounds": 1993, 
+                "median": 0.0006555829895660281, 
+                "iqr": 5.692724880645983e-05, 
+                "q1": 0.000628584748483263, 
+                "q3": 0.0006855119972897228, 
+                "iqr_outliers": 246, 
+                "stddev_outliers": 242, 
+                "outliers": "242;246", 
+                "ld15iqr": 0.0005433619953691959, 
+                "hd15iqr": 0.0007710399950155988, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "hash_str", 
+            "name": "test_hash_str_tuple", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestHash::()::test_hash_str_tuple", 
+            "params": null, 
+            "param": null, 
+            "extra_info": {
+                "schema": "tuple", 
+                "type": "str"
+            }, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 0.00010823398770298809, 
+                "max": 0.0008789929997874424, 
+                "mean": 0.00013216061406210917, 
+                "stddev": 1.713735113580477e-05, 
+                "rounds": 9628, 
+                "median": 0.00012957249418832362, 
+                "iqr": 1.1236006685066968e-05, 
+                "q1": 0.0001244174927705899, 
+                "q3": 0.00013565349945565686, 
+                "iqr_outliers": 569, 
+                "stddev_outliers": 839, 
+                "outliers": "839;569", 
+                "ld15iqr": 0.00010823398770298809, 
+                "hd15iqr": 0.0001525710104033351, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "list", 
+            "name": "test_len[Instance]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestList::()::test_len[Instance]", 
+            "params": {
+                "schema": "Instance"
+            }, 
+            "param": "Instance", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.2846008758060634e-05, 
+                "max": 0.0008086370071396232, 
+                "mean": 1.3631466182939235e-05, 
+                "stddev": 4.5999209139208076e-06, 
+                "rounds": 79127, 
+                "median": 1.3366006896831095e-05, 
+                "iqr": 3.180030034855008e-07, 
+                "q1": 1.3254990335553885e-05, 
+                "q3": 1.3572993339039385e-05, 
+                "iqr_outliers": 3049, 
+                "stddev_outliers": 709, 
+                "outliers": "709;3049", 
+                "ld15iqr": 1.2846008758060634e-05, 
+                "hd15iqr": 1.405000512022525e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "list", 
+            "name": "test_len[NamedTuple]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestList::()::test_len[NamedTuple]", 
+            "params": {
+                "schema": "NamedTuple"
+            }, 
+            "param": "NamedTuple", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.2839998817071319e-05, 
+                "max": 0.0009789310133783147, 
+                "mean": 1.3702130482804246e-05, 
+                "stddev": 5.637118442625895e-06, 
+                "rounds": 77490, 
+                "median": 1.3384997146204114e-05, 
+                "iqr": 3.4099502954632044e-07, 
+                "q1": 1.325600896961987e-05, 
+                "q3": 1.359700399916619e-05, 
+                "iqr_outliers": 3054, 
+                "stddev_outliers": 872, 
+                "outliers": "872;3054", 
+                "ld15iqr": 1.2839998817071319e-05, 
+                "hd15iqr": 1.410899858456105e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "list", 
+            "name": "test_len[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestList::()::test_len[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.8869995730929077e-05, 
+                "max": 0.02136283999425359, 
+                "mean": 3.2513642522671846e-05, 
+                "stddev": 0.00011823511441934906, 
+                "rounds": 35130, 
+                "median": 2.961700374726206e-05, 
+                "iqr": 4.379835445433855e-07, 
+                "q1": 2.9457005439326167e-05, 
+                "q3": 2.9894988983869553e-05, 
+                "iqr_outliers": 5720, 
+                "stddev_outliers": 9, 
+                "outliers": "9;5720", 
+                "ld15iqr": 2.8869995730929077e-05, 
+                "hd15iqr": 3.0552007956430316e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "list", 
+            "name": "test_getitem[Instance]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestList::()::test_getitem[Instance]", 
+            "params": {
+                "schema": "Instance"
+            }, 
+            "param": "Instance", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.3109005521982908e-05, 
+                "max": 0.000811281002825126, 
+                "mean": 1.442664725098787e-05, 
+                "stddev": 5.942469721594078e-06, 
+                "rounds": 78815, 
+                "median": 1.3590994058176875e-05, 
+                "iqr": 4.1100429370999336e-07, 
+                "q1": 1.3420009054243565e-05, 
+                "q3": 1.3831013347953558e-05, 
+                "iqr_outliers": 5748, 
+                "stddev_outliers": 4283, 
+                "outliers": "4283;5748", 
+                "ld15iqr": 1.3109005521982908e-05, 
+                "hd15iqr": 1.4448000001721084e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "list", 
+            "name": "test_getitem[NamedTuple]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestList::()::test_getitem[NamedTuple]", 
+            "params": {
+                "schema": "NamedTuple"
+            }, 
+            "param": "NamedTuple", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.347200304735452e-05, 
+                "max": 0.0009498919971520081, 
+                "mean": 1.4017846702899933e-05, 
+                "stddev": 5.513155605664731e-06, 
+                "rounds": 76348, 
+                "median": 1.3728000340051949e-05, 
+                "iqr": 4.030007403343916e-07, 
+                "q1": 1.3580007362179458e-05, 
+                "q3": 1.398300810251385e-05, 
+                "iqr_outliers": 1651, 
+                "stddev_outliers": 749, 
+                "outliers": "749;1651", 
+                "ld15iqr": 1.347200304735452e-05, 
+                "hd15iqr": 1.4588003978133202e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "list", 
+            "name": "test_getitem[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestList::()::test_getitem[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 0.0002847300056600943, 
+                "max": 0.003627601996413432, 
+                "mean": 0.00032671317022922743, 
+                "stddev": 8.263360289184522e-05, 
+                "rounds": 3508, 
+                "median": 0.000314065495331306, 
+                "iqr": 1.668000186327845e-05, 
+                "q1": 0.0003093650011578575, 
+                "q3": 0.0003260450030211359, 
+                "iqr_outliers": 522, 
+                "stddev_outliers": 82, 
+                "outliers": "82;522", 
+                "ld15iqr": 0.0002847300056600943, 
+                "hd15iqr": 0.0003513029951136559, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "list", 
+            "name": "test_iter[Instance]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestList::()::test_iter[Instance]", 
+            "params": {
+                "schema": "Instance"
+            }, 
+            "param": "Instance", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 9.014799434226006e-05, 
+                "max": 0.0011899649980477989, 
+                "mean": 0.00010638155890676455, 
+                "stddev": 1.9551889790093514e-05, 
+                "rounds": 11164, 
+                "median": 0.00010267299512634054, 
+                "iqr": 4.959503712598234e-06, 
+                "q1": 0.0001003419965854846, 
+                "q3": 0.00010530150029808283, 
+                "iqr_outliers": 1264, 
+                "stddev_outliers": 789, 
+                "outliers": "789;1264", 
+                "ld15iqr": 9.291499736718833e-05, 
+                "hd15iqr": 0.00011279400496277958, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "list", 
+            "name": "test_iter[NamedTuple]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestList::()::test_iter[NamedTuple]", 
+            "params": {
+                "schema": "NamedTuple"
+            }, 
+            "param": "NamedTuple", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 9.292599861510098e-05, 
+                "max": 0.0010631930053932592, 
+                "mean": 0.00010704404597449717, 
+                "stddev": 1.8305821170857815e-05, 
+                "rounds": 10993, 
+                "median": 0.00010357800056226552, 
+                "iqr": 4.785255441674963e-06, 
+                "q1": 0.00010144199768546969, 
+                "q3": 0.00010622725312714465, 
+                "iqr_outliers": 1201, 
+                "stddev_outliers": 736, 
+                "outliers": "736;1201", 
+                "ld15iqr": 9.435199899598956e-05, 
+                "hd15iqr": 0.00011343900405336171, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "list", 
+            "name": "test_iter[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_benchmarks.py::TestList::()::test_iter[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 0.001221582992002368, 
+                "max": 0.0038917060010135174, 
+                "mean": 0.0013281983633516288, 
+                "stddev": 0.00014148773767096233, 
+                "rounds": 819, 
+                "median": 0.0013141550007276237, 
+                "iqr": 9.496574784861878e-05, 
+                "q1": 0.0012673757519223727, 
+                "q3": 0.0013623414997709915, 
+                "iqr_outliers": 6, 
+                "stddev_outliers": 22, 
+                "outliers": "22;6", 
+                "ld15iqr": 0.001221582992002368, 
+                "hd15iqr": 0.001512091010226868, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "buffered", 
+            "name": "test_BufferedSocket", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_buffered.py::TestBuffered::()::test_BufferedSocket", 
+            "params": null, 
+            "param": null, 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 0.010697441000957042, 
+                "max": 0.021239711000816897, 
+                "mean": 0.014055136360015633, 
+                "stddev": 0.00203160227097778, 
+                "rounds": 97, 
+                "median": 0.013823455999954604, 
+                "iqr": 0.0025789990031626076, 
+                "q1": 0.012753648497891845, 
+                "q3": 0.015332647501054453, 
+                "iqr_outliers": 2, 
+                "stddev_outliers": 26, 
+                "outliers": "26;2", 
+                "ld15iqr": 0.010697441000957042, 
+                "hd15iqr": 0.020162713000900112, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "buffered", 
+            "name": "test_BufferedStream", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_buffered.py::TestBuffered::()::test_BufferedStream", 
+            "params": null, 
+            "param": null, 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 0.019241561007220298, 
+                "max": 0.029465425002854317, 
+                "mean": 0.021016532841022128, 
+                "stddev": 0.001959866576882492, 
+                "rounds": 50, 
+                "median": 0.020334374501544517, 
+                "iqr": 0.0008687800145708025, 
+                "q1": 0.020061484989128076, 
+                "q3": 0.020930265003698878, 
+                "iqr_outliers": 8, 
+                "stddev_outliers": 5, 
+                "outliers": "5;8", 
+                "ld15iqr": 0.019241561007220298, 
+                "hd15iqr": 0.02270271599991247, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "buffered", 
+            "name": "test_makefile", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_buffered.py::TestBuffered::()::test_makefile", 
+            "params": null, 
+            "param": null, 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 0.32508192100794986, 
+                "max": 0.6599950880045071, 
+                "mean": 0.5003040164039703, 
+                "stddev": 0.1271718945632868, 
+                "rounds": 5, 
+                "median": 0.4819253390014637, 
+                "iqr": 0.17603639724620734, 
+                "q1": 0.4230605777556775, 
+                "q3": 0.5990969750018849, 
+                "iqr_outliers": 0, 
+                "stddev_outliers": 2, 
+                "outliers": "2;0", 
+                "ld15iqr": 0.32508192100794986, 
+                "hd15iqr": 0.6599950880045071, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "ctor", 
+            "name": "test_simple[Instance]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_ctor.py::TestCtor::()::test_simple[Instance]", 
+            "params": {
+                "schema": "Instance"
+            }, 
+            "param": "Instance", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.84650013782084e-06, 
+                "max": 0.003930393999326043, 
+                "mean": 4.501416848038043e-06, 
+                "stddev": 1.330124171392939e-05, 
+                "rounds": 176460, 
+                "median": 4.15899557992816e-06, 
+                "iqr": 2.4151086108759046e-07, 
+                "q1": 4.1034945752471685e-06, 
+                "q3": 4.345005436334759e-06, 
+                "iqr_outliers": 28990, 
+                "stddev_outliers": 406, 
+                "outliers": "406;28990", 
+                "ld15iqr": 3.7415011320263147e-06, 
+                "hd15iqr": 4.7075009206309915e-06, 
+                "iterations": 2
+            }
+        }, 
+        {
+            "group": "ctor", 
+            "name": "test_simple[NamedTuple]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_ctor.py::TestCtor::()::test_simple[NamedTuple]", 
+            "params": {
+                "schema": "NamedTuple"
+            }, 
+            "param": "NamedTuple", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 4.052497388329357e-06, 
+                "max": 0.0006948240043129772, 
+                "mean": 4.27952956661899e-06, 
+                "stddev": 2.75202742668844e-06, 
+                "rounds": 122760, 
+                "median": 4.156499926466495e-06, 
+                "iqr": 1.0499934433028102e-07, 
+                "q1": 4.112502210773528e-06, 
+                "q3": 4.217501555103809e-06, 
+                "iqr_outliers": 9900, 
+                "stddev_outliers": 719, 
+                "outliers": "719;9900", 
+                "ld15iqr": 4.052497388329357e-06, 
+                "hd15iqr": 4.375004209578037e-06, 
+                "iterations": 2
+            }
+        }, 
+        {
+            "group": "ctor", 
+            "name": "test_simple[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_ctor.py::TestCtor::()::test_simple[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 0.00039858100353740156, 
+                "max": 0.009186979994410649, 
+                "mean": 0.00046874901809383125, 
+                "stddev": 0.0002494432862994174, 
+                "rounds": 2509, 
+                "median": 0.00042443600250408053, 
+                "iqr": 4.447300671017729e-05, 
+                "q1": 0.00041454474194324575, 
+                "q3": 0.00045901774865342304, 
+                "iqr_outliers": 340, 
+                "stddev_outliers": 66, 
+                "outliers": "66;340", 
+                "ld15iqr": 0.00039858100353740156, 
+                "hd15iqr": 0.0005258200108073652, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "ctor", 
+            "name": "test_text[Instance]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_ctor.py::TestCtor::()::test_text[Instance]", 
+            "params": {
+                "schema": "Instance"
+            }, 
+            "param": "Instance", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.8305003070272505e-06, 
+                "max": 0.0005559575001825579, 
+                "mean": 4.298038240472448e-06, 
+                "stddev": 2.1728755306611613e-06, 
+                "rounds": 172029, 
+                "median": 4.1530001908540726e-06, 
+                "iqr": 1.744992914609611e-07, 
+                "q1": 4.106499545741826e-06, 
+                "q3": 4.280998837202787e-06, 
+                "iqr_outliers": 13396, 
+                "stddev_outliers": 1043, 
+                "outliers": "1043;13396", 
+                "ld15iqr": 3.84499435313046e-06, 
+                "hd15iqr": 4.542998794931918e-06, 
+                "iterations": 2
+            }
+        }, 
+        {
+            "group": "ctor", 
+            "name": "test_text[NamedTuple]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_ctor.py::TestCtor::()::test_text[NamedTuple]", 
+            "params": {
+                "schema": "NamedTuple"
+            }, 
+            "param": "NamedTuple", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.9519942472688854e-06, 
+                "max": 0.0005437874933704734, 
+                "mean": 4.299242556209712e-06, 
+                "stddev": 2.1493116806436916e-06, 
+                "rounds": 170475, 
+                "median": 4.1554958443157375e-06, 
+                "iqr": 1.320004230365157e-07, 
+                "q1": 4.10949724027887e-06, 
+                "q3": 4.241497663315386e-06, 
+                "iqr_outliers": 18949, 
+                "stddev_outliers": 1143, 
+                "outliers": "1143;18949", 
+                "ld15iqr": 3.911496605724096e-06, 
+                "hd15iqr": 4.439505573827773e-06, 
+                "iterations": 2
+            }
+        }, 
+        {
+            "group": "ctor", 
+            "name": "test_text[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_ctor.py::TestCtor::()::test_text[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 0.001424655012669973, 
+                "max": 0.02176977100316435, 
+                "mean": 0.001863108918728409, 
+                "stddev": 0.0009805498071043832, 
+                "rounds": 712, 
+                "median": 0.001648206998652313, 
+                "iqr": 0.0002113685113727115, 
+                "q1": 0.0015657794938306324, 
+                "q3": 0.001777148005203344, 
+                "iqr_outliers": 115, 
+                "stddev_outliers": 25, 
+                "outliers": "25;115", 
+                "ld15iqr": 0.001424655012669973, 
+                "hd15iqr": 0.0021168560051592067, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "ctor", 
+            "name": "test_struct[Instance]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_ctor.py::TestCtor::()::test_struct[Instance]", 
+            "params": {
+                "schema": "Instance"
+            }, 
+            "param": "Instance", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.9520015232264996e-06, 
+                "max": 0.0005479105020640418, 
+                "mean": 4.264253348158569e-06, 
+                "stddev": 2.1878258830739333e-06, 
+                "rounds": 147798, 
+                "median": 4.14950045524165e-06, 
+                "iqr": 1.154985511675477e-07, 
+                "q1": 4.114495823159814e-06, 
+                "q3": 4.229994374327362e-06, 
+                "iqr_outliers": 11713, 
+                "stddev_outliers": 808, 
+                "outliers": "808;11713", 
+                "ld15iqr": 3.942004696000367e-06, 
+                "hd15iqr": 4.4034968595951796e-06, 
+                "iterations": 2
+            }
+        }, 
+        {
+            "group": "ctor", 
+            "name": "test_struct[NamedTuple]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_ctor.py::TestCtor::()::test_struct[NamedTuple]", 
+            "params": {
+                "schema": "NamedTuple"
+            }, 
+            "param": "NamedTuple", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.860499080270529e-06, 
+                "max": 0.0004810070022358559, 
+                "mean": 4.342263375231552e-06, 
+                "stddev": 1.7140485568344397e-06, 
+                "rounds": 172772, 
+                "median": 4.289497155696154e-06, 
+                "iqr": 1.824955688789487e-07, 
+                "q1": 4.175999492872506e-06, 
+                "q3": 4.358495061751455e-06, 
+                "iqr_outliers": 7113, 
+                "stddev_outliers": 889, 
+                "outliers": "889;7113", 
+                "ld15iqr": 3.902496246155351e-06, 
+                "hd15iqr": 4.6324930735863745e-06, 
+                "iterations": 2
+            }
+        }, 
+        {
+            "group": "ctor", 
+            "name": "test_struct[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_ctor.py::TestCtor::()::test_struct[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 0.0015977159928297624, 
+                "max": 0.002694836992304772, 
+                "mean": 0.001774042399902828, 
+                "stddev": 0.00011153764134333766, 
+                "rounds": 625, 
+                "median": 0.0017473079933552071, 
+                "iqr": 0.00014340350753627717, 
+                "q1": 0.001691018493147567, 
+                "q3": 0.001834422000683844, 
+                "iqr_outliers": 9, 
+                "stddev_outliers": 173, 
+                "outliers": "173;9", 
+                "ld15iqr": 0.0015977159928297624, 
+                "hd15iqr": 0.002049579008598812, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "copy_pointer", 
+            "name": "test_copy_pointer[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_ctor.py::TestCtor::()::test_copy_pointer[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.6937215149955591, 
+                "max": 1.8769579640065785, 
+                "mean": 1.778747053796542, 
+                "stddev": 0.07362033506333292, 
+                "rounds": 5, 
+                "median": 1.7901774729980389, 
+                "iqr": 0.11593685350817395, 
+                "q1": 1.71319587698963, 
+                "q3": 1.829132730497804, 
+                "iqr_outliers": 0, 
+                "stddev_outliers": 2, 
+                "outliers": "2;0", 
+                "ld15iqr": 1.6937215149955591, 
+                "hd15iqr": 1.8769579640065785, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "ctor", 
+            "name": "test_list[Instance]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_ctor.py::TestCtor::()::test_list[Instance]", 
+            "params": {
+                "schema": "Instance"
+            }, 
+            "param": "Instance", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.7800051611848176e-06, 
+                "max": 0.0019316089965286665, 
+                "mean": 4.218716658634275e-06, 
+                "stddev": 5.268287644224178e-06, 
+                "rounds": 179857, 
+                "median": 4.117995558772236e-06, 
+                "iqr": 1.2649979908019304e-07, 
+                "q1": 4.073001036886126e-06, 
+                "q3": 4.199500835966319e-06, 
+                "iqr_outliers": 22089, 
+                "stddev_outliers": 637, 
+                "outliers": "637;22089", 
+                "ld15iqr": 3.8834987208247185e-06, 
+                "hd15iqr": 4.389497917145491e-06, 
+                "iterations": 2
+            }
+        }, 
+        {
+            "group": "ctor", 
+            "name": "test_list[NamedTuple]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_ctor.py::TestCtor::()::test_list[NamedTuple]", 
+            "params": {
+                "schema": "NamedTuple"
+            }, 
+            "param": "NamedTuple", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 2.8455033316276968e-06, 
+                "max": 0.00046378599654417485, 
+                "mean": 4.201810341978084e-06, 
+                "stddev": 1.805367206610435e-06, 
+                "rounds": 146930, 
+                "median": 4.116496711503714e-06, 
+                "iqr": 1.0550138540565968e-07, 
+                "q1": 4.07799961976707e-06, 
+                "q3": 4.1835010051727295e-06, 
+                "iqr_outliers": 17414, 
+                "stddev_outliers": 739, 
+                "outliers": "739;17414", 
+                "ld15iqr": 3.924003976862878e-06, 
+                "hd15iqr": 4.341993189882487e-06, 
+                "iterations": 2
+            }
+        }, 
+        {
+            "group": "ctor", 
+            "name": "test_list[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_ctor.py::TestCtor::()::test_list[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 0.029501725002774037, 
+                "max": 0.03975368900864851, 
+                "mean": 0.032047610853624064, 
+                "stddev": 0.0017018644354419887, 
+                "rounds": 34, 
+                "median": 0.03197570549673401, 
+                "iqr": 0.0012268249847693369, 
+                "q1": 0.031251182008418255, 
+                "q3": 0.03247800699318759, 
+                "iqr_outliers": 1, 
+                "stddev_outliers": 5, 
+                "outliers": "5;1", 
+                "ld15iqr": 0.029501725002774037, 
+                "hd15iqr": 0.03975368900864851, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "ctor", 
+            "name": "test_list_of_ints[Instance]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_ctor.py::TestCtor::()::test_list_of_ints[Instance]", 
+            "params": {
+                "schema": "Instance"
+            }, 
+            "param": "Instance", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 3.233501047361642e-06, 
+                "max": 0.0004696200048783794, 
+                "mean": 4.26448855258718e-06, 
+                "stddev": 2.0457717611342165e-06, 
+                "rounds": 146135, 
+                "median": 4.12949884776026e-06, 
+                "iqr": 1.3400131138041615e-07, 
+                "q1": 4.085995897185057e-06, 
+                "q3": 4.2199972085654736e-06, 
+                "iqr_outliers": 11900, 
+                "stddev_outliers": 888, 
+                "outliers": "888;11900", 
+                "ld15iqr": 3.886998456437141e-06, 
+                "hd15iqr": 4.421002813614905e-06, 
+                "iterations": 2
+            }
+        }, 
+        {
+            "group": "ctor", 
+            "name": "test_list_of_ints[NamedTuple]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_ctor.py::TestCtor::()::test_list_of_ints[NamedTuple]", 
+            "params": {
+                "schema": "NamedTuple"
+            }, 
+            "param": "NamedTuple", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 3.2975003705359995e-06, 
+                "max": 0.0006402219951269217, 
+                "mean": 4.221206226301502e-06, 
+                "stddev": 2.2853357118921345e-06, 
+                "rounds": 145986, 
+                "median": 4.120498488191515e-06, 
+                "iqr": 1.2000236893072724e-07, 
+                "q1": 4.080997314304113e-06, 
+                "q3": 4.200999683234841e-06, 
+                "iqr_outliers": 13408, 
+                "stddev_outliers": 742, 
+                "outliers": "742;13408", 
+                "ld15iqr": 3.90099739888683e-06, 
+                "hd15iqr": 4.381006874609739e-06, 
+                "iterations": 2
+            }
+        }, 
+        {
+            "group": "ctor", 
+            "name": "test_list_of_ints[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_ctor.py::TestCtor::()::test_list_of_ints[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 0.002808538993122056, 
+                "max": 0.007742243004031479, 
+                "mean": 0.00302699321172579, 
+                "stddev": 0.00026419697666115024, 
+                "rounds": 354, 
+                "median": 0.0030036999960429966, 
+                "iqr": 0.00010404900240246207, 
+                "q1": 0.002960757992696017, 
+                "q3": 0.003064806995098479, 
+                "iqr_outliers": 8, 
+                "stddev_outliers": 2, 
+                "outliers": "2;8", 
+                "ld15iqr": 0.002808538993122056, 
+                "hd15iqr": 0.003223672989406623, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "load", 
+            "name": "test_load_from_file[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_message.py::TestLoad::()::test_load_from_file[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 0.15277631500794087, 
+                "max": 0.15704153499973472, 
+                "mean": 0.1549779110001899, 
+                "stddev": 0.0016432026943100715, 
+                "rounds": 7, 
+                "median": 0.15538776099856477, 
+                "iqr": 0.002822451504471246, 
+                "q1": 0.1536162272459478, 
+                "q3": 0.15643867875041906, 
+                "iqr_outliers": 0, 
+                "stddev_outliers": 3, 
+                "outliers": "3;0", 
+                "ld15iqr": 0.15277631500794087, 
+                "hd15iqr": 0.15704153499973472, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "load", 
+            "name": "test_load_from_socket[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_message.py::TestLoad::()::test_load_from_socket[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 0.09560586500447243, 
+                "max": 0.1422214730118867, 
+                "mean": 0.11640425800142111, 
+                "stddev": 0.01575589240620056, 
+                "rounds": 10, 
+                "median": 0.11580361300002551, 
+                "iqr": 0.01683685800526291, 
+                "q1": 0.10436311399098486, 
+                "q3": 0.12119997199624777, 
+                "iqr_outliers": 0, 
+                "stddev_outliers": 3, 
+                "outliers": "3;0", 
+                "ld15iqr": 0.09560586500447243, 
+                "hd15iqr": 0.1422214730118867, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "dumps", 
+            "name": "test_copy_buffer[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_message.py::TestDump::()::test_copy_buffer[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 4.029300180263817e-05, 
+                "max": 0.0016834679991006851, 
+                "mean": 5.844989472699889e-05, 
+                "stddev": 1.868636673286479e-05, 
+                "rounds": 25327, 
+                "median": 5.5487005738541484e-05, 
+                "iqr": 1.3688004401046783e-05, 
+                "q1": 4.963900209986605e-05, 
+                "q3": 6.332700650091283e-05, 
+                "iqr_outliers": 879, 
+                "stddev_outliers": 1653, 
+                "outliers": "1653;879", 
+                "ld15iqr": 4.029300180263817e-05, 
+                "hd15iqr": 8.386299305129796e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "dumps", 
+            "name": "test_dumps[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_message.py::TestDump::()::test_dumps[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 0.0003142709902022034, 
+                "max": 0.0006772180058760568, 
+                "mean": 0.0003562010472845119, 
+                "stddev": 3.456549552831778e-05, 
+                "rounds": 3181, 
+                "median": 0.0003460549924056977, 
+                "iqr": 3.441823355387896e-05, 
+                "q1": 0.0003337640082463622, 
+                "q3": 0.00036818224180024117, 
+                "iqr_outliers": 165, 
+                "stddev_outliers": 501, 
+                "outliers": "501;165", 
+                "ld15iqr": 0.0003142709902022034, 
+                "hd15iqr": 0.0004198319948045537, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "dumps", 
+            "name": "test_dumps_not_compact[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_message.py::TestDump::()::test_dumps_not_compact[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 0.003979217988671735, 
+                "max": 0.03815701400162652, 
+                "mean": 0.004425709700834292, 
+                "stddev": 0.0022868794595747024, 
+                "rounds": 254, 
+                "median": 0.00417344800371211, 
+                "iqr": 0.000208609999390319, 
+                "q1": 0.0040936879959190264, 
+                "q3": 0.004302297995309345, 
+                "iqr_outliers": 6, 
+                "stddev_outliers": 4, 
+                "outliers": "4;6", 
+                "ld15iqr": 0.003979217988671735, 
+                "hd15iqr": 0.004761795993545093, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "dumps", 
+            "name": "test_dumps_not_compact_no_fastpath[Capnpy]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_message.py::TestDump::()::test_dumps_not_compact_no_fastpath[Capnpy]", 
+            "params": {
+                "schema": "Capnpy"
+            }, 
+            "param": "Capnpy", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 0.0036762660020031035, 
+                "max": 0.00783057400258258, 
+                "mean": 0.004064745057711253, 
+                "stddev": 0.00025462022042498913, 
+                "rounds": 276, 
+                "median": 0.004056030498759355, 
+                "iqr": 0.00015081850142451003, 
+                "q1": 0.0039780550068826415, 
+                "q3": 0.0041288735083071515, 
+                "iqr_outliers": 5, 
+                "stddev_outliers": 7, 
+                "outliers": "7;5", 
+                "ld15iqr": 0.003791711002122611, 
+                "hd15iqr": 0.004597206003381871, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "unpack", 
+            "name": "test_unpack_primitive_int64[str]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_unpack.py::TestUnpack::()::test_unpack_primitive_int64[str]", 
+            "params": {
+                "buftype": "str"
+            }, 
+            "param": "str", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.5168989193625748e-05, 
+                "max": 0.001981466994038783, 
+                "mean": 1.6010781182986077e-05, 
+                "stddev": 9.539931513112903e-06, 
+                "rounds": 69392, 
+                "median": 1.561599492561072e-05, 
+                "iqr": 4.910107236355543e-07, 
+                "q1": 1.544599945191294e-05, 
+                "q3": 1.5937010175548494e-05, 
+                "iqr_outliers": 1868, 
+                "stddev_outliers": 692, 
+                "outliers": "692;1868", 
+                "ld15iqr": 1.5168989193625748e-05, 
+                "hd15iqr": 1.6673991922289133e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "unpack", 
+            "name": "test_unpack_primitive_int64[bytearray]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_unpack.py::TestUnpack::()::test_unpack_primitive_int64[bytearray]", 
+            "params": {
+                "buftype": "bytearray"
+            }, 
+            "param": "bytearray", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 3.587099490687251e-05, 
+                "max": 0.0014893609913997352, 
+                "mean": 3.7457257870357924e-05, 
+                "stddev": 1.3230785135220536e-05, 
+                "rounds": 27976, 
+                "median": 3.617999027483165e-05, 
+                "iqr": 2.6999623514711857e-07, 
+                "q1": 3.609000123105943e-05, 
+                "q3": 3.635999746620655e-05, 
+                "iqr_outliers": 4231, 
+                "stddev_outliers": 561, 
+                "outliers": "561;4231", 
+                "ld15iqr": 3.587099490687251e-05, 
+                "hd15iqr": 3.676500637084246e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "unpack", 
+            "name": "test_unpack_int64[str]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_unpack.py::TestUnpack::()::test_unpack_int64[str]", 
+            "params": {
+                "buftype": "str"
+            }, 
+            "param": "str", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 1.3692988432012498e-05, 
+                "max": 0.001971474994206801, 
+                "mean": 1.4496180982993742e-05, 
+                "stddev": 9.609912111220185e-06, 
+                "rounds": 72680, 
+                "median": 1.4187011402100325e-05, 
+                "iqr": 3.050081431865692e-07, 
+                "q1": 1.4060991816222668e-05, 
+                "q3": 1.4365999959409237e-05, 
+                "iqr_outliers": 2238, 
+                "stddev_outliers": 710, 
+                "outliers": "710;2238", 
+                "ld15iqr": 1.3692988432012498e-05, 
+                "hd15iqr": 1.4823992387391627e-05, 
+                "iterations": 1
+            }
+        }, 
+        {
+            "group": "unpack", 
+            "name": "test_unpack_int64[bytearray]", 
+            "fullname": ".tox/pypy-bench/site-packages/capnpy/benchmarks/test_unpack.py::TestUnpack::()::test_unpack_int64[bytearray]", 
+            "params": {
+                "buftype": "bytearray"
+            }, 
+            "param": "bytearray", 
+            "extra_info": {}, 
+            "options": {
+                "disable_gc": false, 
+                "timer": "monotonic", 
+                "min_rounds": 5, 
+                "max_time": 1.0, 
+                "min_time": 5e-06, 
+                "warmup": 100000
+            }, 
+            "stats": {
+                "min": 3.691700112540275e-05, 
+                "max": 0.0016428919916506857, 
+                "mean": 3.9045781343088086e-05, 
+                "stddev": 1.4730980693452308e-05, 
+                "rounds": 27188, 
+                "median": 3.8094003684818745e-05, 
+                "iqr": 1.881009666249156e-06, 
+                "q1": 3.709099837578833e-05, 
+                "q3": 3.897200804203749e-05, 
+                "iqr_outliers": 1177, 
+                "stddev_outliers": 589, 
+                "outliers": "589;1177", 
+                "ld15iqr": 3.691700112540275e-05, 
+                "hd15iqr": 4.1795006836764514e-05, 
+                "iterations": 1
+            }
+        }
+    ], 
+    "datetime": "2017-07-18T13:20:31.152769", 
+    "version": "3.1.0a1"
+}
