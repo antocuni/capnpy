@@ -21,7 +21,7 @@ def get_obj(schema):
     inner = schema.MyInner(field=200)
     obj = schema.MyStruct(padding=0, bool=100, int8=100, int16=100, int32=100,
                           int64=100, uint8=100, uint16=100, uint32=100, uint64=100,
-                          float32=100, float64=100, text='hello world', group=(100,),
+                          float32=100, float64=100, text=b'hello world', group=(100,),
                           inner=inner, intlist=[1, 2, 3, 4], color=2)
     return obj
 

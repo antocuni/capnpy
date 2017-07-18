@@ -33,9 +33,9 @@ class TestCtor(object):
             def new_and_sum(StrPoint):
                 res = 0
                 for i in range({N}):
-                    obj = StrPoint(x='hello',
-                                   y='this is a longer string',
-                                   z='bar')
+                    obj = StrPoint(x=b'hello',
+                                   y=b'this is a longer string',
+                                   z=b'bar')
                     res += len(obj.z)
                 return res
         """)
