@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+import py
 import sys
 import glob
 import warnings
@@ -26,12 +27,14 @@ def capnpy_schemas(dist, attr, schemas):
     dist.ext_modules += capnpify(schemas, pyx=pyx, convert_case=convert_case)
 
 def capnpify(files, pyx='auto', convert_case=True):
+    cwd = py.path.local('.')
     if isinstance(files, str):
         files = glob.glob(files)
         if files == []:
             raise ValueError("'%s' did not match any files" % files)
     compiler = DistutilsCompiler(sys.path)
     outfiles = [compiler.compile(f, convert_case, pyx) for f in files]
+    outfiles = [outf.relto(cwd) for outf in outfiles]
     #
     if compiler.getpyx(pyx):
         exts = []
