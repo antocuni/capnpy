@@ -122,5 +122,12 @@ class TestSetup(CompilerTest):
             outfile = self.tmpdir.join('example.so')
         else:
             outfile = self.tmpdir.join('example.py')
-        #
         assert outfile.check(file=True)
+        #
+        # make sure that SOURCES.txt does not contain absolute paths, which
+        # break things on windows
+        ret = os.system('%s setup.py egg_info' % sys.executable)
+        assert ret == 0
+        SOURCES = self.tmpdir.join('foo.egg-info', 'SOURCES.txt')
+        for line in SOURCES.readlines():
+            assert not line.startswith('/')
