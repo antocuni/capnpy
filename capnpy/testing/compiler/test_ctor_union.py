@@ -91,12 +91,12 @@ class TestSpecificCtors(BaseTestUnionConstructors):
         """
         mod = self.compile(schema)
         # the order is: area, perimeter, [circle/square], color
-        p = mod.Shape.new_empty(1, 2, color='red')
+        p = mod.Shape.new_empty(1, 2, color=b'red')
         assert p.area == 1
         assert p.perimeter == 2
         assert p.color == 'red'
         #
-        p = mod.Shape.new_square(1, 2, 3, color='red')
+        p = mod.Shape.new_square(1, 2, 3, color=b'red')
         assert p.area == 1
         assert p.perimeter == 2
         assert p.square == 3
@@ -159,15 +159,15 @@ class TestNamedUnion(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        p = mod.Person(name='foo', job=mod.Person.Job(unemployed=None))
+        p = mod.Person(name=b'foo', job=mod.Person.Job(unemployed=None))
         assert p.name == 'foo'
         assert p.job.is_unemployed()
         #
-        p = mod.Person(name='foo', job=mod.Person.Job(retired=None))
+        p = mod.Person(name=b'foo', job=mod.Person.Job(retired=None))
         assert p.name == 'foo'
         assert p.job.is_retired()
         #
-        p = mod.Person(name='foo', job=mod.Person.Job(worker='capnpy'))
+        p = mod.Person(name=b'foo', job=mod.Person.Job(worker=b'capnpy'))
         assert p.name == 'foo'
         assert p.job.worker == 'capnpy'
 
@@ -188,7 +188,7 @@ class TestNamedUnion(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        p = mod.Person(name='foo', job=mod.Person.Job(unemployed=None))
+        p = mod.Person(name=b'foo', job=mod.Person.Job(unemployed=None))
         assert p.job.is_unemployed()
 
     def test_many_unions_arbitrary_order(self):
@@ -212,9 +212,9 @@ class TestNamedUnion(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        p = mod.Person.new_male(name='foo',
+        p = mod.Person.new_male(name=b'foo',
                                 location=mod.Person.Location(work=None),
-                                job=mod.Person.Job(worker='capnpy'))
+                                job=mod.Person.Job(worker=b'capnpy'))
         assert p.is_male()
         assert p.location.is_work()
         assert p.job.is_worker()
@@ -245,10 +245,10 @@ class TestNamedUnion(CompilerTest):
         """
         mod = self.compile(schema)
         p = mod.Person(
-            name='foo',
+            name=b'foo',
             job=mod.Person.Job(
                 employed=mod.Person_job.Employed(
-                    company_name='capnpy',
+                    company_name=b'capnpy',
                     it=None,
                     position=mod.Person_job_employed.Position(worker=None)
                 )

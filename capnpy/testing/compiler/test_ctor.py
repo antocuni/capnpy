@@ -252,7 +252,7 @@ class TestConstructors(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        p = mod.Point(position=(1, 2), color='red')
+        p = mod.Point(position=(1, 2), color=b'red')
         assert p.position.x == 1
         assert p.position.y == 2
         assert p.color == 'red'
@@ -296,7 +296,7 @@ class TestConstructors(CompilerTest):
         """
         mod = self.compile(schema)
         p = mod.Point(position=mod.Point.Position(x=1, y=2),
-                      color=mod.Point.Color(alpha=1.0, name='red'))
+                      color=mod.Point.Color(alpha=1.0, name=b'red'))
         assert p.position.x == 1
         assert p.position.y == 2
         assert p.color.alpha == 1.0
@@ -411,7 +411,7 @@ class TestDefaults(CompilerTest):
         assert mod.Point.Position() == (42, 0)
         assert mod.Point.Color() == (255, None)
         p = mod.Point(position=mod.Point.Position(y=2),
-                      color=mod.Point.Color(name='red'))
+                      color=mod.Point.Color(name=b'red'))
         assert p.position.x == 42
         assert p.position.y == 2
         assert p.color.alpha == 255

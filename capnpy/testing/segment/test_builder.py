@@ -119,10 +119,10 @@ class TestSegmentBuilder(object):
     def test_alloc_text_and_data(self):
         buf = SegmentBuilder()
         buf.allocate(32)
-        buf.alloc_text(0, 'foo')
+        buf.alloc_text(0, b'foo')
         buf.alloc_text(8, None)
-        buf.alloc_text(16, 'bar')
-        buf.alloc_data(24, 'bar')
+        buf.alloc_text(16, b'bar')
+        buf.alloc_data(24, b'bar')
         s = buf.as_string()
         print()
         print_buffer(s)
@@ -235,7 +235,7 @@ class TestSegmentBuilder(object):
         buf = SegmentBuilder()
         pos = buf.allocate(8)
         item_type = TextItemType(Types.text)
-        buf.copy_from_list(pos, item_type, ['A', 'BC', 'DEF', 'GHIJ'])
+        buf.copy_from_list(pos, item_type, [b'A', b'BC', b'DEF', b'GHIJ'])
         s = buf.as_string()
         expected_buf = b('\x01\x00\x00\x00\x26\x00\x00\x00'   # ptrlist
                          '\x0d\x00\x00\x00\x12\x00\x00\x00'   # ptr item 1

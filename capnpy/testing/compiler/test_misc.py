@@ -24,7 +24,7 @@ class TestIntegration(CompilerTest):
         """
         mod = self.compile(schema)
         bars = [mod.Bar(1, 2)]
-        foo = mod.Foo('name', bars)
+        foo = mod.Foo(b'name', bars)
         assert len(foo.bars) == 1
         assert foo.bars[0].x == 1
         assert foo.bars[0].y == 2
@@ -89,8 +89,8 @@ class TestIntegration(CompilerTest):
             }
         """
         mod = self.compile(schema)
-        p1 = mod.Person('Mickey', 'Mouse')
-        p2 = mod.Person('Donald', 'Duck')
+        p1 = mod.Person(b'Mickey', b'Mouse')
+        p2 = mod.Person(b'Donald', b'Duck')
         t = mod.Town([p1, p2])
         assert t.people[0].name == 'Mickey'
         assert t.people[0].surname == 'Mouse'

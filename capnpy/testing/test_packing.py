@@ -54,7 +54,7 @@ class TestUnpack(object):
         assert unpack_primitive(ord('q'), buf, 0) == 42
 
     def test_errors(self):
-        buf = '\xff' * 8
+        buf = b'\xff' * 8
         pytest.raises(IndexError, "unpack_primitive(ord('q'), buf, -1)")
         pytest.raises(IndexError, "unpack_primitive(ord('q'), buf, 8)")
         pytest.raises(TypeError, "unpack_primitive(ord('q'), 42, 0)")

@@ -15,7 +15,7 @@ def test_unpack_uint32():
     buf = struct.pack('II', a, b)
     assert unpack_uint32(buf, 0) == a
     assert unpack_uint32(buf, 4) == b
-    buf = 'abc'
+    buf = b'abc'
     pytest.raises(IndexError, "unpack_uint32(buf, 0)")
 
 
@@ -87,7 +87,7 @@ class TestBaseSegment(object):
             assert val == val2
 
     def test_errors(self):
-        buf = '\xff' * 8
+        buf = b'\xff' * 8
         s = BaseSegment(buf)
         pytest.raises(IndexError, "s.read_int8(-1)")
         pytest.raises(IndexError, "s.read_int16(-1)")
