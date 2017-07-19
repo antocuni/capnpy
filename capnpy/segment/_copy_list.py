@@ -2,8 +2,9 @@
 Look at the docstring of _copy_pointer.py for an explanation of why we
 need fakecython/cython.compiled/etc.
 """
-       # TODO uncomment all @cython.locals
 from pypytools import fakecython
+from six import PY3
+
 with fakecython:
     import cython
 
@@ -11,12 +12,13 @@ if not cython.compiled:
     from capnpy import ptr
     from capnpy.segment.builder import SegmentBuilder
     from capnpy.list import ItemType, StructItemType
+    if PY3: long = int
 
 @cython.ccall
-#@cython.locals(builder=SegmentBuilder, pos=long, item_type=ItemType,
-#               item_length=long, size_tag=long, item_count=long, body_length=long,
-#               struct_item_type=StructItemType,
-#               data_size=long, ptrs_size=long, total_words=long, tag=long)
+@cython.locals(builder=SegmentBuilder, pos=long, item_type=ItemType,
+               item_length=long, size_tag=long, item_count=long, body_length=long,
+               struct_item_type=StructItemType,
+               data_size=long, ptrs_size=long, total_words=long, tag=long)
 def copy_from_list(builder, pos, item_type, lst):
     if lst is None:
         builder.write_int64(pos, 0)
