@@ -3,6 +3,7 @@ import py
 import keyword
 from collections import defaultdict
 from pypytools.codegen import Code
+from six import PY3
 
 from capnpy.util import ensure_unicode
 from capnpy.convert_case import from_camel_case
@@ -73,7 +74,7 @@ class ModuleGenerator(object):
         visit(node)
 
     def _convert_name(self, name):
-        name = ensure_unicode(name)
+        name = ensure_unicode(name) if PY3 else name
         if self.convert_case:
             return from_camel_case(name)
         else:
