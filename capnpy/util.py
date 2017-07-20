@@ -1,6 +1,5 @@
 import sys
 import py
-import imp
 import six
 
 import capnpy
@@ -76,8 +75,8 @@ def extend_module_maybe(globals, filename=None, modname=None):
     exec(code, globals)
 
 def check_version(version):
-    return # FIXME mismatched versions even when they are the same
-           # one is [version]+[commit], other is [version]+[commit].d[date]
+    return # FIXME can't rerun the test when date changes nor recompile schema
+           #  because the version format is [version]+g[commit].d[date]
     if version != capnpy.__version__:
         msg = ('Version mismatch: the module has been compiled with capnpy '
                '{v1}, but the current version of capnpy is {v2}. '

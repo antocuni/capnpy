@@ -180,7 +180,7 @@ setup(name="capnpy",
       },
       packages = find_packages(),
       ext_modules = ext_modules,
-      install_requires=['pypytools>=0.3.2', 'docopt', 'six'] + extra_install_requires,
+      install_requires=['pypytools>=0.3.3', 'docopt', 'six'] + extra_install_requires,
       setup_requires=['setuptools_scm'],
       zip_safe=False,
       entry_points = {
