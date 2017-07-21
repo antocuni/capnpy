@@ -37,7 +37,6 @@ def test_read_str():
     assert s == b"hello capnproto\0"
 
 def test_hash_str():
-    py.test.skip('FIXME') # FIXME hashes temporarily disabled
     buf = b('garbage0'
             'hello capnproto\0') # string
     p = ptr.new_list(0, ptr.LIST_SIZE_8, 16)
