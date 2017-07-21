@@ -133,9 +133,8 @@ def get_cython_extensions():
              "capnpy/packing.pyx",
              "capnpy/_util.pyx",
             ]
-    # TODO only temp
-    from six import PY3
-    if PY3:
+
+    if sys.version_info.major == 3:
         files.append("capnpy/_hash3.pyx")
     else:
         files.append("capnpy/_hash2.pyx")
@@ -183,12 +182,12 @@ setup(name="capnpy",
           'sdist': my_sdist,
           'build_ext': my_build_ext,
       },
-      packages = find_packages(),
-      ext_modules = ext_modules,
+      packages=find_packages(),
+      ext_modules=ext_modules,
       install_requires=['pypytools>=0.3.3', 'docopt', 'six'] + extra_install_requires,
       setup_requires=['setuptools_scm'],
       zip_safe=False,
-      entry_points = {
+      entry_points={
           "distutils.setup_keywords": [
               "capnpy_options = capnpy.compiler.distutils:capnpy_options",
               "capnpy_schemas = capnpy.compiler.distutils:capnpy_schemas",
