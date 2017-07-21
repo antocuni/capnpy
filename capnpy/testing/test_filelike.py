@@ -1,4 +1,3 @@
-# TODO consider using StringIO(u'...')
 from io import BytesIO
 from capnpy.blob import PYX
 from capnpy.filelike import as_filelike, FileLike

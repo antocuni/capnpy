@@ -27,9 +27,9 @@ class TestShortRepr(CompilerTest):
         myrepr = obj.shortrepr()
         capnp_repr = self.decode(obj)
 
-        if PY3:
-            capnp_repr = capnp_repr.replace(r"\"", "\\\\\"").replace(r"\'", "\\\\\'")
-            capnp_repr = capnp_repr.encode("latin1").decode("unicode-escape").encode("latin1").decode("utf8")
+        # if PY3:
+        #     capnp_repr = capnp_repr.replace(r"\"", "\\\\\"").replace(r"\'", "\\\\\'")
+        #     capnp_repr = capnp_repr.encode("latin1").decode("unicode-escape").encode("latin1").decode("utf8")
 
         assert myrepr == capnp_repr
         if expected is not None:
@@ -129,7 +129,6 @@ class TestShortRepr(CompilerTest):
         p = self.mod.P(txt=b"tricky \" '")
         self.check(p, r'(txt = "tricky \" \'")')
         #
-        py.test.skip('FIXME') # FIXME not sure what the indented behaviour is, skipping for now
         p = self.mod.P(txt=u'hellò'.encode('utf-8'))
         self.check(p, r'(txt = "hell\xc3\xb2")')
 
@@ -150,7 +149,6 @@ class TestShortRepr(CompilerTest):
         p = self.mod.P(data=b"tricky \" '")
         self.check(p, r'(data = "tricky \" \'")')
         #
-        py.test.skip('FIXME') # FIXME not sure what the indented behaviour is, skipping for now
         p = self.mod.P(data=u'hellò'.encode('utf-8'))
         self.check(p, r'(data = "hell\xc3\xb2")')
 

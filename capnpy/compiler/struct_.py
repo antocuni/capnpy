@@ -222,7 +222,7 @@ class Node__Struct:
                     ns.w("if self.has_{fname}(): {append}")
                 else:
                     ns.w("{append}")
-            ns.w('return "(%s)" % ", ".join(parts)')
+            ns.w('return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")')
 
     def _shortrepr_for_field(self, ns, f):
         if f.is_float32():
