@@ -1,10 +1,11 @@
 import py
 from datetime import datetime
+from six import PY3
 
 import capnpy
 from capnpy import schema
 from capnpy.type import Types
-from capnpy.util import ensure_unicode, PY3
+from capnpy.util import ensure_unicode
 
 @schema.CodeGeneratorRequest.__extend__
 class CodeGeneratorRequest:
@@ -71,7 +72,7 @@ class RequestedFile:
         m.w("from capnpy.util import check_version as _check_version")
         #
         if m.pyx:
-            m.w("from capnpy cimport _hash")
+            m.w("from capnpy cimport _hash%d as _hash" % (3 if PY3 else 2))
             for t in Types.__all__:
                 name = '%s_list_item_type' % t.name
                 m.w("from capnpy.list {cimport} {name} as _{name}", name=name)

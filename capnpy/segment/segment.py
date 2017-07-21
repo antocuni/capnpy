@@ -1,7 +1,23 @@
+from six import PY3
+from pypytools import IS_PYPY
+
 from capnpy.segment.base import BaseSegment
 from capnpy import ptr
-from capnpy import _hash
 from capnpy.printer import print_buffer, BufferPrinter
+
+try:
+    import cython
+except ImportError:
+    has_cython = False
+else:
+    has_cython = True
+
+if IS_PYPY or not has_cython:
+    from capnpy import _hash
+elif PY3:
+    from capnpy import _hash3 as _hash
+else:
+    from capnpy import _hash2 as _hash
 
 
 class Segment(BaseSegment):

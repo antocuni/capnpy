@@ -1,7 +1,7 @@
 cimport cython
 from capnpy.segment.base cimport BaseSegment
 from capnpy cimport ptr
-from capnpy cimport _hash
+#from capnpy cimport _hash
 
 
 cdef class Segment(BaseSegment):

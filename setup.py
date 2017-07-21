@@ -131,9 +131,14 @@ def get_cython_extensions():
              "capnpy/filelike.py",
              "capnpy/ptr.pyx",
              "capnpy/packing.pyx",
-             "capnpy/_hash.pyx",
              "capnpy/_util.pyx",
-    ]
+            ]
+    # TODO only temp
+    from six import PY3
+    if PY3:
+        files.append("capnpy/_hash3.pyx")
+    else:
+        files.append("capnpy/_hash2.pyx")
 
     root_dir = os.path.abspath(os.path.dirname(__file__))
     capnpy_dir = os.path.join(root_dir, 'capnpy')
