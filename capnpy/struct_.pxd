@@ -6,7 +6,7 @@ from capnpy.list cimport List, ItemType
 from capnpy.packing cimport pack_int64
 from capnpy.segment.builder cimport SegmentBuilder
 
-        # TODO uncomment all @cython.locals
+
 cpdef str check_tag(str curtag, str newtag)
 
 @cython.locals(self=Struct)
@@ -29,22 +29,22 @@ cdef class Struct(Blob):
     cpdef _read_far_ptr(self, long offset)
     cpdef long _as_pointer(self, long offset)
 
-    #@cython.locals(p=long, obj=Struct)
+    @cython.locals(p=long, obj=Struct)
     cpdef _read_struct(self, long offset, type structcls)
 
-    #@cython.locals(p=long, offset=long)
+    @cython.locals(p=long, offset=long)
     cpdef _read_str_text(self, long offset, str default_=*)
 
-    #@cython.locals(p=long, offset=long)
+    @cython.locals(p=long, offset=long)
     cpdef _read_str_data(self, long offset, str default_=*, int additional_size=*)
 
-    #@cython.locals(p=long, offset=long, obj=List)
+    @cython.locals(p=long, offset=long, obj=List)
     cpdef _read_list(self, long offset, ItemType item_type, default_=*)
 
-    #@cython.locals(p=long, offset=long)
+    @cython.locals(p=long, offset=long)
     cpdef long _hash_str_text(self, long offset, long default_=*)
 
-    #@cython.locals(p=long, offset=long)
+    @cython.locals(p=long, offset=long)
     cpdef long _hash_str_data(self, long offset, long default_=*, int additional_size=*)
 
     cpdef object _ensure_union(self, long expected_tag)
@@ -53,6 +53,6 @@ cdef class Struct(Blob):
     cpdef long _get_end(self)
     cpdef long _is_compact(self)
 
-    #@cython.locals(builder=SegmentBuilder, pos=long, buf=bytes, t=type, res=Struct)
+    @cython.locals(builder=SegmentBuilder, pos=long, buf=bytes, t=type, res=Struct)
     cpdef object compact(self)
     
