@@ -37,6 +37,7 @@ from capnpy.schema import Node, Node__Enum, Node__Const, Node__Annotation
 #     cdef class Outer:
 #         ...
 #         Nested = Outer__Nested # reference as child
+from capnpy.util import ensure_unicode
 
 
 @Node.__extend__
@@ -62,9 +63,9 @@ class Node:
     def shortname(self, m):
         name = self.displayName[self.displayNamePrefixLength:]
         if self.is_file():
-            filename = self.displayName
-            return m.importnames[filename]
-        return name
+            filename = ensure_unicode(self.displayName)
+            return ensure_unicode(m.importnames[filename])
+        return ensure_unicode(name)
 
     def _fullname(self, m, sep):
         parent = self.get_parent(m)
@@ -74,8 +75,8 @@ class Node:
 
     def compile_name(self, m):
         if self.is_imported(m):
-            return self.runtime_name(m)
-        return self._fullname(m, '_')
+            return ensure_unicode(self.runtime_name(m))
+        return ensure_unicode(self._fullname(m, '_'))
 
     def runtime_name(self, m):
         return self._fullname(m, '.')

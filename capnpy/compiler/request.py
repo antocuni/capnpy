@@ -29,7 +29,7 @@ class RequestedFile:
             m.modname = m.modname.encode('utf-8')
         m.tmpname = '%s_tmp' % m.modname
         m.code.global_scope.extname = '%s_extended' % m.modname
-        #
+        #c
         # some lines need to be different when in pyx mode: here we define
         # some global kwarg which are "turned off" when in pure python mode
         if m.pyx:
@@ -117,9 +117,9 @@ class RequestedFile:
                 # this means that the file was imported but not used
                 # anywhere. Simply ignore it
                 continue
-            fname = filenode.displayName
+            fname = ensure_unicode(filenode.displayName)
             ns.importname = m.register_import(fname)
-            ns.fullpath = imp.name
+            ns.fullpath = ensure_unicode(imp.name)
             if ns.fullpath == '/capnp/c++.capnp':
                 # ignore this file as it's useless for python
                 continue

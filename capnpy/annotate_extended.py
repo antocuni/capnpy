@@ -15,9 +15,9 @@ class nullable:
         if len(group.struct.fields) != 2:
             error()
         f_is_null, f_value = group.struct.fields
-        if f_is_null.name != 'isNull':
+        if f_is_null.name != b'isNull':
             error()
-        if f_value.name != 'value':
+        if f_value.name != b'value':
             error()
         return name, f_is_null, f_value
 

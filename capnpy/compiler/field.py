@@ -95,11 +95,11 @@ class Field__Slot:
         ns.name = name
         m.def_property(ns, name, """
             {ensure_union}
-            return self._read_str_identifier({offset})
+            return self._read_str_text({offset})
         """)
         ns.ww("""
             {cpdef} get_{name}(self):
-                return self._read_str_identifier({offset}, default_="")
+                return self._read_str_text({offset}, default_="")
         """)
         ns.w()
         self._emit_has_method(ns)
