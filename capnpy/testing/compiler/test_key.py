@@ -79,8 +79,8 @@ class TestKey(CompilerTest):
         assert p1 == p2
         assert p1 != p3
         #
-        assert p1 == (1, 2, "p1")
-        assert p3 == (1, 2, "p3")
+        assert p1 == (1, 2, b"p1")
+        assert p3 == (1, 2, b"p3")
         assert hash(p1) == hash(p2) == hash((1, 2, "p1"))
 
 

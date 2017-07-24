@@ -65,7 +65,7 @@ class TestNullPointers(CompilerTest):
                 '\x01\x00\x00\x00\x05\x00\x00\x00'   # non-null empty list, size=64
                 '\xfc\xff\xff\xff\x00\x00\x00\x00')  # non-null empty struct
         f = mod.Foo.from_buffer(buf, 0, data_size=0, ptrs_size=3)
-        assert f.x == ''
+        assert f.x == b''
         assert f.y == []
         assert f.z is not None and isinstance(f.z, mod.P)
         assert f.has_x()

@@ -70,7 +70,7 @@ class TestIntegration(CompilerTest):
                 'dummy\x00\x00\x00')
         p = mod.Person.from_buffer(buf, 8, 0, 1)
         foo = mod.Foo(p)
-        assert foo.key.name == 'dummy'
+        assert foo.key.name == b'dummy'
         # we check that the structure has been packed
         assert foo.key._data_offset == 8
         assert foo.key._seg.buf[8:] == b('\x01\x00\x00\x00\x32\x00\x00\x00'  # ptr to dummy
@@ -92,10 +92,10 @@ class TestIntegration(CompilerTest):
         p1 = mod.Person(b'Mickey', b'Mouse')
         p2 = mod.Person(b'Donald', b'Duck')
         t = mod.Town([p1, p2])
-        assert t.people[0].name == 'Mickey'
-        assert t.people[0].surname == 'Mouse'
-        assert t.people[1].name == 'Donald'
-        assert t.people[1].surname == 'Duck'
+        assert t.people[0].name == b'Mickey'
+        assert t.people[0].surname == b'Mouse'
+        assert t.people[1].name == b'Donald'
+        assert t.people[1].surname == b'Duck'
 
     def test_dump_list_of_bool(self):
         schema = """

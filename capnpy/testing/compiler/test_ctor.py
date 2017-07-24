@@ -255,7 +255,7 @@ class TestConstructors(CompilerTest):
         p = mod.Point(position=(1, 2), color=b'red')
         assert p.position.x == 1
         assert p.position.y == 2
-        assert p.color == 'red'
+        assert p.color == b'red'
 
     def test_nested_group(self):
         schema = """
@@ -300,7 +300,7 @@ class TestConstructors(CompilerTest):
         assert p.position.x == 1
         assert p.position.y == 2
         assert p.color.alpha == 1.0
-        assert p.color.name == 'red'
+        assert p.color.name == b'red'
 
     def test_group_void(self):
         schema = """
@@ -415,7 +415,7 @@ class TestDefaults(CompilerTest):
         assert p.position.x == 42
         assert p.position.y == 2
         assert p.color.alpha == 255
-        assert p.color.name == 'red'
+        assert p.color.name == b'red'
 
     def test_bool(self):
         schema = """

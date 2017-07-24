@@ -94,13 +94,13 @@ class TestSpecificCtors(BaseTestUnionConstructors):
         p = mod.Shape.new_empty(1, 2, color=b'red')
         assert p.area == 1
         assert p.perimeter == 2
-        assert p.color == 'red'
+        assert p.color == b'red'
         #
         p = mod.Shape.new_square(1, 2, 3, color=b'red')
         assert p.area == 1
         assert p.perimeter == 2
         assert p.square == 3
-        assert p.color == 'red'
+        assert p.color == b'red'
 
 class TestGenericCtor(BaseTestUnionConstructors):
 
@@ -160,16 +160,16 @@ class TestNamedUnion(CompilerTest):
         """
         mod = self.compile(schema)
         p = mod.Person(name=b'foo', job=mod.Person.Job(unemployed=None))
-        assert p.name == 'foo'
+        assert p.name == b'foo'
         assert p.job.is_unemployed()
         #
         p = mod.Person(name=b'foo', job=mod.Person.Job(retired=None))
-        assert p.name == 'foo'
+        assert p.name == b'foo'
         assert p.job.is_retired()
         #
         p = mod.Person(name=b'foo', job=mod.Person.Job(worker=b'capnpy'))
-        assert p.name == 'foo'
-        assert p.job.worker == 'capnpy'
+        assert p.name == b'foo'
+        assert p.job.worker == b'capnpy'
 
     def test_group_inside_union(self):
         schema = """
@@ -218,7 +218,7 @@ class TestNamedUnion(CompilerTest):
         assert p.is_male()
         assert p.location.is_work()
         assert p.job.is_worker()
-        assert p.job.worker == 'capnpy'
+        assert p.job.worker == b'capnpy'
 
     def test_nested_unions(self):
         schema = """
@@ -254,9 +254,9 @@ class TestNamedUnion(CompilerTest):
                 )
             )
         )
-        assert p.name == 'foo'
+        assert p.name == b'foo'
         assert p.job.is_employed()
-        assert p.job.employed.company_name == 'capnpy'
+        assert p.job.employed.company_name == b'capnpy'
         assert p.job.employed.is_it()
         assert p.job.employed.position.is_worker()
 
