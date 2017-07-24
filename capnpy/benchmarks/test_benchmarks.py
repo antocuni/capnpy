@@ -61,7 +61,7 @@ class TestGetAttr(object):
             res = 0
             for i in range(self.N):
                 obj = myobjs[i%2]
-                res += (obj.text == 'hello world')
+                res += (obj.text == b'hello world')
             return res
         #
         obj = get_obj(schema)
@@ -213,8 +213,8 @@ class TestHash(object):
             py.test.skip('pycapnp does not implement hash properly')
         benchmark.extra_info['schema'] = schema.__name__
         benchmark.extra_info['type'] = 'str'
-        obj = schema.StrPoint('hello world'[:], 'this is a string',
-                              'this is another string')
+        obj = schema.StrPoint(b'hello world'[:], b'this is a string',
+                              b'this is another string')
         res = benchmark(self.hash_many, obj)
         assert res == 0
 
