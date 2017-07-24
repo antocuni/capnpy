@@ -109,7 +109,7 @@ class TestFashHash(CompilerTest):
         self.only_fasthash(mod.Point)
         p1 = mod.Point(1, 2, b"p1")
         exc = py.test.raises(ValueError, "hash(p1)")
-        assert exc.value.message == "slow hash not allowed"
+        assert exc.value.args[0] == "slow hash not allowed"
 
     def test_fasthash_int_long(self):
         schema = """

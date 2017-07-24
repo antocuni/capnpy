@@ -253,4 +253,4 @@ class TestDynamicCompiler(object):
         filename.write(schema)
         comp = DynamicCompiler([])
         req = comp.parse_schema(filename=filename)
-        assert req.requestedFiles[0].filename == str(filename)
+        assert req.requestedFiles[0].filename == str(filename).encode()
