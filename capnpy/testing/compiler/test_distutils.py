@@ -2,6 +2,8 @@ import py
 import pytest
 import sys
 import os
+import sysconfig
+
 from capnpy.testing.compiler.support import CompilerTest
 from capnpy.compiler.compiler import DistutilsCompiler
 
@@ -89,7 +91,8 @@ class TestSetup(CompilerTest):
         ret = os.system('%s setup.py build_ext --inplace' % sys.executable)
         assert ret == 0
         if self.pyx:
-            outfile = self.tmpdir.join('example.so')
+            outfile = self.tmpdir.join(
+                'example' + (sysconfig.get_config_var('EXT_SUFFIX') or '.so'))
         else:
             outfile = self.tmpdir.join('example.py')
         #
@@ -119,7 +122,8 @@ class TestSetup(CompilerTest):
         ret = os.system('%s setup.py build_ext --inplace' % sys.executable)
         assert ret == 0
         if self.pyx:
-            outfile = self.tmpdir.join('example.so')
+            outfile = self.tmpdir.join(
+                'example' + (sysconfig.get_config_var('EXT_SUFFIX') or '.so'))
         else:
             outfile = self.tmpdir.join('example.py')
         assert outfile.check(file=True)
