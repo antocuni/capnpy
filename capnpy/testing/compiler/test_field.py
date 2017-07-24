@@ -1,5 +1,5 @@
 import py
-from six import b
+from six import b, PY3
 
 from capnpy.testing.compiler.support import CompilerTest
 
@@ -15,10 +15,10 @@ class TestField(CompilerTest):
         """
         mod = self.compile(schema)
         self.check_pyx(mod)
-        if self.pyx:
+        if self.pyx and not PY3:
             # the repr starts with 'class' for Python classes but 'type' for
             # classes defined in C. Let's check that mod.Point is actually a
-            # cdef class
+            # cdef class. XXX This is no longer true for Python 3.
             assert repr(mod.Point) == "<type 'tmp.Point'>"
         #
         buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
