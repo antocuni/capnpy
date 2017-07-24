@@ -28,7 +28,7 @@ def decode(args):
     print('schema loaded in %.2f secs' % (b-a), file=sys.stderr)
     print('decoding stream...', file=sys.stderr)
     cls = getattr(mod, args['CLASS'])
-    with open(args['FILE']) as f:
+    with open(args['FILE'], 'rb') as f:
         i = 0
         while True:
             try:
