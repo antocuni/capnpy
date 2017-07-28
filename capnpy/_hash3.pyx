@@ -5,6 +5,7 @@ types. The idea is that if you have C variables, you can compute fast hashes
 """
 import sys
 
+cdef long hash_mask = sys.hash_info.modulus
 
 ctypedef size_t Py_hash_t
 ctypedef Py_hash_t (*hash_f)(const void *, Py_ssize_t)
@@ -43,13 +44,27 @@ cpdef long strhash(bytes a, long start, long size):
 
 
 cpdef long inthash(long v):
+    cdef sign = 1
+    if v < 0:
+        sign = -1
+        v = -(v)
+
+    v = (v & hash_mask) + (v >> 61)
+    if v >= hash_mask:
+        v -= hash_mask
+
+    v *= sign
     if v == -1:
         return -2
     return v
 
 
 cpdef long longhash(unsigned long v):
-    return inthash(<long>v)
+    v = (v & hash_mask) + (v >> 61)
+    if v >= hash_mask:
+        v -= hash_mask
+    return v
+
 
 # tuple hashing algorithm. The magic numbers and the algorithm itself are
 # taken from python/Objects/tupleobject.c:tuplehash
