@@ -44,6 +44,9 @@ cpdef long strhash(bytes a, long start, long size):
 
 
 cpdef long inthash(long v):
+    if v == -9223372036854775808: # minlong
+        return -4
+
     cdef sign = 1
     if v < 0:
         sign = -1
