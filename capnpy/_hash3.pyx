@@ -3,20 +3,32 @@ Reimplementation of CPython's hashing algorithm for many builtin
 types. The idea is that if you have C variables, you can compute fast hashes
 *without* having to allocate real Python object
 """
+import sys
+
+
+ctypedef size_t Py_hash_t
+ctypedef Py_hash_t (*hash_f)(const void *, Py_ssize_t)
 
 cdef extern from "Python.h":
-    ctypedef size_t Py_hash_t
-
-    ctypedef Py_hash_t (*hash_f)(const void *, Py_ssize_t)
-
     ctypedef struct PyHash_FuncDef_t:
         hash_f hash
         const char *name;
         const int hash_bits;
         const int seed_bits;
-#    PyHash_FuncDef_t PyHash_FuncDef
-
     cdef PyHash_FuncDef_t* PyHash_GetFuncDef()
+
+    # XXX Possibly call _PyHashBytes() instead of PyHash_FuncDef.hash()
+    #     If python interpreter was compiled with Py_HASH_CUTOFF in range (0,7],
+    #     it optimises hashing strings of length less or equal to cutoff
+    #     with inline DJBX33A, which would produce different results. However,
+    #     python builds usually don't use this option.
+    #     Can check with sys.hash_info.cutoff
+    cdef Py_hash_t _Py_HashBytes(void *src, Py_ssize_t len)
+
+cdef hash_f strhash_f = PyHash_GetFuncDef().hash
+if sys.hash_info.cutoff:
+    strhash_f = _Py_HashBytes
+
 
 cpdef long strhash(bytes a, long start, long size):
     cdef long maxlen = len(a)
@@ -27,13 +39,14 @@ cpdef long strhash(bytes a, long start, long size):
 
     cdef const unsigned char* p = a
     p += start
-    return PyHash_GetFuncDef().hash(p, size)
+    return strhash_f(p, size)
 
 
 cpdef long inthash(long v):
     if v == -1:
         return -2
     return v
+
 
 cpdef long longhash(unsigned long v):
     return inthash(<long>v)
@@ -61,7 +74,6 @@ cdef long tuplehash(long hashes[], long len):
     if x == -1:
         x = -2
     return x
-
 
 # Python interface, used by tests
 from cpython cimport array
