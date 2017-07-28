@@ -20,6 +20,7 @@ def test_inthash():
     assert h(-1) == hash(-1)
     assert h(-2) == hash(-2)
     assert h(sys.maxsize) == hash(sys.maxsize)
+    assert h(-sys.maxsize+1) == hash(-sys.maxsize+1)
     assert h(-sys.maxsize-1) == hash(-sys.maxsize-1)
 
 def test_longhash():
