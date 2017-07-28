@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2017-07-24 16:32
+# generated on 2017-07-28 14:32
 
 from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
@@ -23,7 +23,7 @@ from capnpy.util import float32_repr as _float32_repr
 from capnpy.util import float64_repr as _float64_repr
 from capnpy.util import extend_module_maybe as _extend_module_maybe
 from capnpy.util import check_version as _check_version
-__capnpy_version__ = '0.3.1.dev37+g60eeacf.d20170724'
+__capnpy_version__ = '0.3.1.dev50+g6cd89bb.d20170728'
 _check_version(__capnpy_version__)
 
 #### FORWARD DECLARATIONS ####
@@ -189,7 +189,7 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
     @property
     def id(self):
         # no union check
-        value = self._read_data(0, ord('Q'))
+        value = self._read_data(0, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -236,7 +236,7 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
     @property
     def id(self):
         # no union check
-        value = self._read_data(0, ord('Q'))
+        value = self._read_data(0, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -368,7 +368,7 @@ class Method(_Struct):
     @property
     def codeOrder(self):
         # no union check
-        value = self._read_data(0, ord('H'))
+        value = self._read_data(0, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -376,7 +376,7 @@ class Method(_Struct):
     @property
     def paramStructType(self):
         # no union check
-        value = self._read_data(8, ord('Q'))
+        value = self._read_data(8, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -384,7 +384,7 @@ class Method(_Struct):
     @property
     def resultStructType(self):
         # no union check
-        value = self._read_data(16, ord('Q'))
+        value = self._read_data(16, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -522,7 +522,7 @@ class Enumerant(_Struct):
     @property
     def codeOrder(self):
         # no union check
-        value = self._read_data(0, ord('H'))
+        value = self._read_data(0, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -573,7 +573,7 @@ class Superclass(_Struct):
     @property
     def id(self):
         # no union check
-        value = self._read_data(0, ord('Q'))
+        value = self._read_data(0, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -632,7 +632,7 @@ class Field_group(_Struct):
     @property
     def typeId(self):
         # no union check
-        value = self._read_data(16, ord('Q'))
+        value = self._read_data(16, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -666,7 +666,7 @@ class Field_ordinal(_Struct):
     @property
     def explicit(self):
         self._ensure_union(1)
-        value = self._read_data(12, ord('H'))
+        value = self._read_data(12, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -688,7 +688,7 @@ class Field_slot(_Struct):
     @property
     def offset(self):
         # no union check
-        value = self._read_data(4, ord('I'))
+        value = self._read_data(4, ord(b'I'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -791,7 +791,7 @@ class Field(_Struct):
     @property
     def codeOrder(self):
         # no union check
-        value = self._read_data(0, ord('H'))
+        value = self._read_data(0, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -814,7 +814,7 @@ class Field(_Struct):
     @property
     def discriminantValue(self):
         # no union check
-        value = self._read_data(2, ord('H'))
+        value = self._read_data(2, ord(b'H'))
         if 65535 != 0:
             value = value ^ 65535
         return value
@@ -925,7 +925,7 @@ class Type_anyPointer_parameter(_Struct):
     @property
     def scopeId(self):
         # no union check
-        value = self._read_data(16, ord('Q'))
+        value = self._read_data(16, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -933,7 +933,7 @@ class Type_anyPointer_parameter(_Struct):
     @property
     def parameterIndex(self):
         # no union check
-        value = self._read_data(10, ord('H'))
+        value = self._read_data(10, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -955,7 +955,7 @@ class Type_anyPointer_implicitMethodParameter(_Struct):
     @property
     def parameterIndex(self):
         # no union check
-        value = self._read_data(10, ord('H'))
+        value = self._read_data(10, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1030,7 +1030,7 @@ class Type_struct(_Struct):
     @property
     def typeId(self):
         # no union check
-        value = self._read_data(8, ord('Q'))
+        value = self._read_data(8, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1077,7 +1077,7 @@ class Type_enum(_Struct):
     @property
     def typeId(self):
         # no union check
-        value = self._read_data(8, ord('Q'))
+        value = self._read_data(8, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1124,7 +1124,7 @@ class Type_interface(_Struct):
     @property
     def typeId(self):
         # no union check
-        value = self._read_data(8, ord('Q'))
+        value = self._read_data(8, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1692,7 +1692,7 @@ class Brand_Scope(_Struct):
     @property
     def scopeId(self):
         # no union check
-        value = self._read_data(0, ord('Q'))
+        value = self._read_data(0, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1862,7 +1862,7 @@ class Value(_Struct):
     @property
     def int8(self):
         self._ensure_union(2)
-        value = self._read_data(2, ord('b'))
+        value = self._read_data(2, ord(b'b'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1870,7 +1870,7 @@ class Value(_Struct):
     @property
     def int16(self):
         self._ensure_union(3)
-        value = self._read_data(2, ord('h'))
+        value = self._read_data(2, ord(b'h'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1878,7 +1878,7 @@ class Value(_Struct):
     @property
     def int32(self):
         self._ensure_union(4)
-        value = self._read_data(4, ord('i'))
+        value = self._read_data(4, ord(b'i'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1886,7 +1886,7 @@ class Value(_Struct):
     @property
     def int64(self):
         self._ensure_union(5)
-        value = self._read_data(8, ord('q'))
+        value = self._read_data(8, ord(b'q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1894,7 +1894,7 @@ class Value(_Struct):
     @property
     def uint8(self):
         self._ensure_union(6)
-        value = self._read_data(2, ord('B'))
+        value = self._read_data(2, ord(b'B'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1902,7 +1902,7 @@ class Value(_Struct):
     @property
     def uint16(self):
         self._ensure_union(7)
-        value = self._read_data(2, ord('H'))
+        value = self._read_data(2, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1910,7 +1910,7 @@ class Value(_Struct):
     @property
     def uint32(self):
         self._ensure_union(8)
-        value = self._read_data(4, ord('I'))
+        value = self._read_data(4, ord(b'I'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1918,7 +1918,7 @@ class Value(_Struct):
     @property
     def uint64(self):
         self._ensure_union(9)
-        value = self._read_data(8, ord('Q'))
+        value = self._read_data(8, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1926,7 +1926,7 @@ class Value(_Struct):
     @property
     def float32(self):
         self._ensure_union(10)
-        value = self._read_data(4, ord('f'))
+        value = self._read_data(4, ord(b'f'))
         if 0.0 != 0:
             value = value ^ 0.0
         return value
@@ -1934,7 +1934,7 @@ class Value(_Struct):
     @property
     def float64(self):
         self._ensure_union(11)
-        value = self._read_data(8, ord('d'))
+        value = self._read_data(8, ord(b'd'))
         if 0.0 != 0:
             value = value ^ 0.0
         return value
@@ -1977,7 +1977,7 @@ class Value(_Struct):
     @property
     def enum(self):
         self._ensure_union(15)
-        value = self._read_data(2, ord('H'))
+        value = self._read_data(2, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2233,7 +2233,7 @@ class Annotation(_Struct):
     @property
     def id(self):
         # no union check
-        value = self._read_data(0, ord('Q'))
+        value = self._read_data(0, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2427,7 +2427,7 @@ class Node_struct(_Struct):
     @property
     def dataWordCount(self):
         # no union check
-        value = self._read_data(14, ord('H'))
+        value = self._read_data(14, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2435,7 +2435,7 @@ class Node_struct(_Struct):
     @property
     def pointerCount(self):
         # no union check
-        value = self._read_data(24, ord('H'))
+        value = self._read_data(24, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2459,7 +2459,7 @@ class Node_struct(_Struct):
     @property
     def discriminantCount(self):
         # no union check
-        value = self._read_data(30, ord('H'))
+        value = self._read_data(30, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2467,7 +2467,7 @@ class Node_struct(_Struct):
     @property
     def discriminantOffset(self):
         # no union check
-        value = self._read_data(32, ord('I'))
+        value = self._read_data(32, ord(b'I'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2695,7 +2695,7 @@ class Node_NestedNode(_Struct):
     @property
     def id(self):
         # no union check
-        value = self._read_data(0, ord('Q'))
+        value = self._read_data(0, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2783,7 +2783,7 @@ class Node(_Struct):
     @property
     def id(self):
         # no union check
-        value = self._read_data(0, ord('Q'))
+        value = self._read_data(0, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2803,7 +2803,7 @@ class Node(_Struct):
     @property
     def displayNamePrefixLength(self):
         # no union check
-        value = self._read_data(8, ord('I'))
+        value = self._read_data(8, ord(b'I'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2811,7 +2811,7 @@ class Node(_Struct):
     @property
     def scopeId(self):
         # no union check
-        value = self._read_data(16, ord('Q'))
+        value = self._read_data(16, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
