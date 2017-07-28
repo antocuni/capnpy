@@ -37,13 +37,13 @@ def test_strhash():
             expected_hash_empty_string = -2
     #
     h = _hash.strhash
-    assert h('', 0, 0) == hash('') == expected_hash_empty_string
-    assert h('hello', 0, 5) == hash('hello')
-    assert h('hello', 1, 4) == hash('ello')
-    assert h('hello', 1, 3) == hash('ell')
-    assert h('hello', 1, 100) == hash('ello')
-    assert h('hello', 1, 0) == hash('')
-    assert h('hello', 100, 5) == hash('')
+    assert h(b'', 0, 0) == hash('') == expected_hash_empty_string
+    assert h(b'hello', 0, 5) == hash('hello')
+    assert h(b'hello', 1, 4) == hash('ello')
+    assert h(b'hello', 1, 3) == hash('ell')
+    assert h(b'hello', 1, 100) == hash('ello')
+    assert h(b'hello', 1, 0) == hash('')
+    assert h(b'hello', 100, 5) == hash('')
 
 def test_tuplehash():
     h = _hash.__tuplehash_for_tests
