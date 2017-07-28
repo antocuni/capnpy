@@ -30,8 +30,10 @@ def test_strhash():
     expected_hash_empty_string = 0
     if IS_PYPY:
         if PY3:
-            py.test.skip("Undeterministic hashes")
-        if sys.pypy_version_info[:2] < (5,4):
+            # pypy3.5 v5.8 uses salt even for empty string
+            expected_hash_empty_string = hash('')
+        elif sys.pypy_version_info[:2] < (5,4):
+            # pypy changed this on 5.4, related to issue #3
             expected_hash_empty_string = -1
         else:
             expected_hash_empty_string = -2
