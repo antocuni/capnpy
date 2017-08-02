@@ -99,7 +99,7 @@ class Field__Slot:
         """)
         ns.ww("""
             {cpdef} get_{name}(self):
-                return self._read_str_text({offset}, default_="")
+                return self._read_str_text({offset}, default_=b"")
         """)
         ns.w()
         self._emit_has_method(ns)
@@ -112,7 +112,7 @@ class Field__Slot:
         """)
         ns.ww("""
             {cpdef} get_{name}(self):
-                return self._read_str_data({offset}, default_="")
+                return self._read_str_data({offset}, default_=b"")
         """)
         ns.w()
         self._emit_has_method(ns)

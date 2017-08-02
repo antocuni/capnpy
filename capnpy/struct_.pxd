@@ -32,13 +32,13 @@ cdef class Struct(Blob):
     @cython.locals(p=long, obj=Struct)
     cpdef _read_struct(self, long offset, type structcls)
 
-    cpdef _read_str_identifier(self, long offset, str default_=*)
+    cpdef _read_str_identifier(self, long offset, bytes default_=*)
 
     @cython.locals(p=long, offset=long)
-    cpdef _read_str_text(self, long offset, str default_=*)
+    cpdef _read_str_text(self, long offset, bytes default_=*)
 
     @cython.locals(p=long, offset=long)
-    cpdef _read_str_data(self, long offset, str default_=*, int additional_size=*)
+    cpdef _read_str_data(self, long offset, bytes default_=*, int additional_size=*)
 
     @cython.locals(p=long, offset=long, obj=List)
     cpdef _read_list(self, long offset, ItemType item_type, default_=*)
