@@ -38,9 +38,9 @@ def decode(args):
             print(obj.shortrepr())
             i += 1
             if i % 10000 == 0:
-                print(i, file=sys.stderr)
+                print(i, file=sys.stderr, end='\r')
     c = time.time()
-    print('stream decoded in %.2f secs' % (c-b), file=sys.stderr)
+    print('\nstream decoded in %.2f secs' % (c-b), file=sys.stderr)
 
 def compile(args):
     srcfile = args['FILE']
