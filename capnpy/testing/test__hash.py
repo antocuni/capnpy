@@ -2,16 +2,7 @@ import py
 import sys
 from pypytools import IS_PYPY
 from six import PY3
-from capnpy.segment import base
-
-has_cython = base.__file__.endswith('.so')
-
-if IS_PYPY or not has_cython:
-    from capnpy import _hash
-elif PY3:
-    from capnpy import _hash3 as _hash
-else:
-    from capnpy import _hash2 as _hash
+from capnpy import _hash
 
 
 def test_inthash():

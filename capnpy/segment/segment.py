@@ -1,19 +1,7 @@
-from six import PY3
-from pypytools import IS_PYPY
-
 from capnpy.segment.base import BaseSegment
 from capnpy import ptr
 from capnpy.printer import print_buffer, BufferPrinter
-
-
-try:
-    if PY3:
-        from capnpy import _hash3 as _hash
-    else:
-        from capnpy import _hash2 as _hash
-except ImportError:
-    from capnpy import _hash
-
+from capnpy import _hash
 
 
 class Segment(BaseSegment):

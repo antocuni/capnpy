@@ -132,12 +132,8 @@ def get_cython_extensions():
              "capnpy/ptr.pyx",
              "capnpy/packing.pyx",
              "capnpy/_util.pyx",
+             "capnpy/_hash.pyx"
             ]
-
-    if sys.version_info.major == 3:
-        files.append("capnpy/_hash3.pyx")
-    else:
-        files.append("capnpy/_hash2.pyx")
 
     root_dir = os.path.abspath(os.path.dirname(__file__))
     capnpy_dir = os.path.join(root_dir, 'capnpy')

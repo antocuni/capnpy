@@ -72,7 +72,7 @@ class RequestedFile:
         m.w("from capnpy.util import check_version as _check_version")
         #
         if m.pyx:
-            m.w("from capnpy cimport _hash%d as _hash" % (3 if PY3 else 2))
+            m.w("from capnpy cimport _hash")
             for t in Types.__all__:
                 name = '%s_list_item_type' % t.name
                 m.w("from capnpy.list {cimport} {name} as _{name}", name=name)
