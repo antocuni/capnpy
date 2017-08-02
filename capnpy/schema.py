@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2017-07-28 14:32
+# generated on 2017-08-02 15:52
 
 from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
@@ -23,7 +23,7 @@ from capnpy.util import float32_repr as _float32_repr
 from capnpy.util import float64_repr as _float64_repr
 from capnpy.util import extend_module_maybe as _extend_module_maybe
 from capnpy.util import check_version as _check_version
-__capnpy_version__ = '0.3.1.dev50+g6cd89bb.d20170728'
+__capnpy_version__ = '0.3.1.dev58+gbcf3869.d20170802'
 _check_version(__capnpy_version__)
 
 #### FORWARD DECLARATIONS ####
@@ -200,7 +200,7 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
         return self._read_str_text(0)
     
     def get_name(self):
-        return self._read_str_text(0, default_="")
+        return self._read_str_text(0, default_=b"")
     
     def has_name(self):
         ptr = self._read_fast_ptr(0)
@@ -222,7 +222,7 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
         parts = []
         parts.append("id = %s" % self.id)
         if self.has_name(): parts.append("name = %s" % _text_repr(self.get_name()))
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _CodeGeneratorRequest_RequestedFile_Import_list_item_type = _StructItemType(CodeGeneratorRequest_RequestedFile_Import)
 
@@ -247,7 +247,7 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
         return self._read_str_text(0)
     
     def get_filename(self):
-        return self._read_str_text(0, default_="")
+        return self._read_str_text(0, default_=b"")
     
     def has_filename(self):
         ptr = self._read_fast_ptr(0)
@@ -286,7 +286,7 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
         parts.append("id = %s" % self.id)
         if self.has_filename(): parts.append("filename = %s" % _text_repr(self.get_filename()))
         if self.has_imports(): parts.append("imports = %s" % self.get_imports().shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _CodeGeneratorRequest_RequestedFile_list_item_type = _StructItemType(CodeGeneratorRequest_RequestedFile)
 
@@ -343,7 +343,7 @@ class CodeGeneratorRequest(_Struct):
         parts = []
         if self.has_nodes(): parts.append("nodes = %s" % self.get_nodes().shortrepr())
         if self.has_requestedFiles(): parts.append("requestedFiles = %s" % self.get_requestedFiles().shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _CodeGeneratorRequest_list_item_type = _StructItemType(CodeGeneratorRequest)
 
@@ -359,7 +359,7 @@ class Method(_Struct):
         return self._read_str_text(0)
     
     def get_name(self):
-        return self._read_str_text(0, default_="")
+        return self._read_str_text(0, default_=b"")
     
     def has_name(self):
         ptr = self._read_fast_ptr(0)
@@ -497,7 +497,7 @@ class Method(_Struct):
         if self.has_paramBrand(): parts.append("paramBrand = %s" % self.get_paramBrand().shortrepr())
         if self.has_resultBrand(): parts.append("resultBrand = %s" % self.get_resultBrand().shortrepr())
         if self.has_implicitParameters(): parts.append("implicitParameters = %s" % self.get_implicitParameters().shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Method_list_item_type = _StructItemType(Method)
 
@@ -513,7 +513,7 @@ class Enumerant(_Struct):
         return self._read_str_text(0)
     
     def get_name(self):
-        return self._read_str_text(0, default_="")
+        return self._read_str_text(0, default_=b"")
     
     def has_name(self):
         ptr = self._read_fast_ptr(0)
@@ -560,7 +560,7 @@ class Enumerant(_Struct):
         if self.has_name(): parts.append("name = %s" % _text_repr(self.get_name()))
         parts.append("codeOrder = %s" % self.codeOrder)
         if self.has_annotations(): parts.append("annotations = %s" % self.get_annotations().shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Enumerant_list_item_type = _StructItemType(Enumerant)
 
@@ -619,7 +619,7 @@ class Superclass(_Struct):
         parts = []
         parts.append("id = %s" % self.id)
         if self.has_brand(): parts.append("brand = %s" % self.get_brand().shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Superclass_list_item_type = _StructItemType(Superclass)
 
@@ -640,7 +640,7 @@ class Field_group(_Struct):
     def shortrepr(self):
         parts = []
         parts.append("typeId = %s" % self.typeId)
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Field_group_list_item_type = _StructItemType(Field_group)
 
@@ -675,7 +675,7 @@ class Field_ordinal(_Struct):
         parts = []
         if self.is_implicit(): parts.append("implicit = %s" % "void")
         if self.is_explicit(): parts.append("explicit = %s" % self.explicit)
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Field_ordinal_list_item_type = _StructItemType(Field_ordinal)
 
@@ -757,7 +757,7 @@ class Field_slot(_Struct):
         if self.has_type(): parts.append("type = %s" % self.get_type().shortrepr())
         if self.has_defaultValue(): parts.append("defaultValue = %s" % self.get_defaultValue().shortrepr())
         parts.append("hadExplicitDefault = %s" % str(self.hadExplicitDefault).lower())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Field_slot_list_item_type = _StructItemType(Field_slot)
 
@@ -782,7 +782,7 @@ class Field(_Struct):
         return self._read_str_text(0)
     
     def get_name(self):
-        return self._read_str_text(0, default_="")
+        return self._read_str_text(0, default_=b"")
     
     def has_name(self):
         ptr = self._read_fast_ptr(0)
@@ -912,7 +912,7 @@ class Field(_Struct):
         if self.is_slot(): parts.append("slot = %s" % self.slot.shortrepr())
         if self.is_group(): parts.append("group = %s" % self.group.shortrepr())
         parts.append("ordinal = %s" % self.ordinal.shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Field_list_item_type = _StructItemType(Field)
 
@@ -942,7 +942,7 @@ class Type_anyPointer_parameter(_Struct):
         parts = []
         parts.append("scopeId = %s" % self.scopeId)
         parts.append("parameterIndex = %s" % self.parameterIndex)
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Type_anyPointer_parameter_list_item_type = _StructItemType(Type_anyPointer_parameter)
 
@@ -963,7 +963,7 @@ class Type_anyPointer_implicitMethodParameter(_Struct):
     def shortrepr(self):
         parts = []
         parts.append("parameterIndex = %s" % self.parameterIndex)
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Type_anyPointer_implicitMethodParameter_list_item_type = _StructItemType(Type_anyPointer_implicitMethodParameter)
 
@@ -1017,7 +1017,7 @@ class Type_anyPointer(_Struct):
         if self.is_unconstrained(): parts.append("unconstrained = %s" % "void")
         if self.is_parameter(): parts.append("parameter = %s" % self.parameter.shortrepr())
         if self.is_implicitMethodParameter(): parts.append("implicitMethodParameter = %s" % self.implicitMethodParameter.shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Type_anyPointer_list_item_type = _StructItemType(Type_anyPointer)
 
@@ -1064,7 +1064,7 @@ class Type_struct(_Struct):
         parts = []
         parts.append("typeId = %s" % self.typeId)
         if self.has_brand(): parts.append("brand = %s" % self.get_brand().shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Type_struct_list_item_type = _StructItemType(Type_struct)
 
@@ -1111,7 +1111,7 @@ class Type_enum(_Struct):
         parts = []
         parts.append("typeId = %s" % self.typeId)
         if self.has_brand(): parts.append("brand = %s" % self.get_brand().shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Type_enum_list_item_type = _StructItemType(Type_enum)
 
@@ -1158,7 +1158,7 @@ class Type_interface(_Struct):
         parts = []
         parts.append("typeId = %s" % self.typeId)
         if self.has_brand(): parts.append("brand = %s" % self.get_brand().shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Type_interface_list_item_type = _StructItemType(Type_interface)
 
@@ -1196,7 +1196,7 @@ class Type_list(_Struct):
     def shortrepr(self):
         parts = []
         if self.has_elementType(): parts.append("elementType = %s" % self.get_elementType().shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Type_list_list_item_type = _StructItemType(Type_list)
 
@@ -1589,7 +1589,7 @@ class Type(_Struct):
         if self.is_struct(): parts.append("struct = %s" % self.struct.shortrepr())
         if self.is_interface(): parts.append("interface = %s" % self.interface.shortrepr())
         if self.is_anyPointer(): parts.append("anyPointer = %s" % self.anyPointer.shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Type_list_item_type = _StructItemType(Type)
 
@@ -1671,7 +1671,7 @@ class Brand_Binding(_Struct):
         if self.is_type() and (self.has_type() or
                                   not False):
             parts.append("type = %s" % self.get_type().shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Brand_Binding_list_item_type = _StructItemType(Brand_Binding)
 
@@ -1753,7 +1753,7 @@ class Brand_Scope(_Struct):
                                   not True):
             parts.append("bind = %s" % self.get_bind().shortrepr())
         if self.is_inherit(): parts.append("inherit = %s" % "void")
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Brand_Scope_list_item_type = _StructItemType(Brand_Scope)
 
@@ -1794,7 +1794,7 @@ class Brand(_Struct):
     def shortrepr(self):
         parts = []
         if self.has_scopes(): parts.append("scopes = %s" % self.get_scopes().shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Brand_list_item_type = _StructItemType(Brand)
 
@@ -1945,7 +1945,7 @@ class Value(_Struct):
         return self._read_str_text(0)
     
     def get_text(self):
-        return self._read_str_text(0, default_="")
+        return self._read_str_text(0, default_=b"")
     
     def has_text(self):
         ptr = self._read_fast_ptr(0)
@@ -1957,7 +1957,7 @@ class Value(_Struct):
         return self._read_str_data(0)
     
     def get_data(self):
-        return self._read_str_data(0, default_="")
+        return self._read_str_data(0, default_=b"")
     
     def has_data(self):
         ptr = self._read_fast_ptr(0)
@@ -2220,7 +2220,7 @@ class Value(_Struct):
         if self.is_anyPointer() and (self.has_anyPointer() or
                                   not False):
             parts.append("anyPointer = %s" % "???")
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Value_list_item_type = _StructItemType(Value)
 
@@ -2306,7 +2306,7 @@ class Annotation(_Struct):
         parts.append("id = %s" % self.id)
         if self.has_value(): parts.append("value = %s" % self.get_value().shortrepr())
         if self.has_brand(): parts.append("brand = %s" % self.get_brand().shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Annotation_list_item_type = _StructItemType(Annotation)
 
@@ -2350,7 +2350,7 @@ class Node_interface(_Struct):
         parts = []
         if self.has_methods(): parts.append("methods = %s" % self.get_methods().shortrepr())
         if self.has_superclasses(): parts.append("superclasses = %s" % self.get_superclasses().shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Node_interface_list_item_type = _StructItemType(Node_interface)
 
@@ -2414,7 +2414,7 @@ class Node_const(_Struct):
         parts = []
         if self.has_type(): parts.append("type = %s" % self.get_type().shortrepr())
         if self.has_value(): parts.append("value = %s" % self.get_value().shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Node_const_list_item_type = _StructItemType(Node_const)
 
@@ -2496,7 +2496,7 @@ class Node_struct(_Struct):
         parts.append("discriminantCount = %s" % self.discriminantCount)
         parts.append("discriminantOffset = %s" % self.discriminantOffset)
         if self.has_fields(): parts.append("fields = %s" % self.get_fields().shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Node_struct_list_item_type = _StructItemType(Node_struct)
 
@@ -2642,7 +2642,7 @@ class Node_annotation(_Struct):
         parts.append("targetsMethod = %s" % str(self.targetsMethod).lower())
         parts.append("targetsParam = %s" % str(self.targetsParam).lower())
         parts.append("targetsAnnotation = %s" % str(self.targetsAnnotation).lower())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Node_annotation_list_item_type = _StructItemType(Node_annotation)
 
@@ -2670,7 +2670,7 @@ class Node_enum(_Struct):
     def shortrepr(self):
         parts = []
         if self.has_enumerants(): parts.append("enumerants = %s" % self.get_enumerants().shortrepr())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Node_enum_list_item_type = _StructItemType(Node_enum)
 
@@ -2686,7 +2686,7 @@ class Node_NestedNode(_Struct):
         return self._read_str_text(0)
     
     def get_name(self):
-        return self._read_str_text(0, default_="")
+        return self._read_str_text(0, default_=b"")
     
     def has_name(self):
         ptr = self._read_fast_ptr(0)
@@ -2716,7 +2716,7 @@ class Node_NestedNode(_Struct):
         parts = []
         if self.has_name(): parts.append("name = %s" % _text_repr(self.get_name()))
         parts.append("id = %s" % self.id)
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Node_NestedNode_list_item_type = _StructItemType(Node_NestedNode)
 
@@ -2732,7 +2732,7 @@ class Node_Parameter(_Struct):
         return self._read_str_text(0)
     
     def get_name(self):
-        return self._read_str_text(0, default_="")
+        return self._read_str_text(0, default_=b"")
     
     def has_name(self):
         ptr = self._read_fast_ptr(0)
@@ -2752,7 +2752,7 @@ class Node_Parameter(_Struct):
     def shortrepr(self):
         parts = []
         if self.has_name(): parts.append("name = %s" % _text_repr(self.get_name()))
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Node_Parameter_list_item_type = _StructItemType(Node_Parameter)
 
@@ -2794,7 +2794,7 @@ class Node(_Struct):
         return self._read_str_text(0)
     
     def get_displayName(self):
-        return self._read_str_text(0, default_="")
+        return self._read_str_text(0, default_=b"")
     
     def has_displayName(self):
         ptr = self._read_fast_ptr(0)
@@ -3047,7 +3047,7 @@ class Node(_Struct):
         if self.is_annotation(): parts.append("annotation = %s" % self.annotation.shortrepr())
         if self.has_parameters(): parts.append("parameters = %s" % self.get_parameters().shortrepr())
         parts.append("isGeneric = %s" % str(self.isGeneric).lower())
-        return "(%s)" % ", ".join(parts).encode().decode("ascii", errors="backslashreplace")
+        return "(%s)" % ", ".join(parts)
 
 _Node_list_item_type = _StructItemType(Node)
 
