@@ -90,12 +90,9 @@ def text_repr(s):
     # non-ascii chars and single quotes. Then, we manually escape the double
     # quotes and put everything inside double quotes
     #
-    if PY3:
-        s = ensure_unicode(s)
-
-    s = s + "'" + '"'
-    s = repr(s)[1:-4] # remove the single quotes around the string, plus the
-                      # extra quotes we added above
+    s = s + b"'" + b'"'
+    s = repr(s)[1+PY3:-4] # remove the single quotes around the string, plus the
+                          # extra quotes we added above and b prefix in Python 3
     s = s.replace('"', r'\"')
     return '"%s"' % s
 
