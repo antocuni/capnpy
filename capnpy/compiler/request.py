@@ -29,7 +29,7 @@ class RequestedFile:
             m.modname = m.modname.encode('utf-8')
         m.tmpname = '%s_tmp' % m.modname
         m.code.global_scope.extname = '%s_extended' % m.modname
-        #c
+        #
         # some lines need to be different when in pyx mode: here we define
         # some global kwarg which are "turned off" when in pure python mode
         if m.pyx:

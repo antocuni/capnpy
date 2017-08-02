@@ -1,4 +1,6 @@
 import struct
+from six.moves import range
+
 import capnpy
 from capnpy.type import Types
 from capnpy.blob import Blob, PYX
