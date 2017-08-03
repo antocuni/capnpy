@@ -6,7 +6,6 @@
 from __future__ import print_function
 import sys
 from pypytools import IS_PYPY
-from six import binary_type
 
 import capnpy
 from capnpy.util import extend
@@ -41,7 +40,7 @@ class Blob(object):
 
     def _init_blob(self, seg):
         assert seg is not None
-        if isinstance(seg, binary_type):
+        if isinstance(seg, bytes):
             seg = Segment(seg)
         self._seg = seg
 
