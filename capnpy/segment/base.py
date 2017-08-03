@@ -1,6 +1,6 @@
 import struct
 
-import six
+from six import int2byte
 from pypytools import IS_PYPY
 
 if IS_PYPY:
@@ -15,12 +15,12 @@ if IS_PYPY:
     # is not a tracing-time constant (it becomes constant later, during
     # optimizeopt). The work around is to use mychr, which pyjitpl.py is smart
     # enough to detect as a tracing-time constant.
-    _CHR = tuple(map(six.int2byte, range(256)))
+    _CHR = tuple(map(int2byte, range(256)))
     def mychr(i):
         return _CHR[i]
 
 else:
-    mychr = six.int2byte
+    mychr = int2byte
 
 
 def unpack_uint32(buf, offset):

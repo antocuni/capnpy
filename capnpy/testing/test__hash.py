@@ -1,4 +1,3 @@
-import py
 import sys
 from pypytools import IS_PYPY
 from six import PY3
