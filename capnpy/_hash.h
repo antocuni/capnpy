@@ -7,8 +7,9 @@ typedef struct {
     long suffix;
 } _Py_HashSecret_custom;
 
-#if PY_MAJOR_VERSION < 3
+#define MINLONG -9223372036854775808
 
+#if PY_MAJOR_VERSION < 3
 
     #define HASH_MASK 0
     Py_hash_t strhash_f(const void *src, Py_ssize_t len) {return 0;}

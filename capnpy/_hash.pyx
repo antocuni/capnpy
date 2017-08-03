@@ -18,6 +18,7 @@ cdef extern from "_hash.h":
     ctypedef size_t Py_hash_t
     cdef Py_hash_t strhash_f(const void *src, Py_ssize_t len)
     long HASH_MASK
+    long MINLONG
 
 
 cpdef long strhash(bytes a, long start, long size):
@@ -79,21 +80,22 @@ cdef inline long _strhash_3(const unsigned char* p, long size):
     return strhash_f(p, size)
 
 cdef inline long _inthash_3(long v):
-    if v == -9223372036854775808: # minlong
+    if v == MINLONG: # minlong
         return -4
 
-    cdef sign = 1
+    cdef int neg = False
     if v < 0:
-        sign = -1
-        v = -(v)
+        neg = True
+        v = -v
 
     v = (v & HASH_MASK) + (v >> 61)
     if v >= HASH_MASK:
         v -= HASH_MASK
 
-    v *= sign
-    if v == -1:
-        return -2
+    if neg:
+        v = -v
+        if v == -1:
+            return -2
     return v
 
 
