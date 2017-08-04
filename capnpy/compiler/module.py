@@ -18,11 +18,12 @@ import capnpy.compiler.misc
 
 class ModuleGenerator(object):
 
-    def __init__(self, request, convert_case, pyx, standalone):
+    def __init__(self, request, convert_case, pyx, version_check, standalone):
         self.code = Code(pyx=pyx)
         self.request = request
         self.convert_case = convert_case
         self.pyx = pyx
+        self.version_check = version_check
         self.standalone = standalone
         self.allnodes = {} # id -> node
         self.children = defaultdict(list) # nodeId -> nested nodes

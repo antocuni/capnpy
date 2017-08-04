@@ -82,7 +82,8 @@ class RequestedFile:
             m.w('from %s import __compiler, __schema__' % m.tmpname)
         #
         m.w('__capnpy_version__ = {version!r}', version=capnpy.__version__)
-        m.w('_check_version(__capnpy_version__)')
+        if m.version_check:
+            m.w('_check_version(__capnpy_version__)')
         self._declare_imports(m)
         m.w("")
         #

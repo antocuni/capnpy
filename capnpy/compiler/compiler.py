@@ -50,10 +50,10 @@ class BaseCompiler(object):
         request = loads(data, schema.CodeGeneratorRequest)
         return request
 
-    def generate_py_source(self, filename, convert_case, pyx):
+    def generate_py_source(self, filename, convert_case, pyx, version_check=True):
         pyx = self.getpyx(pyx)
         request = self._parse_schema_file(filename)
-        m = ModuleGenerator(request, convert_case, pyx, self.standalone)
+        m = ModuleGenerator(request, convert_case, pyx, version_check, self.standalone)
         src = m.generate()
         return m, py.code.Source(src)
 
@@ -243,10 +243,10 @@ class StandaloneCompiler(BaseCompiler):
 
     standalone = True
 
-    def compile(self, filename, convert_case=True, pyx='auto'):
+    def compile(self, filename, convert_case=True, pyx='auto', version_check=True):
         pyx = self.getpyx(pyx)
         infile = py.path.local(filename)
-        m, src = self.generate_py_source(infile, convert_case, pyx)
+        m, src = self.generate_py_source(infile, convert_case, pyx, version_check)
         if pyx:
             self._compile_pyx(infile, m, src)
         else:
