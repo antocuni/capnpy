@@ -12,7 +12,7 @@ except ImportError:
 
 # setuptools entry-points
 def capnpy_options(dist, attr, value):
-    my_options = set(['pyx', 'convert_case'])
+    my_options = set(['pyx', 'convert_case', 'version_check'])
     for opt in value:
         if opt not in my_options:
             warnings.warn('Unknown capnpy option: %s' % opt)
@@ -22,18 +22,20 @@ def capnpy_schemas(dist, attr, schemas):
     options = dist.capnpy_options or {}
     pyx = options.get('pyx', 'auto')
     convert_case = options.get('convert_case', True)
+    version_check = options.get('version_check', True)
     if dist.ext_modules is None:
         dist.ext_modules = []
-    dist.ext_modules += capnpify(schemas, pyx=pyx, convert_case=convert_case)
+    dist.ext_modules += capnpify(schemas, pyx=pyx, convert_case=convert_case,
+                                 version_check=version_check)
 
-def capnpify(files, pyx='auto', convert_case=True):
+def capnpify(files, pyx='auto', convert_case=True, version_check=True):
     cwd = py.path.local('.')
     if isinstance(files, str):
         files = glob.glob(files)
         if files == []:
             raise ValueError("'%s' did not match any files" % files)
     compiler = DistutilsCompiler(sys.path)
-    outfiles = [compiler.compile(f, convert_case, pyx) for f in files]
+    outfiles = [compiler.compile(f, convert_case, pyx, version_check) for f in files]
     outfiles = [outf.relto(cwd) for outf in outfiles]
     #
     if compiler.getpyx(pyx):
