@@ -131,8 +131,8 @@ def get_cython_extensions():
              "capnpy/filelike.py",
              "capnpy/ptr.pyx",
              "capnpy/packing.pyx",
-             "capnpy/_hash.pyx"
-             "capnpy/_util.pyx",
+             "capnpy/_hash.pyx",
+             "capnpy/_util.pyx"
             ]
 
     root_dir = os.path.abspath(os.path.dirname(__file__))
