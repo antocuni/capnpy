@@ -7,6 +7,7 @@ from capnpy.printer import print_buffer
 from capnpy.segment.segment import Segment
 from capnpy.segment.builder import SegmentBuilder, copy_pointer
 
+
 class TestCopyPointer(object):
 
     def copy_struct(self, src, offset, data_size, ptrs_size, bufsize=None):

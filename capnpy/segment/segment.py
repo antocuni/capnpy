@@ -63,7 +63,6 @@ class Segment(BaseSegment):
         p.printbuf(start=0, end=None, **kwds)
 
 
-
 class MultiSegment(Segment):
     """
     Represent a capnproto buffer for a multiple segments message. The segments

@@ -2,6 +2,7 @@ import struct
 from six import int2byte
 from pypytools import IS_PYPY
 
+
 if IS_PYPY:
     # workaround for a limitation of the PyPy JIT: struct.unpack is optimized
     # only if the format string is a tracing-time constant; this is because of
@@ -82,5 +83,6 @@ class BaseSegment(object):
         length = end-start
         header = struct.pack(b'IIq', (segment_count-1), length//8 + 1, p)
         return header + self.buf[start:end]
+
 
 BaseSegmentForTests = BaseSegment
