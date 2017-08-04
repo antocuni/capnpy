@@ -75,8 +75,6 @@ def extend_module_maybe(globals, filename=None, modname=None):
     exec(code, globals)
 
 def check_version(version):
-    return # FIXME can't rerun the test when date changes nor recompile schema
-           #  because the version format is [version]+g[commit].d[date]
     if version != capnpy.__version__:
         msg = ('Version mismatch: the module has been compiled with capnpy '
                '{v1}, but the current version of capnpy is {v2}. '
