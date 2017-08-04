@@ -69,7 +69,7 @@ addons:
       - gcc-4.8
       - g++-4.8
       - python-dev
-      - ucspi-tcp # for tcpserver, see the comment above
+      #- ucspi-tcp # for tcpserver, see the comment above
 
 
 stage: test
@@ -96,4 +96,3 @@ notifications:
       - https://readthedocs.org/build/capnpy # trigger docs build
     on_success: always
     on_failure: never
-  email: false
