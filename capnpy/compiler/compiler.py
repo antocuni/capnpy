@@ -270,7 +270,7 @@ class DistutilsCompiler(BaseCompiler):
     """
     standalone = True
 
-    def compile(self, filename, convert_case=True, pyx='auto'):
+    def compile(self, filename, convert_case=True, pyx='auto', version_check=True):
         pyx = self.getpyx(pyx)
         infile = py.path.local(filename)
         if pyx:
@@ -284,6 +284,6 @@ class DistutilsCompiler(BaseCompiler):
         cwd = py.path.local('.')
         print('[capnpy] Compiling', infile.relto(cwd))
         m, src = self.generate_py_source(infile, convert_case=convert_case,
-                                         pyx=pyx)
+                                         pyx=pyx, version_check=version_check)
         outfile.write(src)
         return outfile
