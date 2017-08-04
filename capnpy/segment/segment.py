@@ -1,7 +1,7 @@
 from capnpy.segment.base import BaseSegment
 from capnpy import ptr
-from capnpy.printer import print_buffer, BufferPrinter
 from capnpy import _hash
+from capnpy.printer import print_buffer, BufferPrinter
 
 
 class Segment(BaseSegment):
