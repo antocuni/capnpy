@@ -2,6 +2,7 @@
 
 #include <Python.h>
 
+// duck-typed _Py_HashSecret_t from CPython 2.7 (different from 3.5)
 typedef struct {
     long prefix;
     long suffix;
@@ -17,8 +18,8 @@ typedef struct {
 
 #else
 
-    #define strhash_f _Py_HashBytes
-    _Py_HashSecret_custom HashSecret;
     #define HASH_MASK _PyHASH_MODULUS
+    #define strhash_f _Py_HashBytes
+    _Py_HashSecret_custom HashSecret; // uninitialized dummy
 
 #endif

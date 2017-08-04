@@ -3,9 +3,8 @@ Reimplementation of CPython's hashing algorithm for many builtin
 types. The idea is that if you have C variables, you can compute fast hashes
 *without* having to allocate real Python object
 """
-cimport cython
 
-cdef  extern from "Python.h":
+cdef extern from "Python.h":
     int PY_MAJOR_VERSION
 cdef int PY3 = PY_MAJOR_VERSION == 3
 
@@ -47,6 +46,9 @@ cpdef long longhash(unsigned long v):
 
 
 ### Python 2 ##################################################
+# string hashing algorithm. Copied from CPython's 2.7 stringobject.c. Note
+# that in Python 3 the hash function is different.
+# The invariant is: strhash(s, i, n) == hash(s[i:i+n]) (assuming size>=0)
 cdef inline long _strhash_2(const unsigned char* p, long size):
     #
     cdef long n = size
@@ -76,9 +78,13 @@ cdef inline long _longhash_2(unsigned long v):
 ### END Python 2 ###############################################
 
 ### Python 3 ###################################################
+# Directly call CPython bytes hash and let it decide which
+# hash function implementation to use (because Py3 has multiple)
 cdef inline long _strhash_3(const unsigned char* p, long size):
     return strhash_f(p, size)
 
+# Simplified version of CPython's 3.5 hashing algorithm found in
+# longobject.c. Adapted to work on at most 64bit integers
 cdef inline long _inthash_3(long v):
     if v == MINLONG: # minlong
         return -4
@@ -97,7 +103,6 @@ cdef inline long _inthash_3(long v):
         if v == -1:
             return -2
     return v
-
 
 cdef inline long _longhash_3(unsigned long v):
     v = (v & HASH_MASK) + (v >> 61)
