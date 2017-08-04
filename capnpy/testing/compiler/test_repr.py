@@ -26,11 +26,6 @@ class TestShortRepr(CompilerTest):
     def check(self, obj, expected=None):
         myrepr = obj.shortrepr()
         capnp_repr = self.decode(obj)
-
-        # if PY3:
-        #     capnp_repr = capnp_repr.replace(r"\"", "\\\\\"").replace(r"\'", "\\\\\'")
-        #     capnp_repr = capnp_repr.encode("latin1").decode("unicode-escape").encode("latin1").decode("utf8")
-
         assert myrepr == capnp_repr
         if expected is not None:
             assert myrepr == expected
