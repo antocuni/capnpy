@@ -1,5 +1,4 @@
 import struct
-
 from six import int2byte
 from pypytools import IS_PYPY
 

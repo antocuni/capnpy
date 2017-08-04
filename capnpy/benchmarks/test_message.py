@@ -2,6 +2,7 @@ import pytest
 import socket
 import contextlib
 import six
+from six.moves import range
 
 from capnpy.buffered import BufferedSocket
 from capnpy.benchmarks import support
