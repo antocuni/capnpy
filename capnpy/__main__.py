@@ -10,7 +10,6 @@ Options:
 from __future__ import print_function
 
 import sys
-import py
 import time
 import docopt
 
@@ -22,7 +21,7 @@ from capnpy.compiler.compiler import StandaloneCompiler
 def decode(args):
     print('Loading schema...', file=sys.stderr)
     a = time.time()
-    mod = load_schema(args['SCHEMA'],
+    mod = load_schema(modname=args['SCHEMA'],
                       convert_case=args['--convert-case'],
                       pyx=args['--pyx'])
     b = time.time()
@@ -44,9 +43,8 @@ def decode(args):
     print('\nstream decoded in %.2f secs' % (c-b), file=sys.stderr)
 
 def compile(args):
-    srcfile = args['FILE']
     comp = StandaloneCompiler(sys.path)
-    comp.compile(args['FILE'],
+    comp.compile(filename=args['FILE'],
                  convert_case=args['--convert-case'],
                  pyx=args['--pyx'],
                  version_check=args['--version-check'])

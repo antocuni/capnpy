@@ -4,6 +4,7 @@ import sys
 import os
 import types
 import subprocess
+from six import PY3
 from distutils.version import LooseVersion
 
 import capnpy
@@ -11,7 +12,7 @@ from capnpy import schema
 from capnpy.message import loads
 from capnpy.blob import PYX
 from capnpy.compiler.module import ModuleGenerator
-from capnpy.util import ensure_unicode, PY3
+from capnpy.util import ensure_unicode
 
 
 PKGDIR = py.path.local(capnpy.__file__).dirpath()

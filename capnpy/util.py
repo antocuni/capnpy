@@ -8,7 +8,6 @@ try:
 except ImportError:
     setattr_builtin = None
 
-PY3 = sys.version_info >= (3, 0)
 
 Py_TPFLAGS_HEAPTYPE = (1<<9)  # from object.h
 
@@ -89,8 +88,9 @@ def text_repr(s):
     # quotes and put everything inside double quotes
     #
     s = s + b"'" + b'"'
-    s = repr(s)[1+PY3:-4] # remove the single quotes around the string, plus the
-                          # extra quotes we added above and b prefix in Python 3
+    s = repr(s)[1+six.PY3:-4] # remove the single quotes around the string,
+                              # plus the extra quotes we added above and
+                              # the prefixed `b` in Python 3
     s = s.replace('"', r'\"')
     return '"%s"' % s
 

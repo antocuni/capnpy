@@ -6,7 +6,7 @@ from capnpy.visit import end_of
 from capnpy.list import List
 from capnpy.packing import pack_int64
 from capnpy.segment.builder import SegmentBuilder
-from capnpy.util import magic_setattr, ensure_unicode, PY3
+from capnpy.util import magic_setattr
 
 class Undefined(object):
     def __repr__(self):
