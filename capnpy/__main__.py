@@ -5,6 +5,7 @@ Usage: capnpy compile FILE [options]
 Options:
   --no-convert-case    Don't convert camelCase to camel_case
   --no-pyx             Always produce a .py file, even if Cython is available
+  --no-version-check   Don't check for version discrepancy.
 """
 from __future__ import print_function
 
@@ -47,7 +48,8 @@ def compile(args):
     comp = StandaloneCompiler(sys.path)
     comp.compile(args['FILE'],
                  convert_case=args['--convert-case'],
-                 pyx=args['--pyx'])
+                 pyx=args['--pyx'],
+                 version_check=args['--version-check'])
 
 def main(argv=None):
     args = docopt.docopt(__doc__, argv=argv)
@@ -55,6 +57,7 @@ def main(argv=None):
     args['--pyx'] = 'auto'
     if args['--no-pyx']:
         args['--pyx'] = False
+    args['--version-check'] = not args['--no-version-check']
     if args['compile']:
         compile(args)
     elif args['decode']:
