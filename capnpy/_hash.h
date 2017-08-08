@@ -1,5 +1,3 @@
-
-
 #include <Python.h>
 
 // duck-typed _Py_HashSecret_t from CPython 2.7 (different from 3.5)
@@ -8,7 +6,7 @@ typedef struct {
     long suffix;
 } _Py_HashSecret_custom;
 
-#define MINLONG -9223372036854775807 -1
+#define MINLONG -9223372036854775807 - 1
 
 #if PY_MAJOR_VERSION < 3
     #define HASH_MASK 0
