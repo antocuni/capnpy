@@ -1,32 +1,30 @@
 from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
                           uint32_t, int32_t, int64_t, uint64_t, INT64_MAX)
-from six import PY2
-
-if PY2:
-    from cpython.string cimport (PyString_GET_SIZE, PyString_AS_STRING,
-                                 PyString_CheckExact, PyString_FromStringAndSize)
-else:
-    from cpython.bytes cimport (PyBytes_GET_SIZE as PyString_GET_SIZE,
-                                PyBytes_AS_STRING as PyString_AS_STRING,
-                                PyBytes_CheckExact as PyString_CheckExact,
-                                PyBytes_FromStringAndSize as PyString_FromStringAndSize)
-
-mychr = chr
 
 cdef extern from "Python.h":
     int PyByteArray_CheckExact(object o)
     char* PyByteArray_AS_STRING(object o)
     Py_ssize_t PyByteArray_GET_SIZE(object o)
 
+cdef extern from "_util.h":
+    cdef Py_ssize_t _PyString_GET_SIZE(object string)
+    cdef char* _PyString_AS_STRING(object string)
+    cdef bint _PyString_CheckExact(object o)
+    cdef bytes _PyString_FromStringAndSize(char *v, Py_ssize_t len)
+
+
+mychr = chr
+
+
 cdef char* as_cbuf(object buf, Py_ssize_t* length, bint rw=0) except NULL:
     # PyString_AS_STRING seems to be faster than relying of cython's own logic
     # to convert bytes to char*
     cdef bytes bytes_buf
     cdef bytearray ba_buf
-    if not rw and PyString_CheckExact(buf):
+    if not rw and _PyString_CheckExact(buf):
         bytes_buf = buf
-        length[0] = PyString_GET_SIZE(bytes_buf)
-        return PyString_AS_STRING(bytes_buf)
+        length[0] = _PyString_GET_SIZE(bytes_buf)
+        return _PyString_AS_STRING(bytes_buf)
     elif PyByteArray_CheckExact(buf):
         ba_buf = buf
         length[0] = PyByteArray_GET_SIZE(ba_buf)
@@ -119,8 +117,8 @@ cpdef bytes pack_message_header(int segment_count, int segment_size, long p):
     cdef bytes buf
     cdef char* cbuf
     assert segment_count == 1
-    buf = PyString_FromStringAndSize(NULL, 16)
-    cbuf = PyString_AS_STRING(buf)
+    buf = _PyString_FromStringAndSize(NULL, 16)
+    cbuf = _PyString_AS_STRING(buf)
     (<int32_t*>(cbuf+0))[0] = segment_count-1
     (<int32_t*>(cbuf+4))[0] = segment_size
     (<int64_t*>(cbuf+8))[0] = p
@@ -130,8 +128,8 @@ cpdef bytes pack_message_header(int segment_count, int segment_size, long p):
 cpdef bytes pack_int64(long value):
     cdef bytes buf
     cdef char* cbuf
-    buf = PyString_FromStringAndSize(NULL, 8)
-    cbuf = PyString_AS_STRING(buf)
+    buf = _PyString_FromStringAndSize(NULL, 8)
+    cbuf = _PyString_AS_STRING(buf)
     (<int64_t*>(cbuf+0))[0] = value
     return buf
 

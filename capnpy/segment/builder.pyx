@@ -2,14 +2,6 @@ cimport cython
 from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
                           uint32_t, int32_t, int64_t, uint64_t, INT64_MAX)
 from libc.string cimport memcpy, memset
-from six import PY2
-if PY2:
-    from cpython.string cimport (PyString_FromStringAndSize, PyString_GET_SIZE,
-                                 PyString_AS_STRING)
-else:
-    from cpython.bytes cimport (PyBytes_FromStringAndSize as PyString_FromStringAndSize,
-                                PyBytes_GET_SIZE as PyString_GET_SIZE,
-                                PyBytes_AS_STRING as PyString_AS_STRING)
 
 from capnpy.segment.base cimport BaseSegment
 from capnpy.struct_ cimport Struct
@@ -18,6 +10,12 @@ from capnpy.list cimport List, ItemType, StructItemType
 cdef extern from "Python.h":
     int PyByteArray_Resize(object o, Py_ssize_t len)
     char* PyByteArray_AS_STRING(object o)
+
+cdef extern from "_util.h":
+    cdef Py_ssize_t _PyString_GET_SIZE(object string)
+    cdef char* _PyString_AS_STRING(object string)
+    cdef bytes _PyString_FromStringAndSize(char *v, Py_ssize_t len)
+
 
 cdef long round_to_word(long pos):
     return (pos + (8 - 1)) & -8  # Round up to 8-byte boundary
@@ -54,7 +52,7 @@ cdef class SegmentBuilder(object):
         return self.end
 
     cpdef as_string(self):
-        return PyString_FromStringAndSize(self.cbuf, self.end)
+        return _PyString_FromStringAndSize(self.cbuf, self.end)
 
     cpdef object write_generic(self, char ifmt, Py_ssize_t i, object value):
         if ifmt == 'q':
@@ -161,9 +159,9 @@ cdef class SegmentBuilder(object):
         if s is None:
             self.write_int64(pos, 0)
             return -1
-        cdef Py_ssize_t n = PyString_GET_SIZE(s)
+        cdef Py_ssize_t n = _PyString_GET_SIZE(s)
         cdef Py_ssize_t nn = n + trailing_zero
-        cdef const char *src = PyString_AS_STRING(s)
+        cdef const char *src = _PyString_AS_STRING(s)
         cdef Py_ssize_t result = self.alloc_list(pos, ptr.LIST_SIZE_8, nn, nn)
         memcpy(self.cbuf+result, src, n)
         # there is no need to write the trailing 0 as the byte is already
