@@ -81,7 +81,7 @@ addons:
 stage: test
 
 before_install:
-  - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then openssl aes-256-cbc -K $encrypted_571f1f821904_key -iv $encrypted_571f1f821904_iv -in ./travis/travis.rsa.enc -out ./travis/travis.rsa -d; fi
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then openssl aes-256-cbc -K $encrypted_571f1f821904_key -iv $encrypted_571f1f821904_iv -in ./travis/travis.rsa.enc -out ./travis/travis.rsa -d; fi
 
 install:
   - bash ./travis/install_capnp.sh
@@ -92,9 +92,9 @@ install:
   - pip install cython>=0.25
 
 script:
-  - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./travis/clone-benchmarks-repo.sh; fi
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./travis/clone-benchmarks-repo.sh; fi
   - tox
-  - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./travis/commit-results.sh; fi
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./travis/commit-results.sh; fi
 
 notifications:
   webhooks:
