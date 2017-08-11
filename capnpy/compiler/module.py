@@ -57,7 +57,7 @@ class ModuleGenerator(object):
         name = py.path.local(fname).purebasename
         name = name.replace('+', 'PLUS')
         name = '_%s_capnp' % name
-        if name in list(self.importnames.values()):
+        if name in self.importnames.values():
             # avoid name clashes
             name = '%s_%s' % (name, len(self.filenames))
         self.importnames[fname] = name
