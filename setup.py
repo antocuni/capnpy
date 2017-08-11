@@ -62,8 +62,6 @@ explicit installation of Cython in the non common cases (1) and (3).
 ###############################################################################
 # Custom distutils commands
 
-DEBUG = int(os.environ.get('DEBUG', False)) # whether to compile files with -g
-
 def my_cythonize(extensions):
     try:
         import Cython
@@ -115,6 +113,7 @@ class my_build_ext(build_ext):
 # end of the custom commands section
 ###############################################################################
 
+DEBUG = int(os.environ.get('CAPNPY_DEBUG', False)) # whether to compile files with -g
 
 def get_cython_extensions():
     files = ["capnpy/segment/base.pyx",
