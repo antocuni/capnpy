@@ -81,20 +81,20 @@ addons:
 stage: test
 
 before_install:
-  - openssl aes-256-cbc -K $encrypted_571f1f821904_key -iv $encrypted_571f1f821904_iv -in ./travis/travis.rsa.enc -out ./travis/travis.rsa -d
+  - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then openssl aes-256-cbc -K $encrypted_571f1f821904_key -iv $encrypted_571f1f821904_iv -in ./travis/travis.rsa.enc -out ./travis/travis.rsa -d; fi
 
 install:
   - bash ./travis/install_capnp.sh
   - pip install -U pip # so that we can use wheels
   - pip install tox-travis
-  - # tox creates the sdist: we need cython to be installed in the env which
-  - # creates the sdist, to generate the .c files
+  # tox creates the sdist: we need cython to be installed in the env which
+  # creates the sdist, to generate the .c files
   - pip install cython>=0.25
 
 script:
-  - bash ./travis/clone-benchmarks-repo.sh
+  - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./travis/clone-benchmarks-repo.sh; fi
   - tox
-  - bash ./travis/commit-results.sh
+  - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./travis/commit-results.sh; fi
 
 notifications:
   webhooks:
