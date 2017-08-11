@@ -109,7 +109,7 @@ class BaseCompiler(object):
         stdout, stderr = proc.communicate()
         ret = proc.wait()
         if ret != 0:
-            raise CompilerError(stderr.decode())
+            raise CompilerError(ensure_unicode(stderr))
         return stdout
 
 

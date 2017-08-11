@@ -250,13 +250,13 @@ class Node__Struct:
         if ann is None:
             return
         assert ann.annotation.value.is_text()
-        allfields = [f.name.decode() for f in self.struct.fields]
+        allfields = [ensure_unicode(f.name) for f in self.struct.fields]
         # we expect keyfields to be something like "x, y, z" or "*"
-        txt = ann.annotation.value.text.strip()
-        if txt == b'*':
+        txt = ensure_unicode(ann.annotation.value.text.strip())
+        if txt == '*':
             fieldnames = allfields
         else:
-            fieldnames = [fn.strip().decode() for fn in txt.split(b',')]
+            fieldnames = [fn.strip() for fn in txt.split(',')]
 
         #
         # sanity check
@@ -277,7 +277,7 @@ class Node__Struct:
 
     def _emit_fash_hash(self, m, fieldnames):
         # emit a specialized, fast __hash__.
-        fields = dict([(f.name.decode(), f) for f in self.struct.fields])
+        fields = dict([(ensure_unicode(f.name), f) for f in self.struct.fields])
         m.w()
         with m.code.block('def __hash__(self):') as ns:
             ns.n = len(fieldnames)
