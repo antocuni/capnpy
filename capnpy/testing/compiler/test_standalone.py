@@ -80,7 +80,7 @@ class TestStandalone(CompilerTest):
         assert r.b.y == 4
 
     def test_pickle(self):
-        import pickle as pickle
+        import pickle
         self.compile("mypoint.capnp", """
         @0xbf5147cbbecf40c1;
         struct Point {
@@ -97,7 +97,7 @@ class TestStandalone(CompilerTest):
             assert p2.y == 2
 
     def test_pickle_list(self):
-        import pickle as pickle
+        import pickle
         self.compile("example.capnp", """
         @0xbf5147cbbecf40c1;
         struct Point {
