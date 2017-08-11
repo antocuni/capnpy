@@ -193,7 +193,7 @@ class Node__Struct:
         # def shortrepr(self):
         #     parts = []
         #     parts.append("x = %s" % self.x)
-        #     parts.append("x = %s" % self.y)
+        #     parts.append("y = %s" % self.y)
         #     return "(%s)" % ", ".join(parts)
         #
         with m.block('{cpdef} shortrepr(self):') as ns:
