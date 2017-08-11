@@ -2,6 +2,7 @@ import py
 import pytest
 import pypytools
 from pypytools.codegen import Code
+
 from capnpy.benchmarks import support
 
 @pytest.fixture(params=('Instance', 'NamedTuple', 'Capnpy', 'PyCapnp'))
@@ -56,12 +57,13 @@ class TestGetAttr(object):
     @pytest.mark.benchmark(group="getattr")
     def test_text(self, schema, benchmark):
         benchmark.extra_info['attribute_type'] = 'text'
+        exp_text = b'hello world' if schema != 'PyCapnp' else 'hello world'
         def count_text(obj):
             myobjs = (obj, obj)
             res = 0
             for i in range(self.N):
                 obj = myobjs[i%2]
-                res += (obj.text == b'hello world')
+                res += (obj.text == exp_text)
             return res
         #
         obj = get_obj(schema)
