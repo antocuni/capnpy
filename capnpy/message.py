@@ -104,8 +104,8 @@ def _load_buffer_multiple_segments(f, n):
     #
     # 2. add enough padding so that the message starts at word boundary
     bytes_read = 4 + n*4 # 4 bytes for the n, plus 4 bytes for each segment
-    if bytes_read % 8 != 0:
-        padding = 8-(bytes_read % 8)
+    if bytes_read & 7 != 0: # using & is faster than % (x & 7 == x % 8)
+        padding = 8-(bytes_read & 7)
         f.read(padding)
     #
     # 3. read the body of the message

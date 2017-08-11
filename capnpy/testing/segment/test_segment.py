@@ -5,7 +5,7 @@ from capnpy import ptr
 from capnpy.segment.segment import Segment, MultiSegment
 
 def test_Segment_pickle():
-    import pickle as pickle
+    import pickle
     buf = Segment(b'hello')
     #
     buf2 = pickle.loads(pickle.dumps(buf))
@@ -15,7 +15,7 @@ def test_Segment_pickle():
     assert buf2.buf == b'hello'
 
 def test_MultiSegment_pickle():
-    import pickle as pickle
+    import pickle
     buf = MultiSegment(b'hello', (1, 2, 3))
     #
     buf2 = pickle.loads(pickle.dumps(buf))

@@ -48,7 +48,7 @@ if not cython.compiled:
     globals()['read_int64_fast'] = _read_int64_fast
 
 
-# depending on the phase of the moon, I saw speeupds up to 20% if we declare
+# depending on the phase of the moon, I saw speedups up to 20% if we declare
 # all these functions as returning a long and "except -1". However, other
 # times I didn't see any significant speedup.
 #

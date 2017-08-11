@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2017-08-04 18:19
+# generated on 2017-08-11 15:35
 
 from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
@@ -23,7 +23,8 @@ from capnpy.util import float32_repr as _float32_repr
 from capnpy.util import float64_repr as _float64_repr
 from capnpy.util import extend_module_maybe as _extend_module_maybe
 from capnpy.util import check_version as _check_version
-__capnpy_version__ = '0.3.1.dev73+g188d845.d20170804'
+__capnpy_version__ = '0.3.1.dev95+g27c0fa5.d20170811'
+# schema compiled with --no-version-check, skipping the call to _check_version
 
 #### FORWARD DECLARATIONS ####
 
