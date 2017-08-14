@@ -3,6 +3,8 @@ import sys
 import struct
 import math
 from pypytools import IS_PYPY
+from six import b, PY3
+
 from capnpy import ptr
 from capnpy.printer import print_buffer
 from capnpy.segment.base import BaseSegmentForTests as BaseSegment, unpack_uint32
@@ -13,7 +15,7 @@ def test_unpack_uint32():
     buf = struct.pack('II', a, b)
     assert unpack_uint32(buf, 0) == a
     assert unpack_uint32(buf, 4) == b
-    buf = 'abc'
+    buf = b'abc'
     pytest.raises(IndexError, "unpack_uint32(buf, 0)")
 
 
@@ -30,7 +32,7 @@ class TestBaseSegment(object):
         assert s.read_int64(16) == 44
 
     def test_read_ints(self):
-        buf = 'garbage0' + '\xff' * 8
+        buf = b'garbage0' + b'\xff' * 8
         s = BaseSegment(buf)
         assert s.read_int8(8) == -1
         assert s.read_int16(8) == -1
@@ -53,25 +55,28 @@ class TestBaseSegment(object):
         assert s.read_double(8) == struct.unpack('dd', buf)[1]
 
     def test_uint64(self):
-        if sys.maxint != (1 << 63)-1:
+        if sys.maxsize != (1 << 63)-1:
             pytest.skip('64 bit only')
         if IS_PYPY and sys.pypy_version_info < (5, 6):
             pytest.skip('Broken on PyPy<5.6')
         #
-        buf = struct.pack('QQ', sys.maxint, sys.maxint+1)
+        buf = struct.pack('QQ', sys.maxsize, sys.maxsize+1)
         s = BaseSegment(buf)
         #
         val = s.read_uint64_magic(0)
-        assert val == sys.maxint == s.read_uint64(0)
+        assert val == sys.maxsize == s.read_uint64(0)
         assert type(val) is int
         #
         val = s.read_primitive(0, ord('Q'))
-        assert val == sys.maxint == s.read_uint64(0)
+        assert val == sys.maxsize == s.read_uint64(0)
         assert type(val) is int
         #
         val = s.read_uint64_magic(8)
-        assert val == sys.maxint+1 == s.read_uint64(8)
-        assert type(val) is long
+        assert val == sys.maxsize+1 == s.read_uint64(8)
+        if PY3:
+            assert type(val) is int
+        else:
+            assert type(val) is long
 
     def test_read_primitive(self):
         buf = struct.pack('Q', 0x1234567887654321)
@@ -82,7 +87,7 @@ class TestBaseSegment(object):
             assert val == val2
 
     def test_errors(self):
-        buf = '\xff' * 8
+        buf = b'\xff' * 8
         s = BaseSegment(buf)
         pytest.raises(IndexError, "s.read_int8(-1)")
         pytest.raises(IndexError, "s.read_int16(-1)")
@@ -100,27 +105,27 @@ class TestBaseSegment(object):
         pytest.raises(IndexError, "s.read_int64(8)")
 
     def test_dump_message(self):
-        buf = ('garbage0'
-               '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00'  # 2
-               'garbage1')
+        buf = b('garbage0'
+                '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+                '\x02\x00\x00\x00\x00\x00\x00\x00'  # 2
+                'garbage1')
         s = BaseSegment(buf)
         p = 0x12345678
         # segment header:
         #     segment_count-1: 0
         #     segment[0]_length: 3 (words)
-        exp = ('\x00\x00\x00\x00\x03\x00\x00\x00'  # segment header
-               '\x78\x56\x34\x12\x00\x00\x00\x00'  # p
-               '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        exp = b('\x00\x00\x00\x00\x03\x00\x00\x00'  # segment header
+                '\x78\x56\x34\x12\x00\x00\x00\x00'  # p
+                '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
         msg = s.dump_message(p, 8, 24)
         assert msg == exp
 
     def test_dump_message_errors(self):
-        buf = ('garbage0'
-               '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00'  # 2
-               'garbage1')
+        buf = b('garbage0'
+                '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+                '\x02\x00\x00\x00\x00\x00\x00\x00'  # 2
+                'garbage1')
         s = BaseSegment(buf)
         pytest.raises(ValueError, "s.dump_message(0, -1,  8)")
         pytest.raises(ValueError, "s.dump_message(0, 32,  8)")

@@ -1,4 +1,6 @@
 import py
+from six import b, PY3
+
 from capnpy.testing.compiler.support import CompilerTest
 
 class TestField(CompilerTest):
@@ -13,14 +15,14 @@ class TestField(CompilerTest):
         """
         mod = self.compile(schema)
         self.check_pyx(mod)
-        if self.pyx:
+        if self.pyx and not PY3:
             # the repr starts with 'class' for Python classes but 'type' for
             # classes defined in C. Let's check that mod.Point is actually a
-            # cdef class
+            # cdef class. XXX This is no longer true for Python 3.
             assert repr(mod.Point) == "<type 'tmp.Point'>"
         #
-        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
         p = mod.Point.from_buffer(buf, 0, 2, 0)
         assert p.x == 1
         assert p.y == 2
@@ -35,14 +37,14 @@ class TestField(CompilerTest):
         """
         mod = self.compile(schema)
         #
-        buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'
-               '\x00\x00\x00\x00\x00\x00\x00\x00')
+        buf = b('\x00\x00\x00\x00\x00\x00\x00\x00'
+                '\x00\x00\x00\x00\x00\x00\x00\x00')
         p = mod.Foo.from_buffer(buf, 0, 2, 0)
         assert p.x == 42
         assert p.y is True
         #
-        buf = ('\x2a\x00\x00\x00\x00\x00\x00\x00'
-               '\x01\x00\x00\x00\x00\x00\x00\x00')
+        buf = b('\x2a\x00\x00\x00\x00\x00\x00\x00'
+                '\x01\x00\x00\x00\x00\x00\x00\x00')
         p = mod.Foo.from_buffer(buf, 0, 2, 0)
         assert p.x == 0
         assert p.y is False
@@ -57,7 +59,7 @@ class TestField(CompilerTest):
         """
         mod = self.compile(schema)
         #
-        p = mod.Foo.from_buffer('', 0, 0, 0)
+        p = mod.Foo.from_buffer(b'', 0, 0, 0)
         assert p.x is None
 
 
@@ -71,13 +73,13 @@ class TestField(CompilerTest):
         """
         mod = self.compile(schema)
 
-        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
-               '\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
-               'hello capnproto\0')                 # string
+        buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
+                '\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
+                'hello capnproto\0')                 # string
 
         f = mod.Foo.from_buffer(buf, 0, 1, 1)
         assert f.x == 1
-        assert f.name == 'hello capnproto'
+        assert f.name == b'hello capnproto'
 
     def test_data(self):
         schema = """
@@ -88,12 +90,12 @@ class TestField(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
-               '\x01\x00\x00\x00\x42\x00\x00\x00'   # ptrlist
-               'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H')     # data
+        buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
+                '\x01\x00\x00\x00\x42\x00\x00\x00'   # ptrlist
+                'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H')     # data
 
         f = mod.Foo.from_buffer(buf, 0, 1, 1)
-        assert f.data == 'ABCDEFGH'
+        assert f.data == b'ABCDEFGH'
 
 
     def test_struct(self):
@@ -109,12 +111,12 @@ class TestField(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
-               '\x08\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
-               '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
-               '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
-               '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
+        buf = b('\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+                '\x08\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
+                '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+                '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
+                '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
+                '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
         r = mod.Rectangle.from_buffer(buf, 0, 0, 2)
         assert r.a.x == 1
         assert r.a.y == 2
@@ -134,12 +136,12 @@ class TestField(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
-               '\x08\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
-               '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
-               '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
-               '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
+        buf = b('\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+                '\x08\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
+                '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+                '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
+                '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
+                '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
         r = mod.Rectangle.from_buffer(buf, 0, 0, 2)
         assert r.a.x == 1
         assert r.a.y == 2
@@ -168,14 +170,14 @@ class TestField(CompilerTest):
         mod = self.compile(schema)
         assert mod.Color.__members__ == ('red', 'green', 'blue', 'yellow')
         #      color      gender     padding
-        buf = '\x02\x00' '\x01\x00' '\x00\x00\x00\x00'
+        buf = b'\x02\x00' b'\x01\x00' b'\x00\x00\x00\x00'
         f = mod.Foo.from_buffer(buf, 0, 1, 0)
         assert f.color == mod.Color.blue
         assert f.gender == mod.Gender.female
         #
         # check that we can read values even if they are not statically known
         # at compile time
-        buf = '\x04\x00' '\x03\x00' '\x00\x00\x00\x00'
+        buf = b'\x04\x00' b'\x03\x00' b'\x00\x00\x00\x00'
         f = mod.Foo.from_buffer(buf, 0, 1, 0)
         assert f.color == 4
         assert f.gender == 3
@@ -210,7 +212,7 @@ class TestField(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ''
+        buf = b''
         f = mod.Foo.from_buffer(buf, 0, 0, 0)
         assert f.color == mod.Color.green
         assert f.gender == mod.Gender.female
@@ -230,9 +232,9 @@ class TestField(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
-               '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
-               '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
+        buf = b('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
+                '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
+                '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
         shape = mod.Shape.from_buffer(buf, 0, 3, 0)
         assert shape.area == 64
         assert shape.which() == mod.Shape.__tag__.square
@@ -240,9 +242,9 @@ class TestField(CompilerTest):
         py.test.raises(ValueError, "shape.circle")
         py.test.raises(ValueError, "shape.empty")
         #
-        buf = ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
-               '\x00\x00\x00\x00\x00\x00\x00\x00'     # unused
-               '\x02\x00\x00\x00\x00\x00\x00\x00')    # which() == empty, padding
+        buf = b('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
+                '\x00\x00\x00\x00\x00\x00\x00\x00'     # unused
+                '\x02\x00\x00\x00\x00\x00\x00\x00')    # which() == empty, padding
         shape = mod.Shape.from_buffer(buf, 0, 3, 0)
         assert shape.area == 64
         assert shape.which() == mod.Shape.__tag__.empty
@@ -266,13 +268,13 @@ class TestField(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        shape = mod.Shape.from_buffer('', 0, data_size=0, ptrs_size=0)
+        shape = mod.Shape.from_buffer(b'', 0, data_size=0, ptrs_size=0)
         assert shape.which() == mod.Shape.__tag__.circle
         assert type(shape.which()) is mod.Shape.__tag__
         assert shape.__which__() == mod.Shape.__tag__.circle
         assert type(shape.__which__()) is int
         #
-        foo = mod.Foo.from_buffer('', 0, data_size=0, ptrs_size=0)
+        foo = mod.Foo.from_buffer(b'', 0, data_size=0, ptrs_size=0)
         exc = py.test.raises(TypeError, "foo.which()")
         assert str(exc.value) == 'Cannot call which() on a non-union type'
 
@@ -289,9 +291,9 @@ class TestField(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
-               '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
-               '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
+        buf = b('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
+                '\x08\x00\x00\x00\x00\x00\x00\x00'     # square == 8
+                '\x01\x00\x00\x00\x00\x00\x00\x00')    # which() == square, padding
         shape = mod.Shape.from_buffer(buf, 0, 3, 0)
         assert shape.is_square()
         assert not shape.is_circle()
@@ -313,11 +315,11 @@ class TestField(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('garbage0'
-               '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
-               '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
-               '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
+        buf = b('garbage0'
+                '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+                '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
+                '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
+                '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
         r = mod.Rectangle.from_buffer(buf, 8, 4, 0)
         assert r.a.x == 1
         assert r.a.y == 2
@@ -340,9 +342,9 @@ class TestField(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x04\x00\x00\x00\x00\x00\x00\x00'    # rectangle.width == 4
-               '\x01\x00\x00\x00\x00\x00\x00\x00'    # which() == rectangle, padding
-               '\x05\x00\x00\x00\x00\x00\x00\x00')   # rectangle.height == 5
+        buf = b('\x04\x00\x00\x00\x00\x00\x00\x00'    # rectangle.width == 4
+                '\x01\x00\x00\x00\x00\x00\x00\x00'    # which() == rectangle, padding
+                '\x05\x00\x00\x00\x00\x00\x00\x00')   # rectangle.height == 5
 
         shape = mod.Shape.from_buffer(buf, 0, 3, 0)
         assert shape.which() == mod.Shape.__tag__.rectangle
@@ -361,8 +363,8 @@ class TestField(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'   # padding
-               '\x05\x00\x00\x00\x00\x00\x00\x00')  # True, False, True, padding
+        buf = b('\x00\x00\x00\x00\x00\x00\x00\x00'   # padding
+                '\x05\x00\x00\x00\x00\x00\x00\x00')  # True, False, True, padding
         p = mod.Foo.from_buffer(buf, 0, 2, 0)
         assert p.a == True
         assert p.b == False
@@ -376,7 +378,7 @@ class TestField(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        f = mod.Foo.from_buffer('somedata', 0, 0, 1)
+        f = mod.Foo.from_buffer(b'somedata', 0, 0, 1)
         py.test.raises(ValueError, "f.x")
 
     def test_anyPointer_null(self):
@@ -387,7 +389,7 @@ class TestField(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        f = mod.Foo.from_buffer('', 0, data_size=0, ptrs_size=0)
+        f = mod.Foo.from_buffer(b'', 0, data_size=0, ptrs_size=0)
         assert f.x is None
 
 
@@ -401,11 +403,11 @@ class TestList(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
-               '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
-               '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
-               '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
+        buf = b('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
+                '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
+                '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
+                '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
+                '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
         f = mod.Foo.from_buffer(buf, 0, 0, 1)
         assert f.items == [1, 2, 3, 4]
 
@@ -417,7 +419,7 @@ class TestList(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x01\x00\x00\x00\x20\x00\x00\x00')   # ptrlist
+        buf = b('\x01\x00\x00\x00\x20\x00\x00\x00')   # ptrlist
         f = mod.Foo.from_buffer(buf, 0, 0, 1)
         assert len(f.items) == 4
         assert list(f.items) == [None]*4
@@ -435,16 +437,16 @@ class TestList(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x01\x00\x00\x00\x47\x00\x00\x00'    # ptrlist
-               '\x10\x00\x00\x00\x02\x00\x00\x00'    # list tag
-               '\x0a\x00\x00\x00\x00\x00\x00\x00'    # 10
-               '\x64\x00\x00\x00\x00\x00\x00\x00'    # 100
-               '\x14\x00\x00\x00\x00\x00\x00\x00'    # 20
-               '\xc8\x00\x00\x00\x00\x00\x00\x00'    # 200
-               '\x1e\x00\x00\x00\x00\x00\x00\x00'    # 30
-               '\x2c\x01\x00\x00\x00\x00\x00\x00'    # 300
-               '\x28\x00\x00\x00\x00\x00\x00\x00'    # 40
-               '\x90\x01\x00\x00\x00\x00\x00\x00')   # 400
+        buf = b('\x01\x00\x00\x00\x47\x00\x00\x00'    # ptrlist
+                '\x10\x00\x00\x00\x02\x00\x00\x00'    # list tag
+                '\x0a\x00\x00\x00\x00\x00\x00\x00'    # 10
+                '\x64\x00\x00\x00\x00\x00\x00\x00'    # 100
+                '\x14\x00\x00\x00\x00\x00\x00\x00'    # 20
+                '\xc8\x00\x00\x00\x00\x00\x00\x00'    # 200
+                '\x1e\x00\x00\x00\x00\x00\x00\x00'    # 30
+                '\x2c\x01\x00\x00\x00\x00\x00\x00'    # 300
+                '\x28\x00\x00\x00\x00\x00\x00\x00'    # 40
+                '\x90\x01\x00\x00\x00\x00\x00\x00')   # 400
         poly = mod.Polygon.from_buffer(buf, 0, 0, 1)
         assert len(poly.points) == 4
         assert poly.points[0].x == 10
@@ -464,8 +466,8 @@ class TestList(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x01\x00\x00\x00\x23\x00\x00\x00'    # ptrlist
-               '\x00\x00\x01\x00\x02\x00\x03\x00')   # [0, 1, 2, 3]
+        buf = b('\x01\x00\x00\x00\x23\x00\x00\x00'    # ptrlist
+                '\x00\x00\x01\x00\x02\x00\x03\x00')   # [0, 1, 2, 3]
         flag = mod.Flag.from_buffer(buf, 0, data_size=0, ptrs_size=1)
         assert len(flag.stripes) == 4
         assert list(flag.stripes) == [0, 1, 2, 3]
@@ -480,8 +482,8 @@ class TestList(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x01\x00\x00\x00\x51\x00\x00\x00'    # ptrlist
-               '\x2b\x02\x00\x00\x00\x00\x00\x00')
+        buf = b('\x01\x00\x00\x00\x51\x00\x00\x00'    # ptrlist
+                '\x2b\x02\x00\x00\x00\x00\x00\x00')
         f = mod.Foo.from_buffer(buf, 0, 0, 1)
         assert list(f.items) == [True, True, False, True, False, True, False, False,
                                  False, True]
@@ -494,15 +496,15 @@ class TestList(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x01\x00\x00\x00\x1e\x00\x00\x00'    # ptrlist
-               '\x09\x00\x00\x00\x22\x00\x00\x00'
-               '\x09\x00\x00\x00\x22\x00\x00\x00'
-               '\x09\x00\x00\x00\x22\x00\x00\x00'
-               'foo\x00\x00\x00\x00\x00'
-               'bar\x00\x00\x00\x00\x00'
-               'baz\x00\x00\x00\x00\x00')
+        buf = b('\x01\x00\x00\x00\x1e\x00\x00\x00'    # ptrlist
+                '\x09\x00\x00\x00\x22\x00\x00\x00'
+                '\x09\x00\x00\x00\x22\x00\x00\x00'
+                '\x09\x00\x00\x00\x22\x00\x00\x00'
+                'foo\x00\x00\x00\x00\x00'
+                'bar\x00\x00\x00\x00\x00'
+                'baz\x00\x00\x00\x00\x00')
         f = mod.Foo.from_buffer(buf, 0, 0, 1)
-        assert list(f.items) == ['foo', 'bar', 'baz']
+        assert list(f.items) == [b'foo', b'bar', b'baz']
 
     def test_list_of_data(self):
         schema = """
@@ -512,15 +514,15 @@ class TestList(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x01\x00\x00\x00\x1e\x00\x00\x00'  # ptrlist
-               '\x09\x00\x00\x00\x1a\x00\x00\x00'
-               '\x09\x00\x00\x00\x1a\x00\x00\x00'
-               '\x09\x00\x00\x00\x1a\x00\x00\x00'
-               'foo\x00\x00\x00\x00\x00'
-               'bar\x00\x00\x00\x00\x00'
-               'baz\x00\x00\x00\x00\x00')
+        buf = b('\x01\x00\x00\x00\x1e\x00\x00\x00'  # ptrlist
+                '\x09\x00\x00\x00\x1a\x00\x00\x00'
+                '\x09\x00\x00\x00\x1a\x00\x00\x00'
+                '\x09\x00\x00\x00\x1a\x00\x00\x00'
+                'foo\x00\x00\x00\x00\x00'
+                'bar\x00\x00\x00\x00\x00'
+                'baz\x00\x00\x00\x00\x00')
         f = mod.Foo.from_buffer(buf, 0, 0, 1)
-        assert list(f.items) == ['foo', 'bar', 'baz']
+        assert list(f.items) == [b'foo', b'bar', b'baz']
 
     def test_list_of_list(self):
         schema = """
@@ -530,13 +532,13 @@ class TestList(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        buf = ('\x01\x00\x00\x00\x1e\x00\x00\x00'   # list<ptr> (3 items)
-               '\x09\x00\x00\x00\x1a\x00\x00\x00'   # list<8> (3 items)
-               '\x09\x00\x00\x00\x12\x00\x00\x00'   # list<8> (2 items)
-               '\x09\x00\x00\x00\x22\x00\x00\x00'   # list<8> (4 items)
-               '\x01\x02\x03\x00\x00\x00\x00\x00'
-               '\x04\x05\x00\x00\x00\x00\x00\x00'
-               '\x06\x07\x08\x09\x00\x00\x00\x00')
+        buf = b('\x01\x00\x00\x00\x1e\x00\x00\x00'   # list<ptr> (3 items)
+                '\x09\x00\x00\x00\x1a\x00\x00\x00'   # list<8> (3 items)
+                '\x09\x00\x00\x00\x12\x00\x00\x00'   # list<8> (2 items)
+                '\x09\x00\x00\x00\x22\x00\x00\x00'   # list<8> (4 items)
+                '\x01\x02\x03\x00\x00\x00\x00\x00'
+                '\x04\x05\x00\x00\x00\x00\x00\x00'
+                '\x06\x07\x08\x09\x00\x00\x00\x00')
 
         f = mod.Foo.from_buffer(buf, 0, 0, 1)
         lst = [list(item) for item in f.items]

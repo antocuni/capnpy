@@ -1,8 +1,11 @@
 from __future__ import print_function
 import sys
 import struct
+import six
 from pypytools.jitview import Color
+
 from capnpy import ptr
+
 
 COLORS = [Color.darkred, Color.darkgreen, Color.brown,
           Color.darkblue, Color.purple, Color.teal]
@@ -27,25 +30,25 @@ class BufferPrinter(object):
 
     def hex(self, s):
         digits = []
-        for ch in s:
-            if ch == '\x00':
+        for ch in six.iterbytes(s):
+            if ch == 0:
                 digits.append(Color.set(Color.lightgray, '00'))
             else:
-                digits.append('%02X' % ord(ch))
+                digits.append('%02X' % ch)
         return ' '.join(digits)
 
     def addr(self, x):
-        color = (x/8) % len(COLORS)
+        color = (x//8) % len(COLORS)
         color = COLORS[color]
         return Color.set(color, '%d' % x)
 
     def string(self, s):
         def printable(ch):
-            if 32 <= ord(ch) <= 127:
-                return ch
+            if 32 <= ch <= 127:
+                return six.unichr(ch)
             else:
                 return Color.set(Color.lightgray, '.')
-        return ''.join(map(printable, s))
+        return ''.join(map(printable, six.iterbytes(s)))
 
     def int64(self, s):
         val = struct.unpack('q', s)[0]
@@ -135,7 +138,7 @@ class BufferPrinter(object):
 
         if end is None:
             end = len(self.buf)
-        for i in range(start/8, end/8):
+        for i in range(start//8, end//8):
             addr = i*8
             line = self.buf[i*8:i*8+8]
             if human:

@@ -109,7 +109,7 @@ class EndOf(Visitor):
         return ptr.round_up_to_word(offset + item_size*count)
 
     def visit_list_bit(self, buf, p, offset, count):
-        bytes_length = ptr.round_up_to_word(count) / 8
+        bytes_length = ptr.round_up_to_word(count) // 8
         return ptr.round_up_to_word(offset + bytes_length)
 
 

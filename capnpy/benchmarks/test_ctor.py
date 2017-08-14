@@ -33,9 +33,9 @@ class TestCtor(object):
             def new_and_sum(StrPoint):
                 res = 0
                 for i in range({N}):
-                    obj = StrPoint(x='hello',
-                                   y='this is a longer string',
-                                   z='bar')
+                    obj = StrPoint(x=b'hello',
+                                   y=b'this is a longer string',
+                                   z=b'bar')
                     res += len(obj.z)
                 return res
         """)
@@ -76,7 +76,6 @@ class TestCtor(object):
         tree = schema.Tree(make(12))
         with self.BIG_TREE.open('w') as f:
             tree.dump(f)
-        print 'big tree wrote to ', self.BIG_TREE
 
     @pytest.mark.benchmark(group="copy_pointer")
     def test_copy_pointer(self, schema, benchmark):
@@ -87,7 +86,7 @@ class TestCtor(object):
             pytest.skip('N/A')
         #
         #self._make_big_tree() # uncomment this if you want to regenerate the file
-        s = self.BIG_TREE.read()
+        s = self.BIG_TREE.read("rb")
         tree = schema.Tree.loads(s)
 
         def loop(oldtree):

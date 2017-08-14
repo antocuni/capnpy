@@ -108,7 +108,7 @@ class Struct(Blob):
         Return a pointer p which points to this structure, assuming that p will be
         read at ``offset``
         """
-        p_offset = (self._data_offset - offset - 8) / 8
+        p_offset = (self._data_offset - offset - 8) // 8
         return ptr.new_struct(p_offset, self._data_size, self._ptrs_size)
 
     def _read_fast_ptr(self, offset):

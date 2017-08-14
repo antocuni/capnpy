@@ -54,15 +54,13 @@ will be handled transparently also in the remaining cases. However:
     will be forced to wait for setuptools to compile cython, instead of doing
     a fast install from a wheel.
 
-So, we chose to speep up the common cases, at the cost of requiring an
+So, we chose to speed up the common cases, at the cost of requiring an
 explicit installation of Cython in the non common cases (1) and (3).
 """
 
 
 ###############################################################################
 # Custom distutils commands
-
-DEBUG = False # whether to compile files with -g
 
 def my_cythonize(extensions):
     try:
@@ -115,6 +113,7 @@ class my_build_ext(build_ext):
 # end of the custom commands section
 ###############################################################################
 
+DEBUG = int(os.environ.get('CAPNPY_DEBUG', False)) # whether to compile files with -g
 
 def get_cython_extensions():
     files = ["capnpy/segment/base.pyx",
@@ -132,8 +131,8 @@ def get_cython_extensions():
              "capnpy/ptr.pyx",
              "capnpy/packing.pyx",
              "capnpy/_hash.pyx",
-             "capnpy/_util.pyx",
-    ]
+             "capnpy/_util.pyx"
+            ]
 
     root_dir = os.path.abspath(os.path.dirname(__file__))
     capnpy_dir = os.path.join(root_dir, 'capnpy')
@@ -158,8 +157,7 @@ if hasattr(sys, 'pypy_version_info'):
     USE_CYTHON = False
 else:
     # on CPython
-    USE_CYTHON = os.environ.get('USE_CYTHON', '1')
-    USE_CYTHON = int(USE_CYTHON)
+    USE_CYTHON = int(os.environ.get('USE_CYTHON', True))
 
 if USE_CYTHON:
     ext_modules = get_cython_extensions()
@@ -179,15 +177,15 @@ setup(name="capnpy",
           'sdist': my_sdist,
           'build_ext': my_build_ext,
       },
-      packages = find_packages(),
-      ext_modules = ext_modules,
-      install_requires=['pypytools>=0.3.2', 'docopt'] + extra_install_requires,
+      packages=find_packages(),
+      ext_modules=ext_modules,
+      install_requires=['pypytools>=0.3.3', 'docopt', 'six'] + extra_install_requires,
       setup_requires=['setuptools_scm'],
       zip_safe=False,
-      entry_points = {
+      entry_points={
           "distutils.setup_keywords": [
               "capnpy_options = capnpy.compiler.distutils:capnpy_options",
               "capnpy_schemas = capnpy.compiler.distutils:capnpy_schemas",
           ],
       }
-)
+      )

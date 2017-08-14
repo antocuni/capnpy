@@ -80,7 +80,7 @@ class TestStandalone(CompilerTest):
         assert r.b.y == 4
 
     def test_pickle(self):
-        import cPickle as pickle
+        import pickle
         self.compile("mypoint.capnp", """
         @0xbf5147cbbecf40c1;
         struct Point {
@@ -97,7 +97,7 @@ class TestStandalone(CompilerTest):
             assert p2.y == 2
 
     def test_pickle_list(self):
-        import cPickle as pickle
+        import pickle
         self.compile("example.capnp", """
         @0xbf5147cbbecf40c1;
         struct Point {
@@ -155,5 +155,3 @@ class TestStandalone(CompilerTest):
                     'Fake 1.0, but the current version of capnpy is Fake 2.0. '
                     'Please recompile.')
         assert str(exc.value) == expected
-
-

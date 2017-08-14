@@ -1,11 +1,12 @@
 import py
 import pytest
 import struct
+import six
 
 @pytest.fixture(params=('str', 'bytearray'))
 def buftype(request):
     if request.param == 'str':
-        return str
+        return six.binary_type
     elif request.param == 'bytearray':
         return bytearray
     else:

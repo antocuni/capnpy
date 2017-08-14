@@ -6,8 +6,8 @@ from capnpy.list cimport List, ItemType
 from capnpy.packing cimport pack_int64
 from capnpy.segment.builder cimport SegmentBuilder
 
-cpdef str check_tag(str curtag, str newtag)
 
+cpdef str check_tag(str curtag, str newtag)
 
 @cython.locals(self=Struct)
 cpdef struct_from_buffer(type cls, object buf, long offset,
@@ -33,10 +33,10 @@ cdef class Struct(Blob):
     cpdef _read_struct(self, long offset, type structcls)
 
     @cython.locals(p=long, offset=long)
-    cpdef _read_str_text(self, long offset, str default_=*)
+    cpdef _read_str_text(self, long offset, bytes default_=*)
 
     @cython.locals(p=long, offset=long)
-    cpdef _read_str_data(self, long offset, str default_=*, int additional_size=*)
+    cpdef _read_str_data(self, long offset, bytes default_=*, int additional_size=*)
 
     @cython.locals(p=long, offset=long, obj=List)
     cpdef _read_list(self, long offset, ItemType item_type, default_=*)

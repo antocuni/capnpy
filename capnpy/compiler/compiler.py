@@ -1,15 +1,19 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import py
 import sys
 import os
 import types
 import subprocess
+from six import PY3
 from distutils.version import LooseVersion
+
 import capnpy
 from capnpy import schema
 from capnpy.message import loads
 from capnpy.blob import PYX
 from capnpy.compiler.module import ModuleGenerator
+from capnpy.util import ensure_unicode
+
 
 PKGDIR = py.path.local(capnpy.__file__).dirpath()
 
@@ -47,10 +51,10 @@ class BaseCompiler(object):
         request = loads(data, schema.CodeGeneratorRequest)
         return request
 
-    def generate_py_source(self, filename, convert_case, pyx):
+    def generate_py_source(self, filename, convert_case, pyx, version_check=True):
         pyx = self.getpyx(pyx)
         request = self._parse_schema_file(filename)
-        m = ModuleGenerator(request, convert_case, pyx, self.standalone)
+        m = ModuleGenerator(request, convert_case, pyx, version_check, self.standalone)
         src = m.generate()
         return m, py.code.Source(src)
 
@@ -89,6 +93,8 @@ class BaseCompiler(object):
 
     def _capnp_check_version(self):
         version = self._exec('capnp', '--version')
+        if PY3:
+            version = ensure_unicode(version)
         version = version.strip()
         if not version.startswith("Cap'n Proto version"):
             raise CompilerError("capnp version string not recognized: %s" % version)
@@ -103,7 +109,7 @@ class BaseCompiler(object):
         stdout, stderr = proc.communicate()
         ret = proc.wait()
         if ret != 0:
-            raise CompilerError(stderr)
+            raise CompilerError(ensure_unicode(stderr))
         return stdout
 
 
@@ -172,7 +178,7 @@ class DynamicCompiler(BaseCompiler):
         mod.__schema__ = str(filename)
         mod.__source__ = str(src)
         mod.__dict__['__compiler'] = self
-        exec src.compile() in mod.__dict__
+        exec(src.compile(), mod.__dict__)
         return mod
 
     def _compile_pyx(self, filename, m, src):
@@ -238,10 +244,10 @@ class StandaloneCompiler(BaseCompiler):
 
     standalone = True
 
-    def compile(self, filename, convert_case=True, pyx='auto'):
+    def compile(self, filename, convert_case=True, pyx='auto', version_check=True):
         pyx = self.getpyx(pyx)
         infile = py.path.local(filename)
-        m, src = self.generate_py_source(infile, convert_case, pyx)
+        m, src = self.generate_py_source(infile, convert_case, pyx, version_check)
         if pyx:
             self._compile_pyx(infile, m, src)
         else:
@@ -265,7 +271,7 @@ class DistutilsCompiler(BaseCompiler):
     """
     standalone = True
 
-    def compile(self, filename, convert_case=True, pyx='auto'):
+    def compile(self, filename, convert_case=True, pyx='auto', version_check=True):
         pyx = self.getpyx(pyx)
         infile = py.path.local(filename)
         if pyx:
@@ -277,8 +283,8 @@ class DistutilsCompiler(BaseCompiler):
             # already compiled
             return outfile
         cwd = py.path.local('.')
-        print '[capnpy] Compiling', infile.relto(cwd)
+        print('[capnpy] Compiling', infile.relto(cwd))
         m, src = self.generate_py_source(infile, convert_case=convert_case,
-                                         pyx=pyx)
+                                         pyx=pyx, version_check=version_check)
         outfile.write(src)
         return outfile

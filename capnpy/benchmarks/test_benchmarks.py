@@ -2,6 +2,7 @@ import py
 import pytest
 import pypytools
 from pypytools.codegen import Code
+
 from capnpy.benchmarks import support
 
 @pytest.fixture(params=('Instance', 'NamedTuple', 'Capnpy', 'PyCapnp'))
@@ -21,7 +22,7 @@ def get_obj(schema):
     inner = schema.MyInner(field=200)
     obj = schema.MyStruct(padding=0, bool=100, int8=100, int16=100, int32=100,
                           int64=100, uint8=100, uint16=100, uint32=100, uint64=100,
-                          float32=100, float64=100, text='hello world', group=(100,),
+                          float32=100, float64=100, text=b'hello world', group=(100,),
                           inner=inner, intlist=[1, 2, 3, 4], color=2)
     return obj
 
@@ -56,12 +57,13 @@ class TestGetAttr(object):
     @pytest.mark.benchmark(group="getattr")
     def test_text(self, schema, benchmark):
         benchmark.extra_info['attribute_type'] = 'text'
+        exp_text = b'hello world' if schema != 'PyCapnp' else 'hello world'
         def count_text(obj):
             myobjs = (obj, obj)
             res = 0
             for i in range(self.N):
                 obj = myobjs[i%2]
-                res += (obj.text == 'hello world')
+                res += (obj.text == exp_text)
             return res
         #
         obj = get_obj(schema)
@@ -213,8 +215,8 @@ class TestHash(object):
             py.test.skip('pycapnp does not implement hash properly')
         benchmark.extra_info['schema'] = schema.__name__
         benchmark.extra_info['type'] = 'str'
-        obj = schema.StrPoint('hello world'[:], 'this is a string',
-                              'this is another string')
+        obj = schema.StrPoint(b'hello world'[:], b'this is a string',
+                              b'this is another string')
         res = benchmark(self.hash_many, obj)
         assert res == 0
 

@@ -1,7 +1,11 @@
+from __future__ import print_function
 import py
 import keyword
 from collections import defaultdict
 from pypytools.codegen import Code
+from six import PY3
+
+from capnpy.util import ensure_unicode
 from capnpy.convert_case import from_camel_case
 
 # the following imports have side-effects, and augment the schema.* classes
@@ -14,11 +18,12 @@ import capnpy.compiler.misc
 
 class ModuleGenerator(object):
 
-    def __init__(self, request, convert_case, pyx, standalone):
+    def __init__(self, request, convert_case, pyx, version_check, standalone):
         self.code = Code(pyx=pyx)
         self.request = request
         self.convert_case = convert_case
         self.pyx = pyx
+        self.version_check = version_check
         self.standalone = standalone
         self.allnodes = {} # id -> node
         self.children = defaultdict(list) # nodeId -> nested nodes
@@ -64,12 +69,13 @@ class ModuleGenerator(object):
 
     def _dump_node(self, node):
         def visit(node, deep=0):
-            print '%s%s: %s' % (' ' * deep, node.which(), node.displayName)
+            print('%s%s: %s' % (' ' * deep, node.which(), node.displayName))
             for child in self.children[node.id]:
                 visit(child, deep+2)
         visit(node)
 
     def _convert_name(self, name):
+        name = ensure_unicode(name) if PY3 else name
         if self.convert_case:
             return from_camel_case(name)
         else:
@@ -88,12 +94,12 @@ class ModuleGenerator(object):
     def declare_enum(self, compile_name, name, items):
         # this method cannot go on Node__Enum because it's also called by
         # Node__Struct (for __tag__)
-        items = map(repr, items)
+        items = list(map(repr, items))
         ns = self.code.new_scope()
         ns.name = compile_name
         ns.members = "(%s,)" % (', '.join(items))
         ns.prebuilt = [ns.format('{name}({i})', i=i)
-                    for i in range(len(items))]
+                       for i in range(len(items))]
         ns.prebuilt = ', '.join(ns.prebuilt)
         ns.prebuilt = ns.format('({prebuilt},)')
         with ns.block("{cdef class} {name}(_BaseEnum):"):

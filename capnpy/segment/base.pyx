@@ -2,14 +2,18 @@ cimport cython
 from libc.string cimport memcpy
 from libc.stdint cimport (int8_t, uint8_t, int16_t, uint16_t,
                           uint32_t, int32_t, int64_t, uint64_t, INT64_MAX)
-from cpython.string cimport (PyString_AS_STRING, PyString_GET_SIZE,
-                             PyString_FromStringAndSize)
 
 from capnpy cimport ptr
 
+cdef extern from "_util.h":
+    cdef Py_ssize_t _PyString_GET_SIZE(object string)
+    cdef char* _PyString_AS_STRING(object string)
+    cdef bytes _PyString_FromStringAndSize(char *v, Py_ssize_t len)
+
+
 cpdef uint32_t unpack_uint32(bytes buf, Py_ssize_t offset) except? 0xffffffff:
-    cdef const char *cbuf = PyString_AS_STRING(buf)
-    cdef Py_ssize_t buflen = PyString_GET_SIZE(buf)
+    cdef const char *cbuf = _PyString_AS_STRING(buf)
+    cdef Py_ssize_t buflen = _PyString_GET_SIZE(buf)
     if offset < 0 or offset + 4 > buflen:
         raise IndexError('Offset out of bounds: %d' % (offset+4))
     return (<uint32_t*>(cbuf+offset))[0]
@@ -22,7 +26,7 @@ cdef class BaseSegment(object):
     def __cinit__(self, bytes buf, object segment_offsets=None):
         assert buf is not None
         self.buf = buf
-        self.cbuf = PyString_AS_STRING(self.buf)
+        self.cbuf = _PyString_AS_STRING(self.buf)
 
     def __init__(self, buf, segment_offsets=None):
         # we need this empty init to silence this warning:
@@ -36,7 +40,7 @@ cdef class BaseSegment(object):
         # relatively much higher if you call it from C. In case it's needed,
         # consider adding a read_int64_fast or similar method, which does
         # *not* do the check.
-        cdef Py_ssize_t buflen = PyString_GET_SIZE(self.buf)
+        cdef Py_ssize_t buflen = _PyString_GET_SIZE(self.buf)
         if offset < 0 or offset + size > buflen:
             raise IndexError('Offset out of bounds: %d' % (offset+size))
 
@@ -129,15 +133,15 @@ cdef class BaseSegment(object):
 
     @cython.final
     cdef object dump_message(self, long p, Py_ssize_t start, Py_ssize_t end):
-        cdef Py_ssize_t maxlen = PyString_GET_SIZE(self.buf)
+        cdef Py_ssize_t maxlen = _PyString_GET_SIZE(self.buf)
         if start < 0 or start > end or end > maxlen:
             raise ValueError("start:end values out of bounds: %s:%s" %
                              (start, end))
         # XXX check start and end
         cdef long segment_count = 1
         cdef Py_ssize_t length = end-start
-        cdef bytes buf = PyString_FromStringAndSize(NULL, length + 16)
-        cdef char *cbuf = PyString_AS_STRING(buf)
+        cdef bytes buf = _PyString_FromStringAndSize(NULL, length + 16)
+        cdef char *cbuf = _PyString_AS_STRING(buf)
         (<int32_t*>(cbuf+0))[0] = segment_count-1
         (<int32_t*>(cbuf+4))[0] = length/8 + 1 # in words
         (<int64_t*>(cbuf+8))[0] = p

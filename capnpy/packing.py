@@ -49,7 +49,7 @@ def pack_into(ifmt, buf, offset, value):
     fmt = '<' + mychr(ifmt)
     try:
         struct.pack_into(fmt, buf, offset, value)
-    except struct.error, e:
+    except struct.error as e:
         raise IndexError(e)
 
 def pack_int64_into(buf, offset, value):

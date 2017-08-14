@@ -18,8 +18,9 @@ Cython-only declarations that cannot be expressed in pure-python mode.
 On the other hand, when we are on PyPy, this is a normal Python module, which
 is imported by builder.py
 """
-
 from pypytools import fakecython
+from six import PY3
+
 with fakecython:
     import cython
 
@@ -29,6 +30,7 @@ if not cython.compiled:
     from capnpy import ptr
     from capnpy.segment.builder import SegmentBuilder
     from capnpy.segment.base import BaseSegment
+    if PY3: long = int
 
     # we cannot call this check_bounds directly, else Cython (incorrectly)
     # thinks that we are overriding the low-level check_bounds defined in
@@ -46,7 +48,7 @@ if not cython.compiled:
     globals()['read_int64_fast'] = _read_int64_fast
 
 
-# depending on the phase of the moon, I saw speeupds up to 20% if we declare
+# depending on the phase of the moon, I saw speedups up to 20% if we declare
 # all these functions as returning a long and "except -1". However, other
 # times I didn't see any significant speedup.
 #
@@ -153,7 +155,7 @@ def _copy_list_primitive(src, p, src_pos, dst, dst_pos):
     size_tag = ptr.list_size_tag(p)
     body_length = 0
     if size_tag == ptr.LIST_SIZE_BIT:
-        body_length = (count + 8 - 1) / 8 # divide by 8 and round up
+        body_length = (count + 8 - 1) // 8 # divide by 8 and round up
     else:
         body_length = count * ptr.list_item_length(size_tag)
     #

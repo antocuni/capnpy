@@ -2,8 +2,9 @@
 Look at the docstring of _copy_pointer.py for an explanation of why we
 need fakecython/cython.compiled/etc.
 """
-
 from pypytools import fakecython
+from six import PY3
+
 with fakecython:
     import cython
 
@@ -11,6 +12,7 @@ if not cython.compiled:
     from capnpy import ptr
     from capnpy.segment.builder import SegmentBuilder
     from capnpy.list import ItemType, StructItemType
+    if PY3: long = int
 
 @cython.ccall
 @cython.locals(builder=SegmentBuilder, pos=long, item_type=ItemType,

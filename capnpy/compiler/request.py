@@ -1,8 +1,11 @@
 import py
 from datetime import datetime
+from six import PY3
+
 import capnpy
 from capnpy import schema
 from capnpy.type import Types
+from capnpy.util import ensure_unicode
 
 @schema.CodeGeneratorRequest.__extend__
 class CodeGeneratorRequest:
@@ -21,7 +24,9 @@ class CodeGeneratorRequest:
 class RequestedFile:
 
     def emit(self, m):
-        m.modname = py.path.local(self.filename).purebasename
+        m.modname = py.path.local(ensure_unicode(self.filename)).purebasename
+        if not PY3:
+            m.modname = m.modname.encode('utf-8')
         m.tmpname = '%s_tmp' % m.modname
         m.code.global_scope.extname = '%s_extended' % m.modname
         #
@@ -77,7 +82,10 @@ class RequestedFile:
             m.w('from %s import __compiler, __schema__' % m.tmpname)
         #
         m.w('__capnpy_version__ = {version!r}', version=capnpy.__version__)
-        m.w('_check_version(__capnpy_version__)')
+        if m.version_check:
+            m.w('_check_version(__capnpy_version__)')
+        else:
+            m.w('# schema compiled with --no-version-check, skipping the call to _check_version')
         self._declare_imports(m)
         m.w("")
         #
@@ -112,9 +120,9 @@ class RequestedFile:
                 # this means that the file was imported but not used
                 # anywhere. Simply ignore it
                 continue
-            fname = filenode.displayName
+            fname = ensure_unicode(filenode.displayName)
             ns.importname = m.register_import(fname)
-            ns.fullpath = imp.name
+            ns.fullpath = ensure_unicode(imp.name)
             if ns.fullpath == '/capnp/c++.capnp':
                 # ignore this file as it's useless for python
                 continue

@@ -1,4 +1,6 @@
 import py
+from six import b
+
 from capnpy.testing.compiler.support import CompilerTest
 
 class TestNullPointers(CompilerTest):
@@ -21,9 +23,9 @@ class TestNullPointers(CompilerTest):
         return self.compile(schema)
 
     def test_null_pointers(self, mod):
-        buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'   # null
-               '\x00\x00\x00\x00\x00\x00\x00\x00'   # null
-               '\x00\x00\x00\x00\x00\x00\x00\x00')  # null
+        buf = b('\x00\x00\x00\x00\x00\x00\x00\x00'   # null
+                '\x00\x00\x00\x00\x00\x00\x00\x00'   # null
+                '\x00\x00\x00\x00\x00\x00\x00\x00')  # null
         f = mod.Foo.from_buffer(buf, 0, data_size=0, ptrs_size=3)
         assert f.x is None
         assert f.y is None
@@ -33,12 +35,12 @@ class TestNullPointers(CompilerTest):
         assert not f.has_z()
 
     def test_get_methods(self, mod):
-        buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'   # null
-               '\x00\x00\x00\x00\x00\x00\x00\x00'   # null
-               '\x00\x00\x00\x00\x00\x00\x00\x00')  # null
+        buf = b('\x00\x00\x00\x00\x00\x00\x00\x00'   # null
+                '\x00\x00\x00\x00\x00\x00\x00\x00'   # null
+                '\x00\x00\x00\x00\x00\x00\x00\x00')  # null
         f = mod.Foo.from_buffer(buf, 0, data_size=0, ptrs_size=3)
         assert f.x is None
-        assert f.get_x() == ''
+        assert f.get_x() == b''
         #
         assert f.y is None
         assert f.get_y() == []
@@ -48,7 +50,7 @@ class TestNullPointers(CompilerTest):
         assert f.get_z().b == 0
 
     def test_default_when_null(self, mod):
-        buf = ''
+        buf = b''
         f = mod.Foo.from_buffer(buf, 0, data_size=0, ptrs_size=0)
         assert f.x is None
         assert f.y is None
@@ -59,11 +61,11 @@ class TestNullPointers(CompilerTest):
 
     def test_nonnull(self, mod):
         # now with non-null ptrs
-        buf = ('\x01\x00\x00\x00\x02\x00\x00\x00'   # non-null empty list, size=8
-               '\x01\x00\x00\x00\x05\x00\x00\x00'   # non-null empty list, size=64
-               '\xfc\xff\xff\xff\x00\x00\x00\x00')  # non-null empty struct
+        buf = b('\x01\x00\x00\x00\x02\x00\x00\x00'   # non-null empty list, size=8
+                '\x01\x00\x00\x00\x05\x00\x00\x00'   # non-null empty list, size=64
+                '\xfc\xff\xff\xff\x00\x00\x00\x00')  # non-null empty struct
         f = mod.Foo.from_buffer(buf, 0, data_size=0, ptrs_size=3)
-        assert f.x == ''
+        assert f.x == b''
         assert f.y == []
         assert f.z is not None and isinstance(f.z, mod.P)
         assert f.has_x()
@@ -89,15 +91,15 @@ class TestNullable(CompilerTest):
         return self.compile(schema)
 
     def test_nullable(self, mod):
-        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
         foo = mod.Foo.from_buffer(buf, 0, 2, 0)
         assert foo._x.is_null
         assert foo._x.value == 2
         assert foo.x is None
         #
-        buf = ('\x00\x00\x00\x00\x00\x00\x00\x00'  # 0
-               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        buf = b('\x00\x00\x00\x00\x00\x00\x00\x00'  # 0
+                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
         foo = mod.Foo.from_buffer(buf, 0, 2, 0)
         assert not foo._x.is_null
         assert foo._x.value == 2

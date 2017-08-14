@@ -15,9 +15,9 @@ class TestKey(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        p1 = mod.Point(1, 2, "p1")
-        p2 = mod.Point(1, 2, "p2")
-        p3 = mod.Point(3, 4, "p3")
+        p1 = mod.Point(1, 2, b"p1")
+        p2 = mod.Point(1, 2, b"p2")
+        p3 = mod.Point(3, 4, b"p3")
         assert p1 == p2
         assert p1 != p3
         #
@@ -52,9 +52,9 @@ class TestKey(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        p1 = mod.Point((1, 2), "p1")
-        p2 = mod.Point((1, 2), "p2")
-        p3 = mod.Point((3, 4), "p3")
+        p1 = mod.Point((1, 2), b"p1")
+        p2 = mod.Point((1, 2), b"p2")
+        p3 = mod.Point((3, 4), b"p3")
         assert p1.point == p2.point
         assert p1.point != p3.point
         #
@@ -73,14 +73,14 @@ class TestKey(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        p1 = mod.Point(1, 2, "p1")
-        p2 = mod.Point(1, 2, "p1")
-        p3 = mod.Point(1, 2, "p3")
+        p1 = mod.Point(1, 2, b"p1")
+        p2 = mod.Point(1, 2, b"p1")
+        p3 = mod.Point(1, 2, b"p3")
         assert p1 == p2
         assert p1 != p3
         #
-        assert p1 == (1, 2, "p1")
-        assert p3 == (1, 2, "p3")
+        assert p1 == (1, 2, b"p1")
+        assert p3 == (1, 2, b"p3")
         assert hash(p1) == hash(p2) == hash((1, 2, "p1"))
 
 
@@ -107,9 +107,9 @@ class TestFashHash(CompilerTest):
         """
         mod = self.compile(schema)
         self.only_fasthash(mod.Point)
-        p1 = mod.Point(1, 2, "p1")
+        p1 = mod.Point(1, 2, b"p1")
         exc = py.test.raises(ValueError, "hash(p1)")
-        assert str(exc.value) == "slow hash not allowed"
+        assert exc.value.args[0] == "slow hash not allowed"
 
     def test_fasthash_int_long(self):
         schema = """
@@ -123,8 +123,8 @@ class TestFashHash(CompilerTest):
         """
         mod = self.compile(schema)
         self.only_fasthash(mod.Point)
-        p1 = mod.Point(1, sys.maxint+1, "p1")
-        assert hash(p1) == hash((1, sys.maxint+1))
+        p1 = mod.Point(1, sys.maxsize+1, b"p1")
+        assert hash(p1) == hash((1, sys.maxsize+1))
 
     def test_fasthash_string(self):
         schema = """
@@ -137,5 +137,5 @@ class TestFashHash(CompilerTest):
         """
         mod = self.compile(schema)
         self.only_fasthash(mod.Person)
-        p = mod.Person("mickey", "mouse")
+        p = mod.Person(b"mickey", b"mouse")
         assert hash(p) == hash(("mickey", "mouse"))

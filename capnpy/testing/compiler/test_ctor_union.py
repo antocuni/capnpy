@@ -1,5 +1,7 @@
 import py
 import pytest
+from six import b
+
 from capnpy.testing.compiler.support import CompilerTest
 
 class BaseTestUnionConstructors(CompilerTest):
@@ -30,10 +32,10 @@ class TestSpecificCtors(BaseTestUnionConstructors):
         assert s.area == 1
         assert s.circle == 2
         assert s.perimeter == 3
-        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'   # area == 1
-               '\x03\x00\x00\x00\x00\x00\x00\x00'   # perimeter == 3
-               '\x02\x00\x00\x00\x00\x00\x00\x00'   # circle == 2
-               '\x00\x00\x00\x00\x00\x00\x00\x00')  # __tag__ == 0 (circle)
+        buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'   # area == 1
+                '\x03\x00\x00\x00\x00\x00\x00\x00'   # perimeter == 3
+                '\x02\x00\x00\x00\x00\x00\x00\x00'   # circle == 2
+                '\x00\x00\x00\x00\x00\x00\x00\x00')  # __tag__ == 0 (circle)
         assert s._seg.buf == buf
         #
         s = mod.Shape.new_square(area=1, square=2, perimeter=3)
@@ -41,10 +43,10 @@ class TestSpecificCtors(BaseTestUnionConstructors):
         assert s.area == 1
         assert s.square == 2
         assert s.perimeter == 3
-        buf = ('\x01\x00\x00\x00\x00\x00\x00\x00'   # area == 1
-               '\x03\x00\x00\x00\x00\x00\x00\x00'   # perimeter == 3
-               '\x02\x00\x00\x00\x00\x00\x00\x00'   # squadre == 2
-               '\x01\x00\x00\x00\x00\x00\x00\x00')  # __tag__ == 1 (square)
+        buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'   # area == 1
+                '\x03\x00\x00\x00\x00\x00\x00\x00'   # perimeter == 3
+                '\x02\x00\x00\x00\x00\x00\x00\x00'   # squadre == 2
+                '\x01\x00\x00\x00\x00\x00\x00\x00')  # __tag__ == 1 (square)
         assert s._seg.buf == buf
 
     def test_default(self, mod):
@@ -89,16 +91,16 @@ class TestSpecificCtors(BaseTestUnionConstructors):
         """
         mod = self.compile(schema)
         # the order is: area, perimeter, [circle/square], color
-        p = mod.Shape.new_empty(1, 2, color='red')
+        p = mod.Shape.new_empty(1, 2, color=b'red')
         assert p.area == 1
         assert p.perimeter == 2
-        assert p.color == 'red'
+        assert p.color == b'red'
         #
-        p = mod.Shape.new_square(1, 2, 3, color='red')
+        p = mod.Shape.new_square(1, 2, 3, color=b'red')
         assert p.area == 1
         assert p.perimeter == 2
         assert p.square == 3
-        assert p.color == 'red'
+        assert p.color == b'red'
 
 class TestGenericCtor(BaseTestUnionConstructors):
 
@@ -157,17 +159,17 @@ class TestNamedUnion(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        p = mod.Person(name='foo', job=mod.Person.Job(unemployed=None))
-        assert p.name == 'foo'
+        p = mod.Person(name=b'foo', job=mod.Person.Job(unemployed=None))
+        assert p.name == b'foo'
         assert p.job.is_unemployed()
         #
-        p = mod.Person(name='foo', job=mod.Person.Job(retired=None))
-        assert p.name == 'foo'
+        p = mod.Person(name=b'foo', job=mod.Person.Job(retired=None))
+        assert p.name == b'foo'
         assert p.job.is_retired()
         #
-        p = mod.Person(name='foo', job=mod.Person.Job(worker='capnpy'))
-        assert p.name == 'foo'
-        assert p.job.worker == 'capnpy'
+        p = mod.Person(name=b'foo', job=mod.Person.Job(worker=b'capnpy'))
+        assert p.name == b'foo'
+        assert p.job.worker == b'capnpy'
 
     def test_group_inside_union(self):
         schema = """
@@ -186,7 +188,7 @@ class TestNamedUnion(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        p = mod.Person(name='foo', job=mod.Person.Job(unemployed=None))
+        p = mod.Person(name=b'foo', job=mod.Person.Job(unemployed=None))
         assert p.job.is_unemployed()
 
     def test_many_unions_arbitrary_order(self):
@@ -210,13 +212,13 @@ class TestNamedUnion(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        p = mod.Person.new_male(name='foo',
+        p = mod.Person.new_male(name=b'foo',
                                 location=mod.Person.Location(work=None),
-                                job=mod.Person.Job(worker='capnpy'))
+                                job=mod.Person.Job(worker=b'capnpy'))
         assert p.is_male()
         assert p.location.is_work()
         assert p.job.is_worker()
-        assert p.job.worker == 'capnpy'
+        assert p.job.worker == b'capnpy'
 
     def test_nested_unions(self):
         schema = """
@@ -243,18 +245,18 @@ class TestNamedUnion(CompilerTest):
         """
         mod = self.compile(schema)
         p = mod.Person(
-            name='foo',
+            name=b'foo',
             job=mod.Person.Job(
                 employed=mod.Person_job.Employed(
-                    company_name='capnpy',
+                    company_name=b'capnpy',
                     it=None,
                     position=mod.Person_job_employed.Position(worker=None)
                 )
             )
         )
-        assert p.name == 'foo'
+        assert p.name == b'foo'
         assert p.job.is_employed()
-        assert p.job.employed.company_name == 'capnpy'
+        assert p.job.employed.company_name == b'capnpy'
         assert p.job.employed.is_it()
         assert p.job.employed.position.is_worker()
 

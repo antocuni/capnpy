@@ -9,10 +9,10 @@ from capnpy.struct_ import Struct
 
 
 def test_tox_PYX():
-    tox_env = os.environ.get('TOX_ENV', '')
-    if 'py27' in tox_env:
+    tox_env = os.environ.get('TOX_ENV', None)
+    if tox_env == 'py27':
         assert PYX
-    elif 'nopyx' in tox_env:
+    elif tox_env == 'nopyx':
         assert not PYX
 
 def test_unpack_primitive():

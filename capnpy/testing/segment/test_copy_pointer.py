@@ -1,9 +1,12 @@
 import pytest
 import struct
+from six import b
+
 from capnpy import ptr
 from capnpy.printer import print_buffer
 from capnpy.segment.segment import Segment
 from capnpy.segment.builder import SegmentBuilder, copy_pointer
+
 
 class TestCopyPointer(object):
 
@@ -18,14 +21,14 @@ class TestCopyPointer(object):
         return dst.as_string()
 
     def test_struct_data(self):
-        src = ('garbage0'
-               'garbage1'
-               '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        src = b('garbage0'
+                'garbage1'
+                '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+                '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
         dst = self.copy_struct(src, offset=16, data_size=2, ptrs_size=0)
-        assert dst == ('\x00\x00\x00\x00\x02\x00\x00\x00'  # ptr (2, 0)
-                       '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
-                       '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+        assert dst == b('\x00\x00\x00\x00\x02\x00\x00\x00'  # ptr (2, 0)
+                        '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+                        '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
 
     def test_struct_ptrs(self):
         ## struct Point {
@@ -38,18 +41,18 @@ class TestCopyPointer(object):
         ##   a @1 :Point;
         ##   b @2 :Point;
         ## }
-        src = ('garbage0'
-               '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
-               '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
-               '\x10\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
-               'garbage1'
-               'garbage2'
-               '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
-               '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
-               '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
-               '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
+        src = b('garbage0'
+                '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+                '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
+                '\x10\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
+                'garbage1'
+                'garbage2'
+                '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
+                '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
+                '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
+                '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
         dst = self.copy_struct(src, offset=8, data_size=1, ptrs_size=2)
-        assert dst == (
+        assert dst == b(
             '\x00\x00\x00\x00\x01\x00\x02\x00'       # ptr to Rectangle (1, 2)
             '\x01\x00\x00\x00\x00\x00\x00\x00'       # color == 1
             '\x04\x00\x00\x00\x02\x00\x00\x00'       # ptr to a
@@ -70,7 +73,7 @@ class TestCopyPointer(object):
         ##   a @1 :Point;
         ##   b @2 :Point;
         ## }
-        src = (
+        src = b(
             '\x01\x00\x00\x00\x00\x00\x00\x00'       # color == 1
             '\x04\x00\x00\x00\x02\x00\x00\x00'       # ptr to a
             '\x08\x00\x00\x00\x02\x00\x00\x00'       # ptr to b
@@ -97,7 +100,7 @@ class TestCopyPointer(object):
         assert str(exc.value).startswith('Offset out of bounds')
 
     def test_struct_one_null_ptr(self):
-        src = (
+        src = b(
             '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
             '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
             '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
@@ -106,7 +109,7 @@ class TestCopyPointer(object):
             '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
             '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
         dst = self.copy_struct(src, offset=0, data_size=1, ptrs_size=2)
-        assert dst == (
+        assert dst == b(
             '\x00\x00\x00\x00\x01\x00\x02\x00'    # ptr to Rectangle (1, 2)
             '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
             '\x04\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
@@ -115,17 +118,17 @@ class TestCopyPointer(object):
             '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
 
     def test_struct_all_null_ptrs(self):
-        src = (
+        src = b(
             '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
             '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to a, NULL
             '\x00\x00\x00\x00\x00\x00\x00\x00')   # ptr to b, NULL
         dst = self.copy_struct(src, offset=0, data_size=1, ptrs_size=2)
         assert dst == (
-            '\x00\x00\x00\x00\x01\x00\x02\x00' +    # ptr to Rectangle (1, 2)
+            b'\x00\x00\x00\x00\x01\x00\x02\x00' +    # ptr to Rectangle (1, 2)
             src)
 
     def test_list_primitive(self):
-        src = (
+        src = b(
             '\x11\x00\x00\x00\x1a\x00\x00\x00'   #  0: ptr list<8>  to a
             '\x15\x00\x00\x00\x1b\x00\x00\x00'   #  8: ptr list<16> to b
             '\x19\x00\x00\x00\x1c\x00\x00\x00'   # 16: ptr list<32> to c
@@ -142,7 +145,7 @@ class TestCopyPointer(object):
             '\x0b\x00\x00\x00\x00\x00\x00\x00'   # 104      11,
             '\x0c\x00\x00\x00\x00\x00\x00\x00')  # 112      12]
         dst = self.copy_struct(src, offset=0, data_size=0, ptrs_size=4)
-        assert dst == (
+        assert dst == b(
             '\x00\x00\x00\x00\x00\x00\x04\x00'   # ptr to Rectangle (0, 4)
             '\x0d\x00\x00\x00\x1a\x00\x00\x00'   #  0: ptr list<8>  to a
             '\x0d\x00\x00\x00\x1b\x00\x00\x00'   #  8: ptr list<16> to b
@@ -157,18 +160,18 @@ class TestCopyPointer(object):
             '\x0c\x00\x00\x00\x00\x00\x00\x00')  # 80
 
     def test_list_of_bool(self):
-        src = (
+        src = b(
             '\x05\x00\x00\x00\x19\x00\x00\x00'    # ptrlist
             'garbage1'
             '\x03\x00\x00\x00\x00\x00\x00\x00')   # [True, True, False]
         dst = self.copy_struct(src, offset=0, data_size=0, ptrs_size=1)
-        assert dst == (
+        assert dst == b(
             '\x00\x00\x00\x00\x00\x00\x01\x00'    # ptr (0, 1)
             '\x01\x00\x00\x00\x19\x00\x00\x00'    # ptrlist
             '\x03\x00\x00\x00\x00\x00\x00\x00')   # [True, True, False]
 
     def test_list_of_pointers(self):
-        src = (
+        src = b(
             '\x01\x00\x00\x00\x1e\x00\x00\x00'   # ptr to list of strings
             '\x0d\x00\x00\x00\x32\x00\x00\x00'   # strings[0] == ptr to #0
             '\x11\x00\x00\x00\x52\x00\x00\x00'   # strings[1] == ptr to #1
@@ -183,7 +186,7 @@ class TestCopyPointer(object):
             'a' ' ' 'l' 'o' 'n' 'g' ' ' 's'
             't' 'r' 'i' 'n' 'g' '\x00\x00\x00')
         dst = self.copy_struct(src, offset=0, data_size=0, ptrs_size=1)
-        assert dst == (
+        assert dst == b(
             '\x00\x00\x00\x00\x00\x00\x01\x00'   # ptr (0, 1)
             '\x01\x00\x00\x00\x1e\x00\x00\x00'   # ptr to list of strings
             '\x09\x00\x00\x00\x32\x00\x00\x00'   # strings[0] == ptr to #0
@@ -197,13 +200,13 @@ class TestCopyPointer(object):
             't' 'r' 'i' 'n' 'g' '\x00\x00\x00')
 
     def test_list_of_pointers_all_null(self):
-        src = ('\x01\x00\x00\x00\x1e\x00\x00\x00'   # ptr to list
-               '\x00\x00\x00\x00\x00\x00\x00\x00'
-               '\x00\x00\x00\x00\x00\x00\x00\x00'
-               '\x00\x00\x00\x00\x00\x00\x00\x00'
-               'garbage1')
+        src = b('\x01\x00\x00\x00\x1e\x00\x00\x00'   # ptr to list
+                '\x00\x00\x00\x00\x00\x00\x00\x00'
+                '\x00\x00\x00\x00\x00\x00\x00\x00'
+                '\x00\x00\x00\x00\x00\x00\x00\x00'
+                'garbage1')
         dst = self.copy_struct(src, offset=0, data_size=0, ptrs_size=1)
-        assert dst == (
+        assert dst == b(
             '\x00\x00\x00\x00\x00\x00\x01\x00'   # ptr (0, 1)
             '\x01\x00\x00\x00\x1e\x00\x00\x00'   # ptr to list
             '\x00\x00\x00\x00\x00\x00\x00\x00'
@@ -216,7 +219,7 @@ class TestCopyPointer(object):
         ##   y @1 :Int64;
         ##   name @2 :Text;
         ## }
-        src = (
+        src = b(
             '\x05\x00\x00\x00\x4f\x00\x00\x00'   # ptr to list
             'garbage1'
             '\x0c\x00\x00\x00\x02\x00\x01\x00'   # list tag
@@ -236,7 +239,7 @@ class TestCopyPointer(object):
             'garbage4'
             'P' 'o' 'i' 'n' 't' ' ' 'C' '\x00')
         dst = self.copy_struct(src, offset=0, data_size=0, ptrs_size=1)
-        assert dst == (
+        assert dst == b(
             '\x00\x00\x00\x00\x00\x00\x01\x00'   # ptr (0, 1)
             '\x01\x00\x00\x00\x4f\x00\x00\x00'   # ptr to list
             '\x0c\x00\x00\x00\x02\x00\x01\x00'   # list tag
@@ -259,7 +262,7 @@ class TestCopyPointer(object):
         ##   y @1 :Int64;
         ##   name @2 :Text;
         ## }
-        src = (
+        src = b(
             '\x05\x00\x00\x00\x4f\x00\x00\x00'   # ptr to list
             'garbage1'
             '\x0c\x00\x00\x00\x02\x00\x01\x00'   # list tag

@@ -6,6 +6,7 @@ from capnpy.struct_ import Struct, struct_from_buffer
 from capnpy import ptr
 from capnpy.filelike import as_filelike
 from capnpy.buffered import StringBuffer
+from six.moves import range
 
 
 def load(f, payload_type):
@@ -95,7 +96,7 @@ def _load_buffer_multiple_segments(f, n):
     segments = []
     fmt = b'<I'
     size = struct.calcsize(fmt)
-    for i in xrange(n):
+    for i in range(n):
         buf = f.read(size)
         if len(buf) < size:
             raise ValueError("Unexpected EOF when reading the header")
@@ -103,8 +104,8 @@ def _load_buffer_multiple_segments(f, n):
     #
     # 2. add enough padding so that the message starts at word boundary
     bytes_read = 4 + n*4 # 4 bytes for the n, plus 4 bytes for each segment
-    if bytes_read % 8 != 0:
-        padding = 8-(bytes_read % 8)
+    if bytes_read & 7 != 0: # using & is faster than % (x & 7 == x % 8)
+        padding = 8-(bytes_read & 7)
         f.read(padding)
     #
     # 3. read the body of the message
@@ -160,8 +161,8 @@ def dumps(obj, fastpath=True):
         builder.allocate(16) # reserve space for segment header+the root pointer
         builder.copy_from_struct(8, Struct, obj)
         segment_count = 1
-        segment_size = (builder.get_length()-8) / 8 # subtract the segment header
-                                                    # and convert to words
+        segment_size = (builder.get_length()-8) // 8 # subtract the segment header
+                                                     # and convert to words
         builder.write_uint32(0, segment_count - 1)
         builder.write_uint32(4, segment_size)
         return builder.as_string()
