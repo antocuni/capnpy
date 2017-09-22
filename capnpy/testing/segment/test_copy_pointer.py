@@ -127,6 +127,21 @@ class TestCopyPointer(object):
             b'\x00\x00\x00\x00\x01\x00\x02\x00' +    # ptr to Rectangle (1, 2)
             src)
 
+    def test_struct_empty_ptr(self):
+        # test that we copy "empty structs" correctly. These are structs with
+        # data_size == ptr_size == 0; in this case, our copy_pointer always
+        # generates a ptr whose offset==-1, whatever the orignal offset was.
+        src = (
+            '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+            '\xfc\xff\xBB\xAA\x00\x00\x00\x00'    # empty ptr, arbitrary offset
+            '\x00\x00\x00\x00\x00\x00\x00\x00')   # ptr to b, NULL
+        dst = self.copy_struct(src, offset=0, data_size=1, ptrs_size=2)
+        assert dst == (
+            '\x00\x00\x00\x00\x01\x00\x02\x00'    # ptr to Rectangle (1, 2)
+            '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
+            '\xfc\xff\xff\xff\x00\x00\x00\x00'    # empty ptr, offset == -1
+            '\x00\x00\x00\x00\x00\x00\x00\x00')   # ptr to b, NULL
+
     def test_list_primitive(self):
         src = b(
             '\x11\x00\x00\x00\x1a\x00\x00\x00'   #  0: ptr list<8>  to a

@@ -109,6 +109,10 @@ def _copy_struct(src, p, src_pos, dst, dst_pos):
     src_pos = ptr.deref(p, src_pos)
     data_size = ptr.struct_data_size(p)
     ptrs_size = ptr.struct_ptrs_size(p)
+    if data_size + ptrs_size == 0:
+        # "empty" struct, no need to allocate
+        dst.write_int64(dst_pos, ptr.new_struct(-1, 0, 0))
+        return
     ds = data_size*8
     dst_pos = dst.alloc_struct(dst_pos, data_size, ptrs_size)
     check_bounds(src, ds, src_pos)
