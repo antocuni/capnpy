@@ -40,7 +40,13 @@ class Type:
             if self.is_builtin():
                 return '_%s_list_item_type' % self.which()
             elif self.is_struct() or self.is_enum():
-                return '_%s_list_item_type' % compile_name
+                # XXX horrible woraround
+                if '.' in compile_name:
+                    a, b = compile_name.rsplit('.', 1)
+                    b = '_%s_list_item_type' % b
+                    return '%s.%s' % (a, b)
+                else:
+                    return '_%s_list_item_type' % compile_name
             else:
                 raise NotImplementedError
         else:
