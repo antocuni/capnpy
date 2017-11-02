@@ -149,7 +149,7 @@ class Node__Const:
         pass
 
     def emit_reference_as_child(self, m):
-        # XXX: this works only for numerical consts so far
+        # XXX: this works only for numerical & text consts so far
         name = self.shortname(m)
         val = self.const.value.as_pyobj()
-        m.w("%s = %s" % (name, val))
+        m.w('{} = {!r}'.format(name, val))
