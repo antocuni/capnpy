@@ -115,6 +115,11 @@ class TestNullable(CompilerTest):
         assert not foo._x.is_null
         assert foo._x.value == 42
         assert foo.x == 42
+        #
+        foo = mod.Foo()
+        assert foo._x.is_null
+        assert foo._x.value == 0
+        assert foo.x is None
 
     def test_bad_nullable(self):
         schema = """

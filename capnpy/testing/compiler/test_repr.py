@@ -283,3 +283,20 @@ class TestShortRepr(CompilerTest):
         p = self.mod.P.from_buffer(buf, 0, 1, 1)
         assert p.is_d()
         self.check(p, '(d = [])')
+
+    def test_null(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        struct Foo {
+            x :group $Py.nullable {
+                isNull @0 :Int8;
+                value  @1 :Int64;
+            }
+        }
+        """
+        self.mod = self.compile(schema)
+        foo = self.mod.Foo(None)
+        assert foo.shortrepr() == '(x = None)'
+        foo = self.mod.Foo(2)
+        assert foo.shortrepr() == '(x = 2)'

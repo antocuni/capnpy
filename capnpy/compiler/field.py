@@ -203,16 +203,13 @@ class Field__Group:
         if nullable:
             nullable.check(m)
             ns.privname = '_' + name
-            ns.ww("""
-                @property
-                def {name}(self):
-                    g = self.{privname}
-                    if g.is_null:
-                        return None
-                    return g.value
+            m.def_property(ns, name, """
+                g = self.{privname}
+                if g.is_null:
+                    return None
+                return g.value
             """)
             name = ns.privname
-            ns.w()
         #
         m.def_property(ns, name, """
             {ensure_union}

@@ -230,7 +230,7 @@ class Struct(Blob):
     # hashing and equality
     # ----------------------
 
-    # in theory, this is the only method you nedd to override to enable
+    # in theory, this is the only method you need to override to enable
     # hashing and comparability. But in PYX mode, we override _hash and
     # _equals as well.
     def _key(self):
