@@ -77,15 +77,13 @@ class BaseCompiler(object):
         return dll
 
     def _capnp_compile(self, filename):
-        # this is a hack: we use cat as a plugin of capnp compile to get the
-        # CodeGeneratorRequest bytes. There MUST be a more proper way to do that
         capnp = py.path.local.sysfind('capnp')
         if capnp is None:
             raise CompilerError("Cannot find the capnp executable. Make sure it is "
                                 "installed and in $PATH")
-        #
         self._capnp_check_version()
-        cmd = ['capnp', 'compile', '-o', '/bin/cat']
+        # If <lang> is '-', the capnp compiler dumps the CodeGeneratorRequest bytes to standard output.
+        cmd = ['capnp', 'compile', '-o-']
         for dirname in self.path:
             cmd.append('-I%s' % dirname)
         cmd.append(str(filename))
