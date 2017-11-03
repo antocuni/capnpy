@@ -116,8 +116,12 @@ class Node(AbstractNode):
             self.default = str(default_val)
         else:
             assert self.f.is_group()
-            items = [child.default for child in self.children]
-            self.default = '(%s,)' % ', '.join(items)
+
+            if self.f.is_nullable(m):
+                self.default = 'None'
+            else:
+                items = [child.default for child in self.children]
+                self.default = '(%s,)' % ', '.join(items)
 
     def __repr__(self):
         return '<Node %s: %s>' % (self.varname, self.f.which())

@@ -201,8 +201,15 @@ class Node__Struct:
             ns.w('parts = []')
             for f in fields:
                 ns.fname = m._field_name(f)
-                ns.fieldrepr = self._shortrepr_for_field(ns, f)
-                ns.append = ns.format('parts.append("{fname} = %s" % {fieldrepr})')
+                if f.is_nullable(m):
+                    assert f.is_group()
+                    f = m.allnodes[f.group.typeId].struct.fields[1]
+                    ns.fieldrepr = self._shortrepr_for_field(ns, f)
+                    ns.append = ns.format('parts.append("{fname} = %s" % ({fieldrepr} if self.{fname} is not None else None))')
+                else:
+                    ns.fieldrepr = self._shortrepr_for_field(ns, f)
+                    ns.append = ns.format('parts.append("{fname} = %s" % {fieldrepr})')
+
                 ns.is_default_field = bool(f.discriminantValue == 0)
                 #
                 if f.is_part_of_union() and f.is_pointer():
