@@ -29,9 +29,13 @@ class ModuleGenerator(object):
         self.children = defaultdict(list) # nodeId -> nested nodes
         self.importnames = {} # filename -> import name
         self.extra_annotations = defaultdict(list) # obj -> [ann]
+        self.field_override = {} # obj -> obj
 
     def register_extra_annotation(self, obj, ann):
         self.extra_annotations[obj].append(ann.annotation)
+
+    def register_field_override(self, origin, target):
+        self.field_override[origin] = target
 
     def has_annotation(self, obj, anncls):
         annotations = self.extra_annotations.get(obj, [])

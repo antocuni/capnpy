@@ -24,10 +24,13 @@ class Node__Struct:
         for field in self.struct.fields or []:
             ann = m.has_annotation(field, annotate.key)
             if ann:
+                if field.is_void():
+                    # Register the fake node_group.
+                    field = m.field_override[field]
                 assert field.is_group()
-                groupnode = m.allnodes[field.group.typeId]
-                m.register_extra_annotation(groupnode, ann)
-        #
+                group_node = m.allnodes[field.group.typeId]
+                m.register_extra_annotation(group_node, ann)
+
         ns = m.code.new_scope()
         ns.name = ensure_unicode(self.compile_name(m))
         ns.dotname = self.runtime_name(m)
