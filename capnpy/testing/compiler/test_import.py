@@ -37,6 +37,10 @@ class TestImport(CompilerTest):
             x @0 :Int64;
             y @1 :Int64;
         }
+        enum Color {
+            blue @0;
+            yellow @1;
+        }
         """)
         self.tmpdir.join("tmp.capnp").write("""
         @0xbf5147cbbecf40c2;
@@ -44,11 +48,21 @@ class TestImport(CompilerTest):
         struct Rectangle {
             a @0 :P.Point;
             b @1 :P.Point;
+            c @2 :List(P.Point);
+            d @3 :List(P.Color);
         }
         """)
-        mod = comp.load_schema(importname="/tmp.capnp", pyx=self.pyx)
-        self.check_pyx(mod)
-        self.check_pyx(mod._p_capnp)
+        mod_tmp = comp.load_schema(importname="/tmp.capnp", pyx=self.pyx)
+        self.check_pyx(mod_tmp)
+        self.check_pyx(mod_tmp._p_capnp)
+        a = mod_tmp._p_capnp.Point(1, 2)
+        b = mod_tmp._p_capnp.Point(3, 4)
+        blue = mod_tmp._p_capnp.Color.blue
+        yellow = mod_tmp._p_capnp.Color.yellow
+        rec = mod_tmp.Rectangle(a, b, c=[a, b], d=[blue, yellow])
+        assert rec.b.x == 3
+        assert rec.c[1].x == 3
+        assert rec.d[1] == yellow == 1
 
     def test_import_absolute(self):
         one = self.tmpdir.join('one').ensure(dir=True)

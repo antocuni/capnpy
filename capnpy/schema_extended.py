@@ -27,8 +27,17 @@ class Type:
                                 Type.__tag__.list,
                                 Type.__tag__.anyPointer)
 
+    def get_node(self, m):
+        if self.is_struct():
+            return m.allnodes[self.struct.typeId]
+        elif self.is_enum():
+            return m.allnodes[self.enum.typeId]
+        else:
+            raise NotImplementedError('Cannot get node from {}'.format(self))
+
     def __repr__(self):
         return '<Type: %s>' % self.which()
+
 
 @Node.__extend__
 class Node:
