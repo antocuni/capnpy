@@ -422,6 +422,33 @@ case, they will get the default value, as usual:
           >>> Point.Position
           <function Position at ...>
 
+
+Virtual groups
+--------------
+
+You can use the ``$Py.group`` annotation on a ``Void`` field to generate a
+virtual group, which fishes the data from normal "flat" fields.
+
+.. literalinclude:: example_py_group.capnp
+   :language: capnp
+   :emphasize-lines: 8
+   :lines: 3-12
+
+This becomes particularly handy in conjuction with ``$Py.key`` (see `Equality
+and hashing`_), because it allows to get an hashable/comparable subset of the
+fields without affecting other parts of the code which want to access the
+flat fields:
+
+    >>> mod = capnpy.load_schema('example_py_group')
+    >>> p = mod.Point(x=1, y=2, color='red')
+    >>> p.x
+    1
+    >>> p.position.x
+    1
+    >>> p.position == (1, 2)
+    True
+
+
 Named unions
 -------------
 
