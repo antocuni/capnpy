@@ -1,6 +1,7 @@
 from capnpy import schema
 from capnpy.type import Types
 from capnpy.compiler.fieldtree import FieldTree
+from capnpy import annotate
 
 @schema.Field.__extend__
 class Field:
@@ -50,10 +51,14 @@ class Field__Slot:
                                       self.slot.type.runtime_name(m))
 
     def _emit_void(self, m, ns, name):
-        m.def_property(ns, name, """
-            {ensure_union}
-            return None
-        """)
+        field = m.field_override.get(self, None)
+        if field:
+            field._emit(m, ns, name)
+        else:
+            m.def_property(ns, name, """
+                {ensure_union}
+                return None
+            """)
 
     def _emit_primitive(self, m, ns, name):
         ns.typename = '_Types.%s' % self.slot.type.which()

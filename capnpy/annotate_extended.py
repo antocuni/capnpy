@@ -21,3 +21,9 @@ class nullable:
             error()
         return name, f_is_null, f_value
 
+@extend(group)
+class group:
+
+    def check(self, m):
+        field = self.target
+        assert field.is_void()

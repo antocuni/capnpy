@@ -2,7 +2,7 @@
 
 # make it possible to compare/hash the structure by using the fields declared
 # in the key
-annotation key(struct, group) :Text;
+annotation key(struct, group, field) :Text;
 
 
 
@@ -35,3 +35,6 @@ annotation nullable(group) :Void;
 # }
 
 #annotation nullable(*): Nullable; # XXX: specify a better target than '*'
+
+# Override the field and treat it as a group.
+annotation group(field) :Text;

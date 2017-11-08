@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2017-08-11 15:35
+# generated on 2017-11-06 17:03
 
 from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
@@ -23,7 +23,7 @@ from capnpy.util import float32_repr as _float32_repr
 from capnpy.util import float64_repr as _float64_repr
 from capnpy.util import extend_module_maybe as _extend_module_maybe
 from capnpy.util import check_version as _check_version
-__capnpy_version__ = '0.3.1.dev95+g27c0fa5.d20170811'
+__capnpy_version__ = '0.3.1.dev117+ng1376675.d20171101'
 # schema compiled with --no-version-check, skipping the call to _check_version
 
 #### FORWARD DECLARATIONS ####
@@ -42,6 +42,20 @@ class nullable(object):
     targets_method = False
     targets_param = False
     targets_annotation = False
+class group(object):
+    __id__ = 12694526166034528397
+    targets_file = False
+    targets_const = False
+    targets_enum = False
+    targets_enumerant = False
+    targets_struct = False
+    targets_field = True
+    targets_union = False
+    targets_group = False
+    targets_interface = False
+    targets_method = False
+    targets_param = False
+    targets_annotation = False
 class key(object):
     __id__ = 14658097673689429382
     targets_file = False
@@ -49,7 +63,7 @@ class key(object):
     targets_enum = False
     targets_enumerant = False
     targets_struct = True
-    targets_field = False
+    targets_field = True
     targets_union = False
     targets_group = True
     targets_interface = False

@@ -1,11 +1,43 @@
 import py
 from datetime import datetime
 from six import PY3
-
 import capnpy
 from capnpy import schema
 from capnpy.type import Types
 from capnpy.util import ensure_unicode
+from capnpy import annotate
+
+
+def find_all_py_group_fields(m):
+    xs = []
+    for k, v in m.allnodes.items():
+        if not v.is_struct():
+            continue
+
+        for field in v.struct.fields or []:
+            ann = m.has_annotation(field, annotate.group)
+            if ann:
+                ann.check(m)
+                xs.append((k, ann))
+    return xs
+
+
+def fake_py_group(m, parent_id, ann):
+    """
+    `parent_id` is the id of the struct that contains the field which is annotated by `Py.group`.
+    """
+    field_void = ann.target
+    node_group = schema.Node__Struct.from_group_annotation(m, parent_id, field_void, ann.annotation)
+    node_id = node_group.id
+
+    m.allnodes[node_id] = node_group
+    m.children[parent_id].append(node_group)
+    # Todo: we should populate `m.children[node_id]`
+
+    # Fake field
+    field_group = schema.Field__Group.from_group_annotation(node_id, field_void)
+    m.register_field_override(field_void, field_group)
+    return field_group
 
 @schema.CodeGeneratorRequest.__extend__
 class CodeGeneratorRequest:
@@ -16,6 +48,10 @@ class CodeGeneratorRequest:
             # roots have scopeId == 0, so they will be in children[0]
             m.children[node.scopeId].append(node)
         #
+        py_group_fields = find_all_py_group_fields(m)
+        for parent_id, ann in py_group_fields:
+            fake_py_group(m, parent_id, ann)
+
         assert len(self.requestedFiles) == 1
         self.requestedFiles[0].emit(m)
 

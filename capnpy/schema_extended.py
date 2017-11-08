@@ -1,5 +1,6 @@
 from capnpy.type import Types as _Types
 from capnpy import annotate
+from capnpy.util import ensure_unicode
 
 @Type.__extend__
 class Type:
@@ -150,7 +151,50 @@ class Field_slot:
 # As of now, the compiler is not capable of generating different subclasses
 # for each union tag. In the meantime, write it by hand
 
-class Node__Struct(Node): pass
+class Node__Struct(Node):
+    @classmethod
+    def from_group_annotation(cls, m, parent_id, field_void, annotation):
+        """
+        `parent_id` is the id of the struct that contains the field which is annotated by `Py.group`.
+        """
+        parent = m.allnodes[parent_id]
+        annotation_text = ensure_unicode(annotation.value.text.strip())
+        # we expect arguments to be something like "x, y, z"
+        group_field_names = [fn.strip() for fn in annotation_text.split(',')]
+        all_fields = {ensure_unicode(f.name): f for f in parent.struct.fields}
+        fields = [all_fields[f] for f in group_field_names]
+
+        # Make sure it is bytes.
+        displayName = parent.displayName + b'.' + field_void.name
+        displayNamePrefixLength = len(parent.displayName) + 1
+        scopeId = parent_id
+
+        node_id = parent_id + hash(field_void.name) % 10000
+        # Need a better way to get a UID.
+        # Todo: Use proper md5
+        assert node_id not in m.allnodes
+
+        # There shouldn't be any unions inside the group.
+        # So do not have to deal with discriminantCount
+        struct = cls.Struct(
+            dataWordCount=parent.struct.dataWordCount,
+            pointerCount=parent.struct.pointerCount,
+            # Not sure if this is correct.
+            preferredListEncoding=parent.struct.preferredListEncoding,
+            isGroup=True,
+            fields=fields,
+        )
+
+        ret = cls(
+            id=node_id,
+            displayName=displayName,
+            displayNamePrefixLength=displayNamePrefixLength,
+            scopeId=scopeId,
+            struct=struct,
+        )
+        return ret
+
+
 class Node__Enum(Node): pass
 class Node__Const(Node): pass
 class Node__Annotation(Node): pass
@@ -179,7 +223,25 @@ class Node_struct:
         return self.discriminantCount > 0
 
 class Field__Slot(Field): pass
-class Field__Group(Field): pass
+
+
+class Field__Group(Field):
+    @classmethod
+    def from_group_annotation(cls, node_id, field_void):
+        if field_void.ordinal.is_implicit():
+            ordinal = cls.Ordinal(impplicit=None)
+        else:
+            ordinal = cls.Ordinal(explicit=field_void.ordinal.explicit)
+
+        ret = cls(
+            name=field_void.name,
+            codeOrder=field_void.codeOrder,
+            annotations=field_void.annotations,
+            discriminantValue=field_void.discriminantValue,
+            group=cls.Group(node_id),
+            ordinal=ordinal,
+        )
+        return ret
 
 
 @Field.__extend__
