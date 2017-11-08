@@ -73,13 +73,13 @@ class Node:
             return self.shortname(m)
         return '%s%s%s' % (parent._fullname(m, sep), sep, self.shortname(m))
 
-    def compile_name(self, m):
+    def compile_name(self, m, prefix=''):
         if self.is_imported(m):
-            return ensure_unicode(self.runtime_name(m))
-        return ensure_unicode(self._fullname(m, '_'))
+            return ensure_unicode(self.runtime_name(m, sep='.' + prefix))
+        return ensure_unicode(prefix + self._fullname(m, '_'))
 
-    def runtime_name(self, m):
-        return self._fullname(m, '.')
+    def runtime_name(self, m, sep='.'):
+        return self._fullname(m, sep)
 
     def emit_declaration(self, m):
         assert False, 'Unkown node type: %s' % self.which()
