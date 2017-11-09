@@ -37,6 +37,31 @@ class TestImport(CompilerTest):
             x @0 :Int64;
             y @1 :Int64;
         }
+        """)
+        self.tmpdir.join("tmp.capnp").write("""
+        @0xbf5147cbbecf40c2;
+        using P = import "/p.capnp";
+        struct Rectangle {
+            a @0 :P.Point;
+            b @1 :P.Point;
+        }
+        """)
+        mod_tmp = comp.load_schema(importname="/tmp.capnp", pyx=self.pyx)
+        self.check_pyx(mod_tmp)
+        self.check_pyx(mod_tmp._p_capnp)
+        a = mod_tmp._p_capnp.Point(1, 2)
+        b = mod_tmp._p_capnp.Point(3, 4)
+        rec = mod_tmp.Rectangle(a, b)
+        assert rec.b.x == 3
+
+    def test_import_list(self):
+        comp = DynamicCompiler([self.tmpdir])
+        self.tmpdir.join("p.capnp").write("""
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
         enum Color {
             blue @0;
             yellow @1;
@@ -46,25 +71,39 @@ class TestImport(CompilerTest):
         @0xbf5147cbbecf40c2;
         using P = import "/p.capnp";
         struct Rectangle {
-            a @0 :P.Point;
-            b @1 :P.Point;
-            c @2 :List(P.Point);
-            d @3 :List(P.Color);
-            e @4 :P.Color;
+            a @0 :List(P.Point);
+            b @1 :List(P.Color);
         }
         """)
         mod_tmp = comp.load_schema(importname="/tmp.capnp", pyx=self.pyx)
-        self.check_pyx(mod_tmp)
-        self.check_pyx(mod_tmp._p_capnp)
         a = mod_tmp._p_capnp.Point(1, 2)
         b = mod_tmp._p_capnp.Point(3, 4)
         blue = mod_tmp._p_capnp.Color.blue
         yellow = mod_tmp._p_capnp.Color.yellow
-        rec = mod_tmp.Rectangle(a, b, c=[a, b], d=[blue, yellow], e=blue)
-        assert rec.b.x == 3
-        assert rec.c[1].x == 3
-        assert rec.d[1] == yellow == 1
-        assert rec.e == blue
+        rec = mod_tmp.Rectangle(a=[a, b], b=[blue, yellow])
+        assert rec.a[1].x == 3
+        assert rec.b[1] == yellow == 1
+
+    def test_import_enum(self):
+        comp = DynamicCompiler([self.tmpdir])
+        self.tmpdir.join("p.capnp").write("""
+        @0xbf5147cbbecf40c1;
+        enum Color {
+            blue @0;
+            yellow @1;
+        }
+        """)
+        self.tmpdir.join("tmp.capnp").write("""
+        @0xbf5147cbbecf40c2;
+        using P = import "/p.capnp";
+        struct Rectangle {
+            x @0 :P.Color;
+        }
+        """)
+        mod_tmp = comp.load_schema(importname="/tmp.capnp", pyx=self.pyx)
+        blue = mod_tmp._p_capnp.Color.blue
+        rec = mod_tmp.Rectangle(blue)
+        assert rec.x == blue
 
     def test_import_absolute(self):
         one = self.tmpdir.join('one').ensure(dir=True)
