@@ -207,10 +207,20 @@ class Charter(object):
             ret = os.system(cmd.format(url=url, dir=self.dir))
             assert ret == 0
 
-    def load_all(self):
-        # load all benchmarks
+    def files_to_load(self, limit):
+        result = []
+        for subdir in self.dir.listdir():
+            if subdir.check(dir=False):
+                continue
+            files = sorted(subdir.listdir('*.json'))
+            result += files[-limit:]
+        return result
+
+    def load_all(self, limit=50):
+        # load all benchmarks. We only take the latest 50 because else the
+        # charts are too dense, and the readthedocs build timeouts
         self.all = PyQuery()
-        for f in sorted(self.dir.visit('*.json')):
+        for f in self.files_to_load(limit):
             self.all += self.load_one(f)
         #
         # filter a subset containing only the results for the current revision

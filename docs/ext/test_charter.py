@@ -79,6 +79,24 @@ class TestPyQuery(object):
 
 class TestCharter(object):
 
+    def test_files_to_load(self, tmpdir):
+        for impl in ('CPython', 'PyPy'):
+            d = tmpdir.join(impl).ensure(dir=True)
+            for i in range(20):
+                f = d.join('%03d.json' % i).write('')
+        #
+        charter = Charter(tmpdir, revision='123')
+        files = charter.files_to_load(3)
+        files = [f.relto(tmpdir) for f in files]
+        assert files == [
+            'CPython/017.json',
+            'CPython/018.json',
+            'CPython/019.json',
+            'PyPy/017.json',
+            'PyPy/018.json',
+            'PyPy/019.json',
+        ]
+
     def test_load_one(self, tmpdir):
         data = {
             'machine_info': {
