@@ -88,13 +88,24 @@ class Field__Slot:
     def _emit_enum(self, m, ns, name):
         ns.enumcls = self.slot.type.compile_name(m)
         ns.default_ = self.slot.defaultValue.as_pyobj()
-        m.def_property(ns, name, """
-            {ensure_union}
-            value = self._read_data_int16({offset})
-            if {default_} != 0:
-                value = (value ^ {default_})
-            return {enumcls}._new(value)
-        """)
+
+        node = self.slot.type.get_node(m)
+        if m.pyx and node.is_imported(m):
+            m.def_property(ns, name, """
+                {ensure_union}
+                value = self._read_data_int16({offset})
+                if {default_} != 0:
+                    value = (value ^ {default_})
+                return {enumcls}._new_hack(value)
+            """)
+        else:
+            m.def_property(ns, name, """
+                {ensure_union}
+                value = self._read_data_int16({offset})
+                if {default_} != 0:
+                    value = (value ^ {default_})
+                return {enumcls}._new(value)
+            """)
 
     def _emit_text(self, m, ns, name):
         ns.name = name

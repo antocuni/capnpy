@@ -50,6 +50,7 @@ class TestImport(CompilerTest):
             b @1 :P.Point;
             c @2 :List(P.Point);
             d @3 :List(P.Color);
+            e @4 :P.Color;
         }
         """)
         mod_tmp = comp.load_schema(importname="/tmp.capnp", pyx=self.pyx)
@@ -59,10 +60,11 @@ class TestImport(CompilerTest):
         b = mod_tmp._p_capnp.Point(3, 4)
         blue = mod_tmp._p_capnp.Color.blue
         yellow = mod_tmp._p_capnp.Color.yellow
-        rec = mod_tmp.Rectangle(a, b, c=[a, b], d=[blue, yellow])
+        rec = mod_tmp.Rectangle(a, b, c=[a, b], d=[blue, yellow], e=blue)
         assert rec.b.x == 3
         assert rec.c[1].x == 3
         assert rec.d[1] == yellow == 1
+        assert rec.e == blue
 
     def test_import_absolute(self):
         one = self.tmpdir.join('one').ensure(dir=True)

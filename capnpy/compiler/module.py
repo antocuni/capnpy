@@ -121,6 +121,16 @@ class ModuleGenerator(object):
                         except IndexError:
                             return {name}(x)
                     """)
+
+                # The following is a hack so that other module can use it via import.
+                ns.w("@staticmethod")
+                with ns.block('def _new_hack(long x, __prebuilt={prebuilt}):') as ns:
+                    ns.ww("""
+                        try:
+                            return __prebuilt[x]
+                        except IndexError:
+                            return {name}(x)
+                    """)
             else:
                 # on PyPy, always create a new object, so that the JIT will be
                 # able to make it virtual
