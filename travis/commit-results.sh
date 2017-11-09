@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# https://graysonkoonce.com/getting-the-current-branch-name-during-a-pull-request-in-travis-ci/
+TR_BRANCH=${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}
+echo "current git branch: $TR_BRANCH"
+if [ "$TR_BRANCH" != "master" ]
+then
+    echo "NOT pushing, benchmark results, since it's not master"
+    exit
+fi
+
 echo "Commit result..."
 #set -v
 
