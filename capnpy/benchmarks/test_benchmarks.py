@@ -23,7 +23,7 @@ def get_obj(schema):
     obj = schema.MyStruct(padding=0, bool=100, int8=100, int16=100, int32=100,
                           int64=100, uint8=100, uint16=100, uint32=100, uint64=100,
                           float32=100, float64=100, text=b'hello world', group=(100,),
-                          inner=inner, intlist=[1, 2, 3, 4], color=2)
+                          inner=inner, intlist=[1, 2, 3, 4], color=2, color_imported=2)
     return obj
 
 
@@ -119,6 +119,23 @@ class TestGetAttr(object):
         res = benchmark(count_enum, obj)
         assert res == self.N*2
 
+    @pytest.mark.benchmark(group="getattr")
+    def test_enum_imported(self, schema, benchmark):
+        if schema.__name__ != 'Capnpy':
+            py.test.skip('N/A')
+
+        benchmark.extra_info['attribute_type'] = 'enum_imported'
+        def count_enum(obj):
+            myobjs = (obj, obj)
+            res = 0
+            for i in range(self.N):
+                obj = myobjs[i%2]
+                res += obj.color_imported
+            return res
+        #
+        obj = get_obj(schema)
+        res = benchmark(count_enum, obj)
+        assert res == self.N*2
 
 class TestGetAttrSpecial(object):
     N = 2000
