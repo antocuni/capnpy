@@ -266,6 +266,9 @@ inspired by ``namedtuples``:
     value of a field, you can instantiate a new object, as you would do with
     namedtuples
 
+  - ``_fields`` and ``_asdict()`` are provided with the same semantics as
+    namedtuple
+
   - objects can be made `comparable and hashable`__ by specifying the
     ``$Py.key`` annotation
 

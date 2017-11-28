@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 import capnpy
 from capnpy import ptr
 from capnpy.type import Types
@@ -44,6 +46,8 @@ class Struct(Blob):
     __static_data_size__ = None
     __static_ptrs_size__ = None
 
+    _fields = None
+
     def __init__(self, buf, offset, data_size, ptrs_size):
         self._init_from_buffer(buf, offset, data_size, ptrs_size)
 
@@ -68,6 +72,12 @@ class Struct(Blob):
         args = (self.__class__, self._seg, self._data_offset,
                 self._data_size, self._ptrs_size)
         return (struct_from_buffer, args)
+
+    def _asdict(self):
+        o = OrderedDict()
+        for f in self._fields:
+            o[f] = getattr(self, f)
+        return o
 
     @classmethod
     def from_buffer(cls, buf, offset, data_size, ptrs_size):

@@ -65,6 +65,7 @@ class Node__Struct:
                 __static_ptrs_size__ = {ptrs_size}
 
             """)
+            self._emit_fields(m, ns)
             for child in m.children[self.id]:
                 child.emit_reference_as_child(m)
             m.w()
@@ -96,6 +97,12 @@ class Node__Struct:
             if field.is_part_of_union():
                 enum_items[field.discriminantValue] = m._field_name(field)
         return enum_items
+
+    def _emit_fields(self, m, ns):
+        fnames = []
+        for f in self.struct.fields or []:
+            fnames.append(m._field_name(f))
+        ns.w("_fields = {}".format(tuple(fnames)))
 
     def _emit_union_tag_declaration(self, m):
         enum_items = self._get_enum_items(m)
