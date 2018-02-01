@@ -23,7 +23,14 @@ class TestKey(CompilerTest):
         #
         assert p1 == (1, 2)
         assert p3 == (3, 4)
+        assert (1, 2) == p1
+        assert (3, 4) == p3
         assert hash(p1) == hash(p2) == hash((1, 2))
+        #
+        assert not p1 == None
+        assert p1 != None
+        assert not None == p1
+        assert None != p1
 
     def test_key_convert_case(self):
         schema = """
