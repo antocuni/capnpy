@@ -81,9 +81,9 @@ def copy_pointer(src, p, src_pos, dst, dst_pos):
             return _copy_list_ptr(src, p, src_pos, dst, dst_pos)
         else:
             return _copy_list_primitive(src, p, src_pos, dst, dst_pos)
-    ## elif kind == ptr.FAR:
-    ##     raise NotImplementedError('Far pointer not supported')
-    assert False, 'unknown ptr kind: %s' % kind
+    elif kind == ptr.FAR:
+        src_pos, p = src.read_far_ptr(src_pos)
+        return copy_pointer(src, p, src_pos, dst, dst_pos)
 
 
 @cython.cfunc
