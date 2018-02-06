@@ -4,7 +4,7 @@ from six import b
 
 from capnpy import ptr
 from capnpy.printer import print_buffer
-from capnpy.segment.segment import Segment
+from capnpy.segment.segment import Segment, MultiSegment
 from capnpy.segment.builder import SegmentBuilder, copy_pointer
 
 
@@ -14,6 +14,9 @@ class TestCopyPointer(object):
         src_seg = Segment(src)
         if bufsize is None:
             bufsize = len(src)+8
+        return self.copy_struct_segment(src_seg, offset, data_size, ptrs_size, bufsize)
+
+    def copy_struct_segment(self, src_seg, offset, data_size, ptrs_size, bufsize):
         dst = SegmentBuilder(bufsize)
         dst_pos = dst.allocate(8) # allocate the space to store the pointer p
         p = ptr.new_struct(0, data_size, ptrs_size)
@@ -293,3 +296,27 @@ class TestCopyPointer(object):
         with pytest.raises(IndexError) as exc:
             self.copy_struct(src, offset=0, data_size=0, ptrs_size=1, bufsize=128)
         assert str(exc.value) == ('Offset out of bounds: 96')
+
+    def test_far_pointer(self):
+        ## struct Point {
+        ##   x @0 :Int64;
+        ##   y @1 :Int64;
+        ## }
+        seg0 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # some garbage
+                 '\x00\x00\x00\x00\x00\x00\x01\x00'    # ptr (0, 1) to A
+                 '\x0a\x00\x00\x00\x01\x00\x00\x00')   # far pointer to B: segment=1, offset=1
+        seg1 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # random data
+                 '\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to B {x, y}
+                 '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
+                 '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
+        #
+        src_seg = MultiSegment(seg0+seg1, segment_offsets=(0, 24))
+        dstsize = 16
+        dst = self.copy_struct_segment(src_seg, offset=8, data_size=0, ptrs_size=1,
+                                       bufsize=dstsize)
+        assert dst == b(
+            '\x00\x00\x00\x00\x00\x00\x01\x00'    # root ptr (0, 1)
+            '\x00\x00\x00\x00\x00\x00\x01\x00'    # ptr to A (0, 1)
+            '\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to B {x, y}
+            '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
