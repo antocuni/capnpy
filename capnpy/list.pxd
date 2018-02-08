@@ -3,7 +3,7 @@ from capnpy.blob cimport Blob
 from capnpy.struct_ cimport Struct
 from capnpy.type cimport BuiltinType
 from capnpy cimport ptr
-from capnpy.visit cimport end_of
+from capnpy.segment.endof cimport endof
 from capnpy.segment.builder cimport SegmentBuilder
 
 cdef class ItemType(object)
