@@ -1,8 +1,5 @@
 from capnpy import ptr
 
-class NotCompact(Exception):
-    pass
-
 def endof(seg, p, offset):
     """
     Check whether the given object is compact, and in that case compute its
@@ -18,12 +15,6 @@ def endof(seg, p, offset):
 
       4. there are no FAR pointers
     """
-    try:
-        return _endof(seg, p, offset)
-    except NotCompact:
-        return -1
-
-def _endof(seg, p, offset):
     kind = ptr.kind(p)
     offset = ptr.deref(p, offset)
     if kind == ptr.STRUCT:
@@ -47,7 +38,7 @@ def _endof(seg, p, offset):
         else:
             return _endof_list_primitive(seg, p, offset, item_size, count)
     elif kind == ptr.FAR:
-        raise NotCompact
+        return -1
     else:
         assert False, 'unknown ptr kind'
 
@@ -61,8 +52,8 @@ def _endof_ptrs(seg, offset, ptrs_size, current_end):
             continue
         new_start = ptr.deref(p, p_offset)
         if new_start != current_end:
-            raise NotCompact
-        current_end = _endof(seg, p, p_offset)
+            return -1
+        current_end = endof(seg, p, p_offset)
     #
     return current_end
 
@@ -82,6 +73,8 @@ def _endof_list_composite(seg, p, offset, count, data_size, ptrs_size):
     while i < count:
         item_offset = offset + (item_size)*i + (data_size*8)
         end = _endof_ptrs(seg, item_offset, ptrs_size, end)
+        if end == -1:
+            return -1
         i += 1
     #
     return end
