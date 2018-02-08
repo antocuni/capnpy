@@ -291,7 +291,7 @@ class ListItemType(ItemType):
         offset = lst._offset + (i*8)
         p = lst._seg.read_ptr(offset)
         if ptr.kind(p) == ptr.FAR:
-            raise NotImplementedError('FAR pointers not supported here')
+            offset, p = lst._seg.read_far_ptr(offset)
         obj = List.__new__(List)
         obj._init_from_buffer(lst._seg,
                               ptr.deref(p, offset),
