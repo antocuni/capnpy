@@ -29,7 +29,9 @@ class Visitor(object):
             else:
                 return self.visit_list_primitive(buf, p, offset, item_size, count)
         elif kind == ptr.FAR:
-            raise NotImplementedError('Far pointer not supported')
+            # this is not strictly correct, because it's part of the logic of
+            # EndOf. However, we are going to refactor this shortly
+            raise NotCompact
         else:
             assert False, 'unknown ptr kind'
 
@@ -63,6 +65,8 @@ class EndOf(Visitor):
       2. there is no gap between children
 
       3. its children are compact
+
+      4. there are no FAR pointers
     """
 
     def visit_ptrs(self, buf, offset, ptrs_size, current_end):

@@ -3,14 +3,15 @@ from six import b
 from capnpy import ptr
 from capnpy.printer import print_buffer
 from capnpy.visit import end_of
-from capnpy.segment.segment import Segment
+from capnpy.segment.segment import Segment, MultiSegment
 
 class TestEndOf(object):
 
-    def end_of(self, buf, offset, data_size, ptrs_size):
-        buf = Segment(buf)
+    def end_of(self, seg, offset, data_size, ptrs_size):
+        if isinstance(seg, bytes):
+            seg = Segment(seg)
         p = ptr.new_struct(0, data_size, ptrs_size)
-        return end_of(buf, p, offset-8)
+        return end_of(seg, p, offset-8)
 
     def test_struct_data(self):
         buf = b('garbage0'
@@ -293,3 +294,16 @@ class TestEndOf(object):
         end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
         assert end == 40
         assert buf[end:] == b'garbage1'
+
+    def test_far_pointer(self):
+        ## struct Point {
+        ##   x @0 :Int64;
+        ##   y @1 :Int64;
+        ## }
+        seg0 = b('\x02\x00\x00\x00\x01\x00\x00\x00')   # far pointer: segment=1, offset=0
+        seg1 = b('\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
+                 '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
+                 '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
+        seg = MultiSegment(seg0+seg1, segment_offsets=(0, 8))
+        end = self.end_of(seg, offset=0, data_size=0, ptrs_size=1)
+        assert end == -1
