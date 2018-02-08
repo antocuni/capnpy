@@ -203,6 +203,24 @@ def test_far_pointer():
     lst = blob._read_list(0, PrimitiveItemType(Types.int64))
     assert lst == [1, 2, 3, 4]
 
+def test_TextItem_far_pointer():
+    seg0 = b('\x01\x00\x00\x00\x26\x00\x00\x00'   # ptrlist
+             '\x0d\x00\x00\x00\x12\x00\x00\x00'   # ptr item 1
+             '\x0d\x00\x00\x00\x1a\x00\x00\x00'   # ptr item 2
+             '\x0d\x00\x00\x00\x22\x00\x00\x00'   # ptr item 3
+             '\x02\x00\x00\x00\x01\x00\x00\x00'   # far ptr, segment=1, offset=0
+             'A' '\x00\x00\x00\x00\x00\x00\x00'   # A
+             'B' 'C' '\x00\x00\x00\x00\x00\x00'   # BC
+             'D' 'E' 'F' '\x00\x00\x00\x00\x00')  # DEF
+    #
+    seg1 = b('\x01\x00\x00\x00\x2a\x00\x00\x00'   # ptr item 4
+             'G' 'H' 'I' 'J' '\x00\x00\x00\x00')  # GHIJ
+    #
+    buf = MultiSegment(seg0+seg1, segment_offsets=(0, len(seg0)))
+    blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
+    lst = blob._read_list(0, TextItemType(Types.text))
+    assert list(lst) == [b'A', b'BC', b'DEF', b'GHIJ']
+
 
 class TestPythonicInterface(object):
 

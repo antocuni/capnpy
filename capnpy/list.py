@@ -264,7 +264,7 @@ class TextItemType(ItemType):
         offset = self.offset_for_item(lst, i)
         p = lst._seg.read_ptr(offset)
         if ptr.kind(p) == ptr.FAR:
-            raise NotImplementedError('FAR pointers not supported here')
+            offset, p = lst._seg.read_far_ptr(offset)
         return lst._seg.read_str(p, offset, None, self.additional_size)
 
     def item_repr(self, item):
