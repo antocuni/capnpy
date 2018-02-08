@@ -2,8 +2,8 @@ from six import b
 
 from capnpy import ptr
 from capnpy.printer import print_buffer
-from capnpy.visit import end_of
 from capnpy.segment.segment import Segment, MultiSegment
+from capnpy.segment.endof import endof
 
 class TestEndOf(object):
 
@@ -11,7 +11,7 @@ class TestEndOf(object):
         if isinstance(seg, bytes):
             seg = Segment(seg)
         p = ptr.new_struct(0, data_size, ptrs_size)
-        return end_of(seg, p, offset-8)
+        return endof(seg, p, offset-8)
 
     def test_struct_data(self):
         buf = b('garbage0'

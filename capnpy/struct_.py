@@ -2,9 +2,8 @@ import capnpy
 from capnpy import ptr
 from capnpy.type import Types
 from capnpy.blob import Blob
-from capnpy.visit import end_of
 from capnpy.list import List
-from capnpy.packing import pack_int64
+from capnpy.segment.endof import endof
 from capnpy.segment.builder import SegmentBuilder
 from capnpy.util import magic_setattr
 
@@ -206,7 +205,7 @@ class Struct(Blob):
 
     def _get_end(self):
         p = ptr.new_struct(0, self._data_size, self._ptrs_size)
-        return end_of(self._seg, p, self._data_offset-8)
+        return endof(self._seg, p, self._data_offset-8)
 
     def _is_compact(self):
         return self._get_end() != -1

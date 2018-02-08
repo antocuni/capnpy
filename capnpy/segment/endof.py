@@ -118,7 +118,7 @@ class EndOf(Visitor):
 
 
 
-def end_of(buf, p, offset):
+def endof(buf, p, offset):
     try:
         return _end_of.visit(buf, p, offset)
     except NotCompact:

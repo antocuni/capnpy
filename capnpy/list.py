@@ -6,7 +6,7 @@ from capnpy.type import Types
 from capnpy.blob import Blob, PYX
 from capnpy import ptr
 from capnpy.util import text_repr, float32_repr, float64_repr
-from capnpy.visit import end_of
+from capnpy.segment.endof import endof
 
 class List(Blob):
 
@@ -73,7 +73,7 @@ class List(Blob):
 
     def _get_end(self):
         p = ptr.new_list(0, self._size_tag, self._item_count)
-        return end_of(self._seg, p, self._offset-8)
+        return endof(self._seg, p, self._offset-8)
 
     def _get_slice(self):
         # XXX: investigate whether it is faster to user memoryview for
