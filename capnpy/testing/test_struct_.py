@@ -193,3 +193,16 @@ def test_comparisons_succeed():
 
 def test_check_null_buffer():
     py.test.raises(AssertionError, "Struct(None, 0, 0, 0)")
+
+def test_raw_dump_load(tmpdir):
+    buf = b('garbage0'
+            '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+    obj = Struct.from_buffer(buf, 8, data_size=2, ptrs_size=0)
+    with tmpdir.join('dump').open('w+') as f:
+        obj._raw_dump(f)
+        f.seek(0)
+        obj2 = Struct._raw_load(f)
+    assert obj2._seg.buf == obj._seg.buf
+    assert obj2._read_data(0, Types.int64.ifmt) == 1
+    assert obj2._read_data(8, Types.int64.ifmt) == 2

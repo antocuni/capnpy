@@ -1,3 +1,4 @@
+import marshal
 import capnpy
 from capnpy import ptr
 from capnpy.type import Types
@@ -83,6 +84,39 @@ class Struct(Blob):
     @classmethod
     def load_all(cls, f):
         return capnpy.message.load_all(f, cls)
+
+    def _raw_dump(self, f):
+        """
+        Do a raw dump of the currenct capnpy object to the specified file.
+
+        Raw dumps are intented primarly for debugging and should NEVER be used
+        as a general transmission mechanism. They dump the internal state of
+        the segements and the offsets used to identify the current capnproto
+        object.  If you encounter a canpy bug, you can use _raw_dump to save
+        the offending to make it easier to reproduce the bug.
+        """
+        args = ('capnpy raw dump',
+                self.__class__.__name__,
+                self._seg.buf,
+                self._data_offset,
+                self._data_size,
+                self._ptrs_size)
+        marshal.dump(args, f)
+
+    @classmethod
+    def _raw_load(cls, f):
+        """
+        Load an object which was saved by _raw_dump
+        """
+        args = marshal.load(f)
+        header, clsname, buf, offset, data_size, ptrs_size = args
+        assert header == 'capnpy raw dump'
+        if clsname != cls.__name__:
+            warnings.warn("The raw dump says it's a %s, but we are loading it "
+                          "as a %s" % (clsname, cls.__name__))
+        self = cls.__new__(cls)
+        self._init_from_buffer(buf, offset, data_size, ptrs_size)
+        return self
 
     def shortrepr(self):
         return '(no shortrepr)'
