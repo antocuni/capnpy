@@ -8,27 +8,6 @@ from capnpy.struct_ import Struct, undefined
 from capnpy.enum import enum
 from capnpy.printer import print_buffer
 
-## struct Point {
-##   x @0 :Int64;
-##   y @1 :Int64;
-## }
-##
-## struct Rectangle {
-##   color @0 :Int64;
-##   a @1 :Point;
-##   b @2 :Point;
-## }
-BUF = b('garbage0'
-        '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
-        '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
-        '\x10\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
-        'garbage1'
-        'garbage2'
-        '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
-        '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
-        '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
-        '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
-
 def test_undefined():
     assert repr(undefined) == '<undefined>'
 
@@ -214,3 +193,32 @@ def test_comparisons_succeed():
 
 def test_check_null_buffer():
     py.test.raises(AssertionError, "Struct(None, 0, 0, 0)")
+
+def test_raw_dumps_loads():
+    buf = b('garbage0'
+            '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
+    obj = Struct.from_buffer(buf, 8, data_size=2, ptrs_size=0)
+    mydump = obj._raw_dumps()
+    obj2 = Struct._raw_loads(mydump)
+    assert obj2._seg.buf == obj._seg.buf
+    assert obj2._read_data(0, Types.int64.ifmt) == 1
+    assert obj2._read_data(8, Types.int64.ifmt) == 2
+
+def test_raw_dumps_loads_multi_segment():
+    seg0 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # some garbage
+             '\x0a\x00\x00\x00\x01\x00\x00\x00')   # far pointer: segment=1, offset=1
+    seg1 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # random data
+             '\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
+             '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
+             '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
+    #
+    buf = MultiSegment(seg0+seg1, segment_offsets=(0, 16))
+    obj = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
+    #
+    mydump = obj._raw_dumps()
+    obj2 = Struct._raw_loads(mydump)
+    #
+    p = obj2._read_struct(0, Struct)
+    assert p._read_data(0, Types.int64.ifmt) == 1
+    assert p._read_data(8, Types.int64.ifmt) == 2

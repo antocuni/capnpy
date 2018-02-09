@@ -1,10 +1,12 @@
+import marshal
+import warnings
 import capnpy
 from capnpy import ptr
 from capnpy.type import Types
 from capnpy.blob import Blob
-from capnpy.visit import end_of
 from capnpy.list import List
-from capnpy.packing import pack_int64
+from capnpy.segment.segment import Segment, MultiSegment
+from capnpy.segment.endof import endof
 from capnpy.segment.builder import SegmentBuilder
 from capnpy.util import magic_setattr
 
@@ -84,6 +86,50 @@ class Struct(Blob):
     @classmethod
     def load_all(cls, f):
         return capnpy.message.load_all(f, cls)
+
+    def _raw_dumps(self):
+        """
+        Do a raw dump of the currenct capnpy object to the specified file.
+
+        Raw dumps are intented primarly for debugging and should NEVER be used
+        as a general transmission mechanism. They dump the internal state of
+        the segments and the offsets used to identify the current capnproto
+        object. In particular, they dump the whole buffer in which the object
+        is contained, which might be much larger that the object itself.
+
+        If you encounter a canpy bug, you can use _raw_dumps to save the
+        offending object to make it easier to reproduce the bug.
+        """
+        seg = self._seg
+        segment_offsets = getattr(seg, 'segment_offsets', None)
+        args = ('capnpy raw dump',
+                self.__class__.__name__,
+                self._seg.buf,
+                segment_offsets,
+                self._data_offset,
+                self._data_size,
+                self._ptrs_size)
+        return marshal.dumps(args)
+
+    @classmethod
+    def _raw_loads(cls, s):
+        """
+        Load an object which was saved by _raw_dumps
+        """
+        args = marshal.loads(s)
+        header, clsname, buf, segment_offsets, offset, data_size, ptrs_size = args
+        assert header == 'capnpy raw dump'
+        if clsname != cls.__name__:
+            warnings.warn("The raw dump says it's a %s, but we are loading it "
+                          "as a %s" % (clsname, cls.__name__))
+        #
+        if segment_offsets is None:
+            seg = Segment(buf)
+        else:
+            seg = MultiSegment(buf, segment_offsets)
+        self = cls.__new__(cls)
+        self._init_from_buffer(seg, offset, data_size, ptrs_size)
+        return self
 
     def shortrepr(self):
         return '(no shortrepr)'
@@ -206,7 +252,7 @@ class Struct(Blob):
 
     def _get_end(self):
         p = ptr.new_struct(0, self._data_size, self._ptrs_size)
-        return end_of(self._seg, p, self._data_offset-8)
+        return endof(self._seg, p, self._data_offset-8)
 
     def _is_compact(self):
         return self._get_end() != -1

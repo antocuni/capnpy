@@ -2,22 +2,23 @@ from six import b
 
 from capnpy import ptr
 from capnpy.printer import print_buffer
-from capnpy.visit import end_of
-from capnpy.segment.segment import Segment
+from capnpy.segment.segment import Segment, MultiSegment
+from capnpy.segment.endof import endof
 
 class TestEndOf(object):
 
-    def end_of(self, buf, offset, data_size, ptrs_size):
-        buf = Segment(buf)
+    def endof(self, seg, offset, data_size, ptrs_size):
+        if isinstance(seg, bytes):
+            seg = Segment(seg)
         p = ptr.new_struct(0, data_size, ptrs_size)
-        return end_of(buf, p, offset-8)
+        return endof(seg, p, offset-8)
 
     def test_struct_data(self):
         buf = b('garbage0'
                 'garbage1'
                 '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
                 '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
-        end = self.end_of(buf, 16, data_size=2, ptrs_size=0)
+        end = self.endof(buf, 16, data_size=2, ptrs_size=0)
         assert end == 32
 
     def test_struct_ptrs_compact(self):
@@ -39,7 +40,7 @@ class TestEndOf(object):
                 '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
                 '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
                 '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
-        end = self.end_of(buf, 8, data_size=1, ptrs_size=2)
+        end = self.endof(buf, 8, data_size=1, ptrs_size=2)
         assert end == 64
 
     def test_struct_gap_before_children(self):
@@ -53,7 +54,7 @@ class TestEndOf(object):
                 '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
                 '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
                 '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
-        end = self.end_of(buf, 8, data_size=1, ptrs_size=2)
+        end = self.endof(buf, 8, data_size=1, ptrs_size=2)
         assert end == -1 # not compact
 
     def test_struct_gap_between_children(self):
@@ -66,7 +67,7 @@ class TestEndOf(object):
                 'garbage1'
                 '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
                 '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
-        end = self.end_of(buf, 8, data_size=1, ptrs_size=2)
+        end = self.endof(buf, 8, data_size=1, ptrs_size=2)
         assert end == -1 # not compact
 
     def test_struct_first_null_ptr(self):
@@ -75,7 +76,7 @@ class TestEndOf(object):
                 '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to b, NULL
                 '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
                 '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
-        end = self.end_of(buf, 0, data_size=1, ptrs_size=2)
+        end = self.endof(buf, 0, data_size=1, ptrs_size=2)
         assert end == 40
 
     def test_struct_second_null_ptr(self):
@@ -84,14 +85,14 @@ class TestEndOf(object):
                 '\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
                 '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
                 '\x02\x00\x00\x00\x00\x00\x00\x00')   # a.y == 2
-        end = self.end_of(buf, 0, data_size=1, ptrs_size=2)
+        end = self.endof(buf, 0, data_size=1, ptrs_size=2)
         assert end == 40
 
     def test_struct_all_null_ptrs(self):
         buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
                 '\x00\x00\x00\x00\x00\x00\x00\x00'    # ptr to a, NULL
                 '\x00\x00\x00\x00\x00\x00\x00\x00')   # ptr to b, NULL
-        end = self.end_of(buf, 0, data_size=1, ptrs_size=2)
+        end = self.endof(buf, 0, data_size=1, ptrs_size=2)
         assert end == 24
 
     def test_children_out_of_order(self):
@@ -103,7 +104,7 @@ class TestEndOf(object):
                 '\x02\x00\x00\x00\x00\x00\x00\x00'    # b.y == 2
                 '\x03\x00\x00\x00\x00\x00\x00\x00'    # a.x == 3
                 '\x04\x00\x00\x00\x00\x00\x00\x00')   # a.y == 4
-        end = self.end_of(buf, 8, data_size=1, ptrs_size=2)
+        end = self.endof(buf, 8, data_size=1, ptrs_size=2)
         assert end == -1
 
     def test_list_primitive(self):
@@ -122,10 +123,10 @@ class TestEndOf(object):
                 '\x0b\x00\x00\x00\x00\x00\x00\x00'   # 72
                 '\x0c\x00\x00\x00\x00\x00\x00\x00')  # 80
         #
-        end_a = self.end_of(buf, 0, data_size=0, ptrs_size=1)
-        end_b = self.end_of(buf, 16, data_size=0, ptrs_size=1)
-        end_c = self.end_of(buf, 32, data_size=0, ptrs_size=1)
-        end_d = self.end_of(buf, 56, data_size=0, ptrs_size=1)
+        end_a = self.endof(buf, 0, data_size=0, ptrs_size=1)
+        end_b = self.endof(buf, 16, data_size=0, ptrs_size=1)
+        end_c = self.endof(buf, 32, data_size=0, ptrs_size=1)
+        end_d = self.endof(buf, 56, data_size=0, ptrs_size=1)
         assert end_a == 16 # 8 + 3      rounded to word boundary
         assert end_b == 32 # 24 + (3*2) rounded to word boundary
         assert end_c == 56 # 40 + (3*4) rounded to word boundary
@@ -135,7 +136,7 @@ class TestEndOf(object):
         buf = b('garbage1'
                 '\x01\x00\x00\x00\x19\x00\x00\x00'    # ptrlist
                 '\x03\x00\x00\x00\x00\x00\x00\x00')   # [True, True, False]
-        end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
+        end = self.endof(buf, 8, data_size=0, ptrs_size=1)
         assert end == 24
 
     def test_list_composite_compact(self):
@@ -160,7 +161,7 @@ class TestEndOf(object):
                 'P' 'o' 'i' 'n' 't' ' ' 'B' '\x00'
                 'P' 'o' 'i' 'n' 't' ' ' 'C' '\x00'
                 'garbage1')
-        end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
+        end = self.endof(buf, 8, data_size=0, ptrs_size=1)
         assert end == 120
         assert buf[end:] == b'garbage1'
 
@@ -187,7 +188,7 @@ class TestEndOf(object):
                 'P' 'o' 'i' 'n' 't' ' ' 'B' '\x00'
                 'P' 'o' 'i' 'n' 't' ' ' 'C' '\x00'
                 'garbage2')
-        end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
+        end = self.endof(buf, 8, data_size=0, ptrs_size=1)
         assert end == -1 # not compact
 
     def test_list_composite_one_null_ptr(self):
@@ -211,7 +212,7 @@ class TestEndOf(object):
                 'P' 'o' 'i' 'n' 't' ' ' 'A' '\x00'
                 'P' 'o' 'i' 'n' 't' ' ' 'B' '\x00'
                 'garbage1')
-        end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
+        end = self.endof(buf, 8, data_size=0, ptrs_size=1)
         assert end == 112
         assert buf[end:] == b'garbage1'
 
@@ -234,7 +235,7 @@ class TestEndOf(object):
                 '\x06\x00\x00\x00\x00\x00\x00\x00'   # points[2].y == 6
                 '\x00\x00\x00\x00\x00\x00\x00\x00'   # points[2].name == NULL
                 'garbage1')
-        end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
+        end = self.endof(buf, 8, data_size=0, ptrs_size=1)
         assert end == 96
         assert buf[end:] == b'garbage1'
 
@@ -248,7 +249,7 @@ class TestEndOf(object):
                 '\x04\x00\x00\x00\x00\x00\x00\x00'   # p[1].y == 4
                 'garbage1'
                 'garbage2')
-        end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
+        end = self.endof(buf, 8, data_size=0, ptrs_size=1)
         assert end == 56
         assert buf[end:] == b'garbage1garbage2'
 
@@ -264,7 +265,7 @@ class TestEndOf(object):
                 't' 'h' 'i' 's' ' ' 'i' 's' ' '      # #2...
                 'a' ' ' 'l' 'o' 'n' 'g' ' ' 's'
                 't' 'r' 'i' 'n' 'g' '\x00\x00\x00')
-        end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
+        end = self.endof(buf, 8, data_size=0, ptrs_size=1)
         assert end == 88
 
     def test_list_of_pointers_not_compact(self):
@@ -280,7 +281,7 @@ class TestEndOf(object):
                 't' 'h' 'i' 's' ' ' 'i' 's' ' '      # #2...
                 'a' ' ' 'l' 'o' 'n' 'g' ' ' 's'
                 't' 'r' 'i' 'n' 'g' '\x00\x00\x00')
-        end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
+        end = self.endof(buf, 8, data_size=0, ptrs_size=1)
         assert end == -1 # not compact
 
     def test_list_of_pointers_all_null(self):
@@ -290,6 +291,19 @@ class TestEndOf(object):
                 '\x00\x00\x00\x00\x00\x00\x00\x00'
                 '\x00\x00\x00\x00\x00\x00\x00\x00'
                 'garbage1')
-        end = self.end_of(buf, 8, data_size=0, ptrs_size=1)
+        end = self.endof(buf, 8, data_size=0, ptrs_size=1)
         assert end == 40
         assert buf[end:] == b'garbage1'
+
+    def test_far_pointer(self):
+        ## struct Point {
+        ##   x @0 :Int64;
+        ##   y @1 :Int64;
+        ## }
+        seg0 = b('\x02\x00\x00\x00\x01\x00\x00\x00')   # far pointer: segment=1, offset=0
+        seg1 = b('\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
+                 '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
+                 '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
+        seg = MultiSegment(seg0+seg1, segment_offsets=(0, 8))
+        end = self.endof(seg, offset=0, data_size=0, ptrs_size=1)
+        assert end == -1

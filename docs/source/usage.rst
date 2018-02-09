@@ -250,6 +250,27 @@ In case you want to load your messages from a ``socket``, you can use
 
 __ https://bitbucket.org/pypy/pypy/issues/2272/socket_fileobjectread-horribly-slow
 
+
+Raw dumps
+=========
+
+Raw dumps are intented primarly for debugging and should **never** be used as
+a general transmission mechanism. They dump the internal state of the segments
+and the offsets used to identify a given capnproto object.
+
+In particular, they dump the whole buffer in which the object is contained,
+which might be much larger that the object itself.
+
+If you encounter a canpy bug, you can use ``_raw_dumps`` and ``_raw_loads`` to
+save the offending object to make it easier to reproduce the bug:
+
+    >>> p = example.Point(x=100, y=200)
+    >>> mydump = p._raw_dumps()
+    >>> p2 = example.Point._raw_loads(mydump)
+    >>> print p2.x, p2.y
+    100 200
+
+
 capnproto types
 ================
 
