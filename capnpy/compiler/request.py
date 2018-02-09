@@ -119,7 +119,7 @@ class RequestedFile:
         #
         m.w('__capnpy_version__ = {version!r}', version=capnpy.__version__)
         if m.version_check:
-            m.w('_check_version(__capnpy_version__)')
+            m.w('_check_version(__name__, __capnpy_version__)')
         else:
             m.w('# schema compiled with --no-version-check, skipping the call to _check_version')
         self._declare_imports(m)

@@ -73,8 +73,13 @@ def extend_module_maybe(globals, filename=None, modname=None):
     code = compile(src, str(extmod), 'exec')
     exec(code, globals)
 
-def check_version(version):
+def check_version(modname, version):
     if version != capnpy.__version__:
+        # explicitly remove modname from sys.modules: apparently, CPython does
+        # not do it automatically if the module is an extension (which happens
+        # in PYX mode). See also
+        # testing/compiler/test_standalone:test_version_check
+        sys.modules.pop(modname, None)
         msg = ('Version mismatch: the module has been compiled with capnpy '
                '{v1}, but the current version of capnpy is {v2}. '
                'Please recompile.').format(v1=version, v2=capnpy.__version__)

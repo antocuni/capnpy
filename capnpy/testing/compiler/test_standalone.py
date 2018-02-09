@@ -150,8 +150,12 @@ class TestStandalone(CompilerTest):
         }
         """)
         monkeypatch.setattr(capnpy, '__version__', 'Fake 2.0')
-        exc = py.test.raises(ImportError, "self.import_('example')")
-        expected = ('Version mismatch: the module has been compiled with capnpy '
-                    'Fake 1.0, but the current version of capnpy is Fake 2.0. '
-                    'Please recompile.')
-        assert str(exc.value) == expected
+        # try to import it twice: we need to take extra case to make sure that
+        # when in PYX mode, the module is not left inside sys.modules in case
+        # of version mismatch
+        for i in range(2):
+            exc = py.test.raises(ImportError, "self.import_('example')")
+            expected = ('Version mismatch: the module has been compiled with '
+                        'capnpy Fake 1.0, but the current version of capnpy '
+                        'is Fake 2.0. Please recompile.')
+            assert str(exc.value) == expected
