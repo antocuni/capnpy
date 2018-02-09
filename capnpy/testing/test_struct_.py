@@ -206,3 +206,23 @@ def test_raw_dump_load(tmpdir):
     assert obj2._seg.buf == obj._seg.buf
     assert obj2._read_data(0, Types.int64.ifmt) == 1
     assert obj2._read_data(8, Types.int64.ifmt) == 2
+
+def test_raw_dump_load_multi_segment(tmpdir):
+    seg0 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # some garbage
+             '\x0a\x00\x00\x00\x01\x00\x00\x00')   # far pointer: segment=1, offset=1
+    seg1 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # random data
+             '\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
+             '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
+             '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
+    #
+    buf = MultiSegment(seg0+seg1, segment_offsets=(0, 16))
+    obj = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
+    #
+    with tmpdir.join('dump').open('w+') as f:
+        obj._raw_dump(f)
+        f.seek(0)
+        obj2 = Struct._raw_load(f)
+    #
+    p = obj2._read_struct(0, Struct)
+    assert p._read_data(0, Types.int64.ifmt) == 1
+    assert p._read_data(8, Types.int64.ifmt) == 2

@@ -4,6 +4,7 @@ from capnpy import ptr
 from capnpy.type import Types
 from capnpy.blob import Blob
 from capnpy.list import List
+from capnpy.segment.segment import Segment, MultiSegment
 from capnpy.segment.endof import endof
 from capnpy.segment.builder import SegmentBuilder
 from capnpy.util import magic_setattr
@@ -95,9 +96,12 @@ class Struct(Blob):
         object.  If you encounter a canpy bug, you can use _raw_dump to save
         the offending to make it easier to reproduce the bug.
         """
+        seg = self._seg
+        segment_offsets = getattr(seg, 'segment_offsets', None)
         args = ('capnpy raw dump',
                 self.__class__.__name__,
                 self._seg.buf,
+                segment_offsets,
                 self._data_offset,
                 self._data_size,
                 self._ptrs_size)
@@ -109,13 +113,18 @@ class Struct(Blob):
         Load an object which was saved by _raw_dump
         """
         args = marshal.load(f)
-        header, clsname, buf, offset, data_size, ptrs_size = args
+        header, clsname, buf, segment_offsets, offset, data_size, ptrs_size = args
         assert header == 'capnpy raw dump'
         if clsname != cls.__name__:
             warnings.warn("The raw dump says it's a %s, but we are loading it "
                           "as a %s" % (clsname, cls.__name__))
+        #
+        if segment_offsets is None:
+            seg = Segment(buf)
+        else:
+            seg = MultiSegment(buf, segment_offsets)
         self = cls.__new__(cls)
-        self._init_from_buffer(buf, offset, data_size, ptrs_size)
+        self._init_from_buffer(seg, offset, data_size, ptrs_size)
         return self
 
     def shortrepr(self):
