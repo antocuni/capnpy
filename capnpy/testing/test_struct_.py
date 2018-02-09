@@ -8,27 +8,6 @@ from capnpy.struct_ import Struct, undefined
 from capnpy.enum import enum
 from capnpy.printer import print_buffer
 
-## struct Point {
-##   x @0 :Int64;
-##   y @1 :Int64;
-## }
-##
-## struct Rectangle {
-##   color @0 :Int64;
-##   a @1 :Point;
-##   b @2 :Point;
-## }
-BUF = b('garbage0'
-        '\x01\x00\x00\x00\x00\x00\x00\x00'    # color == 1
-        '\x0c\x00\x00\x00\x02\x00\x00\x00'    # ptr to a
-        '\x10\x00\x00\x00\x02\x00\x00\x00'    # ptr to b
-        'garbage1'
-        'garbage2'
-        '\x01\x00\x00\x00\x00\x00\x00\x00'    # a.x == 1
-        '\x02\x00\x00\x00\x00\x00\x00\x00'    # a.y == 2
-        '\x03\x00\x00\x00\x00\x00\x00\x00'    # b.x == 3
-        '\x04\x00\x00\x00\x00\x00\x00\x00')   # b.y == 4
-
 def test_undefined():
     assert repr(undefined) == '<undefined>'
 
