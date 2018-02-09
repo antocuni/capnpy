@@ -194,20 +194,18 @@ def test_comparisons_succeed():
 def test_check_null_buffer():
     py.test.raises(AssertionError, "Struct(None, 0, 0, 0)")
 
-def test_raw_dump_load(tmpdir):
+def test_raw_dumps_loads():
     buf = b('garbage0'
             '\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
             '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
     obj = Struct.from_buffer(buf, 8, data_size=2, ptrs_size=0)
-    with tmpdir.join('dump').open('w+') as f:
-        obj._raw_dump(f)
-        f.seek(0)
-        obj2 = Struct._raw_load(f)
+    mydump = obj._raw_dumps()
+    obj2 = Struct._raw_loads(mydump)
     assert obj2._seg.buf == obj._seg.buf
     assert obj2._read_data(0, Types.int64.ifmt) == 1
     assert obj2._read_data(8, Types.int64.ifmt) == 2
 
-def test_raw_dump_load_multi_segment(tmpdir):
+def test_raw_dumps_loads_multi_segment():
     seg0 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # some garbage
              '\x0a\x00\x00\x00\x01\x00\x00\x00')   # far pointer: segment=1, offset=1
     seg1 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # random data
@@ -218,10 +216,8 @@ def test_raw_dump_load_multi_segment(tmpdir):
     buf = MultiSegment(seg0+seg1, segment_offsets=(0, 16))
     obj = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
     #
-    with tmpdir.join('dump').open('w+') as f:
-        obj._raw_dump(f)
-        f.seek(0)
-        obj2 = Struct._raw_load(f)
+    mydump = obj._raw_dumps()
+    obj2 = Struct._raw_loads(mydump)
     #
     p = obj2._read_struct(0, Struct)
     assert p._read_data(0, Types.int64.ifmt) == 1
