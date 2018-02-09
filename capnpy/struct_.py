@@ -1,4 +1,5 @@
 import marshal
+import warnings
 import capnpy
 from capnpy import ptr
 from capnpy.type import Types
