@@ -88,7 +88,7 @@ class TestCharter(object):
         charter = Charter(tmpdir, revision='123')
         files = charter.files_to_load(3)
         files = [f.relto(tmpdir) for f in files]
-        assert files == [
+        assert sorted(files) == [
             'CPython/017.json',
             'CPython/018.json',
             'CPython/019.json',
