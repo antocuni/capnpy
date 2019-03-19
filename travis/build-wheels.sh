@@ -7,6 +7,7 @@ PYTHONS=(
     cp27-cp27mu
     cp35-cp35m
     cp36-cp36m
+    cp37-cp37m
     )
 
 for pydir in "${PYTHONS[@]}"; do
