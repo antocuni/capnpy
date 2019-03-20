@@ -4,7 +4,7 @@ from six import b
 
 import capnpy
 from capnpy.testing.compiler.support import CompilerTest
-from capnpy.compiler.compiler import CompilerError, DynamicCompiler
+from capnpy.compiler.compiler import CompilerError, BaseCompiler, DynamicCompiler
 
 
 class TestCompilerOptions(CompilerTest):
@@ -241,7 +241,30 @@ class TestCapnpExcecutable(CompilerTest):
         exc = py.test.raises(CompilerError, "self.compile(schema)")
         assert str(exc.value).startswith('The capnp executable is too old')
 
+    def test_capnp_path(self, tmpdir):
+        class MyFakeCompiler(BaseCompiler):
+            def _exec(self, *cmd):
+                return cmd
 
+            def _capnp_check_version(self):
+                return True
+
+        d1 = tmpdir.ensure('mydir1', dir=True)
+        d2 = tmpdir.ensure('mydir2', dir=True)
+        f1 = tmpdir.ensure('myfile1', file=True)
+        path = [tmpdir.join('mydir1'),
+                tmpdir.join('mydir2'),
+                tmpdir.join('myfile')]
+        comp = MyFakeCompiler(path)
+        cmd = comp._capnp_compile('myschema.capnp')
+        # check that myfile is NOT included in the -I options
+        assert cmd == (
+            'capnp',
+            'compile',
+            '-o-',
+            '-I%s' % d1,
+            '-I%s' % d2,
+            'myschema.capnp')
 
 class TestDynamicCompiler(object):
 

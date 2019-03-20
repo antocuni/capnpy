@@ -85,7 +85,7 @@ class BaseCompiler(object):
         # If <lang> is '-', the capnp compiler dumps the CodeGeneratorRequest bytes to standard output.
         cmd = ['capnp', 'compile', '-o-']
         for dirname in self.path:
-            if os.path.isdir(str(dirname)):
+            if dirname.isdir():
                 cmd.append('-I%s' % dirname)
         cmd.append(str(filename))
         return self._exec(*cmd)
