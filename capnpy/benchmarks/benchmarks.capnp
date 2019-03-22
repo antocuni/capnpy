@@ -1,6 +1,7 @@
 @0xe62e66ea90a396da;
 
 using Py = import "/capnpy/annotate.capnp";
+using Imported = import "/capnpy/benchmarks/benchmarks_base.capnp";
 
 enum Color {
     red @0;
@@ -31,6 +32,7 @@ struct MyStruct {
     inner @14 :MyInner;
     intlist @15 :List(Int64);
     color @16 :Color;
+    colorImported @17: Imported.Color;
 }
 
 struct MyInner {

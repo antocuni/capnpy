@@ -11,7 +11,7 @@ class Instance(object):
     class MyStruct(object):
         def __init__(self, padding, bool, int8, int16, int32, int64, uint8,
                      uint16, uint32, uint64, float32, float64, text, group, inner,
-                     intlist, color):
+                     intlist, color, color_imported):
             self.padding = padding
             self.bool = bool
             self.int8 = int8
@@ -29,6 +29,7 @@ class Instance(object):
             self.inner = inner
             self.intlist = intlist
             self.color = color
+            self.color_imported = color_imported
 
     class MyGroup(object):
         def __init__(self, field):
@@ -78,7 +79,7 @@ class NamedTuple(object):
                                  'int32', 'int64', 'uint8', 'uint16',
                                  'uint32', 'uint64', 'float32',
                                  'float64', 'text', 'group', 'inner', 'intlist',
-                                 'color'])
+                                 'color', 'color_imported'])
 
     MyGroup = namedtuple('MyGroup', ['field'])
     MyInner = namedtuple('MyInner', ['field'])
@@ -87,12 +88,12 @@ class NamedTuple(object):
 
         def __new__(cls, padding, bool, int8, int16, int32, int64, uint8,
                     uint16, uint32, uint64, float32, float64, text, group, inner,
-                    intlist, color):
+                    intlist, color, color_imported):
             group = NamedTuple.MyGroup(*group)
             return NamedTuple._Base.__new__(
                 cls, padding, bool, int8, int16, int32, int64,
                 uint8, uint16, uint32, uint64, float32, float64,
-                text, group, inner, intlist, color)
+                text, group, inner, intlist, color, color_imported)
 
     Point = namedtuple('Point', ['x', 'y', 'z'])
     StrPoint = namedtuple('StrPoint', ['x', 'y', 'z'])
@@ -129,7 +130,7 @@ class PyCapnp(object):
 
         def __new__(cls, padding, bool, int8, int16, int32, int64, uint8, uint16, uint32,
                     uint64, float32, float64, text, group, inner, intlist,
-                    color):
+                    color, color_imported):
             if pycapnp is None:
                 py.test.skip('cannot import pycapnp')
             s = pycapnp_schema.MyStruct.new_message()
