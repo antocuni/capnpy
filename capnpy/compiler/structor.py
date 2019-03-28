@@ -130,7 +130,7 @@ class Structor(object):
         #         x_value = x
         #
         value_node = node.children[1]
-        assert value_node.f.name == 'value' # sanity check
+        assert value_node.f.name == b'value' # sanity check
         ns = self.m.code.new_scope()
         ns.fname = node.varname
         ns.value_default = value_node.default
