@@ -475,7 +475,7 @@ Named unions
 
 Named unions are a special case of groups.
 
-.. literalinclude:: example_union.capnp
+.. literalinclude:: example_named_union.capnp
    :language: capnp
 
 
