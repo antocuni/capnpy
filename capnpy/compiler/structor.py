@@ -129,13 +129,16 @@ class Structor(object):
         #         x_is_null = 0
         #         x_value = x
         #
+        value_node = node.children[1]
+        assert value_node.f.name == 'value' # sanity check
         ns = self.m.code.new_scope()
         ns.fname = node.varname
+        ns.value_default = value_node.default
         ns.ww(
         """
             if {fname} is None:
                 {fname}_is_null = 1
-                {fname}_value = 0
+                {fname}_value = {value_default}
             else:
                 {fname}_is_null = 0
                 {fname}_value = {fname}

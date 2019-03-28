@@ -28,7 +28,7 @@ class Node__Struct:
                     # Register the fake node_group.
                     field = m.field_override[field]
                 assert field.is_group()
-                group_node = m.allnodes[field.group.typeId]
+                group_node = field.group.get_node(m)
                 m.register_extra_annotation(group_node, ann)
 
         ns = m.code.new_scope()
@@ -206,7 +206,7 @@ class Node__Struct:
                 ns.fname = m._field_name(f)
                 if f.is_nullable(m):
                     assert f.is_group()
-                    f = m.allnodes[f.group.typeId].struct.fields[1]
+                    f = f.group.get_node(m).struct.fields[1]
                     ns.fieldrepr = self._shortrepr_for_field(ns, f)
                     ns.append = ns.format('parts.append("{fname} = %s" % ({fieldrepr} if self.{fname} is not None else None))')
                 else:

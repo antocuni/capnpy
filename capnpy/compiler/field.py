@@ -204,7 +204,7 @@ class Field__Slot:
 class Field__Group:
 
     def _emit(self, m, ns, name):
-        groupnode = m.allnodes[self.group.typeId]
+        groupnode = self.group.get_node(m)
         ns.groupcls = groupnode.compile_name(m)
         ns.name = name
         nullable = self.is_nullable(m)
@@ -238,7 +238,7 @@ class Field__Group:
         ## def Position(x=0, y=42):
         ##     return x, y
         ##
-        groupnode = m.allnodes[self.group.typeId]
+        groupnode = self.group.get_node(m)
         union_default = None
         if groupnode.struct.is_union():
             union_default = '_undefined'
@@ -254,3 +254,9 @@ class Field__Group:
                 return {argnames},
         """)
         ns.w()
+
+
+@schema.Field_group.__extend__
+class Field_group:
+    def get_node(self, m):
+        return m.allnodes[self.typeId]

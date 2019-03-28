@@ -100,7 +100,7 @@ class Node(AbstractNode):
     def _init_children(self, m, field_force_default):
         self.children = []
         if self.f.is_group():
-            group = m.allnodes[self.f.group.typeId]
+            group = self.f.group.get_node(m)
             self._add_children(m, group.struct.fields, prefix=self.varname,
                                field_force_default=field_force_default)
             if group.struct.is_union():
@@ -116,7 +116,6 @@ class Node(AbstractNode):
             self.default = str(default_val)
         else:
             assert self.f.is_group()
-
             if self.f.is_nullable(m):
                 self.default = 'None'
             else:

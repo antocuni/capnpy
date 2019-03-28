@@ -87,6 +87,15 @@ class TestNullable(CompilerTest):
                 value  @1 :Int64;
             }
         }
+        struct Bar {
+            p :group $Py.nullable {
+                isNull @0 :Int8;
+                value :group {
+                    x @1: Int8;
+                    y @2: Int8;
+                }
+            }
+        }
         """
         return self.compile(schema)
 
@@ -121,6 +130,21 @@ class TestNullable(CompilerTest):
         assert foo._x.value == 0
         assert foo.x is None
 
+    def test_ctor_nullable_group(self, mod):
+        # check that we can pass a null value
+        bar = mod.Bar(p=None)
+        assert bar._p.is_null
+        assert bar.p is None
+        #
+        # check that we can pass a non-null value
+        bar = mod.Bar(p=(1,2))
+        assert not bar._p.is_null
+        assert bar._p.value.x == 1
+        assert bar._p.value.y == 2
+        assert bar.p.x == 1
+        assert bar.p.y == 2
+        # ...
+
     def test_bad_nullable(self):
         schema = """
         @0xbf5147cbbecf40c1;
@@ -136,3 +160,4 @@ class TestNullable(CompilerTest):
         msg = str(exc.value)
         assert msg == ('x: nullable groups must have exactly two fields: '
                        '"isNull" and "value"')
+

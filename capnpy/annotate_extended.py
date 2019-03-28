@@ -11,7 +11,7 @@ class nullable:
             msg = '%s: nullable groups must have exactly two fields: "isNull" and "value"'
             raise ValueError(msg % name)
         #
-        group = m.allnodes[field.group.typeId]
+        group = field.group.get_node(m)
         if len(group.struct.fields) != 2:
             error()
         f_is_null, f_value = group.struct.fields
