@@ -88,7 +88,7 @@ class TestNullable(CompilerTest):
             }
         }
         struct Bar {
-            p :group $Py.nullable {
+            point :group $Py.nullable {
                 isNull @0 :Int8;
                 value :group {
                     x @1: Int8;
@@ -132,18 +132,23 @@ class TestNullable(CompilerTest):
 
     def test_ctor_nullable_group(self, mod):
         # check that we can pass a null value
-        bar = mod.Bar(p=None)
-        assert bar._p.is_null
-        assert bar.p is None
+        bar = mod.Bar(point=None)
+        assert bar._point.is_null
+        assert bar.point is None
         #
         # check that we can pass a non-null value
-        bar = mod.Bar(p=(1,2))
-        assert not bar._p.is_null
-        assert bar._p.value.x == 1
-        assert bar._p.value.y == 2
-        assert bar.p.x == 1
-        assert bar.p.y == 2
-        # ...
+        bar = mod.Bar(point=(1,2))
+        assert not bar._point.is_null
+        assert bar._point.value.x == 1
+        assert bar._point.value.y == 2
+        assert bar.point.x == 1
+        assert bar.point.y == 2
+        #
+        # check that we can use the ctor-like syntax
+        bar = mod.Bar(mod.Bar_point.Value(x=1, y=2))
+        assert bar.point.x == 1
+        assert bar.point.y == 2
+
 
     def test_bad_nullable(self):
         schema = """
