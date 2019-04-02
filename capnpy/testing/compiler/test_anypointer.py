@@ -29,4 +29,6 @@ class TestAnyPointer(CompilerTest):
         assert not p.is_struct()
         assert p.is_list()
         assert p.is_text()
+        assert p.is_data()
         assert p.as_text() == 'hello capnproto'
+        assert p.as_data() == 'hello capnproto\0'
