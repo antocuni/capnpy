@@ -30,3 +30,5 @@ class AnyPointer(object):
     def as_data(self):
         return self.struct_._read_str_data(self.offset)
 
+    def as_struct(self, structcls):
+        return self.struct_._read_struct(self.offset, structcls)
