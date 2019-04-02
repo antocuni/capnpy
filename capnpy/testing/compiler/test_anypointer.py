@@ -1,4 +1,6 @@
 import py
+from capnpy.list import PrimitiveItemType, StructItemType
+from capnpy.type import Types
 from capnpy.testing.compiler.support import CompilerTest
 
 class TestAnyPointer(CompilerTest):
@@ -62,3 +64,54 @@ class TestAnyPointer(CompilerTest):
         assert p1.y == 2
         assert p2.x == 3
         assert p2.y == 4
+
+    def test_as_list_of_primitives(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            p @0 :AnyPointer;
+        }
+        """
+        mod = self.compile(schema)
+        buf = (b'\x01\x00\x00\x00\x25\x00\x00\x00'  # ptrlist
+               '\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
+               '\x02\x00\x00\x00\x00\x00\x00\x00'   # 2
+               '\x03\x00\x00\x00\x00\x00\x00\x00'   # 3
+               '\x04\x00\x00\x00\x00\x00\x00\x00')  # 4
+        f = mod.Foo.from_buffer(buf, 0, 0, 1)
+        assert f.p.is_list()
+        assert not f.p.is_struct()
+        assert not f.p.is_text()
+        items = f.p.as_list(PrimitiveItemType(Types.int64))
+        assert items == [1, 2, 3, 4]
+
+    def test_as_list_of_structs(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Polygon {
+            struct Point {
+                x @0 :Int64;
+                y @1 :Int64;
+            }
+            points @0 :AnyPointer;
+        }
+        """
+        mod = self.compile(schema)
+        buf = (b'\x01\x00\x00\x00\x47\x00\x00\x00'   # ptrlist
+               '\x10\x00\x00\x00\x02\x00\x00\x00'    # list tag
+               '\x0a\x00\x00\x00\x00\x00\x00\x00'    # 10
+               '\x64\x00\x00\x00\x00\x00\x00\x00'    # 100
+               '\x14\x00\x00\x00\x00\x00\x00\x00'    # 20
+               '\xc8\x00\x00\x00\x00\x00\x00\x00'    # 200
+               '\x1e\x00\x00\x00\x00\x00\x00\x00'    # 30
+               '\x2c\x01\x00\x00\x00\x00\x00\x00'    # 300
+               '\x28\x00\x00\x00\x00\x00\x00\x00'    # 40
+               '\x90\x01\x00\x00\x00\x00\x00\x00')   # 400
+        poly = mod.Polygon.from_buffer(buf, 0, 0, 1)
+        assert poly.points.is_list()
+        assert not poly.points.is_struct()
+        assert not poly.points.is_text()
+        points = poly.points.as_list(StructItemType(mod.Polygon_Point))
+        assert len(points) == 4
+        assert points[0].x == 10
+        assert points[0].y == 100

@@ -32,3 +32,6 @@ class AnyPointer(object):
 
     def as_struct(self, structcls):
         return self.struct_._read_struct(self.offset, structcls)
+
+    def as_list(self, item_type):
+        return self.struct_._read_list(self.offset, item_type)
