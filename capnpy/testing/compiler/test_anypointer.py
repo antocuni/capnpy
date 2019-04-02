@@ -25,4 +25,8 @@ class TestAnyPointer(CompilerTest):
         buf = (b'\x01\x00\x00\x00\x82\x00\x00\x00'  # ptrlist
                'hello capnproto\0')                 # string
         f = mod.Foo.from_buffer(buf, 0, 0, 1)
-        assert f.p.as_text() == 'hello capnproto'
+        p = f.p
+        assert not p.is_struct()
+        assert p.is_list()
+        assert p.is_text()
+        assert p.as_text() == 'hello capnproto'
