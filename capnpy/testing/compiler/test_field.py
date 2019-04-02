@@ -370,29 +370,6 @@ class TestField(CompilerTest):
         assert p.b == False
         assert p.c == True
 
-    def test_anyPointer(self):
-        schema = """
-        @0xbf5147cbbecf40c1;
-        struct Foo {
-            x @0 :AnyPointer;
-        }
-        """
-        mod = self.compile(schema)
-        f = mod.Foo.from_buffer(b'somedata', 0, 0, 1)
-        py.test.raises(ValueError, "f.x")
-
-    def test_anyPointer_null(self):
-        schema = """
-        @0xbf5147cbbecf40c1;
-        struct Foo {
-            x @0 :AnyPointer;
-        }
-        """
-        mod = self.compile(schema)
-        f = mod.Foo.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        assert f.x is None
-
-
 class TestList(CompilerTest):
 
     def test_list_of_primitive(self):

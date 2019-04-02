@@ -101,6 +101,7 @@ class RequestedFile:
         m.w("from capnpy.list {cimport} EnumItemType as _EnumItemType")
         m.w("from capnpy.list {cimport} VoidItemType as _VoidItemType")
         m.w("from capnpy.list {cimport} ListItemType as _ListItemType")
+        m.w("from capnpy.anypointer import AnyPointer as _AnyPointer")
         m.w("from capnpy.util import text_repr as _text_repr")
         m.w("from capnpy.util import float32_repr as _float32_repr")
         m.w("from capnpy.util import float64_repr as _float64_repr")

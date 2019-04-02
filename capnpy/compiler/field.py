@@ -187,7 +187,7 @@ class Field__Slot:
             {ensure_union}
             if not self.has_{name}():
                 return None
-            raise ValueError("Cannot get fields of type AnyPointer")
+            return _AnyPointer(self, {offset})
         """)
         self._emit_has_method(ns)
 
