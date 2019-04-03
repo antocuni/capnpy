@@ -166,3 +166,19 @@ class TestNullable(CompilerTest):
         assert msg == ('x: nullable groups must have exactly two fields: '
                        '"isNull" and "value"')
 
+
+    def test_bad_nullable_2(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        struct Foo {
+            x :group $Py.nullable {
+                isNull @0 :Int8;
+                value  @1 :Text;
+            }
+        }
+        """
+        exc = py.test.raises(ValueError, "self.compile(schema)")
+        msg = str(exc.value)
+        assert msg == ('x: cannot use pointer types for nullable values. '
+                       'Pointers are already nullable.')

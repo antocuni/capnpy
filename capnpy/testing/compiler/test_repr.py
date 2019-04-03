@@ -284,7 +284,7 @@ class TestShortRepr(CompilerTest):
         assert p.is_d()
         self.check(p, '(d = [])')
 
-    def test_null(self):
+    def test_nullable(self):
         schema = """
         @0xbf5147cbbecf40c1;
         using Py = import "/capnpy/annotate.capnp";
