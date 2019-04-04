@@ -63,7 +63,7 @@ class ModuleGenerator(object):
         if obj.annotations is not None:
             annotations += obj.annotations
         for ann in annotations:
-            if ann.id == anncls.__id__:
+            if ann.id == anncls.__capnpy_id__:
                 # XXX: probably "annotation" should be taken by the
                 # constructor
                 res = anncls()

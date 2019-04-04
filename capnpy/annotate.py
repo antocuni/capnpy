@@ -34,7 +34,7 @@ __capnpy_version__ = '0.5.5.dev48+ng36be642.d20190610'
 #### FORWARD DECLARATIONS ####
 
 class key(object):
-    __id__ = 14658097673689429382
+    __capnpy_id__ = 14658097673689429382
     targets_file = False
     targets_const = False
     targets_enum = False
@@ -48,7 +48,7 @@ class key(object):
     targets_param = False
     targets_annotation = False
 class nullable(object):
-    __id__ = 11296117080722892765
+    __capnpy_id__ = 11296117080722892765
     targets_file = False
     targets_const = False
     targets_enum = False
@@ -62,7 +62,7 @@ class nullable(object):
     targets_param = False
     targets_annotation = False
 class group(object):
-    __id__ = 12694526166034528397
+    __capnpy_id__ = 12694526166034528397
     targets_file = False
     targets_const = False
     targets_enum = False
@@ -95,7 +95,7 @@ class Options(_Struct): pass
 Options.__name__ = 'Options'
 
 class options(object):
-    __id__ = 13670177934128632979
+    __capnpy_id__ = 13670177934128632979
     targets_file = True
     targets_const = False
     targets_enum = False
