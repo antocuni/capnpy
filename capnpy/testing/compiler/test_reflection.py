@@ -1,4 +1,5 @@
 import py
+from capnpy import reflection
 from capnpy.testing.compiler.support import CompilerTest
 
 class TestReflection(CompilerTest):
@@ -16,3 +17,16 @@ class TestReflection(CompilerTest):
         # we don't want to hardcode the exact value of Point's id, just check
         # that it exists
         assert mod.Point.__capnpy_id__
+
+    def test_get_reflection_data(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        """
+        mod = self.compile(schema)
+        data = reflection.get_reflection_data(mod)
+        reqfile = data._modgen.request.requestedFiles[0]
+        assert reqfile.filename == mod.__file__

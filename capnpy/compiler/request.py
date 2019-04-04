@@ -94,6 +94,7 @@ class RequestedFile:
         m.w("from capnpy.enum import enum as _enum, fill_enum as _fill_enum")
         m.w("from capnpy.enum {cimport} BaseEnum as _BaseEnum")
         m.w("from capnpy.type import Types as _Types")
+        m.w("from capnpy.reflection import ReflectionData as _ReflectionData")
         m.w("from capnpy.segment.builder {cimport} SegmentBuilder as _SegmentBuilder")
         m.w("from capnpy.list {cimport} List as _List")
         m.w("from capnpy.list {cimport} PrimitiveItemType as _PrimitiveItemType")
@@ -131,7 +132,9 @@ class RequestedFile:
             m.w('_check_version(__name__, __capnpy_version__)')
         else:
             m.w('# schema compiled with --no-version-check, skipping the call to _check_version')
+
         self._declare_imports(m)
+        self._emit_reflection_data(m)
         m.w("")
         #
         # visit the children in two passes: first the declaration, then the
@@ -179,3 +182,17 @@ class RequestedFile:
             else:
                 ns.pyx = m.pyx
                 ns.w('{importname} = __compiler.load_schema(importname="{fullpath}", pyx={pyx})')
+
+    def _emit_reflection_data(self, m):
+        ns = m.code.new_scope()
+        ns.modname = m.modname
+        ns.data = m.request.dumps()
+        ns.convert_case = m.convert_case
+        ns.pyx = m.pyx
+        ns.ww("""
+            class _{modname}_ReflectionData(_ReflectionData):
+                request_data = {data!r}
+                convert_case = {convert_case}
+                pyx = {pyx}
+            _reflection_data = _{modname}_ReflectionData()
+        """)
