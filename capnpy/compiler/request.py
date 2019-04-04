@@ -125,6 +125,7 @@ class RequestedFile:
             # _compile_pyx for a detailed explanation
             m.w('from %s import __compiler, __schema__' % m.tmpname)
         #
+        m.w('__capnpy_id__ = {id:#x}', id=self.id)
         m.w('__capnpy_version__ = {version!r}', version=capnpy.__version__)
         if m.version_check:
             m.w('_check_version(__name__, __capnpy_version__)')

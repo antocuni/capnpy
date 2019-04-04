@@ -57,6 +57,7 @@ class Node__Struct:
             child.emit_definition(m)
         #
         ns = m.code.new_scope()
+        ns.id = self.id
         ns.name = self.compile_name(m)
         ns.dotname = self.runtime_name(m)
         ns.data_size = self.struct.dataWordCount
@@ -70,6 +71,7 @@ class Node__Struct:
         #
         with ns.block("{cdef class} {name}(_Struct):"):
             ns.ww("""
+                __capnpy_id__ = {id:#x}
                 __static_data_size__ = {data_size}
                 __static_ptrs_size__ = {ptrs_size}
 
