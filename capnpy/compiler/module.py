@@ -33,6 +33,14 @@ class ModuleGenerator(object):
         self.importnames = {} # filename -> import name
         self.extra_annotations = defaultdict(list) # obj -> [ann]
         self.field_override = {} # obj -> obj
+        self.current_scope = None
+        self.collect_nodes()
+
+    def collect_nodes(self):
+        for node in self.request.nodes:
+            self.allnodes[node.id] = node
+            # roots have scopeId == 0, so they will be in children[0]
+            self.children[node.scopeId].append(node)
 
     def options(self, node_or_field):
         return self._node_options[node_or_field.id]

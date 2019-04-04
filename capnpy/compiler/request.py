@@ -43,11 +43,6 @@ def fake_py_group(m, parent_id, ann):
 class CodeGeneratorRequest:
 
     def emit(self, m):
-        for node in self.nodes:
-            m.allnodes[node.id] = node
-            # roots have scopeId == 0, so they will be in children[0]
-            m.children[node.scopeId].append(node)
-        #
         py_group_fields = find_all_py_group_fields(m)
         for parent_id, ann in py_group_fields:
             fake_py_group(m, parent_id, ann)

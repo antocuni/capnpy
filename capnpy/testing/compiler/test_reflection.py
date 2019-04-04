@@ -1,5 +1,5 @@
 import py
-from capnpy import reflection
+from capnpy.reflection import get_reflection_data
 from capnpy.testing.compiler.support import CompilerTest
 
 class TestReflection(CompilerTest):
@@ -27,6 +27,24 @@ class TestReflection(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        data = reflection.get_reflection_data(mod)
-        reqfile = data._modgen.request.requestedFiles[0]
+        reflection = get_reflection_data(mod)
+        reqfile = reflection.m.request.requestedFiles[0]
         assert reqfile.filename == mod.__file__
+
+    def test_get_node(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        """
+        mod = self.compile(schema)
+        reflection =  get_reflection_data(mod)
+        mod_node = reflection.get_node(mod)
+        assert mod_node.is_file()
+        assert mod_node.id == 0xbf5147cbbecf40c1
+        #
+        point_node = reflection.get_node(mod.Point)
+        assert point_node.is_struct
+        assert point_node.shortname(reflection.m) == 'Point'
