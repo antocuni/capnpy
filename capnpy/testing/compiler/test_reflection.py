@@ -49,3 +49,19 @@ class TestReflection(CompilerTest):
         point_node = reflection.get_node(mod.Point)
         assert point_node.is_struct
         assert point_node.shortname(reflection.m) == 'Point'
+
+    def test_has_annotation(self):
+        from capnpy import annotate
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        struct Point $Py.key("x, y") {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        """
+        mod = self.compile(schema)
+        reflection =  get_reflection_data(mod)
+        node_Point = reflection.get_node(mod.Point)
+        assert reflection.has_annotation(node_Point, annotate.key)
+        assert reflection.has_annotation(mod.Point, annotate.key)
