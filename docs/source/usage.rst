@@ -293,6 +293,50 @@ inspired by ``namedtuples``:
 .. __: #equality-and-hashing
 
 
+Moreover, in case the type of a field is a pointer (e.g. ``Text``, ``Data``,
+structs and lists), ``capnpy`` generates two different accessors. For a field
+named ``foo``:
+
+  - ``has_foo()``: return ``True`` if ``foo`` is not ``NULL``, ``False``
+    otherwise
+
+  - ``get_foo()``: if ``has_foo()`` is ``True``, it is equivalent to
+    ``foo``. Else, it returns the default value for that field
+
+Note that in case of a ``struct`` field, the default value is a struct whose
+fields have all the default value, recursively:
+
+.. literalinclude:: example_struct.capnp
+   :language: capnp
+
+.. doctest::
+
+    >>> mod = capnpy.load_schema('example_struct')
+    >>> p = mod.Point()
+    >>> p
+    <Point: (x = 0, y = 0)>
+    >>> print p.name
+    None
+    >>> p.has_name()
+    False
+    >>> p.get_name()
+    ''
+    >>> rect = mod.Rectangle()
+    >>> print rect.a
+    None
+    >>> print rect.has_a()
+    False
+    >>> print rect.get_a()
+    <Point: (x = 0, y = 0)>
+    >>> rect.get_a().get_name()
+    ''
+
+The rationale is that ``get_foo()`` and ``has_foo()`` are modeled after the
+semantics of the original C++ implementation of capnproto, while ``.foo`` is
+modeled after the Pythonic ``namedtuple`` API. In particular ``.foo`` returns
+``None`` instead of the default value to avoid unpythonic and surprising cases
+such as ``Point(name=None).name == ''``
+
 Enum
 -----
 
