@@ -1,5 +1,6 @@
 from __future__ import print_function
 import py
+import six
 import keyword
 from collections import defaultdict
 from pypytools.codegen import Code
@@ -7,6 +8,7 @@ from six import PY3
 
 from capnpy.compiler.util import as_identifier
 from capnpy.convert_case import from_camel_case
+from capnpy import schema
 from capnpy import annotate
 
 # the following imports have side-effects, and augment the schema.* classes
@@ -41,6 +43,7 @@ class ModuleGenerator(object):
             self.allnodes[node.id] = node
             # roots have scopeId == 0, so they will be in children[0]
             self.children[node.scopeId].append(node)
+        self.handle_py_groups()
 
     def options(self, node_or_field):
         return self._node_options[node_or_field.id]
@@ -79,6 +82,33 @@ class ModuleGenerator(object):
                 res.target = obj
                 return res
         return None
+
+    def handle_py_groups(self):
+        def register_py_group(struct_id, ann):
+            field_void = ann.target
+            node_group = schema.Node__Struct.from_group_annotation(
+                self, struct_id, field_void, ann.annotation)
+            node_id = node_group.id
+
+            self.allnodes[node_id] = node_group
+            self.children[struct_id].append(node_group)
+            # Todo: we should populate `self.children[node_id]`
+
+            # register a fake field
+            field_group = schema.Field__Group.from_group_annotation(
+                node_id, field_void)
+            self.register_field_override(field_void, field_group)
+
+        for struct_id, node in list(six.iteritems(self.allnodes)):
+            if not node.is_struct():
+                continue
+
+            for field in node.struct.fields or []:
+                ann = self.has_annotation(field, annotate.group)
+                if ann:
+                    ann.check(self)
+                    register_py_group(struct_id, ann)
+
 
     def w(self, *args, **kwargs):
         self.code.w(*args, **kwargs)

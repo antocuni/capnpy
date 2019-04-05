@@ -1,4 +1,5 @@
 import py
+from six import b
 from capnpy.reflection import get_reflection_data
 from capnpy.testing.compiler.support import CompilerTest
 
@@ -29,7 +30,7 @@ class TestReflection(CompilerTest):
         mod = self.compile(schema)
         reflection = get_reflection_data(mod)
         reqfile = reflection.m.request.requestedFiles[0]
-        assert reqfile.filename == mod.__file__
+        assert reqfile.filename == b(mod.__file__)
 
     def test_get_node(self):
         schema = """
