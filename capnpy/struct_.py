@@ -287,8 +287,10 @@ class Struct(Blob):
         return hash(self._key())
 
     def _equals(self, other):
-        # by doing this, we ensure that we compare equals to tuples
-        return other == self._key()
+        if isinstance(other, Struct) or isinstance(other, tuple):
+            # by doing this, we ensure that we compare equals to tuples
+            return other == self._key()
+        return False
 
     # this is already defined in blob.py: however, it seems if we do not
     # redeclare it here, Cython won't use it

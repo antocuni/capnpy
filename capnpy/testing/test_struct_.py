@@ -191,6 +191,18 @@ def test_comparisons_succeed():
     py.test.raises(TypeError, "s1 > s2")
     py.test.raises(TypeError, "s1 >= s2")
 
+def test_can_compare_with_other_types():
+    class SubTuple(tuple):
+        pass
+    s = Struct.from_buffer(b'', 0, data_size=0, ptrs_size=0)
+    assert not s == 'hello'
+    assert s != 'hello'
+    py.test.raises(TypeError, "s == ()")
+    py.test.raises(TypeError, "s != ()")
+    py.test.raises(TypeError, "s == SubTuple()")
+    py.test.raises(TypeError, "s != SubTuple()")
+
+
 def test_check_null_buffer():
     py.test.raises(AssertionError, "Struct(None, 0, 0, 0)")
 
