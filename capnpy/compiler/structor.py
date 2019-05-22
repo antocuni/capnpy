@@ -147,7 +147,7 @@ class Structor(object):
             self.handle_node(child)
 
     def handle_text(self, node):
-        self.m.code.w('builder.alloc_text(pos + {offset}, {arg})',
+        self.m.code.w('builder.alloc_text(pos + {offset}, {arg}.encode("utf-8"))',
                       arg=node.varname, offset=self.slot_offset(node.f))
 
     def handle_data(self, node):
