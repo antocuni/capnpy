@@ -1,3 +1,5 @@
+#! -*- encoding: utf-8 -*-
+
 import py
 from six import b, PY3
 
@@ -79,7 +81,25 @@ class TestField(CompilerTest):
 
         f = mod.Foo.from_buffer(buf, 0, 1, 1)
         assert f.x == 1
-        assert f.name == b'hello capnproto'
+        assert f.name == u'hello capnproto'
+
+    def test_utf8(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            x @0 :Int64;
+            name @1 :Text;
+        }
+        """
+        mod = self.compile(schema)
+
+        buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
+                '\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
+                'hello utf8 \xc3\xa0\xc3\xa8\x00')   # utf-8 encoded string
+        f = mod.Foo.from_buffer(buf, 0, 1, 1)
+        assert f.x == 1
+        assert f.name == u'hello utf8 àè'
+
 
     def test_data(self):
         schema = """

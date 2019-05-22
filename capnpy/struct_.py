@@ -222,7 +222,10 @@ class Struct(Blob):
         return obj
 
     def _read_str_text(self, offset, default_=None):
-        return self._read_str_data(offset, default_, additional_size=-1)
+        t = self._read_str_data(offset, default_, additional_size=-1)
+        if t is None:
+            return t
+        return t.decode('utf-8')
 
     def _hash_str_text(self, offset, default_=hash(None)):
         return self._hash_str_data(offset, default_, additional_size=-1)
