@@ -94,8 +94,9 @@ def test_null_pointers():
     #
     val = b'dummy default value'
     assert blob._read_list(0, None, default_=val) is val
-    assert blob._read_str_text(0, default_=val) is val
-
+    txt = blob._read_str_text(0, default_=val)
+    assert txt == val
+    assert isinstance(txt, unicode)
 
 def test_far_pointer():
     # see also test_list.test_far_pointer
