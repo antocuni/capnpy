@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2017-11-06 17:03
+# generated on 2019-05-22 18:44
 
 from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
@@ -18,30 +18,17 @@ from capnpy.list import StructItemType as _StructItemType
 from capnpy.list import EnumItemType as _EnumItemType
 from capnpy.list import VoidItemType as _VoidItemType
 from capnpy.list import ListItemType as _ListItemType
+from capnpy.anypointer import AnyPointer as _AnyPointer
 from capnpy.util import text_repr as _text_repr
 from capnpy.util import float32_repr as _float32_repr
 from capnpy.util import float64_repr as _float64_repr
 from capnpy.util import extend_module_maybe as _extend_module_maybe
 from capnpy.util import check_version as _check_version
-__capnpy_version__ = '0.3.1.dev117+ng1376675.d20171101'
+__capnpy_version__ = '0.5.4.dev12+ngbc554c5.d20190405'
 # schema compiled with --no-version-check, skipping the call to _check_version
 
 #### FORWARD DECLARATIONS ####
 
-class nullable(object):
-    __id__ = 11296117080722892765
-    targets_file = False
-    targets_const = False
-    targets_enum = False
-    targets_enumerant = False
-    targets_struct = False
-    targets_field = False
-    targets_union = False
-    targets_group = True
-    targets_interface = False
-    targets_method = False
-    targets_param = False
-    targets_annotation = False
 class group(object):
     __id__ = 12694526166034528397
     targets_file = False
@@ -52,6 +39,20 @@ class group(object):
     targets_field = True
     targets_union = False
     targets_group = False
+    targets_interface = False
+    targets_method = False
+    targets_param = False
+    targets_annotation = False
+class nullable(object):
+    __id__ = 11296117080722892765
+    targets_file = False
+    targets_const = False
+    targets_enum = False
+    targets_enumerant = False
+    targets_struct = False
+    targets_field = False
+    targets_union = False
+    targets_group = True
     targets_interface = False
     targets_method = False
     targets_param = False
