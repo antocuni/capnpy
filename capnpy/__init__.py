@@ -11,6 +11,8 @@ try:
 except Exception:
     __version__ = 'unknown'
 
+__version__ += '-text-unicode'
+
 _compiler = DynamicCompiler(sys.path)
 load_schema = _compiler.load_schema
 parse_schema = _compiler.parse_schema
