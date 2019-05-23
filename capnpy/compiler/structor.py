@@ -179,7 +179,7 @@ class Structor(object):
         t = node.f.slot.type.list.elementType
         ns.list_item_type = t.list_item_type(self.m)
         if t.is_text():
-            ns.w('{fname} = [_ensure_bytes(_item) for _item in {fname}]')
+            ns.w('{fname} = {fname} and [_ensure_bytes(_item) for _item in {fname}] or {fname}')
         ns.w('builder.copy_from_list(pos + {offset}, {list_item_type}, {fname})')
 
     def handle_primitive(self, node):
