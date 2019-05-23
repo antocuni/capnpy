@@ -107,6 +107,7 @@ class RequestedFile:
         m.w("from capnpy.util import float64_repr as _float64_repr")
         m.w("from capnpy.util import extend_module_maybe as _extend_module_maybe")
         m.w("from capnpy.util import check_version as _check_version")
+        m.w("from capnpy.util import ensure_bytes as _ensure_bytes")
         #
         if m.pyx:
             m.w("from capnpy cimport _hash")
