@@ -124,7 +124,7 @@ class TestShortRepr(CompilerTest):
         p = self.mod.P(txt=b"tricky \" '")
         self.check(p, r'(txt = "tricky \" \'")')
         #
-        p = self.mod.P(txt=u'hellò'.encode('utf-8'))
+        p = self.mod.P(txt=u'hellò')
         self.check(p, r'(txt = "hell\xc3\xb2")')
 
     def test_data_special_chars(self):
