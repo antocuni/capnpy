@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2019-05-22 18:44
+# generated on 2019-05-23 11:33
 
 from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
@@ -24,6 +24,7 @@ from capnpy.util import float32_repr as _float32_repr
 from capnpy.util import float64_repr as _float64_repr
 from capnpy.util import extend_module_maybe as _extend_module_maybe
 from capnpy.util import check_version as _check_version
+from capnpy.util import ensure_bytes as _ensure_bytes
 __capnpy_version__ = '0.5.4.dev12+ngbc554c5.d20190405'
 # schema compiled with --no-version-check, skipping the call to _check_version
 
@@ -212,7 +213,7 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
         builder = _SegmentBuilder()
         pos = builder.allocate(16)
         builder.write_uint64(pos + 0, id)
-        builder.alloc_text(pos + 8, name.encode("utf-8"))
+        builder.alloc_text(pos + 8, name and name.encode("utf-8")) or name
         return builder.as_string()
     
     def __init__(self, id=0, name=None):
@@ -274,7 +275,7 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
         builder = _SegmentBuilder()
         pos = builder.allocate(24)
         builder.write_uint64(pos + 0, id)
-        builder.alloc_text(pos + 8, filename.encode("utf-8"))
+        builder.alloc_text(pos + 8, filename and filename.encode("utf-8")) or filename
         builder.copy_from_list(pos + 16, _CodeGeneratorRequest_RequestedFile_Import_list_item_type, imports)
         return builder.as_string()
     
@@ -397,11 +398,11 @@ class Brand_Scope(_Struct):
         anonymous__curtag = None
         builder.write_uint64(pos + 0, scopeId)
         if bind is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'bind')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'bind')
             builder.write_int16(8, 0)
             builder.copy_from_list(pos + 16, _Brand_Binding_list_item_type, bind)
         if inherit is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'inherit')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'inherit')
             builder.write_int16(8, 1)
         return builder.as_string()
     
@@ -480,10 +481,10 @@ class Brand_Binding(_Struct):
         pos = builder.allocate(16)
         anonymous__curtag = None
         if unbound is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'unbound')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'unbound')
             builder.write_int16(0, 0)
         if type is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'type')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'type')
             builder.write_int16(0, 1)
             builder.copy_from_struct(pos + 8, Type, type)
         return builder.as_string()
@@ -661,7 +662,7 @@ class Node_Parameter(_Struct):
     def __new(name=None):
         builder = _SegmentBuilder()
         pos = builder.allocate(8)
-        builder.alloc_text(pos + 0, name.encode("utf-8"))
+        builder.alloc_text(pos + 0, name and name.encode("utf-8")) or name
         return builder.as_string()
     
     def __init__(self, name=None):
@@ -815,7 +816,7 @@ class Node_NestedNode(_Struct):
     def __new(name=None, id=0):
         builder = _SegmentBuilder()
         pos = builder.allocate(16)
-        builder.alloc_text(pos + 8, name.encode("utf-8"))
+        builder.alloc_text(pos + 8, name and name.encode("utf-8")) or name
         builder.write_uint64(pos + 0, id)
         return builder.as_string()
     
@@ -1269,16 +1270,16 @@ class Node(_Struct):
         pos = builder.allocate(88)
         anonymous__curtag = None
         builder.write_uint64(pos + 0, id)
-        builder.alloc_text(pos + 40, displayName.encode("utf-8"))
+        builder.alloc_text(pos + 40, displayName and displayName.encode("utf-8")) or displayName
         builder.write_uint32(pos + 8, displayNamePrefixLength)
         builder.write_uint64(pos + 16, scopeId)
         builder.copy_from_list(pos + 48, _Node_NestedNode_list_item_type, nestedNodes)
         builder.copy_from_list(pos + 56, _Annotation_list_item_type, annotations)
         if file is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'file')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'file')
             builder.write_int16(12, 0)
         if struct is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'struct')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'struct')
             builder.write_int16(12, 1)
             struct_dataWordCount, struct_pointerCount, struct_preferredListEncoding, struct_isGroup, struct_discriminantCount, struct_discriminantOffset, struct_fields, = struct
             builder.write_uint16(pos + 14, struct_dataWordCount)
@@ -1289,24 +1290,24 @@ class Node(_Struct):
             builder.write_uint32(pos + 32, struct_discriminantOffset)
             builder.copy_from_list(pos + 64, _Field_list_item_type, struct_fields)
         if enum is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'enum')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'enum')
             builder.write_int16(12, 2)
             enum_enumerants, = enum
             builder.copy_from_list(pos + 64, _Enumerant_list_item_type, enum_enumerants)
         if interface is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'interface')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'interface')
             builder.write_int16(12, 3)
             interface_methods, interface_superclasses, = interface
             builder.copy_from_list(pos + 64, _Method_list_item_type, interface_methods)
             builder.copy_from_list(pos + 72, _Superclass_list_item_type, interface_superclasses)
         if const is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'const')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'const')
             builder.write_int16(12, 4)
             const_type, const_value, = const
             builder.copy_from_struct(pos + 64, Type, const_type)
             builder.copy_from_struct(pos + 72, Value, const_value)
         if annotation is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'annotation')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'annotation')
             builder.write_int16(12, 5)
             annotation_type, annotation_targetsFile, annotation_targetsConst, annotation_targetsEnum, annotation_targetsEnumerant, annotation_targetsStruct, annotation_targetsField, annotation_targetsUnion, annotation_targetsGroup, annotation_targetsInterface, annotation_targetsMethod, annotation_targetsParam, annotation_targetsAnnotation, = annotation
             builder.copy_from_struct(pos + 64, Type, annotation_type)
@@ -1618,13 +1619,13 @@ class Field(_Struct):
         pos = builder.allocate(56)
         anonymous__curtag = None
         ordinal__curtag = None
-        builder.alloc_text(pos + 24, name.encode("utf-8"))
+        builder.alloc_text(pos + 24, name and name.encode("utf-8")) or name
         builder.write_uint16(pos + 0, codeOrder)
         builder.copy_from_list(pos + 32, _Annotation_list_item_type, annotations)
         discriminantValue ^= 65535
         builder.write_uint16(pos + 2, discriminantValue)
         if slot is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'slot')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'slot')
             builder.write_int16(8, 0)
             slot_offset, slot_type, slot_defaultValue, slot_hadExplicitDefault, = slot
             builder.write_uint32(pos + 4, slot_offset)
@@ -1632,16 +1633,16 @@ class Field(_Struct):
             builder.copy_from_struct(pos + 48, Value, slot_defaultValue)
             builder.write_bool(16, 0, slot_hadExplicitDefault)
         if group is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'group')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'group')
             builder.write_int16(8, 1)
             group_typeId, = group
             builder.write_uint64(pos + 16, group_typeId)
         ordinal_implicit, ordinal_explicit, = ordinal
         if ordinal_implicit is not _undefined:
-            ordinal__curtag = _check_tag(ordinal__curtag, 'implicit')
+            ordinal__curtag = _check_tag(ordinal__curtag, b'implicit')
             builder.write_int16(10, 0)
         if ordinal_explicit is not _undefined:
-            ordinal__curtag = _check_tag(ordinal__curtag, 'explicit')
+            ordinal__curtag = _check_tag(ordinal__curtag, b'explicit')
             builder.write_int16(10, 1)
             builder.write_uint16(pos + 12, ordinal_explicit)
         return builder.as_string()
@@ -1718,7 +1719,7 @@ class Enumerant(_Struct):
     def __new(name=None, codeOrder=0, annotations=None):
         builder = _SegmentBuilder()
         pos = builder.allocate(24)
-        builder.alloc_text(pos + 8, name.encode("utf-8"))
+        builder.alloc_text(pos + 8, name and name.encode("utf-8")) or name
         builder.write_uint16(pos + 0, codeOrder)
         builder.copy_from_list(pos + 16, _Annotation_list_item_type, annotations)
         return builder.as_string()
@@ -1862,7 +1863,7 @@ class Method(_Struct):
     def __new(name=None, codeOrder=0, paramStructType=0, resultStructType=0, annotations=None, paramBrand=None, resultBrand=None, implicitParameters=None):
         builder = _SegmentBuilder()
         pos = builder.allocate(64)
-        builder.alloc_text(pos + 24, name.encode("utf-8"))
+        builder.alloc_text(pos + 24, name and name.encode("utf-8")) or name
         builder.write_uint16(pos + 0, codeOrder)
         builder.write_uint64(pos + 8, paramStructType)
         builder.write_uint64(pos + 16, resultStructType)
@@ -2418,85 +2419,85 @@ class Type(_Struct):
         anonymous__curtag = None
         anyPointer__curtag = None
         if void is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'void')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'void')
             builder.write_int16(0, 0)
         if bool is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'bool')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'bool')
             builder.write_int16(0, 1)
         if int8 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'int8')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'int8')
             builder.write_int16(0, 2)
         if int16 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'int16')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'int16')
             builder.write_int16(0, 3)
         if int32 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'int32')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'int32')
             builder.write_int16(0, 4)
         if int64 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'int64')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'int64')
             builder.write_int16(0, 5)
         if uint8 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'uint8')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'uint8')
             builder.write_int16(0, 6)
         if uint16 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'uint16')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'uint16')
             builder.write_int16(0, 7)
         if uint32 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'uint32')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'uint32')
             builder.write_int16(0, 8)
         if uint64 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'uint64')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'uint64')
             builder.write_int16(0, 9)
         if float32 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'float32')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'float32')
             builder.write_int16(0, 10)
         if float64 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'float64')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'float64')
             builder.write_int16(0, 11)
         if text is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'text')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'text')
             builder.write_int16(0, 12)
         if data is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'data')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'data')
             builder.write_int16(0, 13)
         if list is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'list')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'list')
             builder.write_int16(0, 14)
             list_elementType, = list
             builder.copy_from_struct(pos + 24, Type, list_elementType)
         if enum is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'enum')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'enum')
             builder.write_int16(0, 15)
             enum_typeId, enum_brand, = enum
             builder.write_uint64(pos + 8, enum_typeId)
             builder.copy_from_struct(pos + 24, Brand, enum_brand)
         if struct is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'struct')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'struct')
             builder.write_int16(0, 16)
             struct_typeId, struct_brand, = struct
             builder.write_uint64(pos + 8, struct_typeId)
             builder.copy_from_struct(pos + 24, Brand, struct_brand)
         if interface is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'interface')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'interface')
             builder.write_int16(0, 17)
             interface_typeId, interface_brand, = interface
             builder.write_uint64(pos + 8, interface_typeId)
             builder.copy_from_struct(pos + 24, Brand, interface_brand)
         if anyPointer is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'anyPointer')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'anyPointer')
             builder.write_int16(0, 18)
             anyPointer_unconstrained, anyPointer_parameter, anyPointer_implicitMethodParameter, = anyPointer
             if anyPointer_unconstrained is not _undefined:
-                anyPointer__curtag = _check_tag(anyPointer__curtag, 'unconstrained')
+                anyPointer__curtag = _check_tag(anyPointer__curtag, b'unconstrained')
                 builder.write_int16(8, 0)
             if anyPointer_parameter is not _undefined:
-                anyPointer__curtag = _check_tag(anyPointer__curtag, 'parameter')
+                anyPointer__curtag = _check_tag(anyPointer__curtag, b'parameter')
                 builder.write_int16(8, 1)
                 anyPointer_parameter_scopeId, anyPointer_parameter_parameterIndex, = anyPointer_parameter
                 builder.write_uint64(pos + 16, anyPointer_parameter_scopeId)
                 builder.write_uint16(pos + 10, anyPointer_parameter_parameterIndex)
             if anyPointer_implicitMethodParameter is not _undefined:
-                anyPointer__curtag = _check_tag(anyPointer__curtag, 'implicitMethodParameter')
+                anyPointer__curtag = _check_tag(anyPointer__curtag, b'implicitMethodParameter')
                 builder.write_int16(8, 2)
                 anyPointer_implicitMethodParameter_parameterIndex, = anyPointer_implicitMethodParameter
                 builder.write_uint16(pos + 10, anyPointer_implicitMethodParameter_parameterIndex)
@@ -2843,77 +2844,77 @@ class Value(_Struct):
         pos = builder.allocate(24)
         anonymous__curtag = None
         if void is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'void')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'void')
             builder.write_int16(0, 0)
         if bool is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'bool')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'bool')
             builder.write_int16(0, 1)
             builder.write_bool(2, 0, bool)
         if int8 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'int8')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'int8')
             builder.write_int16(0, 2)
             builder.write_int8(pos + 2, int8)
         if int16 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'int16')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'int16')
             builder.write_int16(0, 3)
             builder.write_int16(pos + 2, int16)
         if int32 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'int32')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'int32')
             builder.write_int16(0, 4)
             builder.write_int32(pos + 4, int32)
         if int64 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'int64')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'int64')
             builder.write_int16(0, 5)
             builder.write_int64(pos + 8, int64)
         if uint8 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'uint8')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'uint8')
             builder.write_int16(0, 6)
             builder.write_uint8(pos + 2, uint8)
         if uint16 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'uint16')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'uint16')
             builder.write_int16(0, 7)
             builder.write_uint16(pos + 2, uint16)
         if uint32 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'uint32')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'uint32')
             builder.write_int16(0, 8)
             builder.write_uint32(pos + 4, uint32)
         if uint64 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'uint64')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'uint64')
             builder.write_int16(0, 9)
             builder.write_uint64(pos + 8, uint64)
         if float32 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'float32')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'float32')
             builder.write_int16(0, 10)
             builder.write_float32(pos + 4, float32)
         if float64 is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'float64')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'float64')
             builder.write_int16(0, 11)
             builder.write_float64(pos + 8, float64)
         if text is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'text')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'text')
             builder.write_int16(0, 12)
-            builder.alloc_text(pos + 16, text.encode("utf-8"))
+            builder.alloc_text(pos + 16, text and text.encode("utf-8")) or text
         if data is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'data')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'data')
             builder.write_int16(0, 13)
             builder.alloc_data(pos + 16, data)
         if list is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'list')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'list')
             builder.write_int16(0, 14)
             raise NotImplementedError('Unsupported field type: (name = "list", codeOrder = 14, discriminantValue = 14, slot = (offset = 0, type = (anyPointer = (unconstrained = void)), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 14))')
         if enum is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'enum')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'enum')
             builder.write_int16(0, 15)
             builder.write_uint16(pos + 2, enum)
         if struct is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'struct')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'struct')
             builder.write_int16(0, 16)
             raise NotImplementedError('Unsupported field type: (name = "struct", codeOrder = 16, discriminantValue = 16, slot = (offset = 0, type = (anyPointer = (unconstrained = void)), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 16))')
         if interface is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'interface')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'interface')
             builder.write_int16(0, 17)
         if anyPointer is not _undefined:
-            anonymous__curtag = _check_tag(anonymous__curtag, 'anyPointer')
+            anonymous__curtag = _check_tag(anonymous__curtag, b'anyPointer')
             builder.write_int16(0, 18)
             raise NotImplementedError('Unsupported field type: (name = "anyPointer", codeOrder = 18, discriminantValue = 18, slot = (offset = 0, type = (anyPointer = (unconstrained = void)), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 18))')
         return builder.as_string()

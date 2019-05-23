@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2019-05-22 18:44
+# generated on 2019-05-23 11:33
 
 from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
@@ -24,6 +24,7 @@ from capnpy.util import float32_repr as _float32_repr
 from capnpy.util import float64_repr as _float64_repr
 from capnpy.util import extend_module_maybe as _extend_module_maybe
 from capnpy.util import check_version as _check_version
+from capnpy.util import ensure_bytes as _ensure_bytes
 __capnpy_version__ = '0.5.4.dev12+ngbc554c5.d20190405'
 # schema compiled with --no-version-check, skipping the call to _check_version
 
