@@ -14,8 +14,8 @@ class nullable:
         if len(group.struct.fields) != 2:
             error()
         f_is_null, f_value = group.struct.fields
-        if (f_is_null.name != b'isNull' or
-            f_value.name != b'value'):
+        if (f_is_null.name != u'isNull' or
+            f_value.name != u'value'):
             error('nullable groups must have exactly two fields: '
                   '"isNull" and "value"')
         if f_value.is_pointer():

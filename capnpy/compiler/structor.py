@@ -3,6 +3,7 @@ Structor -> struct ctor -> struct construtor :)
 """
 
 import struct
+import six
 from capnpy.type import Types
 from capnpy.schema import Field, Type, Value
 from capnpy.compiler.fieldtree import FieldTree, Node
@@ -67,10 +68,14 @@ class Structor(object):
             ns.union = node.parent.union.varname
             ns.offset = node.parent.union.offset
             ns.tagval = node.f.discriminantValue
-            ns.tagname = self.m._field_name(node.f).encode('ascii')
+            ns.tagname = self.m._field_name(node.f).encode('utf-8')
+            if six.PY2:
+                ns.b = 'b'
+            else:
+                ns.b = ''
             ns.ifmt  = 'ord(%r)' % Types.int16.fmt
             with ns.block('if {varname} is not _undefined:'):
-                ns.w('{union}__curtag = _check_tag({union}__curtag, {tagname!r})')
+                ns.w('{union}__curtag = _check_tag({union}__curtag, {b}{tagname!r})')
                 ns.w('builder.write_int16({offset}, {tagval})')
                 self._handle_node(node)
         else:
@@ -130,7 +135,7 @@ class Structor(object):
         #         x_value = x
         #
         value_node = node.children[1]
-        assert value_node.f.name == b'value' # sanity check
+        assert value_node.f.name == u'value' # sanity check
         ns = self.m.code.new_scope()
         ns.fname = node.varname
         ns.value_default = value_node.default

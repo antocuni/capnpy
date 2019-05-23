@@ -98,13 +98,13 @@ class TestShortRepr(CompilerTest):
         p = self.mod.Person(name=None, surname=None)
         self.check(p, '()')
         #
-        p = self.mod.Person(name=b"foo", surname=None)
+        p = self.mod.Person(name=u"foo", surname=None)
         self.check(p, '(name = "foo")')
         #
-        p = self.mod.Person(name=None, surname=b"bar")
+        p = self.mod.Person(name=None, surname=u"bar")
         self.check(p, '(surname = "bar")')
         #
-        p = self.mod.Person(name=b"foo", surname=b"bar")
+        p = self.mod.Person(name=u"foo", surname=u"bar")
         self.check(p, '(name = "foo", surname = "bar")')
 
     def test_text_special_chars(self):
@@ -115,13 +115,13 @@ class TestShortRepr(CompilerTest):
         }
         """
         self.mod = self.compile(schema)
-        p = self.mod.P(txt=b'double "quotes"')
+        p = self.mod.P(txt=u'double "quotes"')
         self.check(p, r'(txt = "double \"quotes\"")')
         #
-        p = self.mod.P(txt=b"single 'quotes'")
+        p = self.mod.P(txt=u"single 'quotes'")
         self.check(p, r'(txt = "single \'quotes\'")')
         #
-        p = self.mod.P(txt=b"tricky \" '")
+        p = self.mod.P(txt=u"tricky \" '")
         self.check(p, r'(txt = "tricky \" \'")')
         #
         p = self.mod.P(txt=u'hellò')
@@ -240,7 +240,7 @@ class TestShortRepr(CompilerTest):
         p = self.mod.P.new_y()
         self.check(p, '(y = void)')
         #
-        p = self.mod.P.new_z(b'hello')
+        p = self.mod.P.new_z(u'hello')
         self.check(p, '(z = "hello")')
 
     def test_union_set_but_null_pointer(self):

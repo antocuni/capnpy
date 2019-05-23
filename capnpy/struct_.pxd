@@ -6,7 +6,7 @@ from capnpy.packing cimport pack_int64
 from capnpy.segment.builder cimport SegmentBuilder
 from capnpy.segment.endof cimport endof
 
-cpdef str check_tag(str curtag, str newtag)
+cpdef bytes check_tag(bytes curtag, bytes newtag)
 
 @cython.locals(self=Struct)
 cpdef struct_from_buffer(type cls, object buf, long offset,
