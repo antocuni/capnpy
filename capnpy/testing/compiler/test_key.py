@@ -15,9 +15,9 @@ class TestKey(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        p1 = mod.Point(1, 2, b"p1")
-        p2 = mod.Point(1, 2, b"p2")
-        p3 = mod.Point(3, 4, b"p3")
+        p1 = mod.Point(1, 2, u"p1")
+        p2 = mod.Point(1, 2, u"p2")
+        p3 = mod.Point(3, 4, u"p3")
         assert p1 == p2
         assert p1 != p3
         #
@@ -59,9 +59,9 @@ class TestKey(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        p1 = mod.Point((1, 2), b"p1")
-        p2 = mod.Point((1, 2), b"p2")
-        p3 = mod.Point((3, 4), b"p3")
+        p1 = mod.Point((1, 2), u"p1")
+        p2 = mod.Point((1, 2), u"p2")
+        p3 = mod.Point((3, 4), u"p3")
         assert p1.point == p2.point
         assert p1.point != p3.point
         #
@@ -80,15 +80,15 @@ class TestKey(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        p1 = mod.Point(1, 2, b"p1")
-        p2 = mod.Point(1, 2, b"p1")
-        p3 = mod.Point(1, 2, b"p3")
+        p1 = mod.Point(1, 2, u"p1")
+        p2 = mod.Point(1, 2, u"p1")
+        p3 = mod.Point(1, 2, u"p3")
         assert p1 == p2
         assert p1 != p3
         #
-        assert p1 == (1, 2, b"p1")
-        assert p3 == (1, 2, b"p3")
-        assert hash(p1) == hash(p2) == hash((1, 2, "p1"))
+        assert p1 == (1, 2, u"p1")
+        assert p3 == (1, 2, u"p3")
+        assert hash(p1) == hash(p2) == hash((1, 2, u"p1"))
 
 
 

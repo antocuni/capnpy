@@ -501,7 +501,7 @@ class TestList(CompilerTest):
                 'bar\x00\x00\x00\x00\x00'
                 'baz\x00\x00\x00\x00\x00')
         f = mod.Foo.from_buffer(buf, 0, 0, 1)
-        assert list(f.items) == [b'foo', b'bar', b'baz']
+        assert list(f.items) == [u'foo', u'bar', u'baz']
 
     def test_list_of_data(self):
         schema = """

@@ -53,6 +53,7 @@ cdef class StructItemType(ItemType):
 
 cdef class TextItemType(ItemType):
     cdef readonly int additional_size
+    cdef readonly bool should_decode
 
 cdef class ListItemType(ItemType):
     cdef readonly ItemType inner_item_type

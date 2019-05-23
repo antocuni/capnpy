@@ -90,7 +90,7 @@ def test_string():
            b'hello capnproto\0')                 # string
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     s = blob._read_str_text(0)
-    assert s == b'hello capnproto'
+    assert s == u'hello capnproto'
 
 def test_string_with_offset():
     buf = (b'abcd'                               # some random garbage
@@ -98,7 +98,7 @@ def test_string_with_offset():
            b'hello capnproto\0')                 # string
     blob = Struct.from_buffer(buf, 4, data_size=0, ptrs_size=1)
     s = blob._read_str_text(0)
-    assert s == b'hello capnproto'
+    assert s == u'hello capnproto'
 
 def test_data_string():
     buf = b('\x01\x00\x00\x00\x42\x00\x00\x00'   # ptrlist
@@ -140,7 +140,7 @@ def test_list_of_strings():
            'G' 'H' 'I' 'J' '\x00\x00\x00\x00')  # GHIJ
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     lst = blob._read_list(0, TextItemType(Types.text))
-    assert list(lst) == [b'A', b'BC', b'DEF', b'GHIJ']
+    assert list(lst) == [u'A', u'BC', u'DEF', u'GHIJ']
 
 def test_list_of_strings_composite():
     buf = b('\x01\x00\x00\x00\x27\x00\x00\x00'   # ptr<cmp>
@@ -155,7 +155,7 @@ def test_list_of_strings_composite():
            'G' 'H' 'I' 'J' '\x00\x00\x00\x00')  # GHIJ
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     lst = blob._read_list(0, TextItemType(Types.text))
-    assert list(lst) == [b'A', b'BC', b'DEF', b'GHIJ']
+    assert list(lst) == [u'A', u'BC', u'DEF', u'GHIJ']
 
 def test_list_comparisons():
     buf1 = b('\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
@@ -220,7 +220,7 @@ def test_TextItem_far_pointer():
     buf = MultiSegment(seg0+seg1, segment_offsets=(0, len(seg0)))
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     lst = blob._read_list(0, TextItemType(Types.text))
-    assert list(lst) == [b'A', b'BC', b'DEF', b'GHIJ']
+    assert list(lst) == [u'A', u'BC', u'DEF', u'GHIJ']
 
 
 def test_ListItem_far_pointer():

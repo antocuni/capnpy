@@ -91,16 +91,16 @@ class TestSpecificCtors(BaseTestUnionConstructors):
         """
         mod = self.compile(schema)
         # the order is: area, perimeter, [circle/square], color
-        p = mod.Shape.new_empty(1, 2, color=b'red')
+        p = mod.Shape.new_empty(1, 2, color=u'red')
         assert p.area == 1
         assert p.perimeter == 2
-        assert p.color == b'red'
+        assert p.color == u'red'
         #
-        p = mod.Shape.new_square(1, 2, 3, color=b'red')
+        p = mod.Shape.new_square(1, 2, 3, color=u'red')
         assert p.area == 1
         assert p.perimeter == 2
         assert p.square == 3
-        assert p.color == b'red'
+        assert p.color == u'red'
 
 class TestGenericCtor(BaseTestUnionConstructors):
 
@@ -159,17 +159,17 @@ class TestNamedUnion(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        p = mod.Person(name=b'foo', job=mod.Person.Job(unemployed=None))
-        assert p.name == b'foo'
+        p = mod.Person(name=u'foo', job=mod.Person.Job(unemployed=None))
+        assert p.name == u'foo'
         assert p.job.is_unemployed()
         #
-        p = mod.Person(name=b'foo', job=mod.Person.Job(retired=None))
-        assert p.name == b'foo'
+        p = mod.Person(name=u'foo', job=mod.Person.Job(retired=None))
+        assert p.name == u'foo'
         assert p.job.is_retired()
         #
-        p = mod.Person(name=b'foo', job=mod.Person.Job(worker=b'capnpy'))
-        assert p.name == b'foo'
-        assert p.job.worker == b'capnpy'
+        p = mod.Person(name=u'foo', job=mod.Person.Job(worker=u'capnpy'))
+        assert p.name == u'foo'
+        assert p.job.worker == u'capnpy'
 
     def test_group_inside_union(self):
         schema = """
@@ -188,7 +188,7 @@ class TestNamedUnion(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        p = mod.Person(name=b'foo', job=mod.Person.Job(unemployed=None))
+        p = mod.Person(name=u'foo', job=mod.Person.Job(unemployed=None))
         assert p.job.is_unemployed()
 
     def test_many_unions_arbitrary_order(self):
@@ -212,13 +212,13 @@ class TestNamedUnion(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        p = mod.Person.new_male(name=b'foo',
+        p = mod.Person.new_male(name=u'foo',
                                 location=mod.Person.Location(work=None),
-                                job=mod.Person.Job(worker=b'capnpy'))
+                                job=mod.Person.Job(worker=u'capnpy'))
         assert p.is_male()
         assert p.location.is_work()
         assert p.job.is_worker()
-        assert p.job.worker == b'capnpy'
+        assert p.job.worker == u'capnpy'
 
     def test_nested_unions(self):
         schema = """
@@ -245,18 +245,18 @@ class TestNamedUnion(CompilerTest):
         """
         mod = self.compile(schema)
         p = mod.Person(
-            name=b'foo',
+            name=u'foo',
             job=mod.Person.Job(
                 employed=mod.Person_job.Employed(
-                    company_name=b'capnpy',
+                    company_name=u'capnpy',
                     it=None,
                     position=mod.Person_job_employed.Position(worker=None)
                 )
             )
         )
-        assert p.name == b'foo'
+        assert p.name == u'foo'
         assert p.job.is_employed()
-        assert p.job.employed.company_name == b'capnpy'
+        assert p.job.employed.company_name == u'capnpy'
         assert p.job.employed.is_it()
         assert p.job.employed.position.is_worker()
 

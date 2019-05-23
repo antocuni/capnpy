@@ -18,12 +18,12 @@ class TestPyGroup(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        foo = mod.Foo(1, 2, 3, b'abc')
+        foo = mod.Foo(1, 2, 3, u'abc')
         foo2 = capnpy.loads(foo.dumps(), mod.Foo)
         assert foo.s == foo2.s == 1
         assert foo.x == foo.xyz.x == foo2.x == foo2.xyz.x == 2
         assert foo.y == foo.xyz.y == foo2.y == foo2.xyz.y == 3
-        assert foo.z == foo.xyz.z == foo2.z == foo2.xyz.z == b'abc'
+        assert foo.z == foo.xyz.z == foo2.z == foo2.xyz.z == u'abc'
 
     def test_key(self):
         schema = """
@@ -38,11 +38,11 @@ class TestPyGroup(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        foo = mod.Foo(1, 2, 3, b'abc')
+        foo = mod.Foo(1, 2, 3, u'abc')
         foo2 = capnpy.loads(foo.dumps(), mod.Foo)
         assert hash(foo.s) == hash(foo2.s) == 1
-        assert foo.xyz == foo2.xyz == (foo.x, foo.z) == (2, b'abc')
-        assert hash(foo.xyz) == hash(foo2.xyz) == hash((foo.x, foo.z)) == hash((2, b'abc'))
+        assert foo.xyz == foo2.xyz == (foo.x, foo.z) == (2, u'abc')
+        assert hash(foo.xyz) == hash(foo2.xyz) == hash((foo.x, foo.z)) == hash((2, u'abc'))
 
     def test_key_star(self):
         schema = """
@@ -57,9 +57,9 @@ class TestPyGroup(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        foo = mod.Foo(1, 2, 3, b'abc')
+        foo = mod.Foo(1, 2, 3, u'abc')
         foo2 = capnpy.loads(foo.dumps(), mod.Foo)
         assert hash(foo.s) == hash(foo2.s) == 1
-        assert foo.xyz == foo2.xyz == (foo.x, foo.y, foo.z) == (2, 3, b'abc')
-        assert hash(foo.xyz) == hash(foo2.xyz) == hash((foo.x, foo.y, foo.z)) == hash((2, 3, b'abc'))
+        assert foo.xyz == foo2.xyz == (foo.x, foo.y, foo.z) == (2, 3, u'abc')
+        assert hash(foo.xyz) == hash(foo2.xyz) == hash((foo.x, foo.y, foo.z)) == hash((2, 3, u'abc'))
 

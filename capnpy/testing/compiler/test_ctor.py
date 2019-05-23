@@ -102,7 +102,7 @@ class TestConstructors(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        foo = mod.Foo(1, b'hello capnp')
+        foo = mod.Foo(1, u'hello capnp')
         assert foo._seg.buf == b('\x01\x00\x00\x00\x00\x00\x00\x00'
                                  '\x01\x00\x00\x00\x62\x00\x00\x00'
                                  'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
@@ -173,7 +173,7 @@ class TestConstructors(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        foo = mod.Foo([b'foo', b'bar', b'baz'])
+        foo = mod.Foo([u'foo', u'bar', u'baz'])
         expected = b('\x01\x00\x00\x00\x1e\x00\x00\x00'    # ptrlist
                      '\x09\x00\x00\x00\x22\x00\x00\x00'
                      '\x09\x00\x00\x00\x22\x00\x00\x00'
@@ -252,10 +252,10 @@ class TestConstructors(CompilerTest):
         }
         """
         mod = self.compile(schema)
-        p = mod.Point(position=(1, 2), color=b'red')
+        p = mod.Point(position=(1, 2), color=u'red')
         assert p.position.x == 1
         assert p.position.y == 2
-        assert p.color == b'red'
+        assert p.color == u'red'
 
     def test_nested_group(self):
         schema = """
@@ -296,11 +296,11 @@ class TestConstructors(CompilerTest):
         """
         mod = self.compile(schema)
         p = mod.Point(position=mod.Point.Position(x=1, y=2),
-                      color=mod.Point.Color(alpha=1.0, name=b'red'))
+                      color=mod.Point.Color(alpha=1.0, name=u'red'))
         assert p.position.x == 1
         assert p.position.y == 2
         assert p.color.alpha == 1.0
-        assert p.color.name == b'red'
+        assert p.color.name == u'red'
 
     def test_group_void(self):
         schema = """
@@ -411,11 +411,11 @@ class TestDefaults(CompilerTest):
         assert mod.Point.Position() == (42, 0)
         assert mod.Point.Color() == (255, None)
         p = mod.Point(position=mod.Point.Position(y=2),
-                      color=mod.Point.Color(name=b'red'))
+                      color=mod.Point.Color(name=u'red'))
         assert p.position.x == 42
         assert p.position.y == 2
         assert p.color.alpha == 255
-        assert p.color.name == b'red'
+        assert p.color.name == u'red'
 
     def test_bool(self):
         schema = """

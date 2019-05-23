@@ -8,7 +8,7 @@ from capnpy.list import List
 from capnpy.segment.segment import Segment, MultiSegment
 from capnpy.segment.endof import endof
 from capnpy.segment.builder import SegmentBuilder
-from capnpy.util import magic_setattr
+from capnpy.util import magic_setattr, ensure_unicode
 
 class Undefined(object):
     def __repr__(self):
@@ -17,7 +17,9 @@ undefined = Undefined()
 
 def check_tag(curtag, newtag):
     if curtag is not None:
-        raise TypeError("got multiple values for the union tag: %s, %s" %
+        curtag = ensure_unicode(curtag)
+        newtag = ensure_unicode(newtag)
+        raise TypeError(u"got multiple values for the union tag: %s, %s" %
                         (curtag, newtag))
     return newtag
 

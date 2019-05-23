@@ -252,8 +252,10 @@ class TextItemType(ItemType):
     def __init__(self, t):
         assert t in (Types.text, Types.data)
         self.additional_size = 0
+        self.should_decode = False
         if t == Types.text:
             self.additional_size = -1
+            self.should_decode = True
         self.item_length = 8
         self.size_tag = ptr.LIST_SIZE_PTR
 
@@ -265,7 +267,10 @@ class TextItemType(ItemType):
         p = lst._seg.read_ptr(offset)
         if ptr.kind(p) == ptr.FAR:
             offset, p = lst._seg.read_far_ptr(offset)
-        return lst._seg.read_str(p, offset, None, self.additional_size)
+        s = lst._seg.read_str(p, offset, None, self.additional_size)
+        if s and self.should_decode:
+            s = s.decode('utf-8')
+        return s
 
     def item_repr(self, item):
         return text_repr(item)

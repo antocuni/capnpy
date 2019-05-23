@@ -174,7 +174,7 @@ class Node__Struct(Node):
         fields = [all_fields[f] for f in group_field_names]
 
         # Make sure it is bytes.
-        displayName = parent.displayName + b'.' + field_void.name
+        displayName = parent.displayName + u'.' + field_void.name
         displayNamePrefixLength = len(parent.displayName) + 1
         scopeId = parent_id
 

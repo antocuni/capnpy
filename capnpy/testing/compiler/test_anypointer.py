@@ -33,7 +33,7 @@ class TestAnyPointer(CompilerTest):
         assert p.is_list()
         assert p.is_text()
         assert p.is_data()
-        assert p.as_text() == b'hello capnproto'
+        assert p.as_text() == u'hello capnproto'
         assert p.as_data() == b'hello capnproto\0'
 
     def test_as_struct(self):

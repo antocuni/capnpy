@@ -24,7 +24,7 @@ class TestIntegration(CompilerTest):
         """
         mod = self.compile(schema)
         bars = [mod.Bar(1, 2)]
-        foo = mod.Foo(b'name', bars)
+        foo = mod.Foo(u'name', bars)
         assert len(foo.bars) == 1
         assert foo.bars[0].x == 1
         assert foo.bars[0].y == 2
@@ -70,7 +70,7 @@ class TestIntegration(CompilerTest):
                 'dummy\x00\x00\x00')
         p = mod.Person.from_buffer(buf, 8, 0, 1)
         foo = mod.Foo(p)
-        assert foo.key.name == b'dummy'
+        assert foo.key.name == u'dummy'
         # we check that the structure has been packed
         assert foo.key._data_offset == 8
         assert foo.key._seg.buf[8:] == b('\x01\x00\x00\x00\x32\x00\x00\x00'  # ptr to dummy
@@ -89,13 +89,13 @@ class TestIntegration(CompilerTest):
             }
         """
         mod = self.compile(schema)
-        p1 = mod.Person(b'Mickey', b'Mouse')
-        p2 = mod.Person(b'Donald', b'Duck')
+        p1 = mod.Person(u'Mickey', u'Mouse')
+        p2 = mod.Person(u'Donald', u'Duck')
         t = mod.Town([p1, p2])
-        assert t.people[0].name == b'Mickey'
-        assert t.people[0].surname == b'Mouse'
-        assert t.people[1].name == b'Donald'
-        assert t.people[1].surname == b'Duck'
+        assert t.people[0].name == u'Mickey'
+        assert t.people[0].surname == u'Mouse'
+        assert t.people[1].name == u'Donald'
+        assert t.people[1].surname == u'Duck'
 
     def test_dump_list_of_bool(self):
         schema = """

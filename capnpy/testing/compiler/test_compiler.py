@@ -198,7 +198,7 @@ class TestCompilerOptions(CompilerTest):
         """
         mod = self.compile(schema)
         assert mod.Foo.bar == 42
-        assert mod.Foo.baz == b'baz'
+        assert mod.Foo.baz == u'baz'
 
     def test_global_const(self):
         schema = """
@@ -208,7 +208,7 @@ class TestCompilerOptions(CompilerTest):
         """
         mod = self.compile(schema)
         assert mod.bar == 42
-        assert mod.baz == b'baz'
+        assert mod.baz == u'baz'
 
 
 class TestCapnpExcecutable(CompilerTest):
@@ -280,4 +280,4 @@ class TestDynamicCompiler(object):
         filename.write(schema)
         comp = DynamicCompiler([])
         req = comp.parse_schema(filename=filename)
-        assert req.requestedFiles[0].filename == str(filename).encode()
+        assert req.requestedFiles[0].filename == str(filename)
