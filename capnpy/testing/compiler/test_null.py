@@ -195,7 +195,7 @@ class TestNullable(CompilerTest):
         mod = self.compile(schema)
         foo = mod.Foo()
         assert foo.x == 42
-        assert foo._seg.buf == (
+        assert foo._seg.buf == b(
             '\x00\x00\x00\x00\x00\x00\x00\x00'  # 0
             '\x00\x00\x00\x00\x00\x00\x00\x00') # 0 (value == 42)
 
@@ -213,6 +213,6 @@ class TestNullable(CompilerTest):
         mod = self.compile(schema)
         foo = mod.Foo()
         assert foo.x is None
-        assert foo._seg.buf == (
+        assert foo._seg.buf == b(
             '\x00\x00\x00\x00\x00\x00\x00\x00'  # 0 (isNull == true)
             '\x00\x00\x00\x00\x00\x00\x00\x00') # 0
