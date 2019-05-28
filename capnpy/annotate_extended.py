@@ -35,10 +35,11 @@ class group:
 @extend(BoolOption)
 class BoolOption:
 
-    def __nonzero__(self):
+    def __bool__(self):
         if self == BoolOption.notset:
             raise ValueError("Cannot get the truth value of a 'notset'")
         return bool(int(self))
+    __nonzero__ = __bool__ # for Python2.7
 
 @Options.__extend__
 class Options:
