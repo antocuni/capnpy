@@ -720,7 +720,7 @@ previous version of ``struct Point`` which contains only ``x`` and ``y``:
 
 Then, you receive some other object created with a newer schema which contains
 an additional field, such as our ``Point``. Since ``Point`` is an evolution of
-``OlderPoint``, it is perfectly lecit to load it:
+``OlderPoint``, it is perfectly legit to load it:
 
     >>> p_with_name = Point(1, 2, 'this is my name')
     >>> message_from_the_future = p_with_name.dumps()
