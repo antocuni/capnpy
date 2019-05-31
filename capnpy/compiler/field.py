@@ -1,4 +1,5 @@
 from capnpy import schema
+from capnpy import annotate
 from capnpy.type import Types
 from capnpy.compiler.fieldtree import FieldTree
 from capnpy import annotate
@@ -6,8 +7,11 @@ from capnpy import annotate
 @schema.Field.__extend__
 class Field:
 
+    def compute_options(self, m, parent_opt):
+        m.compute_options_generic(self, parent_opt)
+
     def emit(self, m, node):
-        name = m._field_name(self)
+        name = m.field_name(self)
         ns = m.code.new_scope()
         if self.is_part_of_union():
             ns.ensure_union = 'self._ensure_union(%s)' % self.discriminantValue
@@ -242,7 +246,7 @@ class Field__Group:
         union_default = None
         if groupnode.struct.is_union():
             union_default = '_undefined'
-        tree = FieldTree(m, groupnode.struct)
+        tree = FieldTree(m, groupnode)
         argnames, params = tree.get_args_and_params()
         #
         ns.argnames = m.code.args(argnames)

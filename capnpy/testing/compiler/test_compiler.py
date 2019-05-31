@@ -210,6 +210,48 @@ class TestCompilerOptions(CompilerTest):
         assert mod.bar == 42
         assert mod.baz == b'baz'
 
+    def test_global_options(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        $Py.options(convertCase=false);
+
+        struct MyStruct {
+            firstAttr @0 :Int64;
+            secondAttr @1 :Int64;
+        }
+        """
+        mod = self.compile(schema, convert_case=True)
+        # check that the $Py.options annotation has a greater precedence than
+        # the default options
+        assert hasattr(mod.MyStruct, 'firstAttr')
+        assert hasattr(mod.MyStruct, 'secondAttr')
+
+    def test_struct_and_field_options(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        $Py.options(convertCase=false);
+
+        struct A $Py.options(convertCase=true) {
+            firstAttr @0 :Int64;
+            secondAttr @1 :Int64 $Py.options(convertCase=false);
+        }
+
+        struct B {
+            firstAttr @0 :Int64;
+            secondAttr @1 :Int64 $Py.options(convertCase=true);
+        }
+        """
+        mod = self.compile(schema, convert_case=True)
+        # check that the $Py.options annotation has a greater precedence than
+        # the default options
+        assert hasattr(mod.A, 'first_attr')
+        assert hasattr(mod.A, 'secondAttr')
+        #
+        assert hasattr(mod.B, 'firstAttr')
+        assert hasattr(mod.B, 'second_attr')
+
 
 class TestCapnpExcecutable(CompilerTest):
 

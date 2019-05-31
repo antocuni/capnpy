@@ -83,7 +83,7 @@ class TestNullable(CompilerTest):
         using Py = import "/capnpy/annotate.capnp";
         struct Foo {
             x :group $Py.nullable {
-                isNull @0 :Int8;
+                isNull @0 :Bool;
                 value  @1 :Int64;
             }
         }
@@ -126,9 +126,9 @@ class TestNullable(CompilerTest):
         assert foo.x == 42
         #
         foo = mod.Foo()
-        assert foo._x.is_null
+        assert not foo._x.is_null
         assert foo._x.value == 0
-        assert foo.x is None
+        assert foo.x == 0
 
     def test_ctor_nullable_group(self, mod):
         # check that we can pass a null value
@@ -149,14 +149,13 @@ class TestNullable(CompilerTest):
         assert bar.point.x == 1
         assert bar.point.y == 2
 
-
     def test_bad_nullable(self):
         schema = """
         @0xbf5147cbbecf40c1;
         using Py = import "/capnpy/annotate.capnp";
         struct Foo {
             x :group $Py.nullable {
-                wrongName @0 :Int8;
+                wrongName @0 :Bool;
                 value  @1 :Int64;
             }
         }
@@ -165,7 +164,6 @@ class TestNullable(CompilerTest):
         msg = str(exc.value)
         assert msg == ('x: nullable groups must have exactly two fields: '
                        '"isNull" and "value"')
-
 
     def test_bad_nullable_2(self):
         schema = """
@@ -182,3 +180,39 @@ class TestNullable(CompilerTest):
         msg = str(exc.value)
         assert msg == ('x: cannot use pointer types for nullable values. '
                        'Pointers are already nullable.')
+
+    def test_default_nonnull(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        struct Foo {
+            x :group $Py.nullable {
+                isNull @0 :Bool;
+                value  @1 :Int64 = 42;
+            }
+        }
+        """
+        mod = self.compile(schema)
+        foo = mod.Foo()
+        assert foo.x == 42
+        assert foo._seg.buf == b(
+            '\x00\x00\x00\x00\x00\x00\x00\x00'  # 0
+            '\x00\x00\x00\x00\x00\x00\x00\x00') # 0 (value == 42)
+
+    def test_default_null(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        struct Foo {
+            x :group $Py.nullable {
+                isNull @0 :Bool = true;
+                value  @1 :Int64;
+            }
+        }
+        """
+        mod = self.compile(schema)
+        foo = mod.Foo()
+        assert foo.x is None
+        assert foo._seg.buf == b(
+            '\x00\x00\x00\x00\x00\x00\x00\x00'  # 0 (isNull == true)
+            '\x00\x00\x00\x00\x00\x00\x00\x00') # 0

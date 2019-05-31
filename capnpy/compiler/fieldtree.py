@@ -46,8 +46,9 @@ class FieldTree(AbstractNode):
             self.struct = None
             fields = struct_or_fields
         else:
-            self.struct = struct_or_fields
-            fields = self.struct.fields
+            struct_node = struct_or_fields
+            self.struct = struct_node.struct
+            fields = struct_node.get_struct_fields()
         #
         if self.struct and self.struct.is_union():
             self.union = Union('anonymous', self.struct.discriminantOffset*2)
@@ -91,7 +92,7 @@ class Node(AbstractNode):
     def __init__(self, m, f, prefix, field_force_default):
         self.f = f
         self.force_default = (field_force_default and f == field_force_default)
-        self.varname = m._field_name(f)
+        self.varname = m.field_name(f)
         if prefix:
             self.varname = '%s_%s' % (prefix, self.varname)
         self._init_children(m, field_force_default)
@@ -101,7 +102,7 @@ class Node(AbstractNode):
         self.children = []
         if self.f.is_group():
             group = self.f.group.get_node(m)
-            self._add_children(m, group.struct.fields, prefix=self.varname,
+            self._add_children(m, group.get_struct_fields(), prefix=self.varname,
                                field_force_default=field_force_default)
             if group.struct.is_union():
                 self.union = Union(self.varname, group.struct.discriminantOffset*2)
@@ -109,18 +110,26 @@ class Node(AbstractNode):
     def _init_default(self, m):
         # self.default is a *string* containing a Python repr of the default
         # value
-        if self.f.is_part_of_union() and not self.force_default:
-            self.default = '_undefined'
-        elif self.f.is_slot():
-            default_val = self.f.slot.defaultValue.as_pyobj()
-            self.default = str(default_val)
-        else:
-            assert self.f.is_group()
-            if self.f.is_nullable(m):
-                self.default = 'None'
+        def get_default(f):
+            if f.is_part_of_union() and not self.force_default:
+                return '_undefined'
+            elif f.is_slot():
+                default_val = f.slot.defaultValue.as_pyobj()
+                return str(default_val)
+            elif f.is_nullable(m):
+                ann = f.is_nullable(m)
+                name, f_is_null, f_value = ann.check(m)
+                default_is_null = f_is_null.slot.defaultValue.as_pyobj()
+                if default_is_null:
+                    return 'None'
+                else:
+                    return get_default(f_value)
             else:
+                assert f.is_group()
                 items = [child.default for child in self.children]
-                self.default = '(%s,)' % ', '.join(items)
+                return '(%s,)' % ', '.join(items)
+
+        self.default = get_default(self.f)
 
     def __repr__(self):
         return '<Node %s: %s>' % (self.varname, self.f.which())

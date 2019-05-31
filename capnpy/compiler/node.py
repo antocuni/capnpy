@@ -1,4 +1,6 @@
-from capnpy.schema import Node, Node__Enum, Node__Const, Node__Annotation
+from capnpy.schema import (Node, Node__Enum, Node__Const, Node__Annotation,
+                           Enumerant)
+from capnpy import annotate
 
 # The implementation of each node is divided in three parts:
 #     1. forward declaration
@@ -47,6 +49,12 @@ class Node:
         if self.scopeId == 0:
             return None
         return m.allnodes[self.scopeId]
+
+    def compute_options(self, m, parent_opt):
+        m.compute_options_generic(self, parent_opt)
+        opt = m.options(self)
+        for child in m.children[self.id]:
+            child.compute_options(m, opt)
 
     def is_nested(self, m):
         parent = self.get_parent(m)
@@ -127,20 +135,6 @@ class Node__Annotation:
                 targets_annotation = {targets_annotation}
         """)
 
-@Node__Enum.__extend__
-class Node__Enum:
-
-    def emit_declaration(self, m):
-        name =  self.compile_name(m)
-        items = [m._field_name(item) for item in self.enum.enumerants]
-        m.declare_enum(name, self.shortname(m), items)
-        m.w('_{name}_list_item_type = _EnumItemType({name})', name=name)
-        m.w()
-
-    def emit_reference_as_child(self, m):
-        if self.is_nested(m):
-            m.w("{shortname} = {name}", shortname=self.shortname(m),
-                name=self.compile_name(m))
 
 @Node__Const.__extend__
 class Node__Const:

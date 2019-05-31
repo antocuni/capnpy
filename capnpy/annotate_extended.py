@@ -6,7 +6,7 @@ class nullable:
     def check(self, m):
         field = self.target
         assert field.is_group()
-        name = m._field_name(field)
+        name = m.field_name(field)
         def error(msg):
             raise ValueError('%s: %s' % (name, msg))
         #
@@ -23,9 +23,40 @@ class nullable:
                   'Pointers are already nullable.')
         return name, f_is_null, f_value
 
+
 @extend(group)
 class group:
 
     def check(self, m):
         field = self.target
         assert field.is_void()
+
+
+@extend(BoolOption)
+class BoolOption:
+
+    def __bool__(self):
+        if self == BoolOption.notset:
+            raise ValueError("Cannot get the truth value of a 'notset'")
+        return bool(int(self))
+    __nonzero__ = __bool__ # for Python2.7
+
+@Options.__extend__
+class Options:
+
+    FIELDS = ('convert_case',)
+
+    def combine(self, other):
+        """
+        Combine the options of ``self`` and ``other``. ``other``'s options take
+        the precedence, if they are set.
+        """
+        values = {}
+        for fname in self.FIELDS:
+            values[fname] = getattr(self, fname)
+            otherval = getattr(other, fname)
+            assert isinstance(otherval, BoolOption), 'Only BoolOption supported for now'
+            if otherval != BoolOption.notset:
+                values[fname] = otherval
+            return self.__class__(**values)
+
