@@ -1,5 +1,5 @@
 import pytest
-from capnpy.annotate import Options, BoolOption
+from capnpy.annotate import Options, BoolOption, TextType
 
 def test_Options():
     opt = Options()
@@ -29,13 +29,24 @@ def test_FIELDS():
     all_props.sort()
     assert all_props == sorted(Options.FIELDS)
 
-def test_combine():
+def test_combine_bool():
     t = Options(convert_case=True)
     f = Options(convert_case=False)
-    u = Options()
+    n = Options()
     assert f.combine(t).convert_case == True
-    assert f.combine(u).convert_case == False
+    assert f.combine(n).convert_case == False
     assert t.combine(f).convert_case == False
-    assert t.combine(u).convert_case == True
-    assert u.combine(t).convert_case == True
-    assert u.combine(f).convert_case == False
+    assert t.combine(n).convert_case == True
+    assert n.combine(t).convert_case == True
+    assert n.combine(f).convert_case == False
+
+def test_combine_text_type():
+    b = Options(text_type=TextType.bytes)
+    u = Options(text_type=TextType.unicode)
+    n = Options()
+    assert b.combine(u).text_type == TextType.unicode
+    assert b.combine(n).text_type == TextType.bytes
+    assert u.combine(b).text_type == TextType.bytes
+    assert u.combine(n).text_type == TextType.unicode
+    assert n.combine(b).text_type == TextType.bytes
+    assert n.combine(u).text_type == TextType.unicode

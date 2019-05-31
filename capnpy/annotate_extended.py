@@ -1,4 +1,5 @@
 from capnpy.util import extend
+from capnpy.enum import BaseEnum
 
 @extend(nullable)
 class nullable:
@@ -44,7 +45,7 @@ class BoolOption:
 @Options.__extend__
 class Options:
 
-    FIELDS = ('convert_case',)
+    FIELDS = ('convert_case', 'text_type')
 
     def combine(self, other):
         """
@@ -55,8 +56,9 @@ class Options:
         for fname in self.FIELDS:
             values[fname] = getattr(self, fname)
             otherval = getattr(other, fname)
-            assert isinstance(otherval, BoolOption), 'Only BoolOption supported for now'
-            if otherval != BoolOption.notset:
+            enumcls = otherval.__class__
+            assert issubclass(enumcls, BaseEnum), 'Only Enums supported for now'
+            assert hasattr(enumcls, 'notset'), 'An Option enum must have a "notset" field'
+            if otherval != enumcls.notset:
                 values[fname] = otherval
-            return self.__class__(**values)
-
+        return self.__class__(**values)
