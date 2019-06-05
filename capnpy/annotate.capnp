@@ -23,8 +23,9 @@ enum TextType {
 }
 
 struct Options {
-    convertCase @0 :BoolOption = notset;
-    textType @1 :TextType = notset;
+    versionCheck @0 :BoolOption = notset;
+    convertCase @1 :BoolOption = notset;
+    textType @2 :TextType = notset;
 }
 
 annotation options(file, struct, field) :Options;

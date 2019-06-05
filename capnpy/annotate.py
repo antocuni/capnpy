@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2019-05-31 17:42
+# generated on 2019-06-06 17:29
 
 from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
@@ -114,7 +114,7 @@ class Options(_Struct):
     
     
     @property
-    def convert_case(self):
+    def version_check(self):
         # no union check
         value = self._read_data_int16(0)
         if 2 != 0:
@@ -122,29 +122,40 @@ class Options(_Struct):
         return BoolOption._new(value)
     
     @property
-    def text_type(self):
+    def convert_case(self):
         # no union check
         value = self._read_data_int16(2)
+        if 2 != 0:
+            value = (value ^ 2)
+        return BoolOption._new(value)
+    
+    @property
+    def text_type(self):
+        # no union check
+        value = self._read_data_int16(4)
         if 0 != 0:
             value = (value ^ 0)
         return TextType._new(value)
     
     @staticmethod
-    def __new(convert_case=2, text_type=0):
+    def __new(version_check=2, convert_case=2, text_type=0):
         builder = _SegmentBuilder()
         pos = builder.allocate(8)
+        version_check ^= 2
+        builder.write_int16(pos + 0, version_check)
         convert_case ^= 2
-        builder.write_int16(pos + 0, convert_case)
+        builder.write_int16(pos + 2, convert_case)
         text_type ^= 0
-        builder.write_int16(pos + 2, text_type)
+        builder.write_int16(pos + 4, text_type)
         return builder.as_string()
     
-    def __init__(self, convert_case=2, text_type=0):
-        _buf = Options.__new(convert_case, text_type)
+    def __init__(self, version_check=2, convert_case=2, text_type=0):
+        _buf = Options.__new(version_check, convert_case, text_type)
         self._init_from_buffer(_buf, 0, 1, 0)
     
     def shortrepr(self):
         parts = []
+        parts.append("version_check = %s" % self.version_check)
         parts.append("convert_case = %s" % self.convert_case)
         parts.append("text_type = %s" % self.text_type)
         return "(%s)" % ", ".join(parts)
