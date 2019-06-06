@@ -63,7 +63,7 @@ class TestField(CompilerTest):
         assert p.x is None
 
 
-    def test_string(self):
+    def test_text(self):
         schema = """
         @0xbf5147cbbecf40c1;
         struct Foo {
@@ -72,11 +72,27 @@ class TestField(CompilerTest):
         }
         """
         mod = self.compile(schema)
-
         buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
                 '\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
-                'hello capnproto\0')                 # string
+                'hello capnproto\0')                 # text
 
+        f = mod.Foo.from_buffer(buf, 0, 1, 1)
+        assert f.x == 1
+        assert f.name == b'hello capnproto'
+
+    def test_text_unicode(self):
+        py.test.skip('WIP')
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            x @0 :Int64;
+            name @1 :Text;
+        }
+        """
+        mod = self.compile(schema, text_type='unicode')
+        buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
+                '\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
+                'h\xc3\xa0lo capnproto\x00')         # utf-8 text
         f = mod.Foo.from_buffer(buf, 0, 1, 1)
         assert f.x == 1
         assert f.name == b'hello capnproto'
