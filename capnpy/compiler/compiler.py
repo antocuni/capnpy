@@ -15,6 +15,13 @@ from capnpy.compiler.module import ModuleGenerator
 from capnpy.util import ensure_unicode
 from capnpy import annotate
 
+# these are the default compiler options
+DEFAULT_OPTIONS = annotate.Options(
+    version_check = True,
+    convert_case = True,
+    text_type = annotate.TextType.bytes
+    )
+
 PKGDIR = py.path.local(capnpy.__file__).dirpath()
 
 class CompilerError(Exception):
@@ -50,10 +57,12 @@ class BaseCompiler(object):
         request = loads(data, schema.CodeGeneratorRequest)
         return request
 
-    def generate_py_source(self, filename, convert_case, pyx, version_check=True):
-        pyx = self.getpyx(pyx)
+    def generate_py_source(self, filename, pyx, options):
         request = self._parse_schema_file(filename)
-        m = ModuleGenerator(request, convert_case, pyx, version_check, self.standalone)
+        default_options = DEFAULT_OPTIONS
+        if options is not None:
+            default_options = default_options.combine(options)
+        m = ModuleGenerator(request, pyx, self.standalone, default_options)
         src = m.generate()
         return m, py.code.Source(src)
 
@@ -133,7 +142,7 @@ class DynamicCompiler(BaseCompiler):
         return self._parse_schema_file(filename)
 
     def load_schema(self, modname=None, importname=None, filename=None,
-                    convert_case=True, pyx='auto'):
+                    pyx='auto', options=None):
         """
         Compile and load a capnp schema, which can be specified by setting one
         (and only one) of the following params:
@@ -165,13 +174,12 @@ class DynamicCompiler(BaseCompiler):
         try:
             return self.modules[filename]
         except KeyError:
-            mod = self._compile_file(filename, convert_case, pyx)
+            mod = self._compile_file(filename, pyx, options)
             self.modules[filename] = mod
             return mod
 
-    def _compile_file(self, filename, convert_case, pyx):
-        m, src = self.generate_py_source(filename, convert_case=convert_case,
-                                         pyx=pyx)
+    def _compile_file(self, filename, pyx, options):
+        m, src = self.generate_py_source(filename, pyx, options)
         if pyx:
             return self._compile_pyx(filename, m, src)
         else:
@@ -252,10 +260,10 @@ class StandaloneCompiler(BaseCompiler):
 
     standalone = True
 
-    def compile(self, filename, convert_case=True, pyx='auto', version_check=True):
+    def compile(self, filename, pyx, options):
         pyx = self.getpyx(pyx)
         infile = py.path.local(filename)
-        m, src = self.generate_py_source(infile, convert_case, pyx, version_check)
+        m, src = self.generate_py_source(infile, pyx, options)
         if pyx:
             self._compile_pyx(infile, m, src)
         else:
@@ -279,7 +287,7 @@ class DistutilsCompiler(BaseCompiler):
     """
     standalone = True
 
-    def compile(self, filename, convert_case=True, pyx='auto', version_check=True):
+    def compile(self, filename, pyx='auto', options=None):
         pyx = self.getpyx(pyx)
         infile = py.path.local(filename)
         if pyx:
@@ -292,7 +300,6 @@ class DistutilsCompiler(BaseCompiler):
             return outfile
         cwd = py.path.local('.')
         print('[capnpy] Compiling', infile.relto(cwd))
-        m, src = self.generate_py_source(infile, convert_case=convert_case,
-                                         pyx=pyx, version_check=version_check)
+        m, src = self.generate_py_source(infile, pyx, options)
         outfile.write(src)
         return outfile

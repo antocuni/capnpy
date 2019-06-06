@@ -5,6 +5,7 @@ import glob
 import warnings
 from distutils.core import Extension
 from capnpy.compiler.compiler import DistutilsCompiler
+from capnpy import annotate
 try:
     from Cython.Build import cythonize
 except ImportError:
@@ -19,23 +20,21 @@ def capnpy_options(dist, attr, value):
 
 def capnpy_schemas(dist, attr, schemas):
     assert attr == 'capnpy_schemas'
-    options = dist.capnpy_options or {}
-    pyx = options.get('pyx', 'auto')
-    convert_case = options.get('convert_case', True)
-    version_check = options.get('version_check', True)
+    option_dict = dist.capnpy_options or {}
+    pyx = option_dict.pop('pyx', 'auto')
+    options = annotate.Options(**option_dict)
     if dist.ext_modules is None:
         dist.ext_modules = []
-    dist.ext_modules += capnpify(schemas, pyx=pyx, convert_case=convert_case,
-                                 version_check=version_check)
+    dist.ext_modules += capnpify(schemas, pyx, options)
 
-def capnpify(files, pyx='auto', convert_case=True, version_check=True):
+def capnpify(files, pyx='auto', options=None):
     cwd = py.path.local('.')
     if isinstance(files, str):
         files = glob.glob(files)
         if files == []:
             raise ValueError("'%s' did not match any files" % files)
     compiler = DistutilsCompiler(sys.path)
-    outfiles = [compiler.compile(f, convert_case, pyx, version_check) for f in files]
+    outfiles = [compiler.compile(f, pyx, options) for f in files]
     outfiles = [outf.relto(cwd) for outf in outfiles]
     #
     if compiler.getpyx(pyx):

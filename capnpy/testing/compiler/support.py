@@ -3,6 +3,7 @@ import pytest
 import textwrap
 import capnpy
 from capnpy.blob import PYX
+from capnpy import annotate
 from capnpy.compiler.compiler import DynamicCompiler, BaseCompiler
 
 
@@ -35,23 +36,23 @@ class CompilerTest:
             py.test.skip('cannot test pyx if PYX==False')
         self.annotate = request.config.option.annotate
 
-    def compile(self, s, **kwds):
+    def compile(self, s, **kwargs):
         # root is needed to be able to import capnpy/py.capnp
         root = py.path.local(capnpy.__file__).dirpath('..')
         comp = DynamicCompiler([root, self.tmpdir])
         comp.annotate = self.annotate
         tmp_capnp = self.tmpdir.join('tmp.capnp')
         tmp_capnp.write(s)
+        options = annotate.Options.from_dict(kwargs)
         schema = comp.load_schema(importname='/tmp.capnp', pyx=self.pyx,
-                                  **kwds)
+                                  options=options)
         return schema
 
     def getm(self, s, **kwds):
         comp = BaseCompiler([self.tmpdir])
         tmp_capnp = self.tmpdir.join('tmp.capnp')
         tmp_capnp.write(s)
-        m, src = comp.generate_py_source(tmp_capnp, convert_case=True,
-                                         pyx=self.pyx)
+        m, src = comp.generate_py_source(tmp_capnp, pyx=self.pyx, options=None)
         return m
 
     def write(self, filename, src, **kwds):

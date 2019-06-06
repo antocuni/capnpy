@@ -42,10 +42,42 @@ class BoolOption:
         return bool(int(self))
     __nonzero__ = __bool__ # for Python2.7
 
+
+@extend(TextType)
+class TextType:
+
+    @classmethod
+    def parse(cls, s):
+        if s == 'bytes':
+            return cls.bytes
+        elif s == 'unicode':
+            return cls.unicode
+        else:
+            raise ValueError('Unknown TextType: %s' % s)
+
+
 @Options.__extend__
 class Options:
 
-    FIELDS = ('convert_case', 'text_type')
+    FIELDS = ('version_check', 'convert_case', 'text_type')
+
+    @classmethod
+    def from_dict(cls, d):
+        """
+        Create an Options instance from the given dict.
+
+        Each option is expressed as either a normal bool or a string; strings
+        are parsed (e.g. "bytes" becomes TextType.bytes)
+        """
+        kwargs = {}
+        for key, value in d.iteritems():
+            if key in ('version_check', 'convert_case'):
+                kwargs[key] = value
+            elif key == 'text_type':
+                kwargs[key] = TextType.parse(value)
+            else:
+                raise ValueError("Unknown option: %s" % key)
+        return cls(**kwargs)
 
     def combine(self, other):
         """

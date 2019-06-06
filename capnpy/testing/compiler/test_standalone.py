@@ -15,7 +15,7 @@ class TestStandalone(CompilerTest):
     def compile(self, filename, src):
         infile = self.write(filename, src.strip())
         comp = StandaloneCompiler(sys.path)
-        comp.compile(infile, pyx=self.pyx)
+        comp.compile(infile, pyx=self.pyx, options=None)
 
     def import_(self, modname):
         mod = __import__(modname)

@@ -4,6 +4,8 @@ Usage: capnpy compile FILE [options]
 
 Options:
   --no-convert-case    Don't convert camelCase to camel_case
+  --text-type=TYPE     Type to use to represent Text fields [Default: bytes]
+                       Can be bytes or unicode
   --no-pyx             Always produce a .py file, even if Cython is available
   --no-version-check   Don't check for version discrepancy.
 """
@@ -15,6 +17,7 @@ import docopt
 
 from capnpy import load_schema
 from capnpy.message import load
+from capnpy.annotate import Options
 from capnpy.compiler.compiler import StandaloneCompiler
 
 
@@ -44,10 +47,15 @@ def decode(args):
 
 def compile(args):
     comp = StandaloneCompiler(sys.path)
+    kwargs = dict(
+        version_check = args['--version-check'],
+        convert_case = args['--convert-case'],
+        text_type = args['--text-type']
+    )
+    options = Options.from_dict(kwargs)
     comp.compile(filename=args['FILE'],
-                 convert_case=args['--convert-case'],
                  pyx=args['--pyx'],
-                 version_check=args['--version-check'])
+                 options=options)
 
 def main(argv=None):
     args = docopt.docopt(__doc__, argv=argv)
@@ -56,10 +64,17 @@ def main(argv=None):
     if args['--no-pyx']:
         args['--pyx'] = False
     args['--version-check'] = not args['--no-version-check']
+    text_type = args['--text-type']
+    if text_type not in ('bytes', 'unicode'):
+        print(__doc__)
+        print()
+        print('ERROR: --text-type can be only bytes or unicode')
+        return 1
+
     if args['compile']:
         compile(args)
     elif args['decode']:
         decode(args)
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
