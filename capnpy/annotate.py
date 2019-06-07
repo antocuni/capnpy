@@ -116,7 +116,7 @@ class Options(_Struct):
     @property
     def version_check(self):
         # no union check
-        value = self._read_data_int16(0)
+        value = self._read_int16(0)
         if 2 != 0:
             value = (value ^ 2)
         return BoolOption._new(value)
@@ -124,7 +124,7 @@ class Options(_Struct):
     @property
     def convert_case(self):
         # no union check
-        value = self._read_data_int16(2)
+        value = self._read_int16(2)
         if 2 != 0:
             value = (value ^ 2)
         return BoolOption._new(value)
@@ -132,7 +132,7 @@ class Options(_Struct):
     @property
     def text_type(self):
         # no union check
-        value = self._read_data_int16(4)
+        value = self._read_int16(4)
         if 0 != 0:
             value = (value ^ 0)
         return TextType._new(value)

@@ -74,8 +74,8 @@ def test_list_of_structs():
         p = lst[i]
         assert p._data_size == 2
         assert p._ptrs_size == 0
-        x = p._read_data(0, Types.int64.ifmt)
-        y = p._read_data(8, Types.int64.ifmt)
+        x = p._read_primitive(0, Types.int64.ifmt)
+        y = p._read_primitive(8, Types.int64.ifmt)
         return x, y
     assert read_point(0) == (10, 100)
     assert read_point(1) == (20, 200)

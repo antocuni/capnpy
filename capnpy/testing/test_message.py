@@ -15,8 +15,8 @@ def test_load():
     f = BytesIO(buf)
     p = load(f, Struct)
     assert isinstance(p, Struct)
-    assert p._read_data(0, Types.int64.ifmt) == 1
-    assert p._read_data(8, Types.int64.ifmt) == 2
+    assert p._read_primitive(0, Types.int64.ifmt) == 1
+    assert p._read_primitive(8, Types.int64.ifmt) == 2
 
 def _get_many_messages():
     one = b('\x00\x00\x00\x00\x03\x00\x00\x00'   # message header: 1 segment, size 3 words
@@ -32,11 +32,11 @@ def _get_many_messages():
 def test_load_multiple_messages():
     f = _get_many_messages()
     p1 = load(f, Struct)
-    assert p1._read_data(0, Types.int64.ifmt) == 1
-    assert p1._read_data(8, Types.int64.ifmt) == 2
+    assert p1._read_primitive(0, Types.int64.ifmt) == 1
+    assert p1._read_primitive(8, Types.int64.ifmt) == 2
     p2 = load(f, Struct)
-    assert p2._read_data(0, Types.int64.ifmt) == 3
-    assert p2._read_data(8, Types.int64.ifmt) == 4
+    assert p2._read_primitive(0, Types.int64.ifmt) == 3
+    assert p2._read_primitive(8, Types.int64.ifmt) == 4
 
 def test_load_all():
     f = _get_many_messages()
@@ -44,10 +44,10 @@ def test_load_all():
     assert len(messages) == 2
     p1, p2 = messages
     #
-    assert p1._read_data(0, Types.int64.ifmt) == 1
-    assert p1._read_data(8, Types.int64.ifmt) == 2
-    assert p2._read_data(0, Types.int64.ifmt) == 3
-    assert p2._read_data(8, Types.int64.ifmt) == 4
+    assert p1._read_primitive(0, Types.int64.ifmt) == 1
+    assert p1._read_primitive(8, Types.int64.ifmt) == 2
+    assert p2._read_primitive(0, Types.int64.ifmt) == 3
+    assert p2._read_primitive(8, Types.int64.ifmt) == 4
 
 
 def test_loads():
@@ -58,8 +58,8 @@ def test_loads():
 
     p = loads(buf, Struct)
     assert isinstance(p, Struct)
-    assert p._read_data(0, Types.int64.ifmt) == 1
-    assert p._read_data(8, Types.int64.ifmt) == 2
+    assert p._read_primitive(0, Types.int64.ifmt) == 1
+    assert p._read_primitive(8, Types.int64.ifmt) == 2
 
 def test_loads_not_whole_string():
     buf = b('\x00\x00\x00\x00\x03\x00\x00\x00'   # message header: 1 segment, size 3 words
@@ -182,8 +182,8 @@ def test_Struct_loads():
 
     p = Point.loads(buf)
     assert isinstance(p, Point)
-    assert p._read_data(0, Types.int64.ifmt) == 1
-    assert p._read_data(8, Types.int64.ifmt) == 2
+    assert p._read_primitive(0, Types.int64.ifmt) == 1
+    assert p._read_primitive(8, Types.int64.ifmt) == 2
 
 def test_Struct_dumps():
     class Point(Struct):
@@ -212,8 +212,8 @@ class TestFileLike(object):
     def check(self, f):
         p = load(f, Struct)
         assert isinstance(p, Struct)
-        assert p._read_data(0, Types.int64.ifmt) == 1
-        assert p._read_data(8, Types.int64.ifmt) == 2
+        assert p._read_primitive(0, Types.int64.ifmt) == 1
+        assert p._read_primitive(8, Types.int64.ifmt) == 2
 
     def test_BytesIO(self):
         f = BytesIO(self.buf)

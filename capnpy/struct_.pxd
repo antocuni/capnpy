@@ -22,8 +22,8 @@ cdef class Struct(Blob):
     cpdef _init_from_buffer(self, object buf, long offset,
                             long data_size, long ptrs_size)
     cpdef _init_from_pointer(self, object buf, long offset, long p)
-    cpdef _read_data(self, long offset, char ifmt)
-    cpdef long _read_data_int16(self, long offset)
+    cpdef _read_primitive(self, long offset, char ifmt)
+    cpdef long _read_int16(self, long offset)
     cpdef long _read_fast_ptr(self, long offset)
     cpdef _read_far_ptr(self, long offset)
     cpdef long _as_pointer(self, long offset)

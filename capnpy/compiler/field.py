@@ -70,7 +70,7 @@ class Field__Slot:
         ns.ifmt = "ord(%r)" % self.slot.get_fmt()
         m.def_property(ns, name, """
             {ensure_union}
-            value = self._read_data({offset}, {ifmt})
+            value = self._read_primitive({offset}, {ifmt})
             if {default_} != 0:
                 value = value ^ {default_}
             return value
@@ -97,7 +97,7 @@ class Field__Slot:
         ns.newf = '_new_hack' if m.pyx and node.is_imported(m) else '_new'
         m.def_property(ns, name, """
             {ensure_union}
-            value = self._read_data_int16({offset})
+            value = self._read_int16({offset})
             if {default_} != 0:
                 value = (value ^ {default_})
             return {enumcls}.{newf}(value)

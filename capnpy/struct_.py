@@ -147,7 +147,7 @@ class Struct(Blob):
     def __which__(self):
         if self.__tag_offset__ is None:
             raise TypeError("Cannot call which() on a non-union type")
-        return self._read_data_int16(self.__tag_offset__)
+        return self._read_int16(self.__tag_offset__)
 
     def _as_pointer(self, offset):
         """
@@ -168,20 +168,20 @@ class Struct(Blob):
             return offset, 0
         return self._seg.read_far_ptr(self._ptrs_offset+offset)
 
-    def _read_data(self, offset, ifmt):
+    def _read_primitive(self, offset, ifmt):
         if offset >= self._data_size*8:
             # reading bytes beyond _data_size is equivalent to read 0
             return 0
         return self._seg.read_primitive(self._data_offset+offset, ifmt)
 
-    def _read_data_int16(self, offset):
+    def _read_int16(self, offset):
         if offset >= self._data_size*8:
             # reading bytes beyond _data_size is equivalent to read 0
             return 0
         return self._seg.read_int16(self._data_offset+offset)
 
     def _read_bit(self, offset, bitmask):
-        val = self._read_data(offset, Types.uint8.ifmt)
+        val = self._read_primitive(offset, Types.uint8.ifmt)
         return bool(val & bitmask)
 
     def _read_struct(self, offset, structcls):

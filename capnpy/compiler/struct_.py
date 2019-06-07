@@ -132,7 +132,7 @@ class Node__Struct:
             # are already fast
             ns.ww("""
                 cpdef long __which__(self) except -1:
-                    return self._read_data_int16({tag_offset})
+                    return self._read_int16({tag_offset})
                 cpdef which(self):
                     return {compile_name}._new(self.__which__())
             """)
@@ -143,7 +143,7 @@ class Node__Struct:
             ns.i = i
             ns.ww("""
                 def is_{item}(self):
-                    return self._read_data_int16({tag_offset}) == {i}
+                    return self._read_int16({tag_offset}) == {i}
             """)
         ns.w()
 
