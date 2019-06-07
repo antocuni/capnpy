@@ -25,7 +25,7 @@ class AnyPointer(object):
     is_data = is_text
 
     def as_text(self):
-        return self.struct_._read_str_text(self.offset)
+        return self.struct_._read_text_bytes(self.offset)
 
     def as_data(self):
         return self.struct_._read_str_data(self.offset)

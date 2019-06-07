@@ -89,12 +89,12 @@ def test_null_pointers():
     buf = b'\x00\x00\x00\x00\x00\x00\x00\x00'    # NULL pointer
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     assert blob._read_list(0, None, None) is None
-    assert blob._read_str_text(0) is None
+    assert blob._read_text_bytes(0) is None
     assert blob._read_struct(0, Struct) is None
     #
     val = b'dummy default value'
     assert blob._read_list(0, None, default_=val) is val
-    assert blob._read_str_text(0, default_=val) is val
+    assert blob._read_text_bytes(0, default_=val) is val
 
 
 def test_far_pointer():

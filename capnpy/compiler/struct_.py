@@ -309,7 +309,7 @@ class Node__Struct:
                 ns.fname = m.field_name(f)
                 if f.is_text():
                     ns.offset = f.slot.offset * f.slot.get_size()
-                    ns.w('h[{i}] = self._hash_str_text({offset})')
+                    ns.w('h[{i}] = self._hash_text_bytes({offset})')
                 else:
                     ns.hash = self._fasthash_for_field(f)
                     ns.w('h[{i}] = {hash}(self.{fname})')

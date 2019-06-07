@@ -85,28 +85,28 @@ def test_list_of_structs():
     py.test.raises(TypeError, "lst == lst")
 
 
-def test_string():
+def test_text():
     buf = (b'\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
            b'hello capnproto\0')                 # string
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
-    s = blob._read_str_text(0)
+    s = blob._read_text_bytes(0)
     assert s == b'hello capnproto'
 
-def test_string_with_offset():
+def test_text_with_offset():
     buf = (b'abcd'                               # some random garbage
            b'\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
            b'hello capnproto\0')                 # string
     blob = Struct.from_buffer(buf, 4, data_size=0, ptrs_size=1)
-    s = blob._read_str_text(0)
+    s = blob._read_text_bytes(0)
     assert s == b'hello capnproto'
 
-def test_data_string():
+def test_data():
     buf = b('\x01\x00\x00\x00\x42\x00\x00\x00'   # ptrlist
            'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H')     # data
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     s = blob._read_str_data(0)
     assert s == b'ABCDEFGH'
-    
+
 
 def test_Float64List():
     buf = b('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist

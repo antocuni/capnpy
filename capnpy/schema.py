@@ -198,10 +198,10 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
     @property
     def name(self):
         # no union check
-        return self._read_str_text(0)
+        return self._read_text_bytes(0)
     
     def get_name(self):
-        return self._read_str_text(0, default_=b"")
+        return self._read_text_bytes(0, default_=b"")
     
     def has_name(self):
         ptr = self._read_fast_ptr(0)
@@ -245,10 +245,10 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
     @property
     def filename(self):
         # no union check
-        return self._read_str_text(0)
+        return self._read_text_bytes(0)
     
     def get_filename(self):
-        return self._read_str_text(0, default_=b"")
+        return self._read_text_bytes(0, default_=b"")
     
     def has_filename(self):
         ptr = self._read_fast_ptr(0)
@@ -678,10 +678,10 @@ class Node_Parameter(_Struct):
     @property
     def name(self):
         # no union check
-        return self._read_str_text(0)
+        return self._read_text_bytes(0)
     
     def get_name(self):
-        return self._read_str_text(0, default_=b"")
+        return self._read_text_bytes(0, default_=b"")
     
     def has_name(self):
         ptr = self._read_fast_ptr(0)
@@ -824,10 +824,10 @@ class Node_NestedNode(_Struct):
     @property
     def name(self):
         # no union check
-        return self._read_str_text(0)
+        return self._read_text_bytes(0)
     
     def get_name(self):
-        return self._read_str_text(0, default_=b"")
+        return self._read_text_bytes(0, default_=b"")
     
     def has_name(self):
         ptr = self._read_fast_ptr(0)
@@ -1180,10 +1180,10 @@ class Node(_Struct):
     @property
     def displayName(self):
         # no union check
-        return self._read_str_text(0)
+        return self._read_text_bytes(0)
     
     def get_displayName(self):
-        return self._read_str_text(0, default_=b"")
+        return self._read_text_bytes(0, default_=b"")
     
     def has_displayName(self):
         ptr = self._read_fast_ptr(0)
@@ -1616,10 +1616,10 @@ class Field(_Struct):
     @property
     def name(self):
         # no union check
-        return self._read_str_text(0)
+        return self._read_text_bytes(0)
     
     def get_name(self):
-        return self._read_str_text(0, default_=b"")
+        return self._read_text_bytes(0, default_=b"")
     
     def has_name(self):
         ptr = self._read_fast_ptr(0)
@@ -1762,10 +1762,10 @@ class Enumerant(_Struct):
     @property
     def name(self):
         # no union check
-        return self._read_str_text(0)
+        return self._read_text_bytes(0)
     
     def get_name(self):
-        return self._read_str_text(0, default_=b"")
+        return self._read_text_bytes(0, default_=b"")
     
     def has_name(self):
         ptr = self._read_fast_ptr(0)
@@ -1825,10 +1825,10 @@ class Method(_Struct):
     @property
     def name(self):
         # no union check
-        return self._read_str_text(0)
+        return self._read_text_bytes(0)
     
     def get_name(self):
-        return self._read_str_text(0, default_=b"")
+        return self._read_text_bytes(0, default_=b"")
     
     def has_name(self):
         ptr = self._read_fast_ptr(0)
@@ -2920,10 +2920,10 @@ class Value(_Struct):
     @property
     def text(self):
         self._ensure_union(12)
-        return self._read_str_text(0)
+        return self._read_text_bytes(0)
     
     def get_text(self):
-        return self._read_str_text(0, default_=b"")
+        return self._read_text_bytes(0, default_=b"")
     
     def has_text(self):
         ptr = self._read_fast_ptr(0)
