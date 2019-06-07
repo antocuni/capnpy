@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2019-05-28 10:16
+# generated on 2019-06-07 11:46
 
 from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
@@ -474,16 +474,6 @@ class Brand_Binding(_Struct):
         ptr = self._read_fast_ptr(0)
         return ptr != 0
     
-    def get_type(self):
-        res = self.type
-        if res is None:
-            return Type.from_buffer('', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_type(self):
-        ptr = self._read_fast_ptr(0)
-        return ptr != 0
-    
     @staticmethod
     def __new(unbound=_undefined, type=_undefined):
         builder = _SegmentBuilder()
@@ -602,16 +592,6 @@ class Annotation(_Struct):
         ptr = self._read_fast_ptr(0)
         return ptr != 0
     
-    def get_value(self):
-        res = self.value
-        if res is None:
-            return Value.from_buffer('', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_value(self):
-        ptr = self._read_fast_ptr(0)
-        return ptr != 0
-    
     @property
     def brand(self):
         # no union check
@@ -631,16 +611,6 @@ class Annotation(_Struct):
         res = self.brand
         if res is None:
             return Brand.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_brand(self):
-        ptr = self._read_fast_ptr(8)
-        return ptr != 0
-    
-    def get_brand(self):
-        res = self.brand
-        if res is None:
-            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
         return res
     
     def has_brand(self):
@@ -936,16 +906,6 @@ class Node_const(_Struct):
         ptr = self._read_fast_ptr(24)
         return ptr != 0
     
-    def get_type(self):
-        res = self.type
-        if res is None:
-            return Type.from_buffer('', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_type(self):
-        ptr = self._read_fast_ptr(24)
-        return ptr != 0
-    
     @property
     def value(self):
         # no union check
@@ -965,16 +925,6 @@ class Node_const(_Struct):
         res = self.value
         if res is None:
             return Value.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_value(self):
-        ptr = self._read_fast_ptr(32)
-        return ptr != 0
-    
-    def get_value(self):
-        res = self.value
-        if res is None:
-            return Value.from_buffer('', 0, data_size=0, ptrs_size=0)
         return res
     
     def has_value(self):
@@ -1014,16 +964,6 @@ class Node_annotation(_Struct):
         res = self.type
         if res is None:
             return Type.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_type(self):
-        ptr = self._read_fast_ptr(24)
-        return ptr != 0
-    
-    def get_type(self):
-        res = self.type
-        if res is None:
-            return Type.from_buffer('', 0, data_size=0, ptrs_size=0)
         return res
     
     def has_type(self):
@@ -1479,16 +1419,6 @@ class Field_slot(_Struct):
         ptr = self._read_fast_ptr(16)
         return ptr != 0
     
-    def get_type(self):
-        res = self.type
-        if res is None:
-            return Type.from_buffer('', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_type(self):
-        ptr = self._read_fast_ptr(16)
-        return ptr != 0
-    
     @property
     def defaultValue(self):
         # no union check
@@ -1508,16 +1438,6 @@ class Field_slot(_Struct):
         res = self.defaultValue
         if res is None:
             return Value.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_defaultValue(self):
-        ptr = self._read_fast_ptr(24)
-        return ptr != 0
-    
-    def get_defaultValue(self):
-        res = self.defaultValue
-        if res is None:
-            return Value.from_buffer('', 0, data_size=0, ptrs_size=0)
         return res
     
     def has_defaultValue(self):
@@ -1898,16 +1818,6 @@ class Method(_Struct):
         ptr = self._read_fast_ptr(16)
         return ptr != 0
     
-    def get_paramBrand(self):
-        res = self.paramBrand
-        if res is None:
-            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_paramBrand(self):
-        ptr = self._read_fast_ptr(16)
-        return ptr != 0
-    
     @property
     def resultBrand(self):
         # no union check
@@ -1927,16 +1837,6 @@ class Method(_Struct):
         res = self.resultBrand
         if res is None:
             return Brand.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_resultBrand(self):
-        ptr = self._read_fast_ptr(24)
-        return ptr != 0
-    
-    def get_resultBrand(self):
-        res = self.resultBrand
-        if res is None:
-            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
         return res
     
     def has_resultBrand(self):
@@ -2029,16 +1929,6 @@ class Superclass(_Struct):
         ptr = self._read_fast_ptr(0)
         return ptr != 0
     
-    def get_brand(self):
-        res = self.brand
-        if res is None:
-            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_brand(self):
-        ptr = self._read_fast_ptr(0)
-        return ptr != 0
-    
     @staticmethod
     def __new(id=0, brand=None):
         builder = _SegmentBuilder()
@@ -2098,16 +1988,6 @@ class Type_interface(_Struct):
         ptr = self._read_fast_ptr(0)
         return ptr != 0
     
-    def get_brand(self):
-        res = self.brand
-        if res is None:
-            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_brand(self):
-        ptr = self._read_fast_ptr(0)
-        return ptr != 0
-    
     def shortrepr(self):
         parts = []
         parts.append("typeId = %s" % self.typeId)
@@ -2141,16 +2021,6 @@ class Type_list(_Struct):
         res = self.elementType
         if res is None:
             return Type.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_elementType(self):
-        ptr = self._read_fast_ptr(0)
-        return ptr != 0
-    
-    def get_elementType(self):
-        res = self.elementType
-        if res is None:
-            return Type.from_buffer('', 0, data_size=0, ptrs_size=0)
         return res
     
     def has_elementType(self):
@@ -2308,16 +2178,6 @@ class Type_struct(_Struct):
         ptr = self._read_fast_ptr(0)
         return ptr != 0
     
-    def get_brand(self):
-        res = self.brand
-        if res is None:
-            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_brand(self):
-        ptr = self._read_fast_ptr(0)
-        return ptr != 0
-    
     def shortrepr(self):
         parts = []
         parts.append("typeId = %s" % self.typeId)
@@ -2359,16 +2219,6 @@ class Type_enum(_Struct):
         res = self.brand
         if res is None:
             return Brand.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_brand(self):
-        ptr = self._read_fast_ptr(0)
-        return ptr != 0
-    
-    def get_brand(self):
-        res = self.brand
-        if res is None:
-            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
         return res
     
     def has_brand(self):

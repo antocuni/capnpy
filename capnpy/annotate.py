@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2019-06-06 17:29
+# generated on 2019-06-07 11:46
 
 from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
