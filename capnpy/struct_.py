@@ -222,12 +222,12 @@ class Struct(Blob):
         return obj
 
     def _read_text_bytes(self, offset, default_=None):
-        return self._read_str_data(offset, default_, additional_size=-1)
+        return self._read_data(offset, default_, additional_size=-1)
 
     def _hash_text_bytes(self, offset, default_=hash(None)):
-        return self._hash_str_data(offset, default_, additional_size=-1)
+        return self._hash_data(offset, default_, additional_size=-1)
 
-    def _read_str_data(self, offset, default_=None, additional_size=0):
+    def _read_data(self, offset, default_=None, additional_size=0):
         p = self._read_fast_ptr(offset)
         if ptr.kind(p) == ptr.FAR:
             offset, p = self._read_far_ptr(offset)
@@ -235,7 +235,7 @@ class Struct(Blob):
             offset += self._ptrs_offset
         return self._seg.read_str(p, offset, default_, additional_size)
 
-    def _hash_str_data(self, offset, default_=hash(None), additional_size=0):
+    def _hash_data(self, offset, default_=hash(None), additional_size=0):
         p = self._read_fast_ptr(offset)
         if ptr.kind(p) == ptr.FAR:
             offset, p = self._read_far_ptr(offset)

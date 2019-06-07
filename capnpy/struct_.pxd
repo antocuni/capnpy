@@ -35,7 +35,7 @@ cdef class Struct(Blob):
     cpdef _read_text_bytes(self, long offset, bytes default_=*)
 
     @cython.locals(p=long, offset=long)
-    cpdef _read_str_data(self, long offset, bytes default_=*, int additional_size=*)
+    cpdef _read_data(self, long offset, bytes default_=*, int additional_size=*)
 
     @cython.locals(p=long, offset=long, obj=List)
     cpdef _read_list(self, long offset, ItemType item_type, default_=*)
@@ -44,7 +44,7 @@ cdef class Struct(Blob):
     cpdef long _hash_text_bytes(self, long offset, long default_=*)
 
     @cython.locals(p=long, offset=long)
-    cpdef long _hash_str_data(self, long offset, long default_=*, int additional_size=*)
+    cpdef long _hash_data(self, long offset, long default_=*, int additional_size=*)
 
     cpdef object _ensure_union(self, long expected_tag)
     cpdef long __which__(self) except -1

@@ -104,7 +104,7 @@ def test_data():
     buf = b('\x01\x00\x00\x00\x42\x00\x00\x00'   # ptrlist
            'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H')     # data
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
-    s = blob._read_str_data(0)
+    s = blob._read_data(0)
     assert s == b'ABCDEFGH'
 
 

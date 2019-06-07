@@ -2932,10 +2932,10 @@ class Value(_Struct):
     @property
     def data(self):
         self._ensure_union(13)
-        return self._read_str_data(0)
+        return self._read_data(0)
     
     def get_data(self):
-        return self._read_str_data(0, default_=b"")
+        return self._read_data(0, default_=b"")
     
     def has_data(self):
         ptr = self._read_fast_ptr(0)
