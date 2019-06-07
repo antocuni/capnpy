@@ -8,7 +8,7 @@ from capnpy.list import List
 from capnpy.segment.segment import Segment, MultiSegment
 from capnpy.segment.endof import endof
 from capnpy.segment.builder import SegmentBuilder
-from capnpy.util import magic_setattr
+from capnpy.util import magic_setattr, decode_maybe
 
 class Undefined(object):
     def __repr__(self):
@@ -229,9 +229,7 @@ class Struct(Blob):
 
     def _read_text_unicode(self, offset, default_=None):
         b = self._read_data(offset, default_, additional_size=-1)
-        if b is None:
-            return None
-        return b.decode('utf-8')
+        return decode_maybe(b)
 
     def _hash_text_unicode(self, offset, default_=hash(None)):
         raise NotImplementedError('WIP')
