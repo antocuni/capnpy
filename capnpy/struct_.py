@@ -227,6 +227,15 @@ class Struct(Blob):
     def _hash_text_bytes(self, offset, default_=hash(None)):
         return self._hash_data(offset, default_, additional_size=-1)
 
+    def _read_text_unicode(self, offset, default_=None):
+        b = self._read_data(offset, default_, additional_size=-1)
+        if b is None:
+            return None
+        return b.decode('utf-8')
+
+    def _hash_text_unicode(self, offset, default_=hash(None)):
+        raise NotImplementedError('WIP')
+
     def _read_data(self, offset, default_=None, additional_size=0):
         p = self._read_fast_ptr(offset)
         if ptr.kind(p) == ptr.FAR:

@@ -40,8 +40,10 @@ class Field__Slot:
             return self._emit_bool(m, ns, name)
         elif self.slot.type.is_enum():
             return self._emit_enum(m, ns, name)
-        elif self.slot.type.is_text():
-            return self._emit_text(m, ns, name)
+        elif self.is_text_bytes(m):
+            return self._emit_text_bytes(m, ns, name)
+        elif self.is_text_unicode(m):
+            return self._emit_text_unicode(m, ns, name)
         elif self.slot.type.is_data():
             return self._emit_data(m, ns, name)
         elif self.slot.type.is_struct():
@@ -103,7 +105,7 @@ class Field__Slot:
             return {enumcls}.{newf}(value)
         """)
 
-    def _emit_text(self, m, ns, name):
+    def _emit_text_bytes(self, m, ns, name):
         ns.name = name
         m.def_property(ns, name, """
             {ensure_union}
@@ -112,6 +114,19 @@ class Field__Slot:
         ns.ww("""
             {cpdef} get_{name}(self):
                 return self._read_text_bytes({offset}, default_=b"")
+        """)
+        ns.w()
+        self._emit_has_method(ns)
+
+    def _emit_text_unicode(self, m, ns, name):
+        ns.name = name
+        m.def_property(ns, name, """
+            {ensure_union}
+            return self._read_text_unicode({offset})
+        """)
+        ns.ww("""
+            {cpdef} get_{name}(self):
+                return self._read_text_unicode({offset}, default_=u"")
         """)
         ns.w()
         self._emit_has_method(ns)

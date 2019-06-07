@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 import py
 from six import b, PY3
 
@@ -81,7 +82,6 @@ class TestField(CompilerTest):
         assert f.name == b'hello capnproto'
 
     def test_text_unicode(self):
-        py.test.skip('WIP')
         schema = """
         @0xbf5147cbbecf40c1;
         struct Foo {
@@ -95,7 +95,7 @@ class TestField(CompilerTest):
                 'h\xc3\xa0lo capnproto\x00')         # utf-8 text
         f = mod.Foo.from_buffer(buf, 0, 1, 1)
         assert f.x == 1
-        assert f.name == b'hello capnproto'
+        assert f.name == u'hàlo capnproto'
 
     def test_data(self):
         schema = """

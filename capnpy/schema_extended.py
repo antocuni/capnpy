@@ -1,5 +1,6 @@
 from capnpy.type import Types as _Types
 from capnpy import annotate
+from capnpy.annotate import TextType
 from capnpy.util import ensure_unicode
 
 @Type.__extend__
@@ -101,8 +102,18 @@ class Field:
                 self.slot.type.is_pointer())
 
     def is_text(self):
+        # XXX: kill me eventually, you should always use is_text_bytes or
+        # is_text_unicode
         return (self.which() == Field.__tag__.slot and
                 self.slot.type.is_text())
+
+    def is_text_bytes(self, m):
+        return (self.is_text() and
+                m.options(self).text_type == TextType.bytes)
+
+    def is_text_unicode(self, m):
+        return (self.is_text() and
+                m.options(self).text_type == TextType.unicode)
 
     def is_data(self):
         return (self.which() == Field.__tag__.slot and
