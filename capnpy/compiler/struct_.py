@@ -307,9 +307,12 @@ class Node__Struct:
             for ns.i, fname in enumerate(fieldnames):
                 f = fields[fname]
                 ns.fname = m.field_name(f)
-                if f.is_text():
+                if f.is_text_bytes(m):
                     ns.offset = f.slot.offset * f.slot.get_size()
                     ns.w('h[{i}] = self._hash_text_bytes({offset})')
+                if f.is_text_unicode(m):
+                    ns.offset = f.slot.offset * f.slot.get_size()
+                    ns.w('h[{i}] = self._hash_text_unicode({offset})')
                 else:
                     ns.hash = self._fasthash_for_field(f)
                     ns.w('h[{i}] = {hash}(self.{fname})')

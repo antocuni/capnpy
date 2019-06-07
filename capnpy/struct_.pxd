@@ -34,6 +34,7 @@ cdef class Struct(Blob):
     @cython.locals(p=long, offset=long)
     cpdef _read_text_bytes(self, long offset, bytes default_=*)
 
+    # note that in this case default_ is BYTES, utf-8 encoded
     @cython.locals(p=long, offset=long, b=bytes)
     cpdef _read_text_unicode(self, long offset, bytes default_=*)
 
@@ -46,7 +47,7 @@ cdef class Struct(Blob):
     @cython.locals(p=long, offset=long)
     cpdef long _hash_text_bytes(self, long offset, long default_=*)
 
-    @cython.locals(p=long, offset=long)
+    @cython.locals(p=long, offset=long, u=unicode)
     cpdef long _hash_text_unicode(self, long offset, long default_=*)
 
     @cython.locals(p=long, offset=long)

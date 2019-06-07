@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 import py
 import sys
 from capnpy.testing.compiler.support import CompilerTest
@@ -133,7 +134,7 @@ class TestFashHash(CompilerTest):
         p1 = mod.Point(1, sys.maxsize+1, b"p1")
         assert hash(p1) == hash((1, sys.maxsize+1))
 
-    def test_fasthash_string(self):
+    def test_fasthash_text_bytes(self):
         schema = """
         @0xbf5147cbbecf40c1;
         using Py = import "/capnpy/annotate.capnp";
@@ -146,3 +147,17 @@ class TestFashHash(CompilerTest):
         self.only_fasthash(mod.Person)
         p = mod.Person(b"mickey", b"mouse")
         assert hash(p) == hash(("mickey", "mouse"))
+
+    def test_fasthash_text_unicode(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        struct Person $Py.key("name, surname") {
+            name @0 :Text;
+            surname @1 :Text;
+        }
+        """
+        mod = self.compile(schema, text_type='unicode')
+        self.only_fasthash(mod.Person)
+        p = mod.Person(u"mìckey", u"mòuse")
+        assert hash(p) == hash((u"mìckey", u"mòuse"))

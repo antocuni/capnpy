@@ -227,12 +227,16 @@ class Struct(Blob):
     def _hash_text_bytes(self, offset, default_=hash(None)):
         return self._hash_data(offset, default_, additional_size=-1)
 
+    # note that default_ is an utf-8 encoded BYTES string
     def _read_text_unicode(self, offset, default_=None):
         b = self._read_data(offset, default_, additional_size=-1)
         return decode_maybe(b)
 
     def _hash_text_unicode(self, offset, default_=hash(None)):
-        raise NotImplementedError('WIP')
+        # XXX: this is not a "fast hash" at all, it creates an unicode and the
+        # computes the hash on it
+        u = self._read_text_unicode(offset, default_=b'')
+        return hash(u)
 
     def _read_data(self, offset, default_=None, additional_size=0):
         p = self._read_fast_ptr(offset)

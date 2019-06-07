@@ -126,7 +126,7 @@ class Field__Slot:
         """)
         ns.ww("""
             {cpdef} get_{name}(self):
-                return self._read_text_unicode({offset}, default_=u"")
+                return self._read_text_unicode({offset}, default_=b"")
         """)
         ns.w()
         self._emit_has_method(ns)
