@@ -5,7 +5,7 @@ import capnpy
 from capnpy.type import Types
 from capnpy.blob import Blob, PYX
 from capnpy import ptr
-from capnpy.util import text_repr, float32_repr, float64_repr
+from capnpy.util import text_repr, float32_repr, float64_repr, decode_maybe
 from capnpy.segment.endof import endof
 
 class List(Blob):
@@ -276,6 +276,12 @@ class TextItemType(ItemType):
         else:
             builder.alloc_text(pos, item)
 
+
+class TextUnicodeItemType(TextItemType):
+
+    def read_item(self, lst, i):
+        res = super(TextUnicodeItemType, self).read_item(lst, i)
+        return decode_maybe(res)
 
 class ListItemType(ItemType):
 

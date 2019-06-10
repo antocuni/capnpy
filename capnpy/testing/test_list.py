@@ -1,3 +1,5 @@
+# -*- encoding: utf-8 -*-
+
 import py
 from six import b
 
@@ -6,7 +8,7 @@ from capnpy.type import Types
 from capnpy.segment.segment import MultiSegment
 from capnpy import ptr
 from capnpy.list import (List, StructItemType, PrimitiveItemType, TextItemType,
-                         ListItemType)
+                         ListItemType, TextUnicodeItemType)
 from capnpy.struct_ import Struct
 
 def test_read_list():
@@ -128,7 +130,7 @@ def test_Int8List():
     assert list(lst) == list(map(ord, 'hello capnproto\0'))
 
 
-def test_list_of_strings():
+def test_list_of_text():
     buf = b('\x01\x00\x00\x00\x26\x00\x00\x00'   # ptrlist
            '\x0d\x00\x00\x00\x12\x00\x00\x00'   # ptr item 1
            '\x0d\x00\x00\x00\x1a\x00\x00\x00'   # ptr item 2
@@ -142,7 +144,7 @@ def test_list_of_strings():
     lst = blob._read_list(0, TextItemType(Types.text))
     assert list(lst) == [b'A', b'BC', b'DEF', b'GHIJ']
 
-def test_list_of_strings_composite():
+def test_list_of_text_composite():
     buf = b('\x01\x00\x00\x00\x27\x00\x00\x00'   # ptr<cmp>
            '\x10\x00\x00\x00\x00\x00\x01\x00'   # TAG: 4 items, data=0, ptrs=1
            '\x0d\x00\x00\x00\x12\x00\x00\x00'   # ptr item 1
@@ -156,6 +158,21 @@ def test_list_of_strings_composite():
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     lst = blob._read_list(0, TextItemType(Types.text))
     assert list(lst) == [b'A', b'BC', b'DEF', b'GHIJ']
+
+def test_list_of_text_unicode():
+    buf = b('\x01\x00\x00\x00\x26\x00\x00\x00'   # ptrlist
+           '\x0d\x00\x00\x00\x12\x00\x00\x00'   # ptr item 1
+           '\x0d\x00\x00\x00\x1a\x00\x00\x00'   # ptr item 2
+           '\x0d\x00\x00\x00\x22\x00\x00\x00'   # ptr item 3
+           '\x0d\x00\x00\x00\x2a\x00\x00\x00'   # ptr item 4
+           'A' '\x00\x00\x00\x00\x00\x00\x00'   # A
+           '\xc3\xa0\x00\x00\x00\x00\x00\x00'   # à
+           'D' 'E' 'F' '\x00\x00\x00\x00\x00'   # DEF
+           '\xc3\xa8\xc3\xac\x00\x00\x00\x00')  # èì
+    blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
+    lst = blob._read_list(0, TextUnicodeItemType(Types.text))
+    assert list(lst) == [u'A', u'à', u'DEF', u'èì']
+
 
 def test_list_comparisons():
     buf1 = b('\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
