@@ -70,7 +70,7 @@ class Options:
         are parsed (e.g. "bytes" becomes TextType.bytes)
         """
         kwargs = {}
-        for key, value in d.iteritems():
+        for key, value in d.items():
             if key in ('version_check', 'convert_case'):
                 kwargs[key] = value
             elif key == 'text_type':
