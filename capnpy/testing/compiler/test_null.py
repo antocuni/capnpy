@@ -1,4 +1,5 @@
 import py
+import six
 from six import b
 
 from capnpy.testing.compiler.support import CompilerTest
@@ -58,7 +59,7 @@ class TestNullPointers(CompilerTest):
         #
         assert f.u is None
         assert f.get_u() == u''
-        assert type(f.get_u()) is unicode
+        assert type(f.get_u()) is six.text_type
 
     def test_default_when_null(self, mod):
         buf = b''
