@@ -98,6 +98,7 @@ class RequestedFile:
         m.w("from capnpy.list {cimport} PrimitiveItemType as _PrimitiveItemType")
         m.w("from capnpy.list {cimport} BoolItemType as _BoolItemType")
         m.w("from capnpy.list {cimport} TextItemType as _TextItemType")
+        m.w("from capnpy.list {cimport} TextUnicodeItemType as _TextUnicodeItemType")
         m.w("from capnpy.list {cimport} StructItemType as _StructItemType")
         m.w("from capnpy.list {cimport} EnumItemType as _EnumItemType")
         m.w("from capnpy.list {cimport} VoidItemType as _VoidItemType")

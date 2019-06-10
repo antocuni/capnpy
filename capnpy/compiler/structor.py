@@ -176,11 +176,12 @@ class Structor(object):
         ns.w('builder.copy_from_struct(pos + {offset}, {structname}, {fname})')
 
     def handle_list(self, node):
+        options = self.m.options(node.f)
         ns = self.m.code.new_scope()
         ns.fname = node.varname
         ns.offset = self.slot_offset(node.f)
         t = node.f.slot.type.list.elementType
-        ns.list_item_type = t.list_item_type(self.m)
+        ns.list_item_type = t.list_item_type(self.m, options)
         ns.w('builder.copy_from_list(pos + {offset}, {list_item_type}, {fname})')
 
     def handle_primitive(self, node):

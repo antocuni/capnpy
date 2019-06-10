@@ -183,9 +183,10 @@ class Field__Slot:
         self._emit_has_method(ns)
 
     def _emit_list(self, m, ns, name):
+        options = m.options(self)
         ns.name = name
         t = self.slot.type.list.elementType
-        ns.list_item_type = t.list_item_type(m)
+        ns.list_item_type = t.list_item_type(m, options)
         m.def_property(ns, name, """
             {ensure_union}
             return self._read_list({offset}, {list_item_type})

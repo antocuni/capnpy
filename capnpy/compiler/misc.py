@@ -1,4 +1,5 @@
 from capnpy.schema import Value, Type
+from capnpy.annotate import TextType
 
 @Type.__extend__
 class Type:
@@ -21,7 +22,7 @@ class Type:
         else:
             raise NotImplementedError
 
-    def list_item_type(self, m):
+    def list_item_type(self, m, options):
         if m.pyx:
             # on Cython, try to use the prebuilt ItemType when possible
             if self.is_builtin():
@@ -49,8 +50,10 @@ class Type:
             return '_PrimitiveItemType(_Types.%s)' % self.which()
         elif self.is_bool():
             return '_BoolItemType()'
-        elif self.is_text():
+        elif self.is_text() and options.text_type == TextType.bytes:
             return '_TextItemType(_Types.text)'
+        elif self.is_text() and options.text_type == TextType.unicode:
+            return '_TextUnicodeItemType(_Types.text)'
         elif self.is_data():
             return '_TextItemType(_Types.data)'
         elif self.is_void():
