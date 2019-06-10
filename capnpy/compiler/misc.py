@@ -44,7 +44,7 @@ class Type:
         if use_prebuilt_item_type:
             return '%s_list_item_type' % prebuilt_compile_name
         elif self.is_list():
-            inner_item_type = self.list.elementType.list_item_type(m)
+            inner_item_type = self.list.elementType.list_item_type(m, options)
             return '_ListItemType(%s)' % inner_item_type
         elif self.is_primitive():
             return '_PrimitiveItemType(_Types.%s)' % self.which()
