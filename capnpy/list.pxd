@@ -54,6 +54,9 @@ cdef class StructItemType(ItemType):
 cdef class TextItemType(ItemType):
     cdef readonly int additional_size
 
+cdef class TextUnicodeItemType(TextItemType):
+    pass
+
 cdef class ListItemType(ItemType):
     cdef readonly ItemType inner_item_type
 
