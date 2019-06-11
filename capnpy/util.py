@@ -37,11 +37,6 @@ def ensure_unicode(s):
         return s.decode("utf8")
     return s
 
-def ensure_bytes(b):
-    if isinstance(b, six.text_type):
-        return b.encode("utf8")
-    return b
-
 def extend(cls):
     def decorator(new_class):
         for key, value in new_class.__dict__.items():
