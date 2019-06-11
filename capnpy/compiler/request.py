@@ -85,6 +85,7 @@ class RequestedFile:
         m.w("# THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy")
         m.w("# do not edit by hand")
         m.w("# generated on %s" % datetime.now().strftime("%Y-%m-%d %H:%M"))
+        m.w("# cython: language_level=2")
         m.w("")
         m.w("from capnpy {cimport} ptr as _ptr")
         m.w("from capnpy.struct_ {cimport} Struct as _Struct")

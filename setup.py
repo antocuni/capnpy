@@ -73,7 +73,9 @@ def my_cythonize(extensions):
     except ImportError:
         return cythonize_dummy(extensions)
     else:
-        return cythonize(extensions, gdb_debug=DEBUG)
+        # note: for capnpy-generated pyx files, language_level is set by
+        # emitting a comment in request.py
+        return cythonize(extensions, gdb_debug=DEBUG, language_level='2')
 
 def cythonize_dummy(extensions):
     def cname(fname):
