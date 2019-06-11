@@ -22,11 +22,19 @@ class Type:
         else:
             raise NotImplementedError
 
+    def _get_prebuilt_compile_name(self, options):
+        if self.is_text():
+            # '_text_bytes' or '_text_unicode'
+            return '_text_%s' % str(options.text_type)
+        else:
+            # e.g. '_int16'
+            return '_%s' % self.which()
+
     def list_item_type(self, m, options):
         if m.pyx:
             # on Cython, try to use the prebuilt ItemType when possible
             if self.is_builtin():
-                prebuilt_compile_name = '_%s' % self.which()
+                prebuilt_compile_name = self._get_prebuilt_compile_name(options)
                 use_prebuilt_item_type = True
             elif self.is_struct() or self.is_enum():
                 node = self.get_node(m)
@@ -42,6 +50,7 @@ class Type:
                 use_prebuilt_item_type = False
 
         if use_prebuilt_item_type:
+            # e.g. _int16_list_item_type
             return '%s_list_item_type' % prebuilt_compile_name
         elif self.is_list():
             inner_item_type = self.list.elementType.list_item_type(m, options)

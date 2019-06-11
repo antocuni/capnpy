@@ -114,8 +114,10 @@ class RequestedFile:
         #
         if m.pyx:
             m.w("from capnpy cimport _hash")
-            for t in Types.__all__:
-                name = '%s_list_item_type' % t.name
+            all_types = [t.name for t in Types.__all__ if t is not Types.text]
+            all_types += ['text_bytes', 'text_unicode']
+            for tname in all_types:
+                name = '%s_list_item_type' % tname
                 m.w("from capnpy.list {cimport} {name} as _{name}", name=name)
         if m.pyx and not m.standalone:
             # load the compiler from the outside. See the comment in

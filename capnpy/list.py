@@ -342,5 +342,6 @@ if PYX:
     uint64_list_item_type = PrimitiveItemType(Types.uint64)
     float32_list_item_type = PrimitiveItemType(Types.float32)
     float64_list_item_type = PrimitiveItemType(Types.float64)
-    text_list_item_type = TextItemType(Types.text)
+    text_bytes_list_item_type = TextItemType(Types.text)
+    text_unicode_list_item_type = TextUnicodeItemType(Types.text)
     data_list_item_type = TextItemType(Types.data)
