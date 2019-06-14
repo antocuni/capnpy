@@ -2,8 +2,7 @@ import py
 import textwrap
 import inspect
 from six import binary_type, text_type
-
-from capnpy.util import extend, extend_module_maybe, ensure_unicode
+from capnpy.util import extend, extend_module_maybe
 
 def test_extend():
     class Foo(object):
@@ -95,8 +94,3 @@ class TestExtendModuleMaybe(object):
         assert foo() == 42
         src = inspect.getsource(foo)
         assert src.strip() == 'def foo(): return 42'
-
-    def test_ensure_unicode(self):
-        assert isinstance(ensure_unicode( 'b'), text_type)
-        assert isinstance(ensure_unicode(u'b'), text_type)
-        assert isinstance(ensure_unicode(b'b'), text_type)

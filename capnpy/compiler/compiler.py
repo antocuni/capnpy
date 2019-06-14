@@ -11,9 +11,9 @@ import capnpy
 from capnpy import schema
 from capnpy.message import loads
 from capnpy.blob import PYX
-from capnpy.compiler.module import ModuleGenerator
-from capnpy.util import ensure_unicode
 from capnpy import annotate
+from capnpy.compiler.module import ModuleGenerator
+from capnpy.compiler.util import as_identifier
 
 # these are the default compiler options
 DEFAULT_OPTIONS = annotate.Options(
@@ -100,9 +100,7 @@ class BaseCompiler(object):
 
     def _capnp_check_version(self):
         version = self._exec('capnp', '--version')
-        if PY3:
-            version = ensure_unicode(version)
-        version = version.strip()
+        version = as_identifier(version.strip())
         if not version.startswith("Cap'n Proto version"):
             raise CompilerError("capnp version string not recognized: %s" % version)
         _, version = version.rsplit(' ', 1)
@@ -112,11 +110,12 @@ class BaseCompiler(object):
 
     def _exec(self, *cmd):
         #print ' '.join(cmd)
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
         stdout, stderr = proc.communicate()
         ret = proc.wait()
         if ret != 0:
-            raise CompilerError(ensure_unicode(stderr))
+            raise CompilerError(stderr)
         return stdout
 
 

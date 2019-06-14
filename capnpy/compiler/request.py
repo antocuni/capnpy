@@ -4,7 +4,7 @@ from six import PY3
 import capnpy
 from capnpy import schema
 from capnpy.type import Types
-from capnpy.util import ensure_unicode
+from capnpy.compiler.util import as_identifier
 from capnpy import annotate
 
 
@@ -60,7 +60,7 @@ class CodeGeneratorRequest:
 class RequestedFile:
 
     def emit(self, m):
-        m.modname = py.path.local(ensure_unicode(self.filename)).purebasename
+        m.modname = py.path.local(as_identifier(self.filename)).purebasename
         if not PY3:
             m.modname = m.modname.encode('utf-8')
         m.tmpname = '%s_tmp' % m.modname
@@ -163,9 +163,9 @@ class RequestedFile:
                 # this means that the file was imported but not used
                 # anywhere. Simply ignore it
                 continue
-            fname = ensure_unicode(filenode.displayName)
+            fname = as_identifier(filenode.displayName)
             ns.importname = m.register_import(fname)
-            ns.fullpath = ensure_unicode(imp.name)
+            ns.fullpath = as_identifier(imp.name)
             if ns.fullpath == '/capnp/c++.capnp':
                 # ignore this file as it's useless for python
                 continue

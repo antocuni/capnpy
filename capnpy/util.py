@@ -32,11 +32,6 @@ def decode_maybe(s):
         return None
     return s.decode('utf-8')
 
-def ensure_unicode(s):
-    if isinstance(s, six.binary_type):
-        return s.decode("utf8")
-    return s
-
 def extend(cls):
     def decorator(new_class):
         for key, value in new_class.__dict__.items():

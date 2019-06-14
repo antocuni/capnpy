@@ -3,7 +3,6 @@ from capnpy import schema
 from capnpy.type import Types
 from capnpy.compiler.structor import Structor
 from capnpy.compiler.fieldtree import FieldTree
-from capnpy.util import ensure_unicode
 
 try:
     from capnpy import _hash
@@ -42,7 +41,7 @@ class Node__Struct:
                 m.register_extra_annotation(group_node, ann)
 
         ns = m.code.new_scope()
-        ns.name = ensure_unicode(self.compile_name(m))
+        ns.name = self.compile_name(m)
         ns.dotname = self.runtime_name(m)
         if m.pyx:
             ns.w("cdef class {name}(_Struct)")
@@ -269,14 +268,14 @@ class Node__Struct:
         if ann is None:
             return
         assert ann.annotation.value.is_text()
-        fieldmap = {ensure_unicode(f.name): f for f in self.get_struct_fields()}
-        allfields = [ensure_unicode(f.name) for f in self.get_struct_fields()]
+        fieldmap = {f.name: f for f in self.get_struct_fields()}
+        allfields = [f.name for f in self.get_struct_fields()]
         # we expect keyfields to be something like "x, y, z" or "*"
-        txt = ensure_unicode(ann.annotation.value.text.strip())
-        if txt == '*':
+        txt = ann.annotation.value.text.strip()
+        if txt == b'*':
             fieldnames = allfields
         else:
-            fieldnames = [fn.strip() for fn in txt.split(',')]
+            fieldnames = [fn.strip() for fn in txt.split(b',')]
 
         #
         # sanity check
@@ -298,7 +297,7 @@ class Node__Struct:
 
     def _emit_fash_hash(self, m, fieldnames):
         # emit a specialized, fast __hash__.
-        fields = dict([(ensure_unicode(f.name), f) for f in self.get_struct_fields()])
+        fields = {f.name: f for f in self.get_struct_fields()}
         m.w()
         with m.code.block('def __hash__(self):') as ns:
             ns.n = len(fieldnames)

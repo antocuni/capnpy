@@ -5,7 +5,7 @@ from collections import defaultdict
 from pypytools.codegen import Code
 from six import PY3
 
-from capnpy.util import ensure_unicode
+from capnpy.compiler.util import as_identifier
 from capnpy.convert_case import from_camel_case
 from capnpy import annotate
 
@@ -101,7 +101,7 @@ class ModuleGenerator(object):
 
     def field_name(self, field):
         name = field.name
-        name = ensure_unicode(name) if PY3 else name
+        name = as_identifier(name)
         if self.options(field).convert_case:
             name = from_camel_case(name)
         name = self._mangle_name(name)
