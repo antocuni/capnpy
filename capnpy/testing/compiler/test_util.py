@@ -14,6 +14,6 @@ def test_as_identifier():
     unicode_identifier = u'hellò'.encode('utf-8')
     with pytest.raises(ValueError) as exc:
         as_identifier(unicode_identifier)
-    assert str(exc.value) == (u'Non-ASCII identifiers are not '
-                              u'supported by capnpy: hellò')
+    assert six.text_type(exc.value) == (u'Non-ASCII identifiers are not '
+                                        u'supported by capnpy: hellò')
 
