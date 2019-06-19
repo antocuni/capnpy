@@ -274,6 +274,47 @@ save the offending object to make it easier to reproduce the bug:
 capnproto types
 ================
 
+Text
+----
+
+Capnproto defines ``Text`` fields as "always UTF-8 encoded and
+NUL-terminated". There are at least two reasonable ways to represent this in
+Python:
+
+  - as ``bytes``: this will contain the undecoded UTF-8 string.
+
+  - as ``unicode``: this will automatically do ``.decode('utf-8')`` for
+    you. However, it is potentially less efficient because capnpy needs to
+    re-decode the string again and again any time you read the field.
+
+By default, ``Text`` fields are represented as ``bytes``. You can change the
+default behavior by passing ``capnpy_options={'text_type': 'unicode'}`` in
+your ``setup.py`` (see also `Integration with setuptools`_).
+
+If you want more granular control, you can annotate single files/struct/fields
+with the ``$Py.options`` annotation::
+
+    @0xbf5147cbbecf40c1;
+    using Py = import "/capnpy/annotate.capnp";
+
+    # file-level option
+    $Py.options(textType=unicode);
+
+    struct A {
+        # this will be unicode because of the file-level option
+        x @0: Text;
+    }
+
+    struct B $Py.options(textType=bytes) {
+        x @0 :Text; # bytes
+        y @1 :Text $Py.options(textType=unicode); # unicode
+    }
+
+Note that in ``setup.py`` the option name is spelled ``text_type`` to follow
+Python's ``naming_convention``, while in the schema it is spelled ``textType``
+because the capnproto schema language mandates ``camelCase``.
+
+
 Struct
 -------
 
