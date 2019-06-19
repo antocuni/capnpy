@@ -5,7 +5,8 @@ import capnpy
 from capnpy.type import Types
 from capnpy.blob import Blob, PYX
 from capnpy import ptr
-from capnpy.util import text_repr, float32_repr, float64_repr
+from capnpy.util import (text_repr, float32_repr, float64_repr, decode_maybe,
+                         encode_maybe)
 from capnpy.segment.endof import endof
 
 class List(Blob):
@@ -277,6 +278,22 @@ class TextItemType(ItemType):
             builder.alloc_text(pos, item)
 
 
+class TextUnicodeItemType(TextItemType):
+
+    def __init__(self, t):
+        super(TextUnicodeItemType, self).__init__(t)
+        # cannot use Types.data with TextUnicodeItemType
+        assert t == Types.text
+        assert self.additional_size == -1
+
+    def read_item(self, lst, i):
+        res = super(TextUnicodeItemType, self).read_item(lst, i)
+        return decode_maybe(res)
+
+    def write_item(self, builder, pos, item):
+        item = encode_maybe(item)
+        builder.alloc_text(pos, item)
+
 class ListItemType(ItemType):
 
     def __init__(self, inner_item_type):
@@ -325,5 +342,6 @@ if PYX:
     uint64_list_item_type = PrimitiveItemType(Types.uint64)
     float32_list_item_type = PrimitiveItemType(Types.float32)
     float64_list_item_type = PrimitiveItemType(Types.float64)
-    text_list_item_type = TextItemType(Types.text)
+    text_bytes_list_item_type = TextItemType(Types.text)
+    text_unicode_list_item_type = TextUnicodeItemType(Types.text)
     data_list_item_type = TextItemType(Types.data)

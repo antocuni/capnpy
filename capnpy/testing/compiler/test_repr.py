@@ -6,7 +6,6 @@ from six import PY3, b
 
 import capnpy
 from capnpy.testing.compiler.support import CompilerTest
-from capnpy.util import ensure_unicode
 
 
 class TestShortRepr(CompilerTest):
@@ -21,7 +20,10 @@ class TestShortRepr(CompilerTest):
         ret = proc.wait()
         if ret != 0:
             raise ValueError(stderr)
-        return ensure_unicode(stdout.strip())
+        res = stdout.strip()
+        if PY3:
+            res = res.decode('utf-8')
+        return res
 
     def check(self, obj, expected=None):
         myrepr = obj.shortrepr()

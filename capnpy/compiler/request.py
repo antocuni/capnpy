@@ -4,7 +4,7 @@ from six import PY3
 import capnpy
 from capnpy import schema
 from capnpy.type import Types
-from capnpy.util import ensure_unicode
+from capnpy.compiler.util import as_identifier
 from capnpy import annotate
 
 
@@ -60,7 +60,7 @@ class CodeGeneratorRequest:
 class RequestedFile:
 
     def emit(self, m):
-        m.modname = py.path.local(ensure_unicode(self.filename)).purebasename
+        m.modname = py.path.local(as_identifier(self.filename)).purebasename
         if not PY3:
             m.modname = m.modname.encode('utf-8')
         m.tmpname = '%s_tmp' % m.modname
@@ -80,11 +80,12 @@ class RequestedFile:
         #
         filenode = m.allnodes[self.id]
         assert filenode.is_file()
-        filenode.compute_options(m, m.default_opt)
+        filenode.compute_options(m, m.default_options)
         m.current_scope = filenode
         m.w("# THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy")
         m.w("# do not edit by hand")
         m.w("# generated on %s" % datetime.now().strftime("%Y-%m-%d %H:%M"))
+        m.w("# cython: language_level=2")
         m.w("")
         m.w("from capnpy {cimport} ptr as _ptr")
         m.w("from capnpy.struct_ {cimport} Struct as _Struct")
@@ -98,6 +99,7 @@ class RequestedFile:
         m.w("from capnpy.list {cimport} PrimitiveItemType as _PrimitiveItemType")
         m.w("from capnpy.list {cimport} BoolItemType as _BoolItemType")
         m.w("from capnpy.list {cimport} TextItemType as _TextItemType")
+        m.w("from capnpy.list {cimport} TextUnicodeItemType as _TextUnicodeItemType")
         m.w("from capnpy.list {cimport} StructItemType as _StructItemType")
         m.w("from capnpy.list {cimport} EnumItemType as _EnumItemType")
         m.w("from capnpy.list {cimport} VoidItemType as _VoidItemType")
@@ -108,11 +110,14 @@ class RequestedFile:
         m.w("from capnpy.util import float64_repr as _float64_repr")
         m.w("from capnpy.util import extend_module_maybe as _extend_module_maybe")
         m.w("from capnpy.util import check_version as _check_version")
+        m.w("from capnpy.util import encode_maybe as _encode_maybe")
         #
         if m.pyx:
             m.w("from capnpy cimport _hash")
-            for t in Types.__all__:
-                name = '%s_list_item_type' % t.name
+            all_types = [t.name for t in Types.__all__ if t is not Types.text]
+            all_types += ['text_bytes', 'text_unicode']
+            for tname in all_types:
+                name = '%s_list_item_type' % tname
                 m.w("from capnpy.list {cimport} {name} as _{name}", name=name)
         if m.pyx and not m.standalone:
             # load the compiler from the outside. See the comment in
@@ -158,9 +163,9 @@ class RequestedFile:
                 # this means that the file was imported but not used
                 # anywhere. Simply ignore it
                 continue
-            fname = ensure_unicode(filenode.displayName)
+            fname = as_identifier(filenode.displayName)
             ns.importname = m.register_import(fname)
-            ns.fullpath = ensure_unicode(imp.name)
+            ns.fullpath = as_identifier(imp.name)
             if ns.fullpath == '/capnp/c++.capnp':
                 # ignore this file as it's useless for python
                 continue

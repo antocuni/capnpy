@@ -1,6 +1,7 @@
 from capnpy.schema import (Node, Node__Enum, Node__Const, Node__Annotation,
                            Enumerant)
 from capnpy import annotate
+from capnpy.compiler.util import as_identifier
 
 # The implementation of each node is divided in three parts:
 #     1. forward declaration
@@ -39,7 +40,6 @@ from capnpy import annotate
 #     cdef class Outer:
 #         ...
 #         Nested = Outer__Nested # reference as child
-from capnpy.util import ensure_unicode
 
 
 @Node.__extend__
@@ -71,9 +71,9 @@ class Node:
     def shortname(self, m):
         name = self.displayName[self.displayNamePrefixLength:]
         if self.is_file():
-            filename = ensure_unicode(self.displayName)
-            return ensure_unicode(m.importnames[filename])
-        return ensure_unicode(name)
+            filename = as_identifier(self.displayName)
+            return m.importnames[filename]
+        return as_identifier(name)
 
     def _fullname(self, m, sep):
         parent = self.get_parent(m)
@@ -83,8 +83,8 @@ class Node:
 
     def compile_name(self, m, prefix=''):
         if self.is_imported(m):
-            return ensure_unicode(self.runtime_name(m, sep='.' + prefix))
-        return ensure_unicode(prefix + self._fullname(m, '_'))
+            return self.runtime_name(m, sep='.' + prefix)
+        return prefix + self._fullname(m, '_')
 
     def runtime_name(self, m, sep='.'):
         return self._fullname(m, sep)

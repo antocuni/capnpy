@@ -4,7 +4,6 @@ from six import binary_type
 from capnpy import ptr
 from capnpy.packing import mychr
 from capnpy.printer import print_buffer
-from capnpy.util import ensure_bytes
 
 class SegmentBuilder(object):
 
@@ -95,7 +94,6 @@ class SegmentBuilder(object):
         if s is None:
             self.write_int64(pos, 0)
             return -1
-        s = ensure_bytes(s)
         n = len(s)
         nn = n + trailing_zero
         result = self.alloc_list(pos, ptr.LIST_SIZE_8, nn, nn)

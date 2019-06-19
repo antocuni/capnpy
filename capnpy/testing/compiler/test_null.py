@@ -1,4 +1,5 @@
 import py
+import six
 from six import b
 
 from capnpy.testing.compiler.support import CompilerTest
@@ -9,6 +10,7 @@ class TestNullPointers(CompilerTest):
     def mod(self):
         schema = """
         @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
         struct P {
             a @0 :Int64;
             b @1 :Int64;
@@ -18,6 +20,7 @@ class TestNullPointers(CompilerTest):
             x @0 :Text;
             y @1 :List(Int64);
             z @2 :P;
+            u @3 :Text $Py.options(textType=unicode);
         }
         """
         return self.compile(schema)
@@ -25,22 +28,27 @@ class TestNullPointers(CompilerTest):
     def test_null_pointers(self, mod):
         buf = b('\x00\x00\x00\x00\x00\x00\x00\x00'   # null
                 '\x00\x00\x00\x00\x00\x00\x00\x00'   # null
+                '\x00\x00\x00\x00\x00\x00\x00\x00'   # null
                 '\x00\x00\x00\x00\x00\x00\x00\x00')  # null
         f = mod.Foo.from_buffer(buf, 0, data_size=0, ptrs_size=3)
         assert f.x is None
         assert f.y is None
         assert f.z is None
+        assert f.u is None
         assert not f.has_x()
         assert not f.has_y()
         assert not f.has_z()
+        assert not f.has_u()
 
     def test_get_methods(self, mod):
         buf = b('\x00\x00\x00\x00\x00\x00\x00\x00'   # null
+                '\x00\x00\x00\x00\x00\x00\x00\x00'   # null
                 '\x00\x00\x00\x00\x00\x00\x00\x00'   # null
                 '\x00\x00\x00\x00\x00\x00\x00\x00')  # null
         f = mod.Foo.from_buffer(buf, 0, data_size=0, ptrs_size=3)
         assert f.x is None
         assert f.get_x() == b''
+        assert type(f.get_x()) is bytes
         #
         assert f.y is None
         assert f.get_y() == []
@@ -48,6 +56,10 @@ class TestNullPointers(CompilerTest):
         assert f.z is None
         assert f.get_z().a == 0
         assert f.get_z().b == 0
+        #
+        assert f.u is None
+        assert f.get_u() == u''
+        assert type(f.get_u()) is six.text_type
 
     def test_default_when_null(self, mod):
         buf = b''
@@ -55,9 +67,11 @@ class TestNullPointers(CompilerTest):
         assert f.x is None
         assert f.y is None
         assert f.z is None
+        assert f.u is None
         assert not f.has_x()
         assert not f.has_y()
         assert not f.has_z()
+        assert not f.has_u()
 
     def test_nonnull(self, mod):
         # now with non-null ptrs

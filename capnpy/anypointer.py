@@ -25,10 +25,16 @@ class AnyPointer(object):
     is_data = is_text
 
     def as_text(self):
-        return self.struct_._read_str_text(self.offset)
+        raise Exception("Use as_text_bytes or as_text_unicode as needed")
+
+    def as_text_bytes(self):
+        return self.struct_._read_text_bytes(self.offset)
+
+    def as_text_unicode(self):
+        return self.struct_._read_text_unicode(self.offset)
 
     def as_data(self):
-        return self.struct_._read_str_data(self.offset)
+        return self.struct_._read_data(self.offset)
 
     def as_struct(self, structcls):
         return self.struct_._read_struct(self.offset, structcls)

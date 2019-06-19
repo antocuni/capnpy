@@ -8,7 +8,7 @@ from capnpy.list import List
 from capnpy.segment.segment import Segment, MultiSegment
 from capnpy.segment.endof import endof
 from capnpy.segment.builder import SegmentBuilder
-from capnpy.util import magic_setattr
+from capnpy.util import magic_setattr, decode_maybe
 
 class Undefined(object):
     def __repr__(self):
@@ -147,7 +147,7 @@ class Struct(Blob):
     def __which__(self):
         if self.__tag_offset__ is None:
             raise TypeError("Cannot call which() on a non-union type")
-        return self._read_data_int16(self.__tag_offset__)
+        return self._read_int16(self.__tag_offset__)
 
     def _as_pointer(self, offset):
         """
@@ -168,20 +168,20 @@ class Struct(Blob):
             return offset, 0
         return self._seg.read_far_ptr(self._ptrs_offset+offset)
 
-    def _read_data(self, offset, ifmt):
+    def _read_primitive(self, offset, ifmt):
         if offset >= self._data_size*8:
             # reading bytes beyond _data_size is equivalent to read 0
             return 0
         return self._seg.read_primitive(self._data_offset+offset, ifmt)
 
-    def _read_data_int16(self, offset):
+    def _read_int16(self, offset):
         if offset >= self._data_size*8:
             # reading bytes beyond _data_size is equivalent to read 0
             return 0
         return self._seg.read_int16(self._data_offset+offset)
 
     def _read_bit(self, offset, bitmask):
-        val = self._read_data(offset, Types.uint8.ifmt)
+        val = self._read_primitive(offset, Types.uint8.ifmt)
         return bool(val & bitmask)
 
     def _read_struct(self, offset, structcls):
@@ -221,13 +221,24 @@ class Struct(Blob):
                               item_type)
         return obj
 
-    def _read_str_text(self, offset, default_=None):
-        return self._read_str_data(offset, default_, additional_size=-1)
+    def _read_text_bytes(self, offset, default_=None):
+        return self._read_data(offset, default_, additional_size=-1)
 
-    def _hash_str_text(self, offset, default_=hash(None)):
-        return self._hash_str_data(offset, default_, additional_size=-1)
+    def _hash_text_bytes(self, offset, default_=hash(None)):
+        return self._hash_data(offset, default_, additional_size=-1)
 
-    def _read_str_data(self, offset, default_=None, additional_size=0):
+    # note that default_ is an utf-8 encoded BYTES string
+    def _read_text_unicode(self, offset, default_=None):
+        b = self._read_data(offset, default_, additional_size=-1)
+        return decode_maybe(b)
+
+    def _hash_text_unicode(self, offset, default_=hash(None)):
+        # XXX: this is not a "fast hash" at all, it creates an unicode and the
+        # computes the hash on it
+        u = self._read_text_unicode(offset, default_=b'')
+        return hash(u)
+
+    def _read_data(self, offset, default_=None, additional_size=0):
         p = self._read_fast_ptr(offset)
         if ptr.kind(p) == ptr.FAR:
             offset, p = self._read_far_ptr(offset)
@@ -235,7 +246,7 @@ class Struct(Blob):
             offset += self._ptrs_offset
         return self._seg.read_str(p, offset, default_, additional_size)
 
-    def _hash_str_data(self, offset, default_=hash(None), additional_size=0):
+    def _hash_data(self, offset, default_=hash(None), additional_size=0):
         p = self._read_fast_ptr(offset)
         if ptr.kind(p) == ptr.FAR:
             offset, p = self._read_far_ptr(offset)

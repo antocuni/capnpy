@@ -22,15 +22,15 @@ def magic_setattr(cls, attr, value):
             raise TypeError("Cannot set attributes on C types. "
                             "Run setup.py to compile capnpy._utils and enable the hack")
 
-def ensure_unicode(s):
-    if isinstance(s, six.binary_type):
-        return s.decode("utf8")
-    return s
+def encode_maybe(s):
+    if s is None:
+        return None
+    return s.encode('utf-8')
 
-def ensure_bytes(b):
-    if isinstance(b, six.text_type):
-        return b.encode("utf8")
-    return b
+def decode_maybe(s):
+    if s is None:
+        return None
+    return s.decode('utf-8')
 
 def extend(cls):
     def decorator(new_class):

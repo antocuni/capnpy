@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 import py
 from six import b
 from capnpy.list import PrimitiveItemType, StructItemType
@@ -26,15 +27,16 @@ class TestAnyPointer(CompilerTest):
         """
         mod = self.compile(schema)
         buf = b('\x01\x00\x00\x00\x82\x00\x00\x00'  # ptrlist
-                'hello capnproto\0')                # string
+                'h\xc3\xa0lo capnproto\x00')         # utf-8 text
         f = mod.Foo.from_buffer(buf, 0, 0, 1)
         p = f.p
         assert not p.is_struct()
         assert p.is_list()
         assert p.is_text()
         assert p.is_data()
-        assert p.as_text() == b'hello capnproto'
-        assert p.as_data() == b'hello capnproto\0'
+        assert p.as_text_bytes() == b'h\xc3\xa0lo capnproto'
+        assert p.as_text_unicode() == u'hàlo capnproto'
+        assert p.as_data() == b'h\xc3\xa0lo capnproto\0'
 
     def test_as_struct(self):
         schema = """

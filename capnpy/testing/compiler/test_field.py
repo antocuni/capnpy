@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 import py
 from six import b, PY3
 
@@ -63,7 +64,7 @@ class TestField(CompilerTest):
         assert p.x is None
 
 
-    def test_string(self):
+    def test_text(self):
         schema = """
         @0xbf5147cbbecf40c1;
         struct Foo {
@@ -72,14 +73,29 @@ class TestField(CompilerTest):
         }
         """
         mod = self.compile(schema)
-
         buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
                 '\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
-                'hello capnproto\0')                 # string
+                'hello capnproto\0')                 # text
 
         f = mod.Foo.from_buffer(buf, 0, 1, 1)
         assert f.x == 1
         assert f.name == b'hello capnproto'
+
+    def test_text_unicode(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            x @0 :Int64;
+            name @1 :Text;
+        }
+        """
+        mod = self.compile(schema, text_type='unicode')
+        buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'   # 1
+                '\x01\x00\x00\x00\x82\x00\x00\x00'   # ptrlist
+                'h\xc3\xa0lo capnproto\x00')         # utf-8 text
+        f = mod.Foo.from_buffer(buf, 0, 1, 1)
+        assert f.x == 1
+        assert f.name == u'hàlo capnproto'
 
     def test_data(self):
         schema = """
@@ -465,7 +481,7 @@ class TestList(CompilerTest):
         assert list(f.items) == [True, True, False, True, False, True, False, False,
                                  False, True]
 
-    def test_list_of_text(self):
+    def test_list_of_text_bytes(self):
         schema = """
         @0xbf5147cbbecf40c1;
         struct Foo {
@@ -482,6 +498,24 @@ class TestList(CompilerTest):
                 'baz\x00\x00\x00\x00\x00')
         f = mod.Foo.from_buffer(buf, 0, 0, 1)
         assert list(f.items) == [b'foo', b'bar', b'baz']
+
+    def test_list_of_text_unicode(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            items @0 :List(Text);
+        }
+        """
+        mod = self.compile(schema, text_type='unicode')
+        buf = b('\x01\x00\x00\x00\x1e\x00\x00\x00'    # ptrlist
+                '\x09\x00\x00\x00\x22\x00\x00\x00'
+                '\x09\x00\x00\x00\x22\x00\x00\x00'
+                '\x09\x00\x00\x00\x22\x00\x00\x00'
+                'f\xc3\xa0\x00\x00\x00\x00\x00'
+                'b\xc3\xa8\x00\x00\x00\x00\x00'
+                'b\xc3\xac\x00\x00\x00\x00\x00')
+        f = mod.Foo.from_buffer(buf, 0, 0, 1)
+        assert list(f.items) == [u'fà', u'bè', u'bì']
 
     def test_list_of_data(self):
         schema = """

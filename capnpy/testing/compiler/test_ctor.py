@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 import py
 import pytest
 from six import b
@@ -93,7 +94,7 @@ class TestConstructors(CompilerTest):
         assert p._seg.buf == buf
         py.test.raises(TypeError, "mod.Point(z=None)")
 
-    def test_text(self):
+    def test_text_bytes(self):
         schema = """
         @0xbf5147cbbecf40c1;
         struct Foo {
@@ -107,6 +108,20 @@ class TestConstructors(CompilerTest):
                                  '\x01\x00\x00\x00\x62\x00\x00\x00'
                                  'h' 'e' 'l' 'l' 'o' ' ' 'c' 'a'
                                  'p' 'n' 'p' '\x00\x00\x00\x00\x00')
+
+    def test_text_unicode(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            x @0 :Int64;
+            y @1 :Text;
+        }
+        """
+        mod = self.compile(schema, text_type='unicode')
+        foo = mod.Foo(1, u'hàlo capnproto')
+        assert foo._seg.buf == b('\x01\x00\x00\x00\x00\x00\x00\x00'
+                                 '\x01\x00\x00\x00\x82\x00\x00\x00'
+                                 'h\xc3\xa0lo capnproto\x00')
 
     def test_data(self):
         schema = """
@@ -165,7 +180,7 @@ class TestConstructors(CompilerTest):
         foo = mod.Foo([None]*4)
         assert foo._seg.buf == b('\x01\x00\x00\x00\x20\x00\x00\x00')  # ptrlist
 
-    def test_list_of_text(self):
+    def test_list_of_text_bytes(self):
         schema = """
         @0xbf5147cbbecf40c1;
         struct Foo {
@@ -181,6 +196,24 @@ class TestConstructors(CompilerTest):
                      'foo\x00\x00\x00\x00\x00'
                      'bar\x00\x00\x00\x00\x00'
                      'baz\x00\x00\x00\x00\x00')
+        assert foo._seg.buf == expected
+
+    def test_list_of_text_unicode(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            x @0 :List(Text);
+        }
+        """
+        mod = self.compile(schema, text_type='unicode')
+        foo = mod.Foo([u'fà', u'bè', u'bì'])
+        expected = b('\x01\x00\x00\x00\x1e\x00\x00\x00'    # ptrlist
+                     '\x09\x00\x00\x00\x22\x00\x00\x00'
+                     '\x09\x00\x00\x00\x22\x00\x00\x00'
+                     '\x09\x00\x00\x00\x22\x00\x00\x00'
+                     'f\xc3\xa0\x00\x00\x00\x00\x00'
+                     'b\xc3\xa8\x00\x00\x00\x00\x00'
+                     'b\xc3\xac\x00\x00\x00\x00\x00')
         assert foo._seg.buf == expected
 
     def test_list_of_data(self):

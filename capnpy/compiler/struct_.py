@@ -3,7 +3,6 @@ from capnpy import schema
 from capnpy.type import Types
 from capnpy.compiler.structor import Structor
 from capnpy.compiler.fieldtree import FieldTree
-from capnpy.util import ensure_unicode
 
 try:
     from capnpy import _hash
@@ -42,7 +41,7 @@ class Node__Struct:
                 m.register_extra_annotation(group_node, ann)
 
         ns = m.code.new_scope()
-        ns.name = ensure_unicode(self.compile_name(m))
+        ns.name = self.compile_name(m)
         ns.dotname = self.runtime_name(m)
         if m.pyx:
             ns.w("cdef class {name}(_Struct)")
@@ -132,7 +131,7 @@ class Node__Struct:
             # are already fast
             ns.ww("""
                 cpdef long __which__(self) except -1:
-                    return self._read_data_int16({tag_offset})
+                    return self._read_int16({tag_offset})
                 cpdef which(self):
                     return {compile_name}._new(self.__which__())
             """)
@@ -143,7 +142,7 @@ class Node__Struct:
             ns.i = i
             ns.ww("""
                 def is_{item}(self):
-                    return self._read_data_int16({tag_offset}) == {i}
+                    return self._read_int16({tag_offset}) == {i}
             """)
         ns.w()
 
@@ -255,7 +254,7 @@ class Node__Struct:
             return ns.format('str(self.{fname}).lower()')
         elif f.is_void():
             return '"void"'
-        elif f.is_text() or f.is_data():
+        elif f.is_text_any() or f.is_data():
             return ns.format('_text_repr(self.get_{fname}())')
         elif f.is_struct() or f.is_list():
             return ns.format('self.get_{fname}().shortrepr()')
@@ -269,14 +268,14 @@ class Node__Struct:
         if ann is None:
             return
         assert ann.annotation.value.is_text()
-        fieldmap = {ensure_unicode(f.name): f for f in self.get_struct_fields()}
-        allfields = [ensure_unicode(f.name) for f in self.get_struct_fields()]
+        fieldmap = {f.name: f for f in self.get_struct_fields()}
+        allfields = [f.name for f in self.get_struct_fields()]
         # we expect keyfields to be something like "x, y, z" or "*"
-        txt = ensure_unicode(ann.annotation.value.text.strip())
-        if txt == '*':
+        txt = ann.annotation.value.text.strip()
+        if txt == b'*':
             fieldnames = allfields
         else:
-            fieldnames = [fn.strip() for fn in txt.split(',')]
+            fieldnames = [fn.strip() for fn in txt.split(b',')]
 
         #
         # sanity check
@@ -298,7 +297,7 @@ class Node__Struct:
 
     def _emit_fash_hash(self, m, fieldnames):
         # emit a specialized, fast __hash__.
-        fields = dict([(ensure_unicode(f.name), f) for f in self.get_struct_fields()])
+        fields = {f.name: f for f in self.get_struct_fields()}
         m.w()
         with m.code.block('def __hash__(self):') as ns:
             ns.n = len(fieldnames)
@@ -307,9 +306,12 @@ class Node__Struct:
             for ns.i, fname in enumerate(fieldnames):
                 f = fields[fname]
                 ns.fname = m.field_name(f)
-                if f.is_text():
+                if f.is_text_bytes(m):
                     ns.offset = f.slot.offset * f.slot.get_size()
-                    ns.w('h[{i}] = self._hash_str_text({offset})')
+                    ns.w('h[{i}] = self._hash_text_bytes({offset})')
+                if f.is_text_unicode(m):
+                    ns.offset = f.slot.offset * f.slot.get_size()
+                    ns.w('h[{i}] = self._hash_text_unicode({offset})')
                 else:
                     ns.hash = self._fasthash_for_field(f)
                     ns.w('h[{i}] = {hash}(self.{fname})')

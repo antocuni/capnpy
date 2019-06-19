@@ -82,8 +82,10 @@ class Structor(object):
             self.handle_nullable(node)
         elif f.is_group():
             self.handle_group(node)
-        elif f.is_text():
-            self.handle_text(node)
+        elif f.is_text_bytes(self.m):
+            self.handle_text_bytes(node)
+        elif f.is_text_unicode(self.m):
+            self.handle_text_unicode(node)
         elif f.is_data():
             self.handle_data(node)
         elif f.is_struct():
@@ -146,9 +148,15 @@ class Structor(object):
         for child in node.children:
             self.handle_node(child)
 
-    def handle_text(self, node):
+    def handle_text_bytes(self, node):
         self.m.code.w('builder.alloc_text(pos + {offset}, {arg})',
                       arg=node.varname, offset=self.slot_offset(node.f))
+
+    def handle_text_unicode(self, node):
+        ns = self.m.code.new_scope()
+        ns.arg = node.varname
+        ns.offset = self.slot_offset(node.f)
+        ns.w('builder.alloc_text(pos + {offset}, _encode_maybe({arg}))')
 
     def handle_data(self, node):
         self.m.code.w('builder.alloc_data(pos + {offset}, {arg})',
@@ -168,11 +176,12 @@ class Structor(object):
         ns.w('builder.copy_from_struct(pos + {offset}, {structname}, {fname})')
 
     def handle_list(self, node):
+        options = self.m.options(node.f)
         ns = self.m.code.new_scope()
         ns.fname = node.varname
         ns.offset = self.slot_offset(node.f)
         t = node.f.slot.type.list.elementType
-        ns.list_item_type = t.list_item_type(self.m)
+        ns.list_item_type = t.list_item_type(self.m, options)
         ns.w('builder.copy_from_list(pos + {offset}, {list_item_type}, {fname})')
 
     def handle_primitive(self, node):

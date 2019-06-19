@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2019-05-28 10:16
+# generated on 2019-06-07 11:46
 
 from capnpy import ptr as _ptr
 from capnpy.struct_ import Struct as _Struct
@@ -190,7 +190,7 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
     @property
     def id(self):
         # no union check
-        value = self._read_data(0, ord('Q'))
+        value = self._read_primitive(0, ord('Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -198,10 +198,10 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
     @property
     def name(self):
         # no union check
-        return self._read_str_text(0)
+        return self._read_text_bytes(0)
     
     def get_name(self):
-        return self._read_str_text(0, default_=b"")
+        return self._read_text_bytes(0, default_=b"")
     
     def has_name(self):
         ptr = self._read_fast_ptr(0)
@@ -237,7 +237,7 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
     @property
     def id(self):
         # no union check
-        value = self._read_data(0, ord('Q'))
+        value = self._read_primitive(0, ord('Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -245,10 +245,10 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
     @property
     def filename(self):
         # no union check
-        return self._read_str_text(0)
+        return self._read_text_bytes(0)
     
     def get_filename(self):
-        return self._read_str_text(0, default_=b"")
+        return self._read_text_bytes(0, default_=b"")
     
     def has_filename(self):
         ptr = self._read_fast_ptr(0)
@@ -358,14 +358,14 @@ class Brand_Scope(_Struct):
     __tag_offset__ = 8
     
     def is_bind(self):
-        return self._read_data_int16(8) == 0
+        return self._read_int16(8) == 0
     def is_inherit(self):
-        return self._read_data_int16(8) == 1
+        return self._read_int16(8) == 1
     
     @property
     def scopeId(self):
         # no union check
-        value = self._read_data(0, ord('Q'))
+        value = self._read_primitive(0, ord('Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -440,9 +440,9 @@ class Brand_Binding(_Struct):
     __tag_offset__ = 0
     
     def is_unbound(self):
-        return self._read_data_int16(0) == 0
+        return self._read_int16(0) == 0
     def is_type(self):
-        return self._read_data_int16(0) == 1
+        return self._read_int16(0) == 1
     
     @property
     def unbound(self):
@@ -468,16 +468,6 @@ class Brand_Binding(_Struct):
         res = self.type
         if res is None:
             return Type.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_type(self):
-        ptr = self._read_fast_ptr(0)
-        return ptr != 0
-    
-    def get_type(self):
-        res = self.type
-        if res is None:
-            return Type.from_buffer('', 0, data_size=0, ptrs_size=0)
         return res
     
     def has_type(self):
@@ -572,7 +562,7 @@ class Annotation(_Struct):
     @property
     def id(self):
         # no union check
-        value = self._read_data(0, ord('Q'))
+        value = self._read_primitive(0, ord('Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -602,16 +592,6 @@ class Annotation(_Struct):
         ptr = self._read_fast_ptr(0)
         return ptr != 0
     
-    def get_value(self):
-        res = self.value
-        if res is None:
-            return Value.from_buffer('', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_value(self):
-        ptr = self._read_fast_ptr(0)
-        return ptr != 0
-    
     @property
     def brand(self):
         # no union check
@@ -631,16 +611,6 @@ class Annotation(_Struct):
         res = self.brand
         if res is None:
             return Brand.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_brand(self):
-        ptr = self._read_fast_ptr(8)
-        return ptr != 0
-    
-    def get_brand(self):
-        res = self.brand
-        if res is None:
-            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
         return res
     
     def has_brand(self):
@@ -678,10 +648,10 @@ class Node_Parameter(_Struct):
     @property
     def name(self):
         # no union check
-        return self._read_str_text(0)
+        return self._read_text_bytes(0)
     
     def get_name(self):
-        return self._read_str_text(0, default_=b"")
+        return self._read_text_bytes(0, default_=b"")
     
     def has_name(self):
         ptr = self._read_fast_ptr(0)
@@ -714,7 +684,7 @@ class Node_struct(_Struct):
     @property
     def dataWordCount(self):
         # no union check
-        value = self._read_data(14, ord('H'))
+        value = self._read_primitive(14, ord('H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -722,7 +692,7 @@ class Node_struct(_Struct):
     @property
     def pointerCount(self):
         # no union check
-        value = self._read_data(24, ord('H'))
+        value = self._read_primitive(24, ord('H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -730,7 +700,7 @@ class Node_struct(_Struct):
     @property
     def preferredListEncoding(self):
         # no union check
-        value = self._read_data_int16(26)
+        value = self._read_int16(26)
         if 0 != 0:
             value = (value ^ 0)
         return ElementSize._new(value)
@@ -746,7 +716,7 @@ class Node_struct(_Struct):
     @property
     def discriminantCount(self):
         # no union check
-        value = self._read_data(30, ord('H'))
+        value = self._read_primitive(30, ord('H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -754,7 +724,7 @@ class Node_struct(_Struct):
     @property
     def discriminantOffset(self):
         # no union check
-        value = self._read_data(32, ord('I'))
+        value = self._read_primitive(32, ord('I'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -824,10 +794,10 @@ class Node_NestedNode(_Struct):
     @property
     def name(self):
         # no union check
-        return self._read_str_text(0)
+        return self._read_text_bytes(0)
     
     def get_name(self):
-        return self._read_str_text(0, default_=b"")
+        return self._read_text_bytes(0, default_=b"")
     
     def has_name(self):
         ptr = self._read_fast_ptr(0)
@@ -836,7 +806,7 @@ class Node_NestedNode(_Struct):
     @property
     def id(self):
         # no union check
-        value = self._read_data(0, ord('Q'))
+        value = self._read_primitive(0, ord('Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -936,16 +906,6 @@ class Node_const(_Struct):
         ptr = self._read_fast_ptr(24)
         return ptr != 0
     
-    def get_type(self):
-        res = self.type
-        if res is None:
-            return Type.from_buffer('', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_type(self):
-        ptr = self._read_fast_ptr(24)
-        return ptr != 0
-    
     @property
     def value(self):
         # no union check
@@ -965,16 +925,6 @@ class Node_const(_Struct):
         res = self.value
         if res is None:
             return Value.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_value(self):
-        ptr = self._read_fast_ptr(32)
-        return ptr != 0
-    
-    def get_value(self):
-        res = self.value
-        if res is None:
-            return Value.from_buffer('', 0, data_size=0, ptrs_size=0)
         return res
     
     def has_value(self):
@@ -1014,16 +964,6 @@ class Node_annotation(_Struct):
         res = self.type
         if res is None:
             return Type.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_type(self):
-        ptr = self._read_fast_ptr(24)
-        return ptr != 0
-    
-    def get_type(self):
-        res = self.type
-        if res is None:
-            return Type.from_buffer('', 0, data_size=0, ptrs_size=0)
         return res
     
     def has_type(self):
@@ -1157,22 +1097,22 @@ class Node(_Struct):
     __tag_offset__ = 12
     
     def is_file(self):
-        return self._read_data_int16(12) == 0
+        return self._read_int16(12) == 0
     def is_struct(self):
-        return self._read_data_int16(12) == 1
+        return self._read_int16(12) == 1
     def is_enum(self):
-        return self._read_data_int16(12) == 2
+        return self._read_int16(12) == 2
     def is_interface(self):
-        return self._read_data_int16(12) == 3
+        return self._read_int16(12) == 3
     def is_const(self):
-        return self._read_data_int16(12) == 4
+        return self._read_int16(12) == 4
     def is_annotation(self):
-        return self._read_data_int16(12) == 5
+        return self._read_int16(12) == 5
     
     @property
     def id(self):
         # no union check
-        value = self._read_data(0, ord('Q'))
+        value = self._read_primitive(0, ord('Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1180,10 +1120,10 @@ class Node(_Struct):
     @property
     def displayName(self):
         # no union check
-        return self._read_str_text(0)
+        return self._read_text_bytes(0)
     
     def get_displayName(self):
-        return self._read_str_text(0, default_=b"")
+        return self._read_text_bytes(0, default_=b"")
     
     def has_displayName(self):
         ptr = self._read_fast_ptr(0)
@@ -1192,7 +1132,7 @@ class Node(_Struct):
     @property
     def displayNamePrefixLength(self):
         # no union check
-        value = self._read_data(8, ord('I'))
+        value = self._read_primitive(8, ord('I'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1200,7 +1140,7 @@ class Node(_Struct):
     @property
     def scopeId(self):
         # no union check
-        value = self._read_data(16, ord('Q'))
+        value = self._read_primitive(16, ord('Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1449,7 +1389,7 @@ class Field_slot(_Struct):
     @property
     def offset(self):
         # no union check
-        value = self._read_data(4, ord('I'))
+        value = self._read_primitive(4, ord('I'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1479,16 +1419,6 @@ class Field_slot(_Struct):
         ptr = self._read_fast_ptr(16)
         return ptr != 0
     
-    def get_type(self):
-        res = self.type
-        if res is None:
-            return Type.from_buffer('', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_type(self):
-        ptr = self._read_fast_ptr(16)
-        return ptr != 0
-    
     @property
     def defaultValue(self):
         # no union check
@@ -1508,16 +1438,6 @@ class Field_slot(_Struct):
         res = self.defaultValue
         if res is None:
             return Value.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_defaultValue(self):
-        ptr = self._read_fast_ptr(24)
-        return ptr != 0
-    
-    def get_defaultValue(self):
-        res = self.defaultValue
-        if res is None:
-            return Value.from_buffer('', 0, data_size=0, ptrs_size=0)
         return res
     
     def has_defaultValue(self):
@@ -1552,9 +1472,9 @@ class Field_ordinal(_Struct):
     __tag_offset__ = 10
     
     def is_implicit(self):
-        return self._read_data_int16(10) == 0
+        return self._read_int16(10) == 0
     def is_explicit(self):
-        return self._read_data_int16(10) == 1
+        return self._read_int16(10) == 1
     
     @property
     def implicit(self):
@@ -1564,7 +1484,7 @@ class Field_ordinal(_Struct):
     @property
     def explicit(self):
         self._ensure_union(1)
-        value = self._read_data(12, ord('H'))
+        value = self._read_primitive(12, ord('H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1586,7 +1506,7 @@ class Field_group(_Struct):
     @property
     def typeId(self):
         # no union check
-        value = self._read_data(16, ord('Q'))
+        value = self._read_primitive(16, ord('Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1609,17 +1529,17 @@ class Field(_Struct):
     __tag_offset__ = 8
     
     def is_slot(self):
-        return self._read_data_int16(8) == 0
+        return self._read_int16(8) == 0
     def is_group(self):
-        return self._read_data_int16(8) == 1
+        return self._read_int16(8) == 1
     
     @property
     def name(self):
         # no union check
-        return self._read_str_text(0)
+        return self._read_text_bytes(0)
     
     def get_name(self):
-        return self._read_str_text(0, default_=b"")
+        return self._read_text_bytes(0, default_=b"")
     
     def has_name(self):
         ptr = self._read_fast_ptr(0)
@@ -1628,7 +1548,7 @@ class Field(_Struct):
     @property
     def codeOrder(self):
         # no union check
-        value = self._read_data(0, ord('H'))
+        value = self._read_primitive(0, ord('H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1651,7 +1571,7 @@ class Field(_Struct):
     @property
     def discriminantValue(self):
         # no union check
-        value = self._read_data(2, ord('H'))
+        value = self._read_primitive(2, ord('H'))
         if 65535 != 0:
             value = value ^ 65535
         return value
@@ -1762,10 +1682,10 @@ class Enumerant(_Struct):
     @property
     def name(self):
         # no union check
-        return self._read_str_text(0)
+        return self._read_text_bytes(0)
     
     def get_name(self):
-        return self._read_str_text(0, default_=b"")
+        return self._read_text_bytes(0, default_=b"")
     
     def has_name(self):
         ptr = self._read_fast_ptr(0)
@@ -1774,7 +1694,7 @@ class Enumerant(_Struct):
     @property
     def codeOrder(self):
         # no union check
-        value = self._read_data(0, ord('H'))
+        value = self._read_primitive(0, ord('H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1825,10 +1745,10 @@ class Method(_Struct):
     @property
     def name(self):
         # no union check
-        return self._read_str_text(0)
+        return self._read_text_bytes(0)
     
     def get_name(self):
-        return self._read_str_text(0, default_=b"")
+        return self._read_text_bytes(0, default_=b"")
     
     def has_name(self):
         ptr = self._read_fast_ptr(0)
@@ -1837,7 +1757,7 @@ class Method(_Struct):
     @property
     def codeOrder(self):
         # no union check
-        value = self._read_data(0, ord('H'))
+        value = self._read_primitive(0, ord('H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1845,7 +1765,7 @@ class Method(_Struct):
     @property
     def paramStructType(self):
         # no union check
-        value = self._read_data(8, ord('Q'))
+        value = self._read_primitive(8, ord('Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1853,7 +1773,7 @@ class Method(_Struct):
     @property
     def resultStructType(self):
         # no union check
-        value = self._read_data(16, ord('Q'))
+        value = self._read_primitive(16, ord('Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1898,16 +1818,6 @@ class Method(_Struct):
         ptr = self._read_fast_ptr(16)
         return ptr != 0
     
-    def get_paramBrand(self):
-        res = self.paramBrand
-        if res is None:
-            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_paramBrand(self):
-        ptr = self._read_fast_ptr(16)
-        return ptr != 0
-    
     @property
     def resultBrand(self):
         # no union check
@@ -1927,16 +1837,6 @@ class Method(_Struct):
         res = self.resultBrand
         if res is None:
             return Brand.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_resultBrand(self):
-        ptr = self._read_fast_ptr(24)
-        return ptr != 0
-    
-    def get_resultBrand(self):
-        res = self.resultBrand
-        if res is None:
-            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
         return res
     
     def has_resultBrand(self):
@@ -1999,7 +1899,7 @@ class Superclass(_Struct):
     @property
     def id(self):
         # no union check
-        value = self._read_data(0, ord('Q'))
+        value = self._read_primitive(0, ord('Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2023,16 +1923,6 @@ class Superclass(_Struct):
         res = self.brand
         if res is None:
             return Brand.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_brand(self):
-        ptr = self._read_fast_ptr(0)
-        return ptr != 0
-    
-    def get_brand(self):
-        res = self.brand
-        if res is None:
-            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
         return res
     
     def has_brand(self):
@@ -2068,7 +1958,7 @@ class Type_interface(_Struct):
     @property
     def typeId(self):
         # no union check
-        value = self._read_data(8, ord('Q'))
+        value = self._read_primitive(8, ord('Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2092,16 +1982,6 @@ class Type_interface(_Struct):
         res = self.brand
         if res is None:
             return Brand.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_brand(self):
-        ptr = self._read_fast_ptr(0)
-        return ptr != 0
-    
-    def get_brand(self):
-        res = self.brand
-        if res is None:
-            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
         return res
     
     def has_brand(self):
@@ -2147,16 +2027,6 @@ class Type_list(_Struct):
         ptr = self._read_fast_ptr(0)
         return ptr != 0
     
-    def get_elementType(self):
-        res = self.elementType
-        if res is None:
-            return Type.from_buffer('', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_elementType(self):
-        ptr = self._read_fast_ptr(0)
-        return ptr != 0
-    
     def shortrepr(self):
         parts = []
         if self.has_elementType(): parts.append("elementType = %s" % self.get_elementType().shortrepr())
@@ -2173,7 +2043,7 @@ class Type_anyPointer_implicitMethodParameter(_Struct):
     @property
     def parameterIndex(self):
         # no union check
-        value = self._read_data(10, ord('H'))
+        value = self._read_primitive(10, ord('H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2194,7 +2064,7 @@ class Type_anyPointer_parameter(_Struct):
     @property
     def scopeId(self):
         # no union check
-        value = self._read_data(16, ord('Q'))
+        value = self._read_primitive(16, ord('Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2202,7 +2072,7 @@ class Type_anyPointer_parameter(_Struct):
     @property
     def parameterIndex(self):
         # no union check
-        value = self._read_data(10, ord('H'))
+        value = self._read_primitive(10, ord('H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2225,11 +2095,11 @@ class Type_anyPointer(_Struct):
     __tag_offset__ = 8
     
     def is_unconstrained(self):
-        return self._read_data_int16(8) == 0
+        return self._read_int16(8) == 0
     def is_parameter(self):
-        return self._read_data_int16(8) == 1
+        return self._read_int16(8) == 1
     def is_implicitMethodParameter(self):
-        return self._read_data_int16(8) == 2
+        return self._read_int16(8) == 2
     
     @property
     def unconstrained(self):
@@ -2278,7 +2148,7 @@ class Type_struct(_Struct):
     @property
     def typeId(self):
         # no union check
-        value = self._read_data(8, ord('Q'))
+        value = self._read_primitive(8, ord('Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2302,16 +2172,6 @@ class Type_struct(_Struct):
         res = self.brand
         if res is None:
             return Brand.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_brand(self):
-        ptr = self._read_fast_ptr(0)
-        return ptr != 0
-    
-    def get_brand(self):
-        res = self.brand
-        if res is None:
-            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
         return res
     
     def has_brand(self):
@@ -2335,7 +2195,7 @@ class Type_enum(_Struct):
     @property
     def typeId(self):
         # no union check
-        value = self._read_data(8, ord('Q'))
+        value = self._read_primitive(8, ord('Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2359,16 +2219,6 @@ class Type_enum(_Struct):
         res = self.brand
         if res is None:
             return Brand.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        return res
-    
-    def has_brand(self):
-        ptr = self._read_fast_ptr(0)
-        return ptr != 0
-    
-    def get_brand(self):
-        res = self.brand
-        if res is None:
-            return Brand.from_buffer('', 0, data_size=0, ptrs_size=0)
         return res
     
     def has_brand(self):
@@ -2393,43 +2243,43 @@ class Type(_Struct):
     __tag_offset__ = 0
     
     def is_void(self):
-        return self._read_data_int16(0) == 0
+        return self._read_int16(0) == 0
     def is_bool(self):
-        return self._read_data_int16(0) == 1
+        return self._read_int16(0) == 1
     def is_int8(self):
-        return self._read_data_int16(0) == 2
+        return self._read_int16(0) == 2
     def is_int16(self):
-        return self._read_data_int16(0) == 3
+        return self._read_int16(0) == 3
     def is_int32(self):
-        return self._read_data_int16(0) == 4
+        return self._read_int16(0) == 4
     def is_int64(self):
-        return self._read_data_int16(0) == 5
+        return self._read_int16(0) == 5
     def is_uint8(self):
-        return self._read_data_int16(0) == 6
+        return self._read_int16(0) == 6
     def is_uint16(self):
-        return self._read_data_int16(0) == 7
+        return self._read_int16(0) == 7
     def is_uint32(self):
-        return self._read_data_int16(0) == 8
+        return self._read_int16(0) == 8
     def is_uint64(self):
-        return self._read_data_int16(0) == 9
+        return self._read_int16(0) == 9
     def is_float32(self):
-        return self._read_data_int16(0) == 10
+        return self._read_int16(0) == 10
     def is_float64(self):
-        return self._read_data_int16(0) == 11
+        return self._read_int16(0) == 11
     def is_text(self):
-        return self._read_data_int16(0) == 12
+        return self._read_int16(0) == 12
     def is_data(self):
-        return self._read_data_int16(0) == 13
+        return self._read_int16(0) == 13
     def is_list(self):
-        return self._read_data_int16(0) == 14
+        return self._read_int16(0) == 14
     def is_enum(self):
-        return self._read_data_int16(0) == 15
+        return self._read_int16(0) == 15
     def is_struct(self):
-        return self._read_data_int16(0) == 16
+        return self._read_int16(0) == 16
     def is_interface(self):
-        return self._read_data_int16(0) == 17
+        return self._read_int16(0) == 17
     def is_anyPointer(self):
-        return self._read_data_int16(0) == 18
+        return self._read_int16(0) == 18
     
     @property
     def void(self):
@@ -2786,43 +2636,43 @@ class Value(_Struct):
     __tag_offset__ = 0
     
     def is_void(self):
-        return self._read_data_int16(0) == 0
+        return self._read_int16(0) == 0
     def is_bool(self):
-        return self._read_data_int16(0) == 1
+        return self._read_int16(0) == 1
     def is_int8(self):
-        return self._read_data_int16(0) == 2
+        return self._read_int16(0) == 2
     def is_int16(self):
-        return self._read_data_int16(0) == 3
+        return self._read_int16(0) == 3
     def is_int32(self):
-        return self._read_data_int16(0) == 4
+        return self._read_int16(0) == 4
     def is_int64(self):
-        return self._read_data_int16(0) == 5
+        return self._read_int16(0) == 5
     def is_uint8(self):
-        return self._read_data_int16(0) == 6
+        return self._read_int16(0) == 6
     def is_uint16(self):
-        return self._read_data_int16(0) == 7
+        return self._read_int16(0) == 7
     def is_uint32(self):
-        return self._read_data_int16(0) == 8
+        return self._read_int16(0) == 8
     def is_uint64(self):
-        return self._read_data_int16(0) == 9
+        return self._read_int16(0) == 9
     def is_float32(self):
-        return self._read_data_int16(0) == 10
+        return self._read_int16(0) == 10
     def is_float64(self):
-        return self._read_data_int16(0) == 11
+        return self._read_int16(0) == 11
     def is_text(self):
-        return self._read_data_int16(0) == 12
+        return self._read_int16(0) == 12
     def is_data(self):
-        return self._read_data_int16(0) == 13
+        return self._read_int16(0) == 13
     def is_list(self):
-        return self._read_data_int16(0) == 14
+        return self._read_int16(0) == 14
     def is_enum(self):
-        return self._read_data_int16(0) == 15
+        return self._read_int16(0) == 15
     def is_struct(self):
-        return self._read_data_int16(0) == 16
+        return self._read_int16(0) == 16
     def is_interface(self):
-        return self._read_data_int16(0) == 17
+        return self._read_int16(0) == 17
     def is_anyPointer(self):
-        return self._read_data_int16(0) == 18
+        return self._read_int16(0) == 18
     
     @property
     def void(self):
@@ -2840,7 +2690,7 @@ class Value(_Struct):
     @property
     def int8(self):
         self._ensure_union(2)
-        value = self._read_data(2, ord('b'))
+        value = self._read_primitive(2, ord('b'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2848,7 +2698,7 @@ class Value(_Struct):
     @property
     def int16(self):
         self._ensure_union(3)
-        value = self._read_data(2, ord('h'))
+        value = self._read_primitive(2, ord('h'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2856,7 +2706,7 @@ class Value(_Struct):
     @property
     def int32(self):
         self._ensure_union(4)
-        value = self._read_data(4, ord('i'))
+        value = self._read_primitive(4, ord('i'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2864,7 +2714,7 @@ class Value(_Struct):
     @property
     def int64(self):
         self._ensure_union(5)
-        value = self._read_data(8, ord('q'))
+        value = self._read_primitive(8, ord('q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2872,7 +2722,7 @@ class Value(_Struct):
     @property
     def uint8(self):
         self._ensure_union(6)
-        value = self._read_data(2, ord('B'))
+        value = self._read_primitive(2, ord('B'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2880,7 +2730,7 @@ class Value(_Struct):
     @property
     def uint16(self):
         self._ensure_union(7)
-        value = self._read_data(2, ord('H'))
+        value = self._read_primitive(2, ord('H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2888,7 +2738,7 @@ class Value(_Struct):
     @property
     def uint32(self):
         self._ensure_union(8)
-        value = self._read_data(4, ord('I'))
+        value = self._read_primitive(4, ord('I'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2896,7 +2746,7 @@ class Value(_Struct):
     @property
     def uint64(self):
         self._ensure_union(9)
-        value = self._read_data(8, ord('Q'))
+        value = self._read_primitive(8, ord('Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2904,7 +2754,7 @@ class Value(_Struct):
     @property
     def float32(self):
         self._ensure_union(10)
-        value = self._read_data(4, ord('f'))
+        value = self._read_primitive(4, ord('f'))
         if 0.0 != 0:
             value = value ^ 0.0
         return value
@@ -2912,7 +2762,7 @@ class Value(_Struct):
     @property
     def float64(self):
         self._ensure_union(11)
-        value = self._read_data(8, ord('d'))
+        value = self._read_primitive(8, ord('d'))
         if 0.0 != 0:
             value = value ^ 0.0
         return value
@@ -2920,10 +2770,10 @@ class Value(_Struct):
     @property
     def text(self):
         self._ensure_union(12)
-        return self._read_str_text(0)
+        return self._read_text_bytes(0)
     
     def get_text(self):
-        return self._read_str_text(0, default_=b"")
+        return self._read_text_bytes(0, default_=b"")
     
     def has_text(self):
         ptr = self._read_fast_ptr(0)
@@ -2932,10 +2782,10 @@ class Value(_Struct):
     @property
     def data(self):
         self._ensure_union(13)
-        return self._read_str_data(0)
+        return self._read_data(0)
     
     def get_data(self):
-        return self._read_str_data(0, default_=b"")
+        return self._read_data(0, default_=b"")
     
     def has_data(self):
         ptr = self._read_fast_ptr(0)
@@ -2955,7 +2805,7 @@ class Value(_Struct):
     @property
     def enum(self):
         self._ensure_union(15)
-        value = self._read_data(2, ord('H'))
+        value = self._read_primitive(2, ord('H'))
         if 0 != 0:
             value = value ^ 0
         return value

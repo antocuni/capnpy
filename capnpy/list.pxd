@@ -54,6 +54,9 @@ cdef class StructItemType(ItemType):
 cdef class TextItemType(ItemType):
     cdef readonly int additional_size
 
+cdef class TextUnicodeItemType(TextItemType):
+    pass
+
 cdef class ListItemType(ItemType):
     cdef readonly ItemType inner_item_type
 
@@ -69,5 +72,6 @@ cpdef ItemType int64_list_item_type
 cpdef ItemType uint64_list_item_type
 cpdef ItemType float32_list_item_type
 cpdef ItemType float64_list_item_type
-cpdef ItemType text_list_item_type
+cpdef ItemType text_bytes_list_item_type
+cpdef ItemType text_unicode_list_item_type
 cpdef ItemType data_list_item_type

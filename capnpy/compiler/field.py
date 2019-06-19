@@ -40,8 +40,10 @@ class Field__Slot:
             return self._emit_bool(m, ns, name)
         elif self.slot.type.is_enum():
             return self._emit_enum(m, ns, name)
-        elif self.slot.type.is_text():
-            return self._emit_text(m, ns, name)
+        elif self.is_text_bytes(m):
+            return self._emit_text_bytes(m, ns, name)
+        elif self.is_text_unicode(m):
+            return self._emit_text_unicode(m, ns, name)
         elif self.slot.type.is_data():
             return self._emit_data(m, ns, name)
         elif self.slot.type.is_struct():
@@ -70,7 +72,7 @@ class Field__Slot:
         ns.ifmt = "ord(%r)" % self.slot.get_fmt()
         m.def_property(ns, name, """
             {ensure_union}
-            value = self._read_data({offset}, {ifmt})
+            value = self._read_primitive({offset}, {ifmt})
             if {default_} != 0:
                 value = value ^ {default_}
             return value
@@ -97,21 +99,34 @@ class Field__Slot:
         ns.newf = '_new_hack' if m.pyx and node.is_imported(m) else '_new'
         m.def_property(ns, name, """
             {ensure_union}
-            value = self._read_data_int16({offset})
+            value = self._read_int16({offset})
             if {default_} != 0:
                 value = (value ^ {default_})
             return {enumcls}.{newf}(value)
         """)
 
-    def _emit_text(self, m, ns, name):
+    def _emit_text_bytes(self, m, ns, name):
         ns.name = name
         m.def_property(ns, name, """
             {ensure_union}
-            return self._read_str_text({offset})
+            return self._read_text_bytes({offset})
         """)
         ns.ww("""
             {cpdef} get_{name}(self):
-                return self._read_str_text({offset}, default_=b"")
+                return self._read_text_bytes({offset}, default_=b"")
+        """)
+        ns.w()
+        self._emit_has_method(ns)
+
+    def _emit_text_unicode(self, m, ns, name):
+        ns.name = name
+        m.def_property(ns, name, """
+            {ensure_union}
+            return self._read_text_unicode({offset})
+        """)
+        ns.ww("""
+            {cpdef} get_{name}(self):
+                return self._read_text_unicode({offset}, default_=b"")
         """)
         ns.w()
         self._emit_has_method(ns)
@@ -120,11 +135,11 @@ class Field__Slot:
         ns.name = name
         m.def_property(ns, name, """
             {ensure_union}
-            return self._read_str_data({offset})
+            return self._read_data({offset})
         """)
         ns.ww("""
             {cpdef} get_{name}(self):
-                return self._read_str_data({offset}, default_=b"")
+                return self._read_data({offset}, default_=b"")
         """)
         ns.w()
         self._emit_has_method(ns)
@@ -168,9 +183,10 @@ class Field__Slot:
         self._emit_has_method(ns)
 
     def _emit_list(self, m, ns, name):
+        options = m.options(self)
         ns.name = name
         t = self.slot.type.list.elementType
-        ns.list_item_type = t.list_item_type(m)
+        ns.list_item_type = t.list_item_type(m, options)
         m.def_property(ns, name, """
             {ensure_union}
             return self._read_list({offset}, {list_item_type})

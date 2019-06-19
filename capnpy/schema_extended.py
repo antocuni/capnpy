@@ -1,6 +1,6 @@
 from capnpy.type import Types as _Types
 from capnpy import annotate
-from capnpy.util import ensure_unicode
+from capnpy.annotate import TextType
 
 @Type.__extend__
 class Type:
@@ -100,9 +100,17 @@ class Field:
         return (self.which() == Field.__tag__.slot and
                 self.slot.type.is_pointer())
 
-    def is_text(self):
+    def is_text_any(self):
         return (self.which() == Field.__tag__.slot and
                 self.slot.type.is_text())
+
+    def is_text_bytes(self, m):
+        return (self.is_text_any() and
+                m.options(self).text_type == TextType.bytes)
+
+    def is_text_unicode(self, m):
+        return (self.is_text_any() and
+                m.options(self).text_type == TextType.unicode)
 
     def is_data(self):
         return (self.which() == Field.__tag__.slot and
@@ -167,10 +175,10 @@ class Node__Struct(Node):
         `parent_id` is the id of the struct that contains the field which is annotated by `Py.group`.
         """
         parent = m.allnodes[parent_id]
-        annotation_text = ensure_unicode(annotation.value.text.strip())
+        annotation_text = annotation.value.text.strip()
         # we expect arguments to be something like "x, y, z"
-        group_field_names = [fn.strip() for fn in annotation_text.split(',')]
-        all_fields = {ensure_unicode(f.name): f for f in parent.struct.fields}
+        group_field_names = [fn.strip() for fn in annotation_text.split(b',')]
+        all_fields = {f.name: f for f in parent.struct.fields}
         fields = [all_fields[f] for f in group_field_names]
 
         # Make sure it is bytes.

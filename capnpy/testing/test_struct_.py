@@ -26,9 +26,9 @@ def test__read_data():
     buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'  # 1
             '\x02\x00\x00\x00\x00\x00\x00\x00') # 2
     b1 = Struct.from_buffer(buf, 0, data_size=2, ptrs_size=0)
-    assert b1._read_data(0, Types.int64.ifmt) == 1
-    assert b1._read_data(8, Types.int64.ifmt) == 2
-    assert b1._read_data(16, Types.int64.ifmt) == 0 # outside the buffer
+    assert b1._read_primitive(0, Types.int64.ifmt) == 1
+    assert b1._read_primitive(8, Types.int64.ifmt) == 2
+    assert b1._read_primitive(16, Types.int64.ifmt) == 0 # outside the buffer
 
 def test__read_struct():
     ## struct Point {
@@ -44,8 +44,8 @@ def test__read_struct():
     assert p._data_offset == 8
     assert p._data_size == 2
     assert p._ptrs_size == 0
-    assert p._read_data(0, Types.int64.ifmt) == 1
-    assert p._read_data(8, Types.int64.ifmt) == 2
+    assert p._read_primitive(0, Types.int64.ifmt) == 1
+    assert p._read_primitive(8, Types.int64.ifmt) == 2
 
 def test__read_struct_with_offset():
     ## struct Point {
@@ -62,8 +62,8 @@ def test__read_struct_with_offset():
     assert p._data_offset == 12
     assert p._data_size == 2
     assert p._ptrs_size == 0
-    assert p._read_data(0, Types.int64.ifmt) == 1
-    assert p._read_data(8, Types.int64.ifmt) == 2
+    assert p._read_primitive(0, Types.int64.ifmt) == 1
+    assert p._read_primitive(8, Types.int64.ifmt) == 2
 
 
 def test_nested_struct():
@@ -80,21 +80,21 @@ def test_nested_struct():
     rect = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=2)
     p1 = rect._read_struct(0, Struct)
     p2 = rect._read_struct(8, Struct)
-    assert p1._read_data(0, Types.int64.ifmt) == 1
-    assert p1._read_data(8, Types.int64.ifmt) == 2
-    assert p2._read_data(0, Types.int64.ifmt) == 3
-    assert p2._read_data(8, Types.int64.ifmt) == 4
+    assert p1._read_primitive(0, Types.int64.ifmt) == 1
+    assert p1._read_primitive(8, Types.int64.ifmt) == 2
+    assert p2._read_primitive(0, Types.int64.ifmt) == 3
+    assert p2._read_primitive(8, Types.int64.ifmt) == 4
 
 def test_null_pointers():
     buf = b'\x00\x00\x00\x00\x00\x00\x00\x00'    # NULL pointer
     blob = Struct.from_buffer(buf, 0, data_size=0, ptrs_size=1)
     assert blob._read_list(0, None, None) is None
-    assert blob._read_str_text(0) is None
+    assert blob._read_text_bytes(0) is None
     assert blob._read_struct(0, Struct) is None
     #
     val = b'dummy default value'
     assert blob._read_list(0, None, default_=val) is val
-    assert blob._read_str_text(0, default_=val) is val
+    assert blob._read_text_bytes(0, default_=val) is val
 
 
 def test_far_pointer():
@@ -109,8 +109,8 @@ def test_far_pointer():
     buf = MultiSegment(seg0+seg1, segment_offsets=(0, 16))
     blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
     p = blob._read_struct(0, Struct)
-    assert p._read_data(0, Types.int64.ifmt) == 1
-    assert p._read_data(8, Types.int64.ifmt) == 2
+    assert p._read_primitive(0, Types.int64.ifmt) == 1
+    assert p._read_primitive(8, Types.int64.ifmt) == 2
 
 def test_union():
     ## struct Shape {
@@ -214,8 +214,8 @@ def test_raw_dumps_loads():
     mydump = obj._raw_dumps()
     obj2 = Struct._raw_loads(mydump)
     assert obj2._seg.buf == obj._seg.buf
-    assert obj2._read_data(0, Types.int64.ifmt) == 1
-    assert obj2._read_data(8, Types.int64.ifmt) == 2
+    assert obj2._read_primitive(0, Types.int64.ifmt) == 1
+    assert obj2._read_primitive(8, Types.int64.ifmt) == 2
 
 def test_raw_dumps_loads_multi_segment():
     seg0 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # some garbage
@@ -232,5 +232,5 @@ def test_raw_dumps_loads_multi_segment():
     obj2 = Struct._raw_loads(mydump)
     #
     p = obj2._read_struct(0, Struct)
-    assert p._read_data(0, Types.int64.ifmt) == 1
-    assert p._read_data(8, Types.int64.ifmt) == 2
+    assert p._read_primitive(0, Types.int64.ifmt) == 1
+    assert p._read_primitive(8, Types.int64.ifmt) == 2

@@ -22,8 +22,8 @@ cdef class Struct(Blob):
     cpdef _init_from_buffer(self, object buf, long offset,
                             long data_size, long ptrs_size)
     cpdef _init_from_pointer(self, object buf, long offset, long p)
-    cpdef _read_data(self, long offset, char ifmt)
-    cpdef long _read_data_int16(self, long offset)
+    cpdef _read_primitive(self, long offset, char ifmt)
+    cpdef long _read_int16(self, long offset)
     cpdef long _read_fast_ptr(self, long offset)
     cpdef _read_far_ptr(self, long offset)
     cpdef long _as_pointer(self, long offset)
@@ -32,19 +32,26 @@ cdef class Struct(Blob):
     cpdef _read_struct(self, long offset, type structcls)
 
     @cython.locals(p=long, offset=long)
-    cpdef _read_str_text(self, long offset, bytes default_=*)
+    cpdef _read_text_bytes(self, long offset, bytes default_=*)
+
+    # note that in this case default_ is BYTES, utf-8 encoded
+    @cython.locals(p=long, offset=long, b=bytes)
+    cpdef _read_text_unicode(self, long offset, bytes default_=*)
 
     @cython.locals(p=long, offset=long)
-    cpdef _read_str_data(self, long offset, bytes default_=*, int additional_size=*)
+    cpdef _read_data(self, long offset, bytes default_=*, int additional_size=*)
 
     @cython.locals(p=long, offset=long, obj=List)
     cpdef _read_list(self, long offset, ItemType item_type, default_=*)
 
     @cython.locals(p=long, offset=long)
-    cpdef long _hash_str_text(self, long offset, long default_=*)
+    cpdef long _hash_text_bytes(self, long offset, long default_=*)
+
+    @cython.locals(p=long, offset=long, u=unicode)
+    cpdef long _hash_text_unicode(self, long offset, long default_=*)
 
     @cython.locals(p=long, offset=long)
-    cpdef long _hash_str_data(self, long offset, long default_=*, int additional_size=*)
+    cpdef long _hash_data(self, long offset, long default_=*, int additional_size=*)
 
     cpdef object _ensure_union(self, long expected_tag)
     cpdef long __which__(self) except -1

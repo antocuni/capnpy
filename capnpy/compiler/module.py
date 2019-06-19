@@ -5,7 +5,7 @@ from collections import defaultdict
 from pypytools.codegen import Code
 from six import PY3
 
-from capnpy.util import ensure_unicode
+from capnpy.compiler.util import as_identifier
 from capnpy.convert_case import from_camel_case
 from capnpy import annotate
 
@@ -20,22 +20,22 @@ import capnpy.compiler.misc
 
 class ModuleGenerator(object):
 
-    def __init__(self, request, convert_case, pyx, version_check, standalone):
-        self.code = Code(pyx=pyx)
+    def __init__(self, request, pyx, standalone, default_options):
         self.request = request
         self.pyx = pyx
-        self.version_check = version_check
         self.standalone = standalone
+        self.default_options = default_options
+        self.version_check = default_options.version_check
+        self.code = Code(pyx=self.pyx)
         self.allnodes = {} # id -> node
         self.children = defaultdict(list) # nodeId -> nested nodes
-        self._options = {} # node -> Options
+        self._node_options = {} # node -> Options
         self.importnames = {} # filename -> import name
         self.extra_annotations = defaultdict(list) # obj -> [ann]
         self.field_override = {} # obj -> obj
-        self.default_opt = annotate.Options(convert_case=convert_case)
 
     def options(self, node_or_field):
-        return self._options[node_or_field.id]
+        return self._node_options[node_or_field.id]
 
     def compute_options_generic(self, entity, parent_opt):
         ann = self.has_annotation(entity, annotate.options)
@@ -45,7 +45,7 @@ class ModuleGenerator(object):
             opt = parent_opt.combine(opt)
         else:
             opt = parent_opt
-        self._options[entity.id] = opt
+        self._node_options[entity.id] = opt
 
     def register_extra_annotation(self, obj, ann):
         self.extra_annotations[obj].append(ann.annotation)
@@ -101,7 +101,7 @@ class ModuleGenerator(object):
 
     def field_name(self, field):
         name = field.name
-        name = ensure_unicode(name) if PY3 else name
+        name = as_identifier(name)
         if self.options(field).convert_case:
             name = from_camel_case(name)
         name = self._mangle_name(name)

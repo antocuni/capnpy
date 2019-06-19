@@ -1,4 +1,5 @@
 from capnpy.util import extend
+from capnpy.enum import BaseEnum
 
 @extend(nullable)
 class nullable:
@@ -41,10 +42,42 @@ class BoolOption:
         return bool(int(self))
     __nonzero__ = __bool__ # for Python2.7
 
+
+@extend(TextType)
+class TextType:
+
+    @classmethod
+    def parse(cls, s):
+        if s == 'bytes':
+            return cls.bytes
+        elif s == 'unicode':
+            return cls.unicode
+        else:
+            raise ValueError('Unknown TextType: %s' % s)
+
+
 @Options.__extend__
 class Options:
 
-    FIELDS = ('convert_case',)
+    FIELDS = ('version_check', 'convert_case', 'text_type')
+
+    @classmethod
+    def from_dict(cls, d):
+        """
+        Create an Options instance from the given dict.
+
+        Each option is expressed as either a normal bool or a string; strings
+        are parsed (e.g. "bytes" becomes TextType.bytes)
+        """
+        kwargs = {}
+        for key, value in d.items():
+            if key in ('version_check', 'convert_case'):
+                kwargs[key] = value
+            elif key == 'text_type':
+                kwargs[key] = TextType.parse(value)
+            else:
+                raise ValueError("Unknown option: %s" % key)
+        return cls(**kwargs)
 
     def combine(self, other):
         """
@@ -55,8 +88,9 @@ class Options:
         for fname in self.FIELDS:
             values[fname] = getattr(self, fname)
             otherval = getattr(other, fname)
-            assert isinstance(otherval, BoolOption), 'Only BoolOption supported for now'
-            if otherval != BoolOption.notset:
+            enumcls = otherval.__class__
+            assert issubclass(enumcls, BaseEnum), 'Only Enums supported for now'
+            assert hasattr(enumcls, 'notset'), 'An Option enum must have a "notset" field'
+            if otherval != enumcls.notset:
                 values[fname] = otherval
-            return self.__class__(**values)
-
+        return self.__class__(**values)

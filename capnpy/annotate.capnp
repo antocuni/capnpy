@@ -16,8 +16,16 @@ enum BoolOption {
     notset @2;
 }
 
+enum TextType {
+    notset @0;
+    bytes @1;
+    unicode @2;
+}
+
 struct Options {
-    convertCase @0 :BoolOption = notset;
+    versionCheck @0 :BoolOption = notset;
+    convertCase @1 :BoolOption = notset;
+    textType @2 :TextType = notset;
 }
 
 annotation options(file, struct, field) :Options;
