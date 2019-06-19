@@ -105,6 +105,7 @@ class TestSetup(CompilerTest):
         struct Point {
             x @0: Int64;
             y @1: Int64;
+            z @2: Text;
         }
         """)
         self.write("setup.py", """
@@ -114,7 +115,9 @@ class TestSetup(CompilerTest):
 
         setup(name='foo',
               version='1.0',
-              capnpy_options=dict(pyx={pyx}),
+              capnpy_options=dict(
+                  pyx={pyx},
+                  text_type='unicode'),
               capnpy_schemas=['example.capnp'],
               )
         """, root=ROOT, pyx=self.pyx)
