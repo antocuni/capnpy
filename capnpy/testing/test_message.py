@@ -70,7 +70,12 @@ def test_loads_not_whole_string():
     exc = py.test.raises(ValueError, "p = loads(buf, Struct)")
     assert str(exc.value) == 'Not all bytes were consumed: 8 bytes left'
 
-def test_truncated_header():
+def test_truncated_header_1():
+    buf = b('\x03\x00\x00')  # we expect at least 4 bytes
+    exc = py.test.raises(ValueError, "p = loads(buf, Struct)")
+    assert str(exc.value) == 'Malformed header: expected 4 bytes, got 3'
+
+def test_truncated_header_2():
     buf = b('\x03\x00\x00\x00'  # 3+1 segments, but only two are specified
             '\x10\x00\x00\x00'  # size0: 16
             '\x20\x00\x00\x00') # size1: 32

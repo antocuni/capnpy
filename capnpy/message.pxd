@@ -14,7 +14,7 @@ cpdef loads(bytes buf, object payload_type)
 #cpdef load_all(FileLike f, object payload_type)
 
 
-@cython.locals(buf = bytes, n=int)
+@cython.locals(buf = bytes, n=int, length=int)
 cpdef Struct _load_message(FileLike f)
 
 @cython.locals(buf=bytes, message_size=int, message_lenght=int)

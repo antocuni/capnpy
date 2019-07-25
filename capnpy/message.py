@@ -53,8 +53,11 @@ def load_all(f, payload_type):
 def _load_message(f):
     # read the total number of segments
     buf = f.read(4)
-    if len(buf) < 4:
+    length = len(buf)
+    if length == 0:
         raise EOFError("No message to load")
+    elif length < 4:
+        raise ValueError("Malformed header: expected 4 bytes, got %d" % len(buf))
     n = unpack_uint32(buf, 0) + 1
     if n == 1:
         capnp_buf = _load_buffer_single_segment(f) # fast path
