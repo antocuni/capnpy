@@ -104,6 +104,9 @@ class BaseCompiler(object):
         if not version.startswith("Cap'n Proto version"):
             raise CompilerError("capnp version string not recognized: %s" % version)
         _, version = version.rsplit(' ', 1)
+        if "unknown" in version:
+            # can't determine capnp version, continue with caution
+            return
         if version < LooseVersion('0.5.0'):
             raise CompilerError("The capnp executable is too old: the minimum required "
                                 "version is 0.5.0")
