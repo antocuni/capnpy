@@ -96,7 +96,10 @@ class Node(AbstractNode):
         if prefix:
             self.varname = '%s_%s' % (prefix, self.varname)
         self._init_children(m, field_force_default)
-        self._init_default(m)
+        #
+        # self.default is a *string* containing a Python repr of the default
+        # value
+        self.default = self._get_default(m)
 
     def _init_children(self, m, field_force_default):
         self.children = []
@@ -107,29 +110,27 @@ class Node(AbstractNode):
             if group.struct.is_union():
                 self.union = Union(self.varname, group.struct.discriminantOffset*2)
 
-    def _init_default(self, m):
-        # self.default is a *string* containing a Python repr of the default
-        # value
-        def get_default(f):
-            if f.is_part_of_union() and not self.force_default:
-                return '_undefined'
-            elif f.is_slot():
-                default_val = f.slot.defaultValue.as_pyobj()
-                return str(default_val)
-            elif f.is_nullable(m):
-                ann = f.is_nullable(m)
-                name, f_is_null, f_value = ann.check(m)
-                default_is_null = f_is_null.slot.defaultValue.as_pyobj()
-                if default_is_null:
-                    return 'None'
-                else:
-                    return get_default(f_value)
+    def _get_default(self, m):
+        f = self.f
+        if f.is_part_of_union() and not self.force_default:
+            return '_undefined'
+        elif f.is_slot():
+            default_val = f.slot.defaultValue.as_pyobj()
+            return str(default_val)
+        elif f.is_nullable(m):
+            ann = f.is_nullable(m)
+            name, f_is_null, f_value = ann.check(m)
+            default_is_null = f_is_null.slot.defaultValue.as_pyobj()
+            if default_is_null:
+                return 'None'
             else:
-                assert f.is_group()
-                items = [child.default for child in self.children]
-                return '(%s,)' % ', '.join(items)
+                # self.children[1] is the Node for "value" field of the group
+                return self.children[1].default
+        else:
+            assert f.is_group()
+            items = [child.default for child in self.children]
+            return '(%s,)' % ', '.join(items)
 
-        self.default = get_default(self.f)
 
     def __repr__(self):
         return '<Node %s: %s>' % (self.varname, self.f.which())

@@ -213,6 +213,28 @@ class TestNullable(CompilerTest):
             '\x00\x00\x00\x00\x00\x00\x00\x00'  # 0
             '\x00\x00\x00\x00\x00\x00\x00\x00') # 0 (value == 42)
 
+    def test_default_nonnull_group(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        struct Foo {
+            point :group $Py.nullable {
+                isNull @0 :Bool;
+                value :group {
+                    x @1: Int8 = 4;
+                    y @2: Int8 = 5;
+                    z @3: Int8 = 6;
+                }
+            }
+        }
+        """
+        mod = self.compile(schema)
+        foo = mod.Foo()
+        assert foo.point.x == 4
+        assert foo.point.y == 5
+        assert foo.point.z == 6
+        assert foo._seg.buf == b('\x00\x00\x00\x00\x00\x00\x00\x00')
+
     def test_default_null(self):
         schema = """
         @0xbf5147cbbecf40c1;
@@ -230,3 +252,23 @@ class TestNullable(CompilerTest):
         assert foo._seg.buf == b(
             '\x00\x00\x00\x00\x00\x00\x00\x00'  # 0 (isNull == true)
             '\x00\x00\x00\x00\x00\x00\x00\x00') # 0
+
+    def test_default_null_group(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        struct Foo {
+            point :group $Py.nullable {
+                isNull @0 :Bool = true;
+                value :group {
+                    x @1: Int8;
+                    y @2: Int8;
+                    z @3: Int8;
+                }
+            }
+        }
+        """
+        mod = self.compile(schema)
+        foo = mod.Foo()
+        assert foo.point is None
+        assert foo._seg.buf == b('\x00\x00\x00\x00\x00\x00\x00\x00')
