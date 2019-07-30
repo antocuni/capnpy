@@ -216,10 +216,10 @@ class Node__Struct:
                 if f.is_nullable(m):
                     assert f.is_group()
                     f = f.group.get_node(m).struct.fields[1]
-                    ns.fieldrepr = self._shortrepr_for_field(ns, f)
+                    ns.fieldrepr = self._shortrepr_for_field(m, ns, f)
                     ns.append = ns.format('parts.append("{fname} = %s" % ({fieldrepr} if self.{fname} is not None else None))')
                 else:
-                    ns.fieldrepr = self._shortrepr_for_field(ns, f)
+                    ns.fieldrepr = self._shortrepr_for_field(m, ns, f)
                     ns.append = ns.format('parts.append("{fname} = %s" % {fieldrepr})')
                 ns.is_default_field = bool(f.discriminantValue == 0)
                 #
@@ -243,7 +243,7 @@ class Node__Struct:
                     ns.w("{append}")
             ns.w('return "(%s)" % ", ".join(parts)')
 
-    def _shortrepr_for_field(self, ns, f):
+    def _shortrepr_for_field(self, m, ns, f):
         if f.is_float32():
             return ns.format('_float32_repr(self.{fname})')
         elif f.is_float64():
@@ -254,8 +254,10 @@ class Node__Struct:
             return ns.format('str(self.{fname}).lower()')
         elif f.is_void():
             return '"void"'
-        elif f.is_text_any() or f.is_data():
-            return ns.format('_text_repr(self.get_{fname}())')
+        elif f.is_text_bytes(m) or f.is_data():
+            return ns.format('_text_bytes_repr(self.get_{fname}())')
+        elif f.is_text_unicode(m):
+            return ns.format('_text_unicode_repr(self.get_{fname}())')
         elif f.is_struct() or f.is_list():
             return ns.format('self.get_{fname}().shortrepr()')
         elif f.is_group():

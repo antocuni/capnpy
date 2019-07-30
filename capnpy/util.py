@@ -85,7 +85,7 @@ def check_version(modname, version):
                'Please recompile.').format(v1=version, v2=capnpy.__version__)
         raise ImportError(msg)
 
-def text_repr(s):
+def text_bytes_repr(s):
     # abuse the python string repr algo: make sure that the string contains at
     # least one single quote and one double quote (which we will remove
     # later); this way python returns a repr inside single quotes, and escapes
@@ -98,6 +98,9 @@ def text_repr(s):
                               # the prefixed `b` in Python 3
     s = s.replace('"', r'\"')
     return '"%s"' % s
+
+def text_unicode_repr(s):
+    return text_bytes_repr(encode_maybe(s))
 
 
 try:
