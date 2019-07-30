@@ -191,6 +191,7 @@ class TestShortRepr(CompilerTest):
     def test_list(self):
         schema = """
         @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
         struct Point {
             x @0 :Int64;
             y @1 :Int64;
@@ -199,6 +200,7 @@ class TestShortRepr(CompilerTest):
             ints @0 :List(Int64);
             structs @1 :List(Point);
             texts @2 :List(Text);
+            unicodes @3 :List(Text) $Py.options(textType=unicode);
         }
         """
         self.mod = self.compile(schema)
@@ -212,6 +214,10 @@ class TestShortRepr(CompilerTest):
         #
         p = self.mod.P(ints=None, structs=None, texts=[b'foo', b'bar', b'baz'])
         self.check(p, '(texts = ["foo", "bar", "baz"])')
+        #
+        p = self.mod.P(ints=None, structs=None, unicodes=[u'hellò'])
+        self.check(p, r'(unicodes = ["hell\xc3\xb2"])')
+
 
     def test_list_of_bool(self):
         schema = """

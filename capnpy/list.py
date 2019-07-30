@@ -5,8 +5,8 @@ import capnpy
 from capnpy.type import Types
 from capnpy.blob import Blob, PYX
 from capnpy import ptr
-from capnpy.util import (text_repr, float32_repr, float64_repr, decode_maybe,
-                         encode_maybe)
+from capnpy.util import (float32_repr, float64_repr, decode_maybe,
+                         encode_maybe, text_bytes_repr, text_unicode_repr)
 from capnpy.segment.endof import endof
 
 class List(Blob):
@@ -269,7 +269,7 @@ class TextItemType(ItemType):
         return lst._seg.read_str(p, offset, None, self.additional_size)
 
     def item_repr(self, item):
-        return text_repr(item)
+        return text_bytes_repr(item)
 
     def write_item(self, builder, pos, item):
         if self.additional_size == 0:
@@ -289,6 +289,9 @@ class TextUnicodeItemType(TextItemType):
     def read_item(self, lst, i):
         res = super(TextUnicodeItemType, self).read_item(lst, i)
         return decode_maybe(res)
+
+    def item_repr(self, item):
+        return text_unicode_repr(item)
 
     def write_item(self, builder, pos, item):
         item = encode_maybe(item)
