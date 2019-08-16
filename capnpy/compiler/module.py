@@ -51,7 +51,7 @@ class ModuleGenerator(object):
         self.extra_annotations[obj].append(ann.annotation)
 
     def register_field_override(self, origin, target):
-        self.field_override[origin] = target
+        self.field_override[origin.id] = target
 
     def has_annotation(self, obj, anncls):
         try:

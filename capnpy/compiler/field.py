@@ -57,7 +57,7 @@ class Field__Slot:
                                       self.slot.type.runtime_name(m))
 
     def _emit_void(self, m, ns, name):
-        field = m.field_override.get(self, None)
+        field = m.field_override.get(self.id, None)
         if field:
             field._emit(m, ns, name)
         else:
