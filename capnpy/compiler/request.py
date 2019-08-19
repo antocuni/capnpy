@@ -14,7 +14,7 @@ def find_all_py_group_fields(m):
         if not v.is_struct():
             continue
 
-        for field in v.struct.fields or []:
+        for field in v.get_struct_fields() or []:
             ann = m.has_annotation(field, annotate.group)
             if ann:
                 ann.check(m)

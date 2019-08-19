@@ -63,3 +63,25 @@ class TestPyGroup(CompilerTest):
         assert foo.xyz == foo2.xyz == (foo.x, foo.y, foo.z) == (2, 3, b'abc')
         assert hash(foo.xyz) == hash(foo2.xyz) == hash((foo.x, foo.y, foo.z)) == hash((2, 3, b'abc'))
 
+    def test_collision(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        struct Foo {
+            x @0 :Int64;
+            y @1 :Int64;
+            z @2 :Text;
+            key @3: Void $Py.group("x, y") $Py.key("*");
+        }
+        struct Bar {
+            x @0 :Int64;
+            y @1 :Int64;
+            z @2 :Text;
+            key @3: Void $Py.group("x, z") $Py.key("*");
+        }
+        """
+        mod = self.compile(schema)
+        foo = mod.Foo(1, 2, b'abc')
+        bar = mod.Bar(1, 2, b'abc')
+        assert foo.key != bar.key
+        assert hash(foo.key) != hash(bar.key)

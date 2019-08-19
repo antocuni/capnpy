@@ -30,12 +30,12 @@ class Node__Struct:
         # find and register all groups having a $key annotation. We need to do
         # it here because we need this info when we emit the definition for
         # the group class
-        for field in self.struct.fields or []:
+        for field in self.get_struct_fields() or []:
             ann = m.has_annotation(field, annotate.key)
             if ann:
                 if field.is_void():
                     # Register the fake node_group.
-                    field = m.field_override[field]
+                    field = m.field_override[field.id]
                 assert field.is_group()
                 group_node = field.group.get_node(m)
                 m.register_extra_annotation(group_node, ann)
