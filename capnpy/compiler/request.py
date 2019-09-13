@@ -147,12 +147,10 @@ class RequestedFile:
         ns = m.code.new_scope()
         ns.modname = m.modname
         ns.data = m.request.dumps()
-        ns.convert_case = m.convert_case
         ns.pyx = m.pyx
         ns.ww("""
             class _{modname}_ReflectionData(_ReflectionData):
                 request_data = {data!r}
-                convert_case = {convert_case}
                 pyx = {pyx}
             _reflection_data = _{modname}_ReflectionData()
         """)
