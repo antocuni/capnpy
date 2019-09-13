@@ -15,8 +15,11 @@ class ReflectionData(object):
 
     # subclasses are supposed to fill these fields accordingly
     request_data = None
-    convert_case = False
     pyx = False
+
+    # XXX: we should save/load the actual options used by the compiler, not
+    # the default ones
+    from capnpy.compiler.compiler import DEFAULT_OPTIONS as default_options
 
     # ModuleGenerator, initialized lazily
     _m = None
@@ -26,9 +29,10 @@ class ReflectionData(object):
             return self._m
         #
         request = CodeGeneratorRequest.loads(self.request_data)
-        self._m = ModuleGenerator(request, convert_case=self.convert_case,
-                                  version_check=True,
-                                  pyx=self.pyx, standalone=True)
+        self._m = ModuleGenerator(request,
+                                  pyx=self.pyx,
+                                  standalone=True,
+                                  default_options=self.default_options)
         return self._m
 
     def get_node(self, obj=None):
