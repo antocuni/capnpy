@@ -103,7 +103,7 @@ class ModuleGenerator(object):
             if not node.is_struct():
                 continue
 
-            for field in node.struct.fields or []:
+            for field in node.get_struct_fields() or []:
                 ann = self.has_annotation(field, annotate.group)
                 if ann:
                     ann.check(self)
