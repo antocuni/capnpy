@@ -322,4 +322,10 @@ class TestDynamicCompiler(object):
         filename.write(schema)
         comp = DynamicCompiler([])
         req = comp.parse_schema(filename=filename)
-        assert req.requestedFiles[0].filename == str(filename).encode()
+        # from capnproto 0.7.0, RequestedFile.filename no longer contains an
+        # absolute path: https://github.com/capnproto/capnproto/issues/881
+        #
+        # For the purpose of this test, it is enough to check that the
+        # basename is the same
+        reqname = req.requestedFiles[0].filename.decode('utf-8')
+        assert py.path.local(reqname).basename == filename.basename
