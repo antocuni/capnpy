@@ -37,6 +37,7 @@ class ModuleGenerator(object):
         self.field_override = {} # obj -> obj
         self.current_scope = None
         self.collect_nodes()
+        self.compute_all_options()
 
     def collect_nodes(self):
         for node in self.request.nodes:
@@ -47,6 +48,11 @@ class ModuleGenerator(object):
 
     def options(self, node_or_field):
         return self._node_options[node_or_field.id]
+
+    def compute_all_options(self):
+        for f in self.request.requestedFiles:
+            filenode = self.allnodes[f.id]
+            filenode.compute_options(self, self.default_options)
 
     def compute_options_generic(self, entity, parent_opt):
         ann = self.has_annotation(entity, annotate.options)

@@ -65,3 +65,19 @@ class TestReflection(CompilerTest):
         node_Point = reflection.get_node(mod.Point)
         assert reflection.has_annotation(node_Point, annotate.key)
         assert reflection.has_annotation(mod.Point, annotate.key)
+
+    def test_options(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            myField @0 :Int64;
+        }
+        """
+        mod = self.compile(schema, convert_case=False)
+        reflection = get_reflection_data(mod)
+        node = reflection.get_node(mod.Foo)
+        assert node.is_struct
+        assert node.shortname(reflection.m) == 'Foo'
+        f = node.get_struct_fields()[0]
+        fname = reflection.m.field_name(f)
+        assert fname == 'myField'

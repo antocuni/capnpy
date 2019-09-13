@@ -40,7 +40,6 @@ class RequestedFile:
         #
         filenode = m.allnodes[self.id]
         assert filenode.is_file()
-        filenode.compute_options(m, m.default_options)
         m.current_scope = filenode
         m.w("# THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy")
         m.w("# do not edit by hand")
@@ -147,10 +146,12 @@ class RequestedFile:
         ns = m.code.new_scope()
         ns.modname = m.modname
         ns.data = m.request.dumps()
+        ns.default_options_data = m.default_options.dumps()
         ns.pyx = m.pyx
         ns.ww("""
             class _{modname}_ReflectionData(_ReflectionData):
                 request_data = {data!r}
+                default_options_data = {default_options_data!r}
                 pyx = {pyx}
             _reflection_data = _{modname}_ReflectionData()
         """)
