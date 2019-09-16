@@ -89,7 +89,7 @@ automatically compile your schemas from ``setup.py``::
           )
 
 
-You can specify additional `Compilation options`_ by using ``capnpy_options``::
+You can specify additional `compilation options`_ by using ``capnpy_options``::
 
     from setuptools import setup
     setup(name='foo',
@@ -124,7 +124,7 @@ To dynamically load a capnproto schema, use ``capnpy.load_schema``; its full
 signature is::
 
     def load_schema(modname=None, importname=None, filename=None,
-                    convert_case=True, pyx='auto'):
+                    pyx='auto', options=None):
         ...
 
 ``modname``, ``importname`` and ``filename`` corresponds to three different
@@ -161,7 +161,14 @@ the search path directories, which by default correspond to the ones listed in
 Finally, ``filename`` specifies the exact file name of the schema file. No
 search will be performed.
 
-``pyx`` and ``convert_case`` specify which `compilation options`_ to use.
+``pyx`` specifies whether to use pyx or py mode. ``options`` can be used to
+change the default `compilation options`_:
+
+.. doctest::
+
+   >>> from capnpy.annotate import Options
+   >>> example = capnpy.load_schema('example', options=Options(convert_case=False))
+
 
 
 Compilation options
@@ -226,15 +233,15 @@ types are translated into Python. For example, you could use it to apply the
 
 .. doctest::
 
-    >>> mod = capnpy.load_schema('example_enum')
+    >>> mod = capnpy.load_schema('example_options')
     >>> mod.A.fieldOne
-    <property object at 0x7f2a437bd0a8>
+    <property object at ...>
     >>> mod.B.field_one
-    <property object at 0x7f2a437b4f18>
+    <property object at ...>
     >>> mod.B.field_two
-    <property object at 0x7f2a42c6a9f0>
+    <property object at ...>
     >>> mod.B.fieldThree
-    <property object at 0x7f2a42c6ac00>
+    <property object at ...>
 
 In the example above, ``A.fieldOne`` is not converted because of the
 file-level annotation. ``B.field_one`` and ``B.field_two`` are converted
