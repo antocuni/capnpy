@@ -53,7 +53,7 @@ You can use ``capnpy`` to read and write messages of type ``Point``:
 Compiling schemas
 ==================
 
-``capnpy`` supports two different ways of compiling schemas:
+``capnpy`` supports different ways of compiling schemas:
 
 ``setuptools`` integration
     to compile and distribute schemas using ``setup.py``.
@@ -364,7 +364,7 @@ are using `Integration with setuptools`_, you need to pass
 ``capnpy_options={'text_type': 'unicode'}`` in your ``setup.py``.
 
 If you want more granular control, you can annotate single files/struct/fields
-by using the `Options annotation`.
+by using the `Options annotation`_.
 
 
 Struct
