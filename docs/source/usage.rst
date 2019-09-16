@@ -50,70 +50,71 @@ You can use ``capnpy`` to read and write messages of type ``Point``:
     p2.y == 2
 
 
-Loading schemas
-================
+Compiling schemas
+==================
 
-``capnpy`` supports two different ways of loading schemas:
+``capnpy`` supports two different ways of compiling schemas:
+
+``setuptools`` integration
+    to compile and distribute schemas using ``setup.py``.
 
 Dynamic loading
     to compile and load capnproto schemas on the fly.
 
 Manual compilation
-    to generate Python bindings for a schema, to be imported later.
+    to compile schemas manually.
 
+
+If you use ``setup.py`` or `manual compilation`_, you need ``capnp`` to
+compile the schema, but not to load it later; this means that you can
+distribute the precompiled schemas, and the client machines will be able to
+load it without having to install the official capnproto distribution.
 
 If you use `dynamic loading`_, you always need the ``capnp`` executable
 whenever you want to load a schema.
 
-If you use `manual compilation`_, you need ``capnp`` to compile the schema, but
-not to load it later; this means that you can distribute the precompiled
-schemas, and the client machines will be able to load it without having to
-install the official capnproto distribution.
 
 
-Compilation options
---------------------
+Integration with ``setuptools``
+--------------------------------
 
-The ``capnpy`` schema compiler has two modes of compilation:
+If you use ``setuptools``, you can use the ``capnpy_schema`` keyword to
+automatically compile your schemas from ``setup.py``::
 
-py mode
-   Generate pure Python modules, which can be used either on CPython or
-   PyPy: it is optimized to be super fast on PyPy. It produces slow code on
-   CPython, but it has the advantage of not requiring ``cython``. This is the
-   default on PyPy.
-
-pyx mode
-   Generate pyx modules, which are then compiled into native extension
-   modules by ``cython`` and ``gcc``. It is optimized for speed on
-   CPython. This is the default on CPython, if ``cython`` is available.
-
-Moreover, it supports the following options:
-
-``version_check``
-   If enabled, the compiled schema contains a check which is run at import
-   time to ensure that the current version of capnpy matches to the one we
-   compiled the schema with.  See note below for more details. The default is
-   **True**.
-
-``convert_case``
-   If enabled, ``capnpy`` will automatically convert field names
-   from camelCase to underscore_delimiter: i.e., ``fooBar`` will become
-   ``foo_bar``. The default is **True**.
+    from setuptools import setup
+    setup(name='foo',
+          version='0.1',
+          packages=['mypkg'],
+          capnpy_schemas=['mypkg/example.capnp'],
+          )
 
 
-``text_type``
-   Can be ``bytes`` or ``unicode``, Determines the default Python type for
-   Text_ fields. The default is ``bytes``
+You can specify additional `Compilation options`_ by using ``capnpy_options``::
 
-.. note:: **Version checking** is needed in particular if you are using pyx mode,
-          which is the default on CPython.  Capnproto ``struct`` are
-          represented by Python classes which inherits from
-          ``capnpy.struct_.Struct``: in pyx mode, this is a Cython ``cdef
-          class``, and it has a certain C layout which depends on the number
-          and type of its fields. If the C layout at compilation and import
-          time don't match, you risk segfault and/or misbehavior.  Since the
-          internal layout of classes might change between capnpy version, the
-          version check prevents this risk.
+    from setuptools import setup
+    setup(name='foo',
+          version='0.1',
+          packages=['mypkg'],
+          capnpy_options={
+              'pyx': False,          # do NOT use Cython (default is 'auto')
+              'convert_case': False, # do NOT convert camelCase to camel_case
+                                     # (default is True)
+          }
+          capnpy_schemas=['mypkg/example.capnp'],
+          )
+
+
+Manual compilation
+-------------------
+
+You can manually compile a capnproto schema by using ``python -m capnpy
+compile``::
+
+    $ python -m capnpy compile example.capnp
+
+This will produce ``example.py`` (if you are using py mode) or ``example.so``
+(if you are using pyx mode).  Run ``python -m capnpy --help`` for additional
+options.
 
 
 Dynamic loading
@@ -163,46 +164,88 @@ search will be performed.
 ``pyx`` and ``convert_case`` specify which `compilation options`_ to use.
 
 
-Manual compilation
--------------------
+Compilation options
+--------------------
 
-You can manually compile a capnproto schema by using ``python -m capnpy
-compile``::
+The ``capnpy`` schema compiler has two modes of compilation:
 
-    $ python -m capnpy compile example.capnp
+py mode
+   Generate pure Python modules, which can be used either on CPython or
+   PyPy: it is optimized to be super fast on PyPy. It produces slow code on
+   CPython, but it has the advantage of not requiring ``cython``. This is the
+   default on PyPy.
 
-This will produce ``example.py`` (if you are using py mode) or ``example.so``
-(if you are using pyx mode).
+pyx mode
+   Generate pyx modules, which are then compiled into native extension
+   modules by ``cython`` and ``gcc``. It is optimized for speed on
+   CPython. This is the default on CPython, if ``cython`` is available.
+
+Moreover, it supports the following options:
+
+``version_check``
+   If enabled, the compiled schema contains a check which is run at import
+   time to ensure that the current version of capnpy matches to the one we
+   compiled the schema with.  See note below for more details. The default is
+   **True**.
+
+``convert_case``
+   If enabled, ``capnpy`` will automatically convert field names
+   from camelCase to underscore_delimiter: i.e., ``fooBar`` will become
+   ``foo_bar``. The default is **True**.
+
+``text_type``
+   Can be ``bytes`` or ``unicode``, Determines the default Python type for
+   Text_ fields. The default is ``bytes``
 
 
-Integration with ``setuptools``
---------------------------------
-
-If you use ``setuptools``, you can use the ``capnpy_schema`` keyword to
-automatically compile your schemas from ``setup.py``::
-
-    from setuptools import setup
-    setup(name='foo',
-          version='0.1',
-          packages=['mypkg'],
-          capnpy_schemas=['mypkg/example.capnp'],
-          )
+.. note:: **Version checking** is needed in particular if you are using pyx mode,
+          which is the default on CPython.  Capnproto ``struct`` are
+          represented by Python classes which inherits from
+          ``capnpy.struct_.Struct``: in pyx mode, this is a Cython ``cdef
+          class``, and it has a certain C layout which depends on the number
+          and type of its fields. If the C layout at compilation and import
+          time don't match, you risk segfault and/or misbehavior.  Since the
+          internal layout of classes might change between capnpy version, the
+          version check prevents this risk.
 
 
-You can specify additional options by using ``capnpy_options``::
+Options annotation
+--------------------
 
-    from setuptools import setup
-    setup(name='foo',
-          version='0.1',
-          packages=['mypkg'],
-          capnpy_options={
-              'pyx': False,          # do NOT use Cython (default is 'auto')
-              'convert_case': False, # do NOT convert camelCase to camel_case
-                                     # (default is True)
-          }
-          capnpy_schemas=['mypkg/example.capnp'],
-          )
+Capnpy options can also be configured by using the ``$Py.options`` annotation,
+which can be applied to ``file``, ``struct`` and ``field`` nodes.  The annotation
+recurively applies also to all the children nodes and can be used to override
+the options used by the parents.
 
+This can be used to have a more granular control on how certain capnproto
+types are translated into Python. For example, you could use it to apply the
+``convert_case`` option only to certain structs or fields:
+
+.. literalinclude:: example_options.capnp
+   :language: capnp
+
+.. doctest::
+
+    >>> mod = capnpy.load_schema('example_enum')
+    >>> mod.A.fieldOne
+    <property object at 0x7f2a437bd0a8>
+    >>> mod.B.field_one
+    <property object at 0x7f2a437b4f18>
+    >>> mod.B.field_two
+    <property object at 0x7f2a42c6a9f0>
+    >>> mod.B.fieldThree
+    <property object at 0x7f2a42c6ac00>
+
+In the example above, ``A.fieldOne`` is not converted because of the
+file-level annotation. ``B.field_one`` and ``B.field_two`` are converted
+because the annotation on the struct overrides it. Finally, ``B.fieldThree``
+overrides it again.
+
+.. note:: Note the different spelling of options names: when you specify them
+          in ``setup.py``, they follow Python's ``naming_convention`` and thus
+          are spelled e.g. ``convert_case`` and ``text_type``. However, when
+          you specify them as annotation, the capnproto schema language
+          mandates ``camelCase``.
 
 
 Loading and dumping messages
@@ -314,27 +357,7 @@ are using `Integration with setuptools`_, you need to pass
 ``capnpy_options={'text_type': 'unicode'}`` in your ``setup.py``.
 
 If you want more granular control, you can annotate single files/struct/fields
-with the ``$Py.options`` annotation::
-
-    @0xbf5147cbbecf40c1;
-    using Py = import "/capnpy/annotate.capnp";
-
-    # file-level option
-    $Py.options(textType=unicode);
-
-    struct A {
-        # this will be unicode because of the file-level option
-        x @0: Text;
-    }
-
-    struct B $Py.options(textType=bytes) {
-        x @0 :Text; # bytes
-        y @1 :Text $Py.options(textType=unicode); # unicode
-    }
-
-Note that in ``setup.py`` the option name is spelled ``text_type`` to follow
-Python's ``naming_convention``, while in the schema it is spelled ``textType``
-because the capnproto schema language mandates ``camelCase``.
+by using the `Options annotation`.
 
 
 Struct
