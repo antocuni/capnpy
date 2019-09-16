@@ -30,7 +30,7 @@ class TestReflection(CompilerTest):
         mod = self.compile(schema)
         reflection = get_reflection_data(mod)
         reqfile = reflection.m.request.requestedFiles[0].filename
-        assert py.path.local(reqfile).basename == py.path.local(b(mod.__file__)).basename
+        assert reqfile.endswith('tmp.capnp')
 
     def test_get_node(self):
         schema = """
