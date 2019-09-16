@@ -89,10 +89,31 @@ pyx mode
 
 Moreover, it supports the following options:
 
+``version_check``
+   If enabled, the compiled schema contains a check which is run at import
+   time to ensure that the current version of capnpy matches to the one we
+   compiled the schema with.  See note below for more details. The default is
+   **True**.
+
 ``convert_case``
    If enabled, ``capnpy`` will automatically convert field names
    from camelCase to underscore_delimiter: i.e., ``fooBar`` will become
    ``foo_bar``. The default is **True**.
+
+
+``text_type``
+   Can be ``bytes`` or ``unicode``, Determines the default Python type for
+   Text_ fields. The default is ``bytes``
+
+.. note:: **Version checking** is needed in particular if you are using pyx mode,
+          which is the default on CPython.  Capnproto ``struct`` are
+          represented by Python classes which inherits from
+          ``capnpy.struct_.Struct``: in pyx mode, this is a Cython ``cdef
+          class``, and it has a certain C layout which depends on the number
+          and type of its fields. If the C layout at compilation and import
+          time don't match, you risk segfault and/or misbehavior.  Since the
+          internal layout of classes might change between capnpy version, the
+          version check prevents this risk.
 
 
 Dynamic loading
@@ -288,8 +309,9 @@ Python:
     re-decode the string again and again any time you read the field.
 
 By default, ``Text`` fields are represented as ``bytes``. You can change the
-default behavior by passing ``capnpy_options={'text_type': 'unicode'}`` in
-your ``setup.py`` (see also `Integration with setuptools`_).
+default behavior by setting the appropriate `Compilation options`_. In case you
+are using `Integration with setuptools`_, you need to pass
+``capnpy_options={'text_type': 'unicode'}`` in your ``setup.py``.
 
 If you want more granular control, you can annotate single files/struct/fields
 with the ``$Py.options`` annotation::
