@@ -219,7 +219,7 @@ Moreover, it supports the following options:
 Options annotation
 --------------------
 
-Capnpy options can also be configured by using the ``$Py.options`` annotation,
+``capnpy`` options can also be configured by using the ``$Py.options`` annotation,
 which can be applied to ``file``, ``struct`` and ``field`` nodes.  The annotation
 recurively applies also to all the children nodes and can be used to override
 the options used by the parents.
@@ -894,6 +894,80 @@ the schema:
     >>> p = example.Point(3, 4)
     >>> print p.distance()
     5.0
+
+
+Reflection API
+===============
+
+Using the reflection API, it is possible to programmatically query information
+about a schema, for example what are the fields inside a struct.
+
+The main entry point is the function
+``capnpy.reflection.get_reflection_data()``, which returns the metadata for a
+given module as an instance of ``ReflectionData``.
+
+.. doctest::
+
+   >>> from capnpy.reflection import get_reflection_data
+   >>> mod = capnpy.load_schema('example')
+   >>> reflection = get_reflection_data(mod)
+
+
+Under the hood, the ``capnp`` compiler produces a `capnproto representation`_
+of the parsed schema, where most capnproto entities are represented by
+nodes_. You can use ``get_node`` to get the capnproto node corresponding to a
+given Python-level entity:
+
+.. doctest::
+
+   >>> # get the node for the Point struct
+   >>> node = reflection.get_node(mod.Point)
+   >>> type(node)
+   <class 'capnpy.schema.Node__Struct'>
+   >>> node.displayName
+   'example.capnp:Point'
+   >>> node.which()
+   <Node__tag__.struct: 1>
+   >>> node.is_struct()
+   True
+   >>> for f in node.struct.fields:
+   ...     print f
+   ...
+   <Field 'x': int64>
+   <Field 'y': int64>
+
+
+.. _`capnproto representation`: https://github.com/antocuni/capnpy/blob/master/capnpy/schema.capnp
+
+.. _nodes: https://github.com/antocuni/capnpy/blob/master/capnpy/schema.capnp#L30
+
+
+Nodes vs Python entities
+------------------------
+
+When compiling a schema ``capnpy`` generates Python entities from nodes: for
+example, ``Struct`` are compiled as Python classes, and fields as Python
+properties. Although closely related, they are not always equivalent: for
+example, ``Field.name`` is always ``camelCase``, but the Python property might
+be called differently, depending on the `compilation options`_.
+
+For example, consider the following schema:
+
+.. literalinclude:: example_reflection.capnp
+   :language: capnp
+
+To get the correct Python-level name, you can call ``reflection.field_name()``:
+
+.. doctest::
+
+    >>> mod = capnpy.load_schema('example_reflection')
+    >>> reflection = get_reflection_data(mod)
+    >>> node = reflection.get_node(mod.Foo)
+    >>> f = node.get_struct_fields()[0]
+    >>> f
+    <Field 'myField': int64>
+    >>> reflection.field_name(f)
+    'my_field'
 
 
 ``capnpy`` vs ``pycapnp``
