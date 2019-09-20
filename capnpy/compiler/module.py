@@ -156,18 +156,20 @@ class ModuleGenerator(object):
             return name + '_'
         return name
 
-    def declare_enum(self, compile_name, name, items):
+    def declare_enum(self, compile_name, name, capnpy_id, items):
         # this method cannot go on Node__Enum because it's also called by
         # Node__Struct (for __tag__)
         items = list(map(repr, items))
         ns = self.code.new_scope()
         ns.name = compile_name
+        ns.capnpy_id = capnpy_id
         ns.members = "(%s,)" % (', '.join(items))
         ns.prebuilt = [ns.format('{name}({i})', i=i)
                        for i in range(len(items))]
         ns.prebuilt = ', '.join(ns.prebuilt)
         ns.prebuilt = ns.format('({prebuilt},)')
         with ns.block("{cdef class} {name}(_BaseEnum):"):
+            ns.w("__capnpy_id__ = {capnpy_id}")
             ns.w("__members__ = {members}")
             #
             # define the _new staticmethod, to create new instances.

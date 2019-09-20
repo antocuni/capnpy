@@ -81,3 +81,19 @@ class TestReflection(CompilerTest):
         f = node.get_struct_fields()[0]
         fname = reflection.field_name(f)
         assert fname == 'myField'
+
+    def test_enum(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        enum Color {
+            lightRed @0;
+            darkGreen @1;
+        }
+        """
+        mod = self.compile(schema)
+        reflection = get_reflection_data(mod)
+        node = reflection.get_node(mod.Color)
+        assert node.is_enum()
+        enumerants = node.get_enum_enumerants()
+        assert reflection.field_name(enumerants[0]) == 'light_red'
+        assert reflection.field_name(enumerants[1]) == 'dark_green'

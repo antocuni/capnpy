@@ -114,7 +114,7 @@ class Node__Struct:
             return
         compile_name = self.compile_name(m) + '__tag__'
         enum_name = '%s.__tag__' % self.shortname(m)
-        m.declare_enum(compile_name, enum_name, enum_items)
+        m.declare_enum(compile_name, enum_name, None, enum_items)
 
     def _emit_union_tag(self, m):
         enum_items = self._get_enum_items(m)
