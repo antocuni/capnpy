@@ -969,6 +969,19 @@ To get the correct Python-level name, you can call ``reflection.field_name()``:
     >>> reflection.field_name(f)
     'my_field'
 
+This works also for enums:
+
+.. doctest::
+
+    >>> node = reflection.get_node(mod.Color)
+    >>> node.is_enum()
+    True
+    >>> enumerants = node.get_enum_enumerants()
+    >>> enumerants[0].name
+    'lightRed'
+    >>> reflection.field_name(enumerants[0])
+    'light_red'
+
 
 ``capnpy`` vs ``pycapnp``
 ==========================
