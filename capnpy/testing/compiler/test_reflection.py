@@ -79,5 +79,5 @@ class TestReflection(CompilerTest):
         assert node.is_struct
         assert node.shortname(reflection.m) == 'Foo'
         f = node.get_struct_fields()[0]
-        fname = reflection.m.field_name(f)
+        fname = reflection.field_name(f)
         assert fname == 'myField'
