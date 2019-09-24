@@ -924,7 +924,7 @@ given Python-level entity:
    >>> node = reflection.get_node(mod.Point)
    >>> type(node)
    <class 'capnpy.schema.Node__Struct'>
-   >>> node.displayName
+   >>> node.displayName[-19:]
    'example.capnp:Point'
    >>> node.which()
    <Node__tag__.struct: 1>
