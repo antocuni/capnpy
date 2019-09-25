@@ -4,6 +4,7 @@ import pkg_resources
 from capnpy.compiler.compiler import DynamicCompiler
 from capnpy.compiler.distutils import capnpify
 from capnpy.message import load, loads, load_all, dumps, dump
+from capnpy.reflection import get_reflection_data
 
 
 try:

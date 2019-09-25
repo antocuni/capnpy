@@ -902,14 +902,13 @@ Using the reflection API, it is possible to programmatically query information
 about a schema, for example what are the fields inside a struct.
 
 The main entry point is the function
-``capnpy.reflection.get_reflection_data()``, which returns the metadata for a
+``capnpy.get_reflection_data()``, which returns the metadata for a
 given module as an instance of ``ReflectionData``.
 
 .. doctest::
 
-   >>> from capnpy.reflection import get_reflection_data
    >>> mod = capnpy.load_schema('example')
-   >>> reflection = get_reflection_data(mod)
+   >>> reflection = capnpy.get_reflection_data(mod)
 
 
 Under the hood, the ``capnp`` compiler produces a `capnproto representation`_
@@ -960,7 +959,7 @@ To get the correct Python-level name, you can call ``reflection.field_name()``:
 .. doctest::
 
     >>> mod = capnpy.load_schema('example_reflection')
-    >>> reflection = get_reflection_data(mod)
+    >>> reflection = capnpy.get_reflection_data(mod)
     >>> node = reflection.get_node(mod.Foo)
     >>> f = node.get_struct_fields()[0]
     >>> f

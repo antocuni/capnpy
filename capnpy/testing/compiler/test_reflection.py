@@ -1,4 +1,5 @@
 import py
+import pytest
 from six import b
 from capnpy.reflection import get_reflection_data
 from capnpy.testing.compiler.support import CompilerTest
@@ -50,7 +51,7 @@ class TestReflection(CompilerTest):
         assert point_node.is_struct
         assert point_node.shortname(reflection.m) == 'Point'
 
-    def test_has_annotation(self):
+    def test_get_annotation(self):
         from capnpy import annotate
         schema = """
         @0xbf5147cbbecf40c1;
@@ -59,12 +60,21 @@ class TestReflection(CompilerTest):
             x @0 :Int64;
             y @1 :Int64;
         }
+        struct Foo {
+        }
         """
         mod = self.compile(schema)
         reflection =  get_reflection_data(mod)
         node_Point = reflection.get_node(mod.Point)
         assert reflection.has_annotation(node_Point, annotate.key)
         assert reflection.has_annotation(mod.Point, annotate.key)
+        assert not reflection.has_annotation(mod.Foo, annotate.key)
+        #
+        assert reflection.get_annotation(node_Point, annotate.key) == b'x, y'
+        assert reflection.get_annotation(mod.Point, annotate.key) == b'x, y'
+        #
+        with pytest.raises(KeyError):
+            reflection.get_annotation(mod.Foo, annotate.key)
 
     def test_options(self):
         schema = """

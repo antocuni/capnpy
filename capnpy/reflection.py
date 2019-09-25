@@ -49,7 +49,17 @@ class ReflectionData(object):
             id = obj.__capnpy_id__
         return self.m.allnodes[id]
 
+    def get_annotation(self, entity, anncls):
+        ann = self._get_annotation(entity, anncls)
+        if ann:
+            return ann.annotation.value.as_pyobj()
+        raise KeyError(anncls.__name__)
+
     def has_annotation(self, entity, anncls):
+        ann = self._get_annotation(entity, anncls)
+        return bool(ann)
+
+    def _get_annotation(self, entity, anncls):
         if hasattr(entity, '__capnpy_id__'):
             entity = self.get_node(entity)
         return self.m.has_annotation(entity, anncls)
