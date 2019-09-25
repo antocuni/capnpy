@@ -590,7 +590,7 @@ virtual group, which fishes the data from normal "flat" fields.
 .. literalinclude:: example_py_group.capnp
    :language: capnp
    :emphasize-lines: 8
-   :lines: 3-12
+   :lines: 3-
 
 This becomes particularly handy in conjuction with ``$Py.key`` (see `Equality
 and hashing`_), because it allows to get an hashable/comparable subset of the
@@ -803,8 +803,7 @@ previous version of ``struct Point`` which contains only ``x`` and ``y``:
 
 .. literalinclude:: example_key.capnp
    :language: capnp
-   :emphasize-lines: 5
-   :lines: 13-17
+   :lines: 13-
 
 .. doctest::
 
