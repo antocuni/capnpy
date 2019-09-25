@@ -1,5 +1,6 @@
 from __future__ import print_function
 import py
+import six
 import keyword
 from collections import defaultdict
 from pypytools.codegen import Code
@@ -7,6 +8,7 @@ from six import PY3
 
 from capnpy.compiler.util import as_identifier
 from capnpy.convert_case import from_camel_case
+from capnpy import schema
 from capnpy import annotate
 
 # the following imports have side-effects, and augment the schema.* classes
@@ -33,9 +35,24 @@ class ModuleGenerator(object):
         self.importnames = {} # filename -> import name
         self.extra_annotations = defaultdict(list) # obj -> [ann]
         self.field_override = {} # obj -> obj
+        self.current_scope = None
+        self.collect_nodes()
+        self.compute_all_options()
+
+    def collect_nodes(self):
+        for node in self.request.nodes:
+            self.allnodes[node.id] = node
+            # roots have scopeId == 0, so they will be in children[0]
+            self.children[node.scopeId].append(node)
+        self.handle_py_groups()
 
     def options(self, node_or_field):
         return self._node_options[node_or_field.id]
+
+    def compute_all_options(self):
+        for f in self.request.requestedFiles:
+            filenode = self.allnodes[f.id]
+            filenode.compute_options(self, self.default_options)
 
     def compute_options_generic(self, entity, parent_opt):
         ann = self.has_annotation(entity, annotate.options)
@@ -63,7 +80,7 @@ class ModuleGenerator(object):
         if obj.annotations is not None:
             annotations += obj.annotations
         for ann in annotations:
-            if ann.id == anncls.__id__:
+            if ann.id == anncls.__capnpy_id__:
                 # XXX: probably "annotation" should be taken by the
                 # constructor
                 res = anncls()
@@ -71,6 +88,33 @@ class ModuleGenerator(object):
                 res.target = obj
                 return res
         return None
+
+    def handle_py_groups(self):
+        def register_py_group(struct_id, ann):
+            field_void = ann.target
+            node_group = schema.Node__Struct.from_group_annotation(
+                self, struct_id, field_void, ann.annotation)
+            node_id = node_group.id
+
+            self.allnodes[node_id] = node_group
+            self.children[struct_id].append(node_group)
+            # Todo: we should populate `self.children[node_id]`
+
+            # register a fake field
+            field_group = schema.Field__Group.from_group_annotation(
+                node_id, field_void)
+            self.register_field_override(field_void, field_group)
+
+        for struct_id, node in list(six.iteritems(self.allnodes)):
+            if not node.is_struct():
+                continue
+
+            for field in node.get_struct_fields() or []:
+                ann = self.has_annotation(field, annotate.group)
+                if ann:
+                    ann.check(self)
+                    register_py_group(struct_id, ann)
+
 
     def w(self, *args, **kwargs):
         self.code.w(*args, **kwargs)
@@ -112,18 +156,20 @@ class ModuleGenerator(object):
             return name + '_'
         return name
 
-    def declare_enum(self, compile_name, name, items):
+    def declare_enum(self, compile_name, name, capnpy_id, items):
         # this method cannot go on Node__Enum because it's also called by
         # Node__Struct (for __tag__)
         items = list(map(repr, items))
         ns = self.code.new_scope()
         ns.name = compile_name
+        ns.capnpy_id = capnpy_id
         ns.members = "(%s,)" % (', '.join(items))
         ns.prebuilt = [ns.format('{name}({i})', i=i)
                        for i in range(len(items))]
         ns.prebuilt = ', '.join(ns.prebuilt)
         ns.prebuilt = ns.format('({prebuilt},)')
         with ns.block("{cdef class} {name}(_BaseEnum):"):
+            ns.w("__capnpy_id__ = {capnpy_id}")
             ns.w("__members__ = {members}")
             #
             # define the _new staticmethod, to create new instances.

@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2019-07-30 10:32
+# generated on 2019-09-13 14:32
 # cython: language_level=2
 
 from capnpy import ptr as _ptr
@@ -28,52 +28,27 @@ from capnpy.util import float64_repr as _float64_repr
 from capnpy.util import extend_module_maybe as _extend_module_maybe
 from capnpy.util import check_version as _check_version
 from capnpy.util import encode_maybe as _encode_maybe
-__capnpy_version__ = '0.6.3.dev0+g3c1d2b7.d20190730'
+__capnpy_version__ = '0.5.5.dev48+ng36be642.d20190610'
 # schema compiled with --no-version-check, skipping the call to _check_version
 
 #### FORWARD DECLARATIONS ####
 
-class options(object):
-    __id__ = 13670177934128632979
-    targets_file = True
+class key(object):
+    __capnpy_id__ = 14658097673689429382
+    targets_file = False
     targets_const = False
     targets_enum = False
     targets_enumerant = False
     targets_struct = True
     targets_field = True
     targets_union = False
-    targets_group = False
-    targets_interface = False
-    targets_method = False
-    targets_param = False
-    targets_annotation = False
-class Options(_Struct): pass
-Options.__name__ = 'Options'
-
-class TextType(_BaseEnum):
-    __members__ = ('notset', 'bytes', 'unicode',)
-    @staticmethod
-    def _new(x):
-        return TextType(x)
-_fill_enum(TextType)
-_TextType_list_item_type = _EnumItemType(TextType)
-
-class group(object):
-    __id__ = 12694526166034528397
-    targets_file = False
-    targets_const = False
-    targets_enum = False
-    targets_enumerant = False
-    targets_struct = False
-    targets_field = True
-    targets_union = False
-    targets_group = False
+    targets_group = True
     targets_interface = False
     targets_method = False
     targets_param = False
     targets_annotation = False
 class nullable(object):
-    __id__ = 11296117080722892765
+    __capnpy_id__ = 11296117080722892765
     targets_file = False
     targets_const = False
     targets_enum = False
@@ -86,6 +61,20 @@ class nullable(object):
     targets_method = False
     targets_param = False
     targets_annotation = False
+class group(object):
+    __capnpy_id__ = 12694526166034528397
+    targets_file = False
+    targets_const = False
+    targets_enum = False
+    targets_enumerant = False
+    targets_struct = False
+    targets_field = True
+    targets_union = False
+    targets_group = False
+    targets_interface = False
+    targets_method = False
+    targets_param = False
+    targets_annotation = False
 class BoolOption(_BaseEnum):
     __members__ = ('false', 'true', 'notset',)
     @staticmethod
@@ -94,16 +83,27 @@ class BoolOption(_BaseEnum):
 _fill_enum(BoolOption)
 _BoolOption_list_item_type = _EnumItemType(BoolOption)
 
-class key(object):
-    __id__ = 14658097673689429382
-    targets_file = False
+class TextType(_BaseEnum):
+    __members__ = ('notset', 'bytes', 'unicode',)
+    @staticmethod
+    def _new(x):
+        return TextType(x)
+_fill_enum(TextType)
+_TextType_list_item_type = _EnumItemType(TextType)
+
+class Options(_Struct): pass
+Options.__name__ = 'Options'
+
+class options(object):
+    __capnpy_id__ = 13670177934128632979
+    targets_file = True
     targets_const = False
     targets_enum = False
     targets_enumerant = False
     targets_struct = True
     targets_field = True
     targets_union = False
-    targets_group = True
+    targets_group = False
     targets_interface = False
     targets_method = False
     targets_param = False

@@ -57,6 +57,7 @@ class Node__Struct:
             child.emit_definition(m)
         #
         ns = m.code.new_scope()
+        ns.id = self.id
         ns.name = self.compile_name(m)
         ns.dotname = self.runtime_name(m)
         ns.data_size = self.struct.dataWordCount
@@ -70,6 +71,7 @@ class Node__Struct:
         #
         with ns.block("{cdef class} {name}(_Struct):"):
             ns.ww("""
+                __capnpy_id__ = {id:#x}
                 __static_data_size__ = {data_size}
                 __static_ptrs_size__ = {ptrs_size}
 
@@ -112,7 +114,7 @@ class Node__Struct:
             return
         compile_name = self.compile_name(m) + '__tag__'
         enum_name = '%s.__tag__' % self.shortname(m)
-        m.declare_enum(compile_name, enum_name, enum_items)
+        m.declare_enum(compile_name, enum_name, None, enum_items)
 
     def _emit_union_tag(self, m):
         enum_items = self._get_enum_items(m)

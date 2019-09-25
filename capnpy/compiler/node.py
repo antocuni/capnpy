@@ -120,7 +120,7 @@ class Node__Annotation:
         ns.targets_annotation = self.annotation.targetsAnnotation
         ns.ww("""
             class {name}(object):
-                __id__ = {id}
+                __capnpy_id__ = {id:#x}
                 targets_file = {targets_file}
                 targets_const = {targets_const}
                 targets_enum = {targets_enum}
