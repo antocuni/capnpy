@@ -4,6 +4,7 @@ Usage
 
 .. testsetup::
 
+   from __future__ import print_function
    import sys
    import math
    # this is needed for capnpy.load_schema('example')
@@ -41,8 +42,8 @@ You can use ``capnpy`` to read and write messages of type ``Point``:
     # serialize the message and load it back
     message = p.dumps()
     p2 = example.Point.loads(message)
-    print 'p2.x ==', p2.x
-    print 'p2.y ==', p2.y
+    print('p2.x ==', p2.x)
+    print('p2.y ==', p2.y)
 
 .. testoutput::
 
@@ -281,7 +282,7 @@ For example:
     >>> mybuf
     '\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00d\x00\x00\x00\x00\x00\x00\x00\xc8\x00\x00\x00\x00\x00\x00\x00'
     >>> p2 = capnpy.loads(mybuf, example.Point)
-    >>> print p2.x, p2.y
+    >>> print(p2.x, p2.y)
     100 200
 
 Alternatively, you can call ``load``/``loads`` directly on the class, and
@@ -290,7 +291,7 @@ Alternatively, you can call ``load``/``loads`` directly on the class, and
     >>> p = example.Point(x=100, y=200)
     >>> mybuf = p.dumps()
     >>> p2 = example.Point.loads(mybuf)
-    >>> print p2.x, p2.y
+    >>> print(p2.x, p2.y)
     100 200
 
 By default, ``dump`` and ``dumps`` try to use a fast path which is faster if
@@ -338,7 +339,7 @@ save the offending object to make it easier to reproduce the bug:
     >>> p = example.Point(x=100, y=200)
     >>> mydump = p._raw_dumps()
     >>> p2 = example.Point._raw_loads(mydump)
-    >>> print p2.x, p2.y
+    >>> print(p2.x, p2.y)
     100 200
 
 
@@ -408,18 +409,18 @@ fields have all the default value, recursively:
     >>> p = mod.Point()
     >>> p
     <Point: (x = 0, y = 0)>
-    >>> print p.name
+    >>> print(p.name)
     None
     >>> p.has_name()
     False
     >>> p.get_name()
     ''
     >>> rect = mod.Rectangle()
-    >>> print rect.a
+    >>> print(rect.a)
     None
-    >>> print rect.has_a()
+    >>> print(rect.has_a())
     False
-    >>> print rect.get_a()
+    >>> print(rect.get_a())
     <Point: (x = 0, y = 0)>
     >>> rect.get_a().get_name()
     ''
@@ -891,7 +892,7 @@ the schema:
     >>> import capnpy
     >>> example = capnpy.load_schema('example')
     >>> p = example.Point(3, 4)
-    >>> print p.distance()
+    >>> print(p.distance())
     5.0
 
 
@@ -929,7 +930,7 @@ given Python-level entity:
    >>> node.is_struct()
    True
    >>> for f in node.struct.fields:
-   ...     print f
+   ...     print(f)
    ...
    <Field 'x': int64>
    <Field 'y': int64>
@@ -979,6 +980,59 @@ This works also for enums:
     'lightRed'
     >>> reflection.field_name(enumerants[0])
     'light_red'
+
+
+Inspecting annotations
+-----------------------
+
+The Reflection API provides methods to inspect capnproto annotations. Consider
+the following schema, in which we use custom annotations to map structs to
+database tables:
+
+.. literalinclude:: example_reflection_db.capnp
+   :language: capnp
+
+
+You can use ``has_annotation()`` and ``get_annotation()`` to query about them:
+
+.. doctest::
+
+    >>> mod = capnpy.load_schema('example_reflection_db')
+    >>> reflection = capnpy.get_reflection_data(mod)
+    >>> reflection.has_annotation(mod.Person, mod.dbTable)
+    True
+    >>> reflection.get_annotation(mod.Person, mod.dbTable)
+    'Persons'
+
+The following shows a complete example of how to use annotations to create a
+simple dump of the DB structure.  It is also worth noticing the usage of
+``reflection.field_name()`` to convert from e.g. ``firstName`` to
+``first_name``:
+
+.. doctest::
+
+    >>> def print_table(node):
+    ...     table = reflection.get_annotation(node, mod.dbTable)
+    ...     print('DB Table:', table)
+    ...     for f in node.get_struct_fields():
+    ...         print('   ', reflection.field_name(f), end='')
+    ...         if reflection.has_annotation(f, mod.dbPrimaryKey):
+    ...             print(' PRIMARY KEY', end='')
+    ...         print()
+    >>>
+    >>> for node in reflection.allnodes.values():
+    ...     if reflection.has_annotation(node, mod.dbTable):
+    ...         print_table(node)
+    ...
+    DB Table: Persons
+        id PRIMARY KEY
+        first_name
+        last_name
+        school
+    DB Table: Schools
+        id PRIMARY KEY
+        name
+        city
 
 
 ``capnpy`` vs ``pycapnp``

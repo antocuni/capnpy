@@ -51,6 +51,19 @@ class TestReflection(CompilerTest):
         assert point_node.is_struct
         assert point_node.shortname(reflection.m) == 'Point'
 
+    def test_allnodes(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        """
+        mod = self.compile(schema)
+        reflection =  get_reflection_data(mod)
+        assert mod.__capnpy_id__ in reflection.allnodes
+        assert mod.Point.__capnpy_id__ in reflection.allnodes
+
     def test_get_annotation(self):
         from capnpy import annotate
         schema = """

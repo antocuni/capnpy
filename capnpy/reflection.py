@@ -34,6 +34,10 @@ class ReflectionData(object):
                                   default_options=default_options)
         return self._m
 
+    @property
+    def allnodes(self):
+        return self.m.allnodes
+
     def get_node(self, obj=None):
         """
         Get the schema.Node corresponding to obj. Obj can be either:
