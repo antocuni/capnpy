@@ -14,7 +14,7 @@ except ImportError:
 # setuptools entry-points
 def capnpy_options(dist, attr, value):
     for opt in value:
-        if opt not in annotate.Options.FIELDS:
+        if opt != 'pyx' and opt not in annotate.Options.FIELDS:
             warnings.warn('Unknown capnpy option: %s' % opt)
 
 def capnpy_schemas(dist, attr, schemas):
