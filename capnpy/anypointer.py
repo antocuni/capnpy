@@ -1,5 +1,6 @@
 from capnpy.blob import Blob
 from capnpy import ptr
+from capnpy.list import ItemType
 
 class AnyPointer(object):
 
@@ -40,4 +41,14 @@ class AnyPointer(object):
         return self.struct_._read_struct(self.offset, structcls)
 
     def as_list(self, item_type):
+        """
+        Cast the pointer to a List of the specified type.
+
+        item_type can be an instance of a subclass of ItemType or the capnpy
+        type of the elments: in the latter case, the ItemType will be
+        automatically generated following the rules described in
+        ItemType.from_type
+        """
+        if not isinstance(item_type, ItemType):
+            item_type = ItemType.from_type(item_type)
         return self.struct_._read_list(self.offset, item_type)

@@ -87,6 +87,10 @@ class TestAnyPointer(CompilerTest):
         assert not f.p.is_text()
         items = f.p.as_list(PrimitiveItemType(Types.int64))
         assert items == [1, 2, 3, 4]
+        #
+        # automatically construct the appropriate ItemType
+        items = f.p.as_list(int)
+        assert items == [1, 2, 3, 4]
 
     def test_as_list_of_structs(self):
         schema = """
@@ -115,6 +119,11 @@ class TestAnyPointer(CompilerTest):
         assert not poly.points.is_struct()
         assert not poly.points.is_text()
         points = poly.points.as_list(StructItemType(mod.Polygon_Point))
+        assert len(points) == 4
+        assert points[0].x == 10
+        assert points[0].y == 100
+        #
+        points = poly.points.as_list(mod.Polygon_Point)
         assert len(points) == 4
         assert points[0].x == 10
         assert points[0].y == 100
