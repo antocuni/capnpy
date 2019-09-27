@@ -1,14 +1,17 @@
 # -*- encoding: utf-8 -*-
 
 import py
+import pytest
+import six
 from six import b
 
 from capnpy.printer import print_buffer
 from capnpy.type import Types
 from capnpy.segment.segment import MultiSegment
 from capnpy import ptr
-from capnpy.list import (List, StructItemType, PrimitiveItemType, TextItemType,
-                         ListItemType, TextUnicodeItemType)
+from capnpy.list import (List, ItemType, VoidItemType, BoolItemType,
+                         StructItemType, PrimitiveItemType, TextItemType,
+                         ListItemType, TextUnicodeItemType, EnumItemType)
 from capnpy.struct_ import Struct
 
 def test_read_list():
@@ -259,6 +262,48 @@ def test_ListItem_far_pointer():
     lst = blob._read_list(0, item_type)
     ghij = lst[3]
     assert list(ghij) == [ord('G'), ord('H'), ord('I'), ord('J'), 0]
+
+
+def test_ItemType_from_type():
+    from capnpy.enum import enum
+    def check(t, expected_cls, expected_t=None):
+        if expected_t is None:
+            expected_t = t
+        itemtype = ItemType.from_type(t)
+        assert isinstance(itemtype, expected_cls)
+        assert itemtype.get_type() is expected_t
+
+    class MyStruct(Struct):
+        __static_data_size__ = 0
+        __static_ptrs_size__ = 0
+    MyEnum = enum('MyEnum', ('a', 'b'))
+
+    check(Types.void, VoidItemType)
+    check(Types.bool, BoolItemType)
+    check(Types.int8, PrimitiveItemType)
+    check(Types.uint8, PrimitiveItemType)
+    check(Types.int16, PrimitiveItemType)
+    check(Types.uint16, PrimitiveItemType)
+    check(Types.int32, PrimitiveItemType)
+    check(Types.uint32, PrimitiveItemType)
+    check(Types.int64, PrimitiveItemType)
+    check(Types.uint64, PrimitiveItemType)
+    check(Types.float32, PrimitiveItemType)
+    check(Types.float64, PrimitiveItemType)
+    check(Types.data, TextItemType)
+    check(int, PrimitiveItemType, Types.int64)
+    check(float, PrimitiveItemType, Types.float64)
+    check(bytes, TextItemType, Types.text)
+    check(six.text_type, TextUnicodeItemType, Types.text)
+    check(MyStruct, StructItemType)
+    check(MyEnum, EnumItemType)
+    with pytest.raises(NotImplementedError):
+        ItemType.from_type(Types.text)
+    #
+    # check lists
+    itype = ItemType.from_type([int])
+    assert isinstance(itype, ListItemType)
+    assert itype.inner_item_type.get_type() is Types.int64
 
 
 class TestPythonicInterface(object):

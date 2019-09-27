@@ -31,6 +31,9 @@ class Type:
             return '_%s' % self.which()
 
     def list_item_type(self, m, options):
+        """
+        This is the compile-time equivalent of capnpy.list.ItemType.from_type
+        """
         if m.pyx:
             # on Cython, try to use the prebuilt ItemType when possible
             if self.is_builtin():

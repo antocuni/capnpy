@@ -1,8 +1,9 @@
 import struct
+import six
 from six.moves import range
 
 import capnpy
-from capnpy.type import Types
+from capnpy.type import Types, BuiltinType
 from capnpy.blob import Blob, PYX
 from capnpy import ptr
 from capnpy.util import (float32_repr, float64_repr, decode_maybe,
@@ -101,6 +102,63 @@ class List(Blob):
 
 class ItemType(object):
 
+    @staticmethod
+    def from_type(t):
+        """
+        Construct and return an ItemType which is suitable for the given capnpy
+        type. This is the runtime equivalent of Type.list_item_type defined in
+        compiler/misc.py.
+
+        t can be:
+
+            - one of the types defined in capnpy.type.Types, such as Types.int8
+
+            - a subclass of Struct
+
+            - a subclass of BaseEnum
+
+            - for convenience, one of the following python types:
+                  * int, equivalent to Types.int64
+                  * float, equivalent to Types.float64
+                  * bytes (str in Python2), for bytes Text fields
+                  * six.text_type (i.e. unicode or str depending on py2/py3),
+                    for unicode Text fields
+
+            - [t] to indicate "list of t"
+        """
+        from capnpy.struct_ import Struct
+        from capnpy.enum import BaseEnum
+        if t is Types.void:
+            return VoidItemType()
+        elif t is Types.bool:
+            return BoolItemType()
+        elif t is Types.text:
+            raise NotImplementedError("Use from_type(bytes) or from_type(unicode)")
+        elif t is Types.data:
+            return TextItemType(t)
+        elif isinstance(t, BuiltinType) and t.fmt is not None:
+            return PrimitiveItemType(t)
+        elif t is int:
+            return PrimitiveItemType(Types.int64)
+        elif t is float:
+            return PrimitiveItemType(Types.float64)
+        elif t is bytes:
+            return TextItemType(Types.text)
+        elif t is six.text_type:
+            return TextUnicodeItemType(Types.text)
+        elif isinstance(t, type) and issubclass(t, Struct):
+            return StructItemType(t)
+        elif isinstance(t, type) and issubclass(t, BaseEnum):
+            return EnumItemType(t)
+        elif isinstance(t, list):
+            if len(t) != 1:
+                raise ValueError("List types should contain only one item")
+            inner_type = ItemType.from_type(t[0])
+            return ListItemType(inner_type)
+        else:
+            raise NotImplementedError
+
+
     def get_type(self):
         raise NotImplementedError
 
@@ -127,7 +185,7 @@ class VoidItemType(ItemType):
         self.size_tag = ptr.LIST_SIZE_VOID
 
     def get_type(self):
-        return Types.Void
+        return Types.void
 
     def offset_for_item(self, lst, i):
         return 0
@@ -149,7 +207,7 @@ class BoolItemType(ItemType):
         self.size_tag = ptr.LIST_SIZE_BIT
 
     def get_type(self):
-        return Types.Bool
+        return Types.bool
 
     def offset_for_item(self, lst, i):
         raise NotImplementedError
@@ -259,7 +317,9 @@ class TextItemType(ItemType):
         self.size_tag = ptr.LIST_SIZE_PTR
 
     def get_type(self):
-        return self.t
+        if self.additional_size == 0:
+            return Types.data
+        return Types.text
 
     def read_item(self, lst, i):
         offset = self.offset_for_item(lst, i)
@@ -325,6 +385,9 @@ class ListItemType(ItemType):
 
     def write_item(self, builder, pos, item):
         builder.copy_from_list(pos, self.inner_item_type, item)
+
+
+
 
 if PYX:
     # on CPython, we use prebuilt ItemType instances, as it is costly to
