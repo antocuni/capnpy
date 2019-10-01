@@ -64,8 +64,6 @@ cache:
 # we committed to the repo. That's why we add travis/bin to the PATH
 env:
   global:
-    - CC=gcc-4.8
-    - CXX=g++-4.8
     - export PATH="$PATH:$HOME/capnp/bin:$TRAVIS_BUILD_DIR/travis/bin"
     - export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$HOME/capnp/lib"
 
@@ -74,11 +72,7 @@ env:
 
 addons:
   apt:
-    sources:
-      - ubuntu-toolchain-r-test
     packages:
-      - gcc-4.8
-      - g++-4.8
       - python-dev
       #- ucspi-tcp # for tcpserver, see the comment above
 
