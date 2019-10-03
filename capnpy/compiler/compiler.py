@@ -35,6 +35,7 @@ class BaseCompiler(object):
 
     def __init__(self, path):
         self.path = [py.path.local(dirname) for dirname in path]
+        self.capnproto_version = None
         self._tmpdir = None
 
     @property
@@ -62,7 +63,8 @@ class BaseCompiler(object):
         default_options = DEFAULT_OPTIONS
         if options is not None:
             default_options = default_options.combine(options)
-        m = ModuleGenerator(request, pyx, self.standalone, default_options)
+        m = ModuleGenerator(request, pyx, self.standalone, default_options,
+                            self.capnproto_version)
         src = m.generate()
         return m, py.code.Source(src)
 
@@ -104,6 +106,7 @@ class BaseCompiler(object):
         if not version.startswith("Cap'n Proto version"):
             raise CompilerError("capnp version string not recognized: %s" % version)
         _, version = version.rsplit(' ', 1)
+        self.capnproto_version = version
         if "unknown" in version:
             # can't determine capnp version, continue with caution
             return

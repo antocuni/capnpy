@@ -31,7 +31,8 @@ class ReflectionData(object):
         self._m = ModuleGenerator(request,
                                   pyx=self.pyx,
                                   standalone=True,
-                                  default_options=default_options)
+                                  default_options=default_options,
+                                  capnproto_version=None)
         return self._m
 
     @property

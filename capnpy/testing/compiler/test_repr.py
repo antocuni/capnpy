@@ -24,9 +24,23 @@ class TestShortRepr(CompilerTest):
         return res.decode('utf-8')
 
     def check(self, obj, expected):
+        def is_ascii(s):
+            return all(ord(c) < 128 for c in s)
+        #
         myrepr = obj.shortrepr()
-        capnp_repr = self.decode(obj)
         assert myrepr == expected, 'shortrepr() is not what we expect'
+        #
+        if self.mod.__capnproto_version__ < '0.7.0' and not is_ascii(myrepr):
+            # text literals are outputted differently depending on the
+            # capnproto version. capnp >= 0.7.0 emits plain utf-8 text fields,
+            # while previous versions emits backslash-escaped utf-8: for example:
+            #    0.6.1: (txt = "hell\xc3\xb2")
+            #    0.7.0: (txt = "hellò")
+            #
+            # So, if we are using an older capnproto version and our repr
+            # contains non-ASCII chars, we just skip it.
+            return
+        capnp_repr = self.decode(obj)
         assert myrepr == capnp_repr, 'shortrepr() does not match with capnp decode'
 
     def test_primitive(self):

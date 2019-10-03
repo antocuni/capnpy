@@ -22,11 +22,12 @@ import capnpy.compiler.misc
 
 class ModuleGenerator(object):
 
-    def __init__(self, request, pyx, standalone, default_options):
+    def __init__(self, request, pyx, standalone, default_options, capnproto_version):
         self.request = request
         self.pyx = pyx
         self.standalone = standalone
         self.default_options = default_options
+        self.capnproto_version = capnproto_version
         self.version_check = default_options.version_check
         self.code = Code(pyx=self.pyx)
         self.allnodes = {} # id -> node

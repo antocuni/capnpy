@@ -87,6 +87,7 @@ class RequestedFile:
         #
         m.w('__capnpy_id__ = {id:#x}', id=self.id)
         m.w('__capnpy_version__ = {version!r}', version=capnpy.__version__)
+        m.w('__capnproto_version__ = {version!r}', version=m.capnproto_version)
         if m.version_check:
             m.w('_check_version(__name__, __capnpy_version__)')
         else:
