@@ -21,16 +21,13 @@ class TestShortRepr(CompilerTest):
         if ret != 0:
             raise ValueError(stderr)
         res = stdout.strip()
-        if PY3:
-            res = res.decode('utf-8')
-        return res
+        return res.decode('utf-8')
 
-    def check(self, obj, expected=None):
+    def check(self, obj, expected):
         myrepr = obj.shortrepr()
         capnp_repr = self.decode(obj)
-        assert myrepr == capnp_repr
-        if expected is not None:
-            assert myrepr == expected
+        assert myrepr == expected, 'shortrepr() is not what we expect'
+        assert myrepr == capnp_repr, 'shortrepr() does not match with capnp decode'
 
     def test_primitive(self):
         schema = """
@@ -127,7 +124,7 @@ class TestShortRepr(CompilerTest):
         self.check(p, r'(txt = "tricky \" \'")')
         #
         p = self.mod.P(txt=u'hellò'.encode('utf-8'))
-        self.check(p, r'(txt = "hell\xc3\xb2")')
+        self.check(p, u'(txt = "hellò")')
 
     def test_text_type_unicode(self):
         schema = """
@@ -147,7 +144,7 @@ class TestShortRepr(CompilerTest):
         self.check(p, r'(txt = "tricky \" \'")')
         #
         p = self.mod.P(txt=u'hellò')
-        self.check(p, r'(txt = "hell\xc3\xb2")')
+        self.check(p, u'(txt = "hellò")')
 
     def test_data_special_chars(self):
         schema = """
@@ -167,7 +164,7 @@ class TestShortRepr(CompilerTest):
         self.check(p, r'(data = "tricky \" \'")')
         #
         p = self.mod.P(data=u'hellò'.encode('utf-8'))
-        self.check(p, r'(data = "hell\xc3\xb2")')
+        self.check(p, u'(data = "hellò")')
 
     def test_struct(self):
         schema = """
@@ -216,7 +213,7 @@ class TestShortRepr(CompilerTest):
         self.check(p, '(texts = ["foo", "bar", "baz"])')
         #
         p = self.mod.P(ints=None, structs=None, unicodes=[u'hellò'])
-        self.check(p, r'(unicodes = ["hell\xc3\xb2"])')
+        self.check(p, u'(unicodes = ["hellò"])')
 
 
     def test_list_of_bool(self):

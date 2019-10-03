@@ -132,10 +132,23 @@ class Struct(Blob):
         return self
 
     def shortrepr(self):
-        return '(no shortrepr)'
+        """
+        Return an utf-8 bytes string containing the standard capnproto
+        representation of the current message.
+
+        This method tries to be as close as possible to the standard capnp
+        tool: in particular, you should get the same result which you get with
+        'capnp decode --short', and you should be able to feed it to 'capnp
+        encode' to get the binary message back.
+
+        Because of this, you might get surprising results from the Python
+        point of view. In particular, field names are always camelCase, and
+        $Py.nullable groups are represented as plain capnproto groups.
+        """
+        return u'(no shortrepr)'
 
     def __repr__(self):
-        return '<%s: %s>' % (self.__class__.__name__, self.shortrepr())
+        return u'<%s: %s>' % (self.__class__.__name__, self.shortrepr())
 
     def which(self):
         """
