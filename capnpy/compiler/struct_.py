@@ -214,15 +214,16 @@ class Node__Struct:
             fields = self.get_struct_fields() or []
             ns.w('parts = []')
             for f in fields:
-                ns.fname = m.field_name(f)
+                ns.pyname = m.field_name(f)
+                ns.capname = m.field_name_capnp(f)
                 if f.is_nullable(m):
                     assert f.is_group()
                     f = f.group.get_node(m).struct.fields[1]
                     ns.fieldrepr = self._shortrepr_for_field(m, ns, f)
-                    ns.append = ns.format('parts.append("{fname} = %s" % ({fieldrepr} if self.{fname} is not None else None))')
+                    ns.append = ns.format('parts.append("{capname} = %s" % ({fieldrepr} if self.{pyname} is not None else None))')
                 else:
                     ns.fieldrepr = self._shortrepr_for_field(m, ns, f)
-                    ns.append = ns.format('parts.append("{fname} = %s" % {fieldrepr})')
+                    ns.append = ns.format('parts.append("{capname} = %s" % {fieldrepr})')
                 ns.is_default_field = bool(f.discriminantValue == 0)
                 #
                 if f.is_part_of_union() and f.is_pointer():
@@ -233,37 +234,37 @@ class Node__Struct:
                     # it's null, we don't show anything; see
                     # test_union_set_but_null_pointer for examples.
                     ns.ww("""
-                    if self.is_{fname}() and (self.has_{fname}() or
+                    if self.is_{pyname}() and (self.has_{pyname}() or
                                               not {is_default_field}):
                         {append}
                     """)
                 elif f.is_part_of_union():
-                    ns.w("if self.is_{fname}(): {append}")
+                    ns.w("if self.is_{pyname}(): {append}")
                 elif f.is_pointer():
-                    ns.w("if self.has_{fname}(): {append}")
+                    ns.w("if self.has_{pyname}(): {append}")
                 else:
                     ns.w("{append}")
             ns.w('return "(%s)" % ", ".join(parts)')
 
     def _shortrepr_for_field(self, m, ns, f):
         if f.is_float32():
-            return ns.format('_float32_repr(self.{fname})')
+            return ns.format('_float32_repr(self.{pyname})')
         elif f.is_float64():
-            return ns.format('_float64_repr(self.{fname})')
+            return ns.format('_float64_repr(self.{pyname})')
         if f.is_primitive() or f.is_enum():
-            return ns.format('self.{fname}')
+            return ns.format('self.{pyname}')
         elif f.is_bool():
-            return ns.format('str(self.{fname}).lower()')
+            return ns.format('str(self.{pyname}).lower()')
         elif f.is_void():
             return '"void"'
         elif f.is_text_bytes(m) or f.is_data():
-            return ns.format('_text_bytes_repr(self.get_{fname}())')
+            return ns.format('_text_bytes_repr(self.get_{pyname}())')
         elif f.is_text_unicode(m):
-            return ns.format('_text_unicode_repr(self.get_{fname}())')
+            return ns.format('_text_unicode_repr(self.get_{pyname}())')
         elif f.is_struct() or f.is_list():
-            return ns.format('self.get_{fname}().shortrepr()')
+            return ns.format('self.get_{pyname}().shortrepr()')
         elif f.is_group():
-            return ns.format('self.{fname}.shortrepr()')
+            return ns.format('self.{pyname}.shortrepr()')
         else:
             return '"???"'
 

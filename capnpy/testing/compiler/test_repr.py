@@ -323,6 +323,22 @@ class TestShortRepr(CompilerTest):
         assert p.is_d()
         self.check(p, '(d = [])')
 
+    def test_convert_case(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            fieldOne @0 :Int64;
+            fieldTwo @1 :Int64;
+        }
+        """
+        self.mod = self.compile(schema)
+        p = self.mod.Foo(1, 2)
+        # the shortrepr() always uses camelCase even if the attributes use python_case
+        assert p.field_one == 1
+        assert p.field_two == 2
+        self.check(p, '(fieldOne = 1, fieldTwo = 2)')
+        assert repr(p) == '<Foo: (fieldOne = 1, fieldTwo = 2)>'
+
     def test_nullable(self):
         schema = """
         @0xbf5147cbbecf40c1;

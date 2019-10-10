@@ -145,12 +145,23 @@ class ModuleGenerator(object):
         visit(node)
 
     def field_name(self, field):
+        """
+        Return the Python-side name of a field, with convert_case conversion
+        applied
+        """
         name = field.name
         name = as_identifier(name)
         if self.options(field).convert_case:
             name = from_camel_case(name)
         name = self._mangle_name(name)
         return name
+
+    def field_name_capnp(self, field):
+        """
+        Return the capnproto-side name of a field. Always camelCase
+        """
+        name = field.name
+        return as_identifier(name)
 
     def _mangle_name(self, name):
         if name in keyword.kwlist:
