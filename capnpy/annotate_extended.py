@@ -7,7 +7,7 @@ class nullable:
     def check(self, m):
         field = self.target
         assert field.is_group()
-        name = m.field_name(field)
+        name = m.py_field_name(field)
         def error(msg):
             raise ValueError('%s: %s' % (name, msg))
         #

@@ -144,7 +144,7 @@ class ModuleGenerator(object):
                 visit(child, deep+2)
         visit(node)
 
-    def field_name(self, field):
+    def py_field_name(self, field):
         """
         Return the Python-side name of a field, with convert_case conversion
         applied
@@ -156,7 +156,7 @@ class ModuleGenerator(object):
         name = self._mangle_name(name)
         return name
 
-    def field_name_capnp(self, field):
+    def capnp_field_name(self, field):
         """
         Return the capnproto-side name of a field. Always camelCase
         """
