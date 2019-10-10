@@ -352,6 +352,6 @@ class TestShortRepr(CompilerTest):
         """
         self.mod = self.compile(schema)
         foo = self.mod.Foo(None)
-        assert foo.shortrepr() == '(x = None)'
+        self.check(foo, '(x = (isNull = 1, value = 0))')
         foo = self.mod.Foo(2)
-        assert foo.shortrepr() == '(x = 2)'
+        self.check(foo, '(x = (isNull = 0, value = 2))')

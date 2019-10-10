@@ -217,13 +217,14 @@ class Node__Struct:
                 ns.pyname = m.py_field_name(f)
                 ns.capname = m.capnp_field_name(f)
                 if f.is_nullable(m):
+                    # if 'x' is nullable, obj.x returns either None or the
+                    # value, while obj._x returns the underlying capnproto
+                    # group
                     assert f.is_group()
-                    f = f.group.get_node(m).struct.fields[1]
-                    ns.fieldrepr = self._shortrepr_for_field(m, ns, f)
-                    ns.append = ns.format('parts.append("{capname} = %s" % ({fieldrepr} if self.{pyname} is not None else None))')
-                else:
-                    ns.fieldrepr = self._shortrepr_for_field(m, ns, f)
-                    ns.append = ns.format('parts.append("{capname} = %s" % {fieldrepr})')
+                    ns.pyname = '_' + ns.pyname
+                #
+                ns.fieldrepr = self._shortrepr_for_field(m, ns, f)
+                ns.append = ns.format('parts.append("{capname} = %s" % {fieldrepr})')
                 ns.is_default_field = bool(f.discriminantValue == 0)
                 #
                 if f.is_part_of_union() and f.is_pointer():
