@@ -20,13 +20,21 @@ from capnpy.message import load
 from capnpy.annotate import Options
 from capnpy.compiler.compiler import StandaloneCompiler
 
+def get_options(args):
+    kwargs = dict(
+        version_check = args['--version-check'],
+        convert_case = args['--convert-case'],
+        text_type = args['--text-type']
+    )
+    return Options.from_dict(kwargs)
 
 def decode(args):
     print('Loading schema...', file=sys.stderr)
+    options = get_options(args)
     a = time.time()
     mod = load_schema(modname=args['SCHEMA'],
-                      convert_case=args['--convert-case'],
-                      pyx=args['--pyx'])
+                      pyx=args['--pyx'],
+                      options=options)
     b = time.time()
     print('schema loaded in %.2f secs' % (b-a), file=sys.stderr)
     print('decoding stream...', file=sys.stderr)
@@ -47,12 +55,7 @@ def decode(args):
 
 def compile(args):
     comp = StandaloneCompiler(sys.path)
-    kwargs = dict(
-        version_check = args['--version-check'],
-        convert_case = args['--convert-case'],
-        text_type = args['--text-type']
-    )
-    options = Options.from_dict(kwargs)
+    options = get_options(args)
     comp.compile(filename=args['FILE'],
                  pyx=args['--pyx'],
                  options=options)
