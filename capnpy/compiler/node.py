@@ -145,5 +145,16 @@ class Node__Const:
     def emit_reference_as_child(self, m):
         # XXX: this works only for numerical & text consts so far
         name = self.shortname(m)
-        val = self.const.value.as_pyobj()
-        m.w('{} = {!r}'.format(name, val))
+        if self.const.type.is_struct():
+            ns = m.code.new_scope()
+            struct = m.allnodes[self.const.type.struct.typeId]
+            ns.name = name
+            ns.data = self.const.value.as_pyobj().struct_.dumps()
+            import pdb;pdb.set_trace()
+            ns.struct = struct.compile_name(m)
+            ns.w('{name} = {struct}.loads({data!r})')
+        else:
+            # for primitive types
+            val = self.const.value.as_pyobj()
+            m.w('{} = {!r}'.format(name, val))
+
