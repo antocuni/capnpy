@@ -86,18 +86,10 @@ def check_version(modname, version):
         raise ImportError(msg)
 
 def text_bytes_repr(s):
-    # abuse the python string repr algo: make sure that the string contains at
-    # least one single quote and one double quote (which we will remove
-    # later); this way python returns a repr inside single quotes, and escapes
-    # non-ascii chars and single quotes. Then, we manually escape the double
-    # quotes and put everything inside double quotes
-    #
-    s = s + b"'" + b'"'
-    s = repr(s)[1+six.PY3:-4] # remove the single quotes around the string,
-                              # plus the extra quotes we added above and
-                              # the prefixed `b` in Python 3
+    s = decode_maybe(s)
     s = s.replace('"', r'\"')
-    return '"%s"' % s
+    s = s.replace("'", r"\'")
+    return u'"%s"' % s
 
 def text_unicode_repr(s):
     return text_bytes_repr(encode_maybe(s))

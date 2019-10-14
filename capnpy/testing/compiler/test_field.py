@@ -50,7 +50,6 @@ class TestField(CompilerTest):
         assert p.x == 0
         assert p.y is False
 
-
     def test_void(self):
         schema = """
         @0xbf5147cbbecf40c1;

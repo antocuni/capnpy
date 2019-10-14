@@ -105,7 +105,7 @@ class Node__Struct:
         enum_items = [None] * self.struct.discriminantCount
         for field in self.get_struct_fields():
             if field.is_part_of_union():
-                enum_items[field.discriminantValue] = m.field_name(field)
+                enum_items[field.discriminantValue] = m.py_field_name(field)
         return enum_items
 
     def _emit_union_tag_declaration(self, m):
@@ -180,7 +180,7 @@ class Node__Struct:
         ## def new_foo(cls, x=0, y=0):
         ##     buf = MyStruct.__new(x=x, y=y, foo=None)
         ##     return cls.from_buffer(buf, 0, ..., ...)
-        tag_name = m.field_name(tag_field)
+        tag_name = m.py_field_name(tag_field)
         name = 'new_' + tag_name
         fieldtree = FieldTree(m, fields, field_force_default=tag_field)
         argnames, params = fieldtree.get_args_and_params()
@@ -193,7 +193,7 @@ class Node__Struct:
         # pass a value for all fields which are not explicitly listed
         for f in self.get_struct_fields():
             if f not in fields:
-                argnames.append((m.field_name(f), '_undefined'))
+                argnames.append((m.py_field_name(f), '_undefined'))
         #
         ns.w('@classmethod')
         with ns.def_(name, ['cls'] + params):
@@ -214,15 +214,17 @@ class Node__Struct:
             fields = self.get_struct_fields() or []
             ns.w('parts = []')
             for f in fields:
-                ns.fname = m.field_name(f)
+                ns.pyname = m.py_field_name(f)
+                ns.capname = m.capnp_field_name(f)
                 if f.is_nullable(m):
+                    # if 'x' is nullable, obj.x returns either None or the
+                    # value, while obj._x returns the underlying capnproto
+                    # group
                     assert f.is_group()
-                    f = f.group.get_node(m).struct.fields[1]
-                    ns.fieldrepr = self._shortrepr_for_field(m, ns, f)
-                    ns.append = ns.format('parts.append("{fname} = %s" % ({fieldrepr} if self.{fname} is not None else None))')
-                else:
-                    ns.fieldrepr = self._shortrepr_for_field(m, ns, f)
-                    ns.append = ns.format('parts.append("{fname} = %s" % {fieldrepr})')
+                    ns.pyname = '_' + ns.pyname
+                #
+                ns.fieldrepr = self._shortrepr_for_field(m, ns, f)
+                ns.append = ns.format('parts.append("{capname} = %s" % {fieldrepr})')
                 ns.is_default_field = bool(f.discriminantValue == 0)
                 #
                 if f.is_part_of_union() and f.is_pointer():
@@ -233,37 +235,37 @@ class Node__Struct:
                     # it's null, we don't show anything; see
                     # test_union_set_but_null_pointer for examples.
                     ns.ww("""
-                    if self.is_{fname}() and (self.has_{fname}() or
+                    if self.is_{pyname}() and (self.has_{pyname}() or
                                               not {is_default_field}):
                         {append}
                     """)
                 elif f.is_part_of_union():
-                    ns.w("if self.is_{fname}(): {append}")
+                    ns.w("if self.is_{pyname}(): {append}")
                 elif f.is_pointer():
-                    ns.w("if self.has_{fname}(): {append}")
+                    ns.w("if self.has_{pyname}(): {append}")
                 else:
                     ns.w("{append}")
             ns.w('return "(%s)" % ", ".join(parts)')
 
     def _shortrepr_for_field(self, m, ns, f):
         if f.is_float32():
-            return ns.format('_float32_repr(self.{fname})')
+            return ns.format('_float32_repr(self.{pyname})')
         elif f.is_float64():
-            return ns.format('_float64_repr(self.{fname})')
+            return ns.format('_float64_repr(self.{pyname})')
         if f.is_primitive() or f.is_enum():
-            return ns.format('self.{fname}')
+            return ns.format('self.{pyname}')
         elif f.is_bool():
-            return ns.format('str(self.{fname}).lower()')
+            return ns.format('str(self.{pyname}).lower()')
         elif f.is_void():
             return '"void"'
         elif f.is_text_bytes(m) or f.is_data():
-            return ns.format('_text_bytes_repr(self.get_{fname}())')
+            return ns.format('_text_bytes_repr(self.get_{pyname}())')
         elif f.is_text_unicode(m):
-            return ns.format('_text_unicode_repr(self.get_{fname}())')
+            return ns.format('_text_unicode_repr(self.get_{pyname}())')
         elif f.is_struct() or f.is_list():
-            return ns.format('self.get_{fname}().shortrepr()')
+            return ns.format('self.get_{pyname}().shortrepr()')
         elif f.is_group():
-            return ns.format('self.{fname}.shortrepr()')
+            return ns.format('self.{pyname}.shortrepr()')
         else:
             return '"???"'
 
@@ -289,7 +291,7 @@ class Node__Struct:
         #
         ns = m.code.new_scope()
         fields = [fieldmap[fname] for fname in fieldnames]
-        ns.key = ', '.join(['self.%s' % m.field_name(f) for f in fields])
+        ns.key = ', '.join(['self.%s' % m.py_field_name(f) for f in fields])
         ns.w()
         ns.ww("""
             def _key(self):
@@ -309,7 +311,7 @@ class Node__Struct:
             # compute the hash of each field
             for ns.i, fname in enumerate(fieldnames):
                 f = fields[fname]
-                ns.fname = m.field_name(f)
+                ns.fname = m.py_field_name(f)
                 if f.is_text_bytes(m):
                     ns.offset = f.slot.offset * f.slot.get_size()
                     ns.w('h[{i}] = self._hash_text_bytes({offset})')

@@ -21,16 +21,27 @@ class TestShortRepr(CompilerTest):
         if ret != 0:
             raise ValueError(stderr)
         res = stdout.strip()
-        if PY3:
-            res = res.decode('utf-8')
-        return res
+        return res.decode('utf-8')
 
-    def check(self, obj, expected=None):
+    def check(self, obj, expected):
+        def is_ascii(s):
+            return all(ord(c) < 128 for c in s)
+        #
         myrepr = obj.shortrepr()
+        assert myrepr == expected, 'shortrepr() is not what we expect'
+        #
+        if self.mod.__capnproto_version__ < '0.7.0' and not is_ascii(myrepr):
+            # text literals are outputted differently depending on the
+            # capnproto version. capnp >= 0.7.0 emits plain utf-8 text fields,
+            # while previous versions emits backslash-escaped utf-8: for example:
+            #    0.6.1: (txt = "hell\xc3\xb2")
+            #    0.7.0: (txt = "hellò")
+            #
+            # So, if we are using an older capnproto version and our repr
+            # contains non-ASCII chars, we just skip it.
+            return
         capnp_repr = self.decode(obj)
-        assert myrepr == capnp_repr
-        if expected is not None:
-            assert myrepr == expected
+        assert myrepr == capnp_repr, 'shortrepr() does not match with capnp decode'
 
     def test_primitive(self):
         schema = """
@@ -127,7 +138,7 @@ class TestShortRepr(CompilerTest):
         self.check(p, r'(txt = "tricky \" \'")')
         #
         p = self.mod.P(txt=u'hellò'.encode('utf-8'))
-        self.check(p, r'(txt = "hell\xc3\xb2")')
+        self.check(p, u'(txt = "hellò")')
 
     def test_text_type_unicode(self):
         schema = """
@@ -147,7 +158,7 @@ class TestShortRepr(CompilerTest):
         self.check(p, r'(txt = "tricky \" \'")')
         #
         p = self.mod.P(txt=u'hellò')
-        self.check(p, r'(txt = "hell\xc3\xb2")')
+        self.check(p, u'(txt = "hellò")')
 
     def test_data_special_chars(self):
         schema = """
@@ -167,7 +178,7 @@ class TestShortRepr(CompilerTest):
         self.check(p, r'(data = "tricky \" \'")')
         #
         p = self.mod.P(data=u'hellò'.encode('utf-8'))
-        self.check(p, r'(data = "hell\xc3\xb2")')
+        self.check(p, u'(data = "hellò")')
 
     def test_struct(self):
         schema = """
@@ -216,7 +227,7 @@ class TestShortRepr(CompilerTest):
         self.check(p, '(texts = ["foo", "bar", "baz"])')
         #
         p = self.mod.P(ints=None, structs=None, unicodes=[u'hellò'])
-        self.check(p, r'(unicodes = ["hell\xc3\xb2"])')
+        self.check(p, u'(unicodes = ["hellò"])')
 
 
     def test_list_of_bool(self):
@@ -312,6 +323,22 @@ class TestShortRepr(CompilerTest):
         assert p.is_d()
         self.check(p, '(d = [])')
 
+    def test_convert_case(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            fieldOne @0 :Int64;
+            fieldTwo @1 :Int64;
+        }
+        """
+        self.mod = self.compile(schema)
+        p = self.mod.Foo(1, 2)
+        # the shortrepr() always uses camelCase even if the attributes use python_case
+        assert p.field_one == 1
+        assert p.field_two == 2
+        self.check(p, '(fieldOne = 1, fieldTwo = 2)')
+        assert repr(p) == '<Foo: (fieldOne = 1, fieldTwo = 2)>'
+
     def test_nullable(self):
         schema = """
         @0xbf5147cbbecf40c1;
@@ -325,6 +352,6 @@ class TestShortRepr(CompilerTest):
         """
         self.mod = self.compile(schema)
         foo = self.mod.Foo(None)
-        assert foo.shortrepr() == '(x = None)'
+        self.check(foo, '(x = (isNull = 1, value = 0))')
         foo = self.mod.Foo(2)
-        assert foo.shortrepr() == '(x = 2)'
+        self.check(foo, '(x = (isNull = 0, value = 2))')

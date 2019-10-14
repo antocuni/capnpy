@@ -13,7 +13,7 @@ class Node__Enum:
 
     def emit_declaration(self, m):
         name =  self.compile_name(m)
-        items = [m.field_name(item) for item in self.get_enum_enumerants()]
+        items = [m.py_field_name(item) for item in self.get_enum_enumerants()]
         m.declare_enum(name, self.shortname(m), self.id, items)
         m.w('_{name}_list_item_type = _EnumItemType({name})', name=name)
         m.w()

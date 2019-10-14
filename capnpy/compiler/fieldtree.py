@@ -92,7 +92,7 @@ class Node(AbstractNode):
     def __init__(self, m, f, prefix, field_force_default):
         self.f = f
         self.force_default = (field_force_default and f == field_force_default)
-        self.varname = m.field_name(f)
+        self.varname = m.py_field_name(f)
         if prefix:
             self.varname = '%s_%s' % (prefix, self.varname)
         self._init_children(m, field_force_default)
