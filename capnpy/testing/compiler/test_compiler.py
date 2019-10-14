@@ -188,28 +188,6 @@ class TestCompilerOptions(CompilerTest):
         bar = mod.Bar.from_buffer(buf, 0, 1, 0)
         assert bar.color == mod.Bar.Color.yellow
 
-    def test_const(self):
-        schema = """
-        @0xbf5147cbbecf40c1;
-        struct Foo {
-            const bar :UInt16 = 42;
-            const baz :Text = "baz";
-        }
-        """
-        mod = self.compile(schema)
-        assert mod.Foo.bar == 42
-        assert mod.Foo.baz == b'baz'
-
-    def test_global_const(self):
-        schema = """
-        @0xbf5147cbbecf40c1;
-        const bar :UInt16 = 42;
-        const baz :Text = "baz";
-        """
-        mod = self.compile(schema)
-        assert mod.bar == 42
-        assert mod.baz == b'baz'
-
     def test_global_options(self):
         schema = """
         @0xbf5147cbbecf40c1;
