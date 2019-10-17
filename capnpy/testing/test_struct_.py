@@ -97,10 +97,11 @@ def test_null_pointers():
     assert blob._read_text_bytes(0, default_=val) is val
 
 
-def test_far_pointer():
-    # see also test_list.test_far_pointer
+def test_far_pointer_0():
+    # test for far pointer with landing_pad==0
+    # see also test_list.test_far_pointer_0
     seg0 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # some garbage
-             '\x0a\x00\x00\x00\x01\x00\x00\x00')   # far pointer: segment=1, offset=1
+             '\x0a\x00\x00\x00\x01\x00\x00\x00')   # far ptr: pad=0, segment=1, offset=1
     seg1 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # random data
              '\x00\x00\x00\x00\x02\x00\x00\x00'    # ptr to {x, y}
              '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
@@ -111,6 +112,30 @@ def test_far_pointer():
     p = blob._read_struct(0, Struct)
     assert p._read_primitive(0, Types.int64.ifmt) == 1
     assert p._read_primitive(8, Types.int64.ifmt) == 2
+
+def test_far_pointer_1():
+    # test for far pointer with landing_pad==0
+    # see also test_list.test_far_pointer_1
+    seg0 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # some garbage
+             '\x0e\x00\x00\x00\x02\x00\x00\x00')   # far ptr: pad=1, segment=2, offset=1
+                                                   # ==> 2nd line of seg2
+
+    seg1 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # garbage
+             '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
+             '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
+
+    seg2 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # garbage
+             '\x0a\x00\x00\x00\x01\x00\x00\x00'    # far ptr: pad=0, segment=1, offset=1
+                                                   # ==> 2nd line of seg1
+             '\x00\x00\x00\x00\x02\x00\x00\x00')   # tag: struct,offset=0,data=2,ptrs=0
+    #
+    buf = MultiSegment(seg0+seg1+seg2,
+                       segment_offsets=(0, len(seg0), len(seg0+seg1)))
+    blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
+    p = blob._read_struct(0, Struct)
+    assert p._read_primitive(0, Types.int64.ifmt) == 1
+    assert p._read_primitive(8, Types.int64.ifmt) == 2
+
 
 def test_union():
     ## struct Shape {

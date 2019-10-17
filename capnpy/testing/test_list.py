@@ -209,11 +209,11 @@ def test_compare_with_py_list():
     lst = blob._read_list(0, PrimitiveItemType(Types.int64))
     assert lst == [1, 2, 3, 4]
 
-def test_far_pointer():
-    # see also test_blob.test_far_pointer
-    seg0 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # some garbage
+def test_far_pointer_0():
+    # see also test_blob.test_far_pointer_0
+    seg0 = b('\x00\x00\x00\x00\x00\x00\x00\x00'   # some garbage
             '\x0a\x00\x00\x00\x01\x00\x00\x00')   # far pointer: segment=1, offset=1
-    seg1 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # random data
+    seg1 = b('\x00\x00\x00\x00\x00\x00\x00\x00'   # random data
             '\x01\x00\x00\x00\x25\x00\x00\x00'    # ptrlist
             '\x01\x00\x00\x00\x00\x00\x00\x00'    # 1
             '\x02\x00\x00\x00\x00\x00\x00\x00'    # 2
@@ -223,6 +223,31 @@ def test_far_pointer():
     blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
     lst = blob._read_list(0, PrimitiveItemType(Types.int64))
     assert lst == [1, 2, 3, 4]
+
+def test_far_pointer_1():
+    # see also test_blob.test_far_pointer_1
+    seg0 = b('\x00\x00\x00\x00\x00\x00\x00\x00'   # some garbage
+            '\x0e\x00\x00\x00\x02\x00\x00\x00')   # far ptr: pad=1, segment=2, offset=1
+                                                  # ==> 2nd line of seg2
+
+    seg1 = b('\x00\x00\x00\x00\x00\x00\x00\x00'   # garbage
+            '\x01\x00\x00\x00\x00\x00\x00\x00'    # 1
+            '\x02\x00\x00\x00\x00\x00\x00\x00'    # 2
+            '\x03\x00\x00\x00\x00\x00\x00\x00'    # 3
+            '\x04\x00\x00\x00\x00\x00\x00\x00')   # 4
+
+    seg2 = b('\x00\x00\x00\x00\x00\x00\x00\x00'   # garbage
+             '\x0a\x00\x00\x00\x01\x00\x00\x00'   # far ptr: pad=0, segment=1, offset=1
+                                                  # ==> 2nd line of seg1
+             '\x01\x00\x00\x00\x25\x00\x00\x00')  # tag: ptrlist
+
+    buf = MultiSegment(seg0+seg1+seg2,
+                       segment_offsets=(0, len(seg0), len(seg0+seg1)))
+    blob = Struct.from_buffer(buf, 8, data_size=0, ptrs_size=1)
+    lst = blob._read_list(0, PrimitiveItemType(Types.int64))
+    assert lst == [1, 2, 3, 4]
+
+
 
 def test_TextItem_far_pointer():
     seg0 = b('\x01\x00\x00\x00\x26\x00\x00\x00'   # ptrlist

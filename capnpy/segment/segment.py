@@ -84,8 +84,34 @@ class MultiSegment(Segment):
         Read and return the ptr referenced by this far pointer
         """
         p = self.read_ptr(offset)
-        assert ptr.far_landing_pad(p) == 0
         segment_start = self.segment_offsets[ptr.far_target(p)] # in bytes
         offset  = segment_start + ptr.far_offset(p)*8
-        p = self.read_ptr(offset)
-        return offset, p
+        if ptr.far_landing_pad(p) == 0:
+            # simple case: the landing pad is a normal pointer, just read it
+            p = self.read_ptr(offset)
+            return offset, p
+        else:
+            # complex case. From capnproto specs:
+            #     If B == 1, then the "landing pad" is itself another far
+            #     pointer that is interpreted differently: This far pointer
+            #     (which always has B = 0) points to the start of the object's
+            #     content, located in some other segment. The landing pad is
+            #     itself immediately followed by a tag word. The tag word
+            #     looks exactly like an intra-segment pointer to the target
+            #     object would look, except that the offset is always zero.
+            #
+            # read the 2nd far pointer and the tag word
+            p = self.read_ptr(offset)
+            ptag = self.read_ptr(offset+8)
+            assert ptr.kind(p) == ptr.FAR
+            assert ptr.far_landing_pad(p) == 0
+            assert ptr.offset(ptag) == 0
+            # compute the absolute offset which the object is located at
+            segment_start = self.segment_offsets[ptr.far_target(p)] # in bytes
+            offset  = segment_start + ptr.far_offset(p)*8
+            #
+            # ptag is a pointer which perfectly describes the object we want
+            # to read. Remember that normally when ptr_offset==0, capnproto
+            # expects the object to start at offset+8. So here we return
+            # offset-8, so that the object will be read at the expected place
+            return offset-8, ptag
