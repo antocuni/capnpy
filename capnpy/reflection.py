@@ -8,7 +8,7 @@ def get_reflection_data(module):
     try:
         return module._reflection_data
     except AttributeError:
-        raise ValueError("%s does not seem to be a capnpy-generated module" %
+        raise ValueError("Reflection data not found in module %s" %
                          module)
 
 
