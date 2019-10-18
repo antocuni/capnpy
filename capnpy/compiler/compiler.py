@@ -19,7 +19,8 @@ from capnpy.compiler.util import as_identifier
 DEFAULT_OPTIONS = annotate.Options(
     version_check = True,
     convert_case = True,
-    text_type = annotate.TextType.bytes
+    text_type = annotate.TextType.bytes,
+    include_reflection_data = True,
     )
 
 PKGDIR = py.path.local(capnpy.__file__).dirpath()

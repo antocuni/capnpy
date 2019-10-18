@@ -59,7 +59,7 @@ class TextType:
 @Options.__extend__
 class Options:
 
-    FIELDS = ('version_check', 'convert_case', 'text_type')
+    FIELDS = ('version_check', 'convert_case', 'text_type', 'include_reflection_data')
 
     @classmethod
     def from_dict(cls, d):
@@ -71,7 +71,7 @@ class Options:
         """
         kwargs = {}
         for key, value in d.items():
-            if key in ('version_check', 'convert_case'):
+            if key in ('version_check', 'convert_case', 'include_reflection_data'):
                 kwargs[key] = value
             elif key == 'text_type':
                 kwargs[key] = TextType.parse(value)

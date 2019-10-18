@@ -53,7 +53,6 @@ class RequestedFile:
         m.w("from capnpy.enum import enum as _enum, fill_enum as _fill_enum")
         m.w("from capnpy.enum {cimport} BaseEnum as _BaseEnum")
         m.w("from capnpy.type import Types as _Types")
-        m.w("from capnpy.reflection import ReflectionData as _ReflectionData")
         m.w("from capnpy.segment.builder {cimport} SegmentBuilder as _SegmentBuilder")
         m.w("from capnpy.list {cimport} List as _List")
         m.w("from capnpy.list {cimport} PrimitiveItemType as _PrimitiveItemType")
@@ -94,7 +93,10 @@ class RequestedFile:
             m.w('# schema compiled with --no-version-check, skipping the call to _check_version')
 
         self._declare_imports(m)
-        self._emit_reflection_data(m)
+        if m.options(filenode).include_reflection_data:
+            self._emit_reflection_data(m)
+        else:
+            m.w('# not including reflection data')
         m.w("")
         #
         # visit the children in two passes: first the declaration, then the
@@ -118,6 +120,7 @@ class RequestedFile:
             m.w('_extend_module_maybe(globals(), modname=__name__)')
         else:
             m.w('_extend_module_maybe(globals(), filename=__schema__)')
+        m.w()
 
     def _declare_imports(self, m):
         for imp in self.imports:
@@ -150,6 +153,7 @@ class RequestedFile:
         ns.default_options_data = m.default_options.dumps()
         ns.pyx = m.pyx
         ns.ww("""
+            from capnpy.reflection import ReflectionData as _ReflectionData
             class _{modname}_ReflectionData(_ReflectionData):
                 request_data = {data!r}
                 default_options_data = {default_options_data!r}

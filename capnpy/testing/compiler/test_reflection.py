@@ -33,6 +33,23 @@ class TestReflection(CompilerTest):
         reqfile = reflection.m.request.requestedFiles[0].filename
         assert reqfile.endswith(b'tmp.capnp')
 
+    def test_dont_include(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        using Py = import "/capnpy/annotate.capnp";
+        $Py.options(includeReflectionData=false);
+
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        """
+        mod = self.compile(schema)
+        assert not hasattr(mod, '_reflection_data')
+        with pytest.raises(ValueError):
+            get_reflection_data(mod)
+
+
     def test_get_node(self):
         schema = """
         @0xbf5147cbbecf40c1;

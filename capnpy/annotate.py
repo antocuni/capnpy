@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2019-09-13 14:32
+# generated on 2019-10-18 16:40
 # cython: language_level=2
 
 from capnpy import ptr as _ptr
@@ -28,13 +28,16 @@ from capnpy.util import float64_repr as _float64_repr
 from capnpy.util import extend_module_maybe as _extend_module_maybe
 from capnpy.util import check_version as _check_version
 from capnpy.util import encode_maybe as _encode_maybe
-__capnpy_version__ = '0.5.5.dev48+ng36be642.d20190610'
+__capnpy_id__ = 0xbc24c21845631520
+__capnpy_version__ = '0.7.1.dev8+g4a9c343'
+__capnproto_version__ = '0.7.0'
 # schema compiled with --no-version-check, skipping the call to _check_version
+# not including reflection data
 
 #### FORWARD DECLARATIONS ####
 
 class key(object):
-    __capnpy_id__ = 14658097673689429382
+    __capnpy_id__ = 0xcb6c062c1b3cf586
     targets_file = False
     targets_const = False
     targets_enum = False
@@ -48,7 +51,7 @@ class key(object):
     targets_param = False
     targets_annotation = False
 class nullable(object):
-    __capnpy_id__ = 11296117080722892765
+    __capnpy_id__ = 0x9cc3dea2b1b5e7dd
     targets_file = False
     targets_const = False
     targets_enum = False
@@ -62,7 +65,7 @@ class nullable(object):
     targets_param = False
     targets_annotation = False
 class group(object):
-    __capnpy_id__ = 12694526166034528397
+    __capnpy_id__ = 0xb02c044a1e63b88d
     targets_file = False
     targets_const = False
     targets_enum = False
@@ -76,6 +79,7 @@ class group(object):
     targets_param = False
     targets_annotation = False
 class BoolOption(_BaseEnum):
+    __capnpy_id__ = 16217900014262541116
     __members__ = ('false', 'true', 'notset',)
     @staticmethod
     def _new(x):
@@ -84,6 +88,7 @@ _fill_enum(BoolOption)
 _BoolOption_list_item_type = _EnumItemType(BoolOption)
 
 class TextType(_BaseEnum):
+    __capnpy_id__ = 15347717153063870105
     __members__ = ('notset', 'bytes', 'unicode',)
     @staticmethod
     def _new(x):
@@ -95,7 +100,7 @@ class Options(_Struct): pass
 Options.__name__ = 'Options'
 
 class options(object):
-    __capnpy_id__ = 13670177934128632979
+    __capnpy_id__ = 0xbdb63a67441ed493
     targets_file = True
     targets_const = False
     targets_enum = False
@@ -113,6 +118,7 @@ class options(object):
 
 @Options.__extend__
 class Options(_Struct):
+    __capnpy_id__ = 0xd393b3843dc6b5f3
     __static_data_size__ = 1
     __static_ptrs_size__ = 0
     
@@ -141,8 +147,16 @@ class Options(_Struct):
             value = (value ^ 0)
         return TextType._new(value)
     
+    @property
+    def include_reflection_data(self):
+        # no union check
+        value = self._read_int16(6)
+        if 2 != 0:
+            value = (value ^ 2)
+        return BoolOption._new(value)
+    
     @staticmethod
-    def __new(version_check=2, convert_case=2, text_type=0):
+    def __new(version_check=2, convert_case=2, text_type=0, include_reflection_data=2):
         builder = _SegmentBuilder()
         pos = builder.allocate(8)
         version_check ^= 2
@@ -151,17 +165,20 @@ class Options(_Struct):
         builder.write_int16(pos + 2, convert_case)
         text_type ^= 0
         builder.write_int16(pos + 4, text_type)
+        include_reflection_data ^= 2
+        builder.write_int16(pos + 6, include_reflection_data)
         return builder.as_string()
     
-    def __init__(self, version_check=2, convert_case=2, text_type=0):
-        _buf = Options.__new(version_check, convert_case, text_type)
+    def __init__(self, version_check=2, convert_case=2, text_type=0, include_reflection_data=2):
+        _buf = Options.__new(version_check, convert_case, text_type, include_reflection_data)
         self._init_from_buffer(_buf, 0, 1, 0)
     
     def shortrepr(self):
         parts = []
-        parts.append("version_check = %s" % self.version_check)
-        parts.append("convert_case = %s" % self.convert_case)
-        parts.append("text_type = %s" % self.text_type)
+        parts.append("versionCheck = %s" % self.version_check)
+        parts.append("convertCase = %s" % self.convert_case)
+        parts.append("textType = %s" % self.text_type)
+        parts.append("includeReflectionData = %s" % self.include_reflection_data)
         return "(%s)" % ", ".join(parts)
 
 _Options_list_item_type = _StructItemType(Options)
