@@ -170,7 +170,7 @@ change the default `compilation options`_:
    >>> from capnpy.annotate import Options
    >>> example = capnpy.load_schema('example', options=Options(convert_case=False))
 
-
+.. _option:
 
 Compilation options
 --------------------
@@ -203,8 +203,11 @@ Moreover, it supports the following options:
 
 ``text_type``
    Can be ``bytes`` or ``unicode``, Determines the default Python type for
-   Text_ fields. The default is ``bytes``
+   Text_ fields. The default is ``bytes``.
 
+``include_reflection_data``
+   If enabled, ``capnpy`` will embed `Reflection data`_ into the compiled
+   schemas.
 
 .. note:: **Version checking** is needed in particular if you are using pyx mode,
           which is the default on CPython.  Capnproto ``struct`` are
@@ -896,6 +899,8 @@ the schema:
     5.0
 
 
+.. _`Reflection data`:
+
 Reflection API
 ===============
 
@@ -936,8 +941,12 @@ given Python-level entity:
    <Field 'y': int64>
 
 
-.. _`capnproto representation`: https://github.com/antocuni/capnpy/blob/master/capnpy/schema.capnp
+.. note:: By default, reflection data is included into all compiled
+          schemas. You can change the behavior by setting the option_
+          ``include_reflection_data`` to ``False``.
 
+
+.. _`capnproto representation`: https://github.com/antocuni/capnpy/blob/master/capnpy/schema.capnp
 .. _nodes: https://github.com/antocuni/capnpy/blob/master/capnpy/schema.capnp#L30
 
 
