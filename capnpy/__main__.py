@@ -20,17 +20,28 @@ from capnpy.message import load
 from capnpy.annotate import Options
 from capnpy.compiler.compiler import StandaloneCompiler
 
-def get_options(args):
+def parse_argv(argv):
+    args = docopt.docopt(__doc__, argv=argv)
+    if args['--text-type'] not in ('bytes', 'unicode'):
+        print(__doc__)
+        print()
+        print('ERROR: --text-type can be only bytes or unicode')
+        raise SystemExit(1)
+    #
+    args['--pyx'] = 'auto'
+    if args['--no-pyx']:
+        args['--pyx'] = False
+    del args['--no-pyx']
+    #
     kwargs = dict(
-        version_check = args['--version-check'],
-        convert_case = args['--convert-case'],
+        version_check = not args['--no-version-check'],
+        convert_case = not args['--no-convert-case'],
         text_type = args['--text-type']
     )
-    return Options.from_dict(kwargs)
+    return args, Options.from_dict(kwargs)
 
-def decode(args):
+def decode(args, options):
     print('Loading schema...', file=sys.stderr)
-    options = get_options(args)
     a = time.time()
     mod = load_schema(modname=args['SCHEMA'],
                       pyx=args['--pyx'],
@@ -53,31 +64,19 @@ def decode(args):
     c = time.time()
     print('\nstream decoded in %.2f secs' % (c-b), file=sys.stderr)
 
-def compile(args):
+def compile(args, options):
     comp = StandaloneCompiler(sys.path)
-    options = get_options(args)
     comp.compile(filename=args['FILE'],
                  pyx=args['--pyx'],
                  options=options)
 
-def main(argv=None):
-    args = docopt.docopt(__doc__, argv=argv)
-    args['--convert-case'] = not args['--no-convert-case']
-    args['--pyx'] = 'auto'
-    if args['--no-pyx']:
-        args['--pyx'] = False
-    args['--version-check'] = not args['--no-version-check']
-    text_type = args['--text-type']
-    if text_type not in ('bytes', 'unicode'):
-        print(__doc__)
-        print()
-        print('ERROR: --text-type can be only bytes or unicode')
-        return 1
 
+def main(argv=None):
+    args, options = parse_argv(argv)
     if args['compile']:
-        compile(args)
+        compile(args, options)
     elif args['decode']:
-        decode(args)
+        decode(args, options)
 
 if __name__ == '__main__':
     sys.exit(main())
