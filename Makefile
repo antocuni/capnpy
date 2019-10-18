@@ -6,10 +6,10 @@ clean:
 	rm -rf build dist
 
 annotate:
-	python3.7 -m capnpy compile capnpy/annotate.capnp --no-pyx --no-version-check
+	python3.7 -m capnpy compile capnpy/annotate.capnp --no-pyx --no-version-check --no-reflection
 
 schema: annotate
-	python3.7 -m capnpy compile capnpy/schema.capnp --no-pyx --no-convert-case --no-version-check
+	python3.7 -m capnpy compile capnpy/schema.capnp --no-pyx --no-convert-case --no-version-check --no-reflection
 
 # run only python2 and python3 tests: this should good enough to be checked
 # locally before pushing and run the whole tests on travis

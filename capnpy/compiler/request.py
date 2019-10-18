@@ -120,6 +120,7 @@ class RequestedFile:
             m.w('_extend_module_maybe(globals(), modname=__name__)')
         else:
             m.w('_extend_module_maybe(globals(), filename=__schema__)')
+        m.w()
 
     def _declare_imports(self, m):
         for imp in self.imports:

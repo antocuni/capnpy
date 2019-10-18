@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2019-10-18 11:26
+# generated on 2019-10-18 16:40
 # cython: language_level=2
 
 from capnpy import ptr as _ptr
@@ -32,6 +32,7 @@ __capnpy_id__ = 0xbc24c21845631520
 __capnpy_version__ = '0.7.1.dev8+g4a9c343'
 __capnproto_version__ = '0.7.0'
 # schema compiled with --no-version-check, skipping the call to _check_version
+# not including reflection data
 
 #### FORWARD DECLARATIONS ####
 
