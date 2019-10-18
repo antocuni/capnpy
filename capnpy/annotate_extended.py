@@ -71,7 +71,7 @@ class Options:
         """
         kwargs = {}
         for key, value in d.items():
-            if key in ('version_check', 'convert_case'):
+            if key in ('version_check', 'convert_case', 'include_reflection_data'):
                 kwargs[key] = value
             elif key == 'text_type':
                 kwargs[key] = TextType.parse(value)

@@ -20,7 +20,7 @@ class TestParseOptions:
             version_check: true
             convert_case: true
             text_type: bytes
-            include_reflection_data: notset
+            include_reflection_data: true
         """).strip()
         assert self.dump(options) == expected
 
@@ -29,13 +29,14 @@ class TestParseOptions:
                                    '--no-convert-case '
                                    '--text-type=unicode '
                                    '--no-pyx '
-                                   '--no-version-check')
+                                   '--no-version-check '
+                                   '--no-reflection ')
         assert args['--pyx'] == False
         expected = textwrap.dedent("""
             version_check: false
             convert_case: false
             text_type: unicode
-            include_reflection_data: notset
+            include_reflection_data: false
         """).strip()
         assert self.dump(options) == expected
 

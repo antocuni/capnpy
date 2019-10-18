@@ -7,7 +7,8 @@ Options:
   --text-type=TYPE     Type to use to represent Text fields [Default: bytes]
                        Can be bytes or unicode
   --no-pyx             Always produce a .py file, even if Cython is available
-  --no-version-check   Don't check for version discrepancy.
+  --no-version-check   Don't check for version discrepancy
+  --no-reflection      Don't include reflection data in the generated schema
 """
 from __future__ import print_function
 
@@ -36,7 +37,8 @@ def parse_argv(argv):
     kwargs = dict(
         version_check = not args['--no-version-check'],
         convert_case = not args['--no-convert-case'],
-        text_type = args['--text-type']
+        text_type = args['--text-type'],
+        include_reflection_data = not args['--no-reflection'],
     )
     return args, Options.from_dict(kwargs)
 
