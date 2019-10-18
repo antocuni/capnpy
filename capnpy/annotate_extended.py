@@ -59,7 +59,7 @@ class TextType:
 @Options.__extend__
 class Options:
 
-    FIELDS = ('version_check', 'convert_case', 'text_type')
+    FIELDS = ('version_check', 'convert_case', 'text_type', 'include_reflection_data')
 
     @classmethod
     def from_dict(cls, d):
