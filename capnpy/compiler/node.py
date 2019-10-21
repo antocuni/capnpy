@@ -149,8 +149,7 @@ class Node__Const:
             ns = m.code.new_scope()
             struct = m.allnodes[self.const.type.struct.typeId]
             ns.name = name
-            ns.data = self.const.value.as_pyobj().struct_.dumps()
-            import pdb;pdb.set_trace()
+            ns.data = self.const.value.struct.dumps()
             ns.struct = struct.compile_name(m)
             ns.w('{name} = {struct}.loads({data!r})')
         else:

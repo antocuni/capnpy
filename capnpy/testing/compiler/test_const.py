@@ -35,4 +35,5 @@ class TestConst(CompilerTest):
         const bob :Person = (name = "Bob", email = "bob@example.com");
         """
         mod = self.compile(schema)
-        import pdb;pdb.set_trace()
+        assert mod.bob.name == b'Bob'
+        assert mod.bob.email == b'bob@example.com'
