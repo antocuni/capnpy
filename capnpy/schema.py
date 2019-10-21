@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2019-09-13 14:32
+# generated on 2019-10-21 11:28
 # cython: language_level=2
 
 from capnpy import ptr as _ptr
@@ -28,12 +28,16 @@ from capnpy.util import float64_repr as _float64_repr
 from capnpy.util import extend_module_maybe as _extend_module_maybe
 from capnpy.util import check_version as _check_version
 from capnpy.util import encode_maybe as _encode_maybe
-__capnpy_version__ = '0.5.5.dev48+ng36be642.d20190610'
+__capnpy_id__ = 0xa93fc509624c72d9
+__capnpy_version__ = '0.7.1.dev8+g4a9c343'
+__capnproto_version__ = '0.7.0'
 # schema compiled with --no-version-check, skipping the call to _check_version
+# not including reflection data
 
 #### FORWARD DECLARATIONS ####
 
 class ElementSize(_BaseEnum):
+    __capnpy_id__ = 15102134695616452902
     __members__ = ('empty', 'bit', 'byte', 'twoBytes', 'fourBytes', 'eightBytes', 'pointer', 'inlineComposite',)
     @staticmethod
     def _new(x):
@@ -50,6 +54,7 @@ Field_group.__name__ = 'Field.group'
 class Field_ordinal(_Struct): pass
 Field_ordinal.__name__ = 'Field.ordinal'
 class Field_ordinal__tag__(_BaseEnum):
+    __capnpy_id__ = None
     __members__ = ('implicit', 'explicit',)
     @staticmethod
     def _new(x):
@@ -59,6 +64,7 @@ _fill_enum(Field_ordinal__tag__)
 class Field(_Struct): pass
 Field.__name__ = 'Field'
 class Field__tag__(_BaseEnum):
+    __capnpy_id__ = None
     __members__ = ('slot', 'group',)
     @staticmethod
     def _new(x):
@@ -86,9 +92,16 @@ Node_NestedNode.__name__ = 'Node.NestedNode'
 class Node_Parameter(_Struct): pass
 Node_Parameter.__name__ = 'Node.Parameter'
 
+class Node_SourceInfo_Member(_Struct): pass
+Node_SourceInfo_Member.__name__ = 'Node.SourceInfo.Member'
+
+class Node_SourceInfo(_Struct): pass
+Node_SourceInfo.__name__ = 'Node.SourceInfo'
+
 class Node(_Struct): pass
 Node.__name__ = 'Node'
 class Node__tag__(_BaseEnum):
+    __capnpy_id__ = None
     __members__ = ('file', 'struct', 'enum', 'interface', 'const', 'annotation',)
     @staticmethod
     def _new(x):
@@ -116,6 +129,16 @@ Type_struct.__name__ = 'Type.struct'
 class Type_interface(_Struct): pass
 Type_interface.__name__ = 'Type.interface'
 
+class Type_anyPointer_unconstrained(_Struct): pass
+Type_anyPointer_unconstrained.__name__ = 'Type.anyPointer.unconstrained'
+class Type_anyPointer_unconstrained__tag__(_BaseEnum):
+    __capnpy_id__ = None
+    __members__ = ('anyKind', 'struct', 'list', 'capability',)
+    @staticmethod
+    def _new(x):
+        return Type_anyPointer_unconstrained__tag__(x)
+_fill_enum(Type_anyPointer_unconstrained__tag__)
+
 class Type_anyPointer_parameter(_Struct): pass
 Type_anyPointer_parameter.__name__ = 'Type.anyPointer.parameter'
 
@@ -125,6 +148,7 @@ Type_anyPointer_implicitMethodParameter.__name__ = 'Type.anyPointer.implicitMeth
 class Type_anyPointer(_Struct): pass
 Type_anyPointer.__name__ = 'Type.anyPointer'
 class Type_anyPointer__tag__(_BaseEnum):
+    __capnpy_id__ = None
     __members__ = ('unconstrained', 'parameter', 'implicitMethodParameter',)
     @staticmethod
     def _new(x):
@@ -134,6 +158,7 @@ _fill_enum(Type_anyPointer__tag__)
 class Type(_Struct): pass
 Type.__name__ = 'Type'
 class Type__tag__(_BaseEnum):
+    __capnpy_id__ = None
     __members__ = ('void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer',)
     @staticmethod
     def _new(x):
@@ -143,6 +168,7 @@ _fill_enum(Type__tag__)
 class Value(_Struct): pass
 Value.__name__ = 'Value'
 class Value__tag__(_BaseEnum):
+    __capnpy_id__ = None
     __members__ = ('void', 'bool', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float32', 'float64', 'text', 'data', 'list', 'enum', 'struct', 'interface', 'anyPointer',)
     @staticmethod
     def _new(x):
@@ -155,6 +181,7 @@ Annotation.__name__ = 'Annotation'
 class Brand_Scope(_Struct): pass
 Brand_Scope.__name__ = 'Brand.Scope'
 class Brand_Scope__tag__(_BaseEnum):
+    __capnpy_id__ = None
     __members__ = ('bind', 'inherit',)
     @staticmethod
     def _new(x):
@@ -164,6 +191,7 @@ _fill_enum(Brand_Scope__tag__)
 class Brand_Binding(_Struct): pass
 Brand_Binding.__name__ = 'Brand.Binding'
 class Brand_Binding__tag__(_BaseEnum):
+    __capnpy_id__ = None
     __members__ = ('unbound', 'type',)
     @staticmethod
     def _new(x):
@@ -172,6 +200,9 @@ _fill_enum(Brand_Binding__tag__)
 
 class Brand(_Struct): pass
 Brand.__name__ = 'Brand'
+
+class CapnpVersion(_Struct): pass
+CapnpVersion.__name__ = 'CapnpVersion'
 
 class CodeGeneratorRequest_RequestedFile_Import(_Struct): pass
 CodeGeneratorRequest_RequestedFile_Import.__name__ = 'CodeGeneratorRequest.RequestedFile.Import'
@@ -187,6 +218,7 @@ CodeGeneratorRequest.__name__ = 'CodeGeneratorRequest'
 
 @Field_slot.__extend__
 class Field_slot(_Struct):
+    __capnpy_id__ = 0xc42305476bb4746f
     __static_data_size__ = 3
     __static_ptrs_size__ = 4
     
@@ -194,7 +226,7 @@ class Field_slot(_Struct):
     @property
     def offset(self):
         # no union check
-        value = self._read_primitive(4, ord('I'))
+        value = self._read_primitive(4, ord(b'I'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -269,6 +301,7 @@ _Field_slot_list_item_type = _StructItemType(Field_slot)
 
 @Field_group.__extend__
 class Field_group(_Struct):
+    __capnpy_id__ = 0xcafccddb68db1d11
     __static_data_size__ = 3
     __static_ptrs_size__ = 4
     
@@ -276,7 +309,7 @@ class Field_group(_Struct):
     @property
     def typeId(self):
         # no union check
-        value = self._read_primitive(16, ord('Q'))
+        value = self._read_primitive(16, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -290,6 +323,7 @@ _Field_group_list_item_type = _StructItemType(Field_group)
 
 @Field_ordinal.__extend__
 class Field_ordinal(_Struct):
+    __capnpy_id__ = 0xbb90d5c287870be6
     __static_data_size__ = 3
     __static_ptrs_size__ = 4
     
@@ -310,7 +344,7 @@ class Field_ordinal(_Struct):
     @property
     def explicit(self):
         self._ensure_union(1)
-        value = self._read_primitive(12, ord('H'))
+        value = self._read_primitive(12, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -325,6 +359,7 @@ _Field_ordinal_list_item_type = _StructItemType(Field_ordinal)
 
 @Field.__extend__
 class Field(_Struct):
+    __capnpy_id__ = 0x9aad50a41f4af45f
     __static_data_size__ = 3
     __static_ptrs_size__ = 4
     
@@ -353,7 +388,7 @@ class Field(_Struct):
     @property
     def codeOrder(self):
         # no union check
-        value = self._read_primitive(0, ord('H'))
+        value = self._read_primitive(0, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -376,7 +411,7 @@ class Field(_Struct):
     @property
     def discriminantValue(self):
         # no union check
-        value = self._read_primitive(2, ord('H'))
+        value = self._read_primitive(2, ord(b'H'))
         if 65535 != 0:
             value = value ^ 65535
         return value
@@ -480,6 +515,7 @@ _Field_list_item_type = _StructItemType(Field)
 
 @Node_struct.__extend__
 class Node_struct(_Struct):
+    __capnpy_id__ = 0x9ea0b19b37fb4435
     __static_data_size__ = 5
     __static_ptrs_size__ = 6
     
@@ -487,7 +523,7 @@ class Node_struct(_Struct):
     @property
     def dataWordCount(self):
         # no union check
-        value = self._read_primitive(14, ord('H'))
+        value = self._read_primitive(14, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -495,7 +531,7 @@ class Node_struct(_Struct):
     @property
     def pointerCount(self):
         # no union check
-        value = self._read_primitive(24, ord('H'))
+        value = self._read_primitive(24, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -519,7 +555,7 @@ class Node_struct(_Struct):
     @property
     def discriminantCount(self):
         # no union check
-        value = self._read_primitive(30, ord('H'))
+        value = self._read_primitive(30, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -527,7 +563,7 @@ class Node_struct(_Struct):
     @property
     def discriminantOffset(self):
         # no union check
-        value = self._read_primitive(32, ord('I'))
+        value = self._read_primitive(32, ord(b'I'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -562,6 +598,7 @@ _Node_struct_list_item_type = _StructItemType(Node_struct)
 
 @Node_enum.__extend__
 class Node_enum(_Struct):
+    __capnpy_id__ = 0xb54ab3364333f598
     __static_data_size__ = 5
     __static_ptrs_size__ = 6
     
@@ -590,6 +627,7 @@ _Node_enum_list_item_type = _StructItemType(Node_enum)
 
 @Node_interface.__extend__
 class Node_interface(_Struct):
+    __capnpy_id__ = 0xe82753cff0c2218f
     __static_data_size__ = 5
     __static_ptrs_size__ = 6
     
@@ -634,6 +672,7 @@ _Node_interface_list_item_type = _StructItemType(Node_interface)
 
 @Node_const.__extend__
 class Node_const(_Struct):
+    __capnpy_id__ = 0xb18aa5ac7a0d9420
     __static_data_size__ = 5
     __static_ptrs_size__ = 6
     
@@ -698,6 +737,7 @@ _Node_const_list_item_type = _StructItemType(Node_const)
 
 @Node_annotation.__extend__
 class Node_annotation(_Struct):
+    __capnpy_id__ = 0xec1619d4400a0290
     __static_data_size__ = 5
     __static_ptrs_size__ = 6
     
@@ -844,6 +884,7 @@ _Node_annotation_list_item_type = _StructItemType(Node_annotation)
 
 @Node_NestedNode.__extend__
 class Node_NestedNode(_Struct):
+    __capnpy_id__ = 0xdebf55bbfa0fc242
     __static_data_size__ = 1
     __static_ptrs_size__ = 1
     
@@ -863,7 +904,7 @@ class Node_NestedNode(_Struct):
     @property
     def id(self):
         # no union check
-        value = self._read_primitive(0, ord('Q'))
+        value = self._read_primitive(0, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -890,6 +931,7 @@ _Node_NestedNode_list_item_type = _StructItemType(Node_NestedNode)
 
 @Node_Parameter.__extend__
 class Node_Parameter(_Struct):
+    __capnpy_id__ = 0xb9521bccf10fa3b1
     __static_data_size__ = 0
     __static_ptrs_size__ = 1
     
@@ -924,13 +966,117 @@ class Node_Parameter(_Struct):
 
 _Node_Parameter_list_item_type = _StructItemType(Node_Parameter)
 
+@Node_SourceInfo_Member.__extend__
+class Node_SourceInfo_Member(_Struct):
+    __capnpy_id__ = 0xc2ba9038898e1fa2
+    __static_data_size__ = 0
+    __static_ptrs_size__ = 1
+    
+    
+    @property
+    def docComment(self):
+        # no union check
+        return self._read_text_bytes(0)
+    
+    def get_docComment(self):
+        return self._read_text_bytes(0, default_=b"")
+    
+    def has_docComment(self):
+        ptr = self._read_fast_ptr(0)
+        return ptr != 0
+    
+    @staticmethod
+    def __new(docComment=None):
+        builder = _SegmentBuilder()
+        pos = builder.allocate(8)
+        builder.alloc_text(pos + 0, docComment)
+        return builder.as_string()
+    
+    def __init__(self, docComment=None):
+        _buf = Node_SourceInfo_Member.__new(docComment)
+        self._init_from_buffer(_buf, 0, 0, 1)
+    
+    def shortrepr(self):
+        parts = []
+        if self.has_docComment(): parts.append("docComment = %s" % _text_bytes_repr(self.get_docComment()))
+        return "(%s)" % ", ".join(parts)
+
+_Node_SourceInfo_Member_list_item_type = _StructItemType(Node_SourceInfo_Member)
+
+@Node_SourceInfo.__extend__
+class Node_SourceInfo(_Struct):
+    __capnpy_id__ = 0xf38e1de3041357ae
+    __static_data_size__ = 1
+    __static_ptrs_size__ = 2
+    
+    Member = Node_SourceInfo_Member
+    
+    @property
+    def id(self):
+        # no union check
+        value = self._read_primitive(0, ord(b'Q'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def docComment(self):
+        # no union check
+        return self._read_text_bytes(0)
+    
+    def get_docComment(self):
+        return self._read_text_bytes(0, default_=b"")
+    
+    def has_docComment(self):
+        ptr = self._read_fast_ptr(0)
+        return ptr != 0
+    
+    @property
+    def members(self):
+        # no union check
+        return self._read_list(8, _Node_SourceInfo_Member_list_item_type)
+    
+    def get_members(self):
+        res = self.members
+        if res is None:
+            return _List.from_buffer(b'', 0, 0, 0, _Node_SourceInfo_Member_list_item_type)
+        return res
+    
+    def has_members(self):
+        ptr = self._read_fast_ptr(8)
+        return ptr != 0
+    
+    @staticmethod
+    def __new(id=0, docComment=None, members=None):
+        builder = _SegmentBuilder()
+        pos = builder.allocate(24)
+        builder.write_uint64(pos + 0, id)
+        builder.alloc_text(pos + 8, docComment)
+        builder.copy_from_list(pos + 16, _Node_SourceInfo_Member_list_item_type, members)
+        return builder.as_string()
+    
+    def __init__(self, id=0, docComment=None, members=None):
+        _buf = Node_SourceInfo.__new(id, docComment, members)
+        self._init_from_buffer(_buf, 0, 1, 2)
+    
+    def shortrepr(self):
+        parts = []
+        parts.append("id = %s" % self.id)
+        if self.has_docComment(): parts.append("docComment = %s" % _text_bytes_repr(self.get_docComment()))
+        if self.has_members(): parts.append("members = %s" % self.get_members().shortrepr())
+        return "(%s)" % ", ".join(parts)
+
+_Node_SourceInfo_list_item_type = _StructItemType(Node_SourceInfo)
+
 @Node.__extend__
 class Node(_Struct):
+    __capnpy_id__ = 0xe682ab4cf923a417
     __static_data_size__ = 5
     __static_ptrs_size__ = 6
     
     NestedNode = Node_NestedNode
     Parameter = Node_Parameter
+    SourceInfo = Node_SourceInfo
     
     __tag__ = Node__tag__
     __tag_offset__ = 12
@@ -951,7 +1097,7 @@ class Node(_Struct):
     @property
     def id(self):
         # no union check
-        value = self._read_primitive(0, ord('Q'))
+        value = self._read_primitive(0, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -971,7 +1117,7 @@ class Node(_Struct):
     @property
     def displayNamePrefixLength(self):
         # no union check
-        value = self._read_primitive(8, ord('I'))
+        value = self._read_primitive(8, ord(b'I'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -979,7 +1125,7 @@ class Node(_Struct):
     @property
     def scopeId(self):
         # no union check
-        value = self._read_primitive(16, ord('Q'))
+        value = self._read_primitive(16, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1221,6 +1367,7 @@ _Node_list_item_type = _StructItemType(Node)
 
 @Enumerant.__extend__
 class Enumerant(_Struct):
+    __capnpy_id__ = 0x978a7cebdc549a4d
     __static_data_size__ = 1
     __static_ptrs_size__ = 2
     
@@ -1240,7 +1387,7 @@ class Enumerant(_Struct):
     @property
     def codeOrder(self):
         # no union check
-        value = self._read_primitive(0, ord('H'))
+        value = self._read_primitive(0, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1284,6 +1431,7 @@ _Enumerant_list_item_type = _StructItemType(Enumerant)
 
 @Method.__extend__
 class Method(_Struct):
+    __capnpy_id__ = 0x9500cce23b334d80
     __static_data_size__ = 3
     __static_ptrs_size__ = 5
     
@@ -1303,7 +1451,7 @@ class Method(_Struct):
     @property
     def codeOrder(self):
         # no union check
-        value = self._read_primitive(0, ord('H'))
+        value = self._read_primitive(0, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1311,7 +1459,7 @@ class Method(_Struct):
     @property
     def paramStructType(self):
         # no union check
-        value = self._read_primitive(8, ord('Q'))
+        value = self._read_primitive(8, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1319,7 +1467,7 @@ class Method(_Struct):
     @property
     def resultStructType(self):
         # no union check
-        value = self._read_primitive(16, ord('Q'))
+        value = self._read_primitive(16, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1438,6 +1586,7 @@ _Method_list_item_type = _StructItemType(Method)
 
 @Superclass.__extend__
 class Superclass(_Struct):
+    __capnpy_id__ = 0xa9962a9ed0a4d7f8
     __static_data_size__ = 1
     __static_ptrs_size__ = 1
     
@@ -1445,7 +1594,7 @@ class Superclass(_Struct):
     @property
     def id(self):
         # no union check
-        value = self._read_primitive(0, ord('Q'))
+        value = self._read_primitive(0, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1497,6 +1646,7 @@ _Superclass_list_item_type = _StructItemType(Superclass)
 
 @Type_list.__extend__
 class Type_list(_Struct):
+    __capnpy_id__ = 0x87e739250a60ea97
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
     
@@ -1535,6 +1685,7 @@ _Type_list_list_item_type = _StructItemType(Type_list)
 
 @Type_enum.__extend__
 class Type_enum(_Struct):
+    __capnpy_id__ = 0x9e0e78711a7f87a9
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
     
@@ -1542,7 +1693,7 @@ class Type_enum(_Struct):
     @property
     def typeId(self):
         # no union check
-        value = self._read_primitive(8, ord('Q'))
+        value = self._read_primitive(8, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1582,6 +1733,7 @@ _Type_enum_list_item_type = _StructItemType(Type_enum)
 
 @Type_struct.__extend__
 class Type_struct(_Struct):
+    __capnpy_id__ = 0xac3a6f60ef4cc6d3
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
     
@@ -1589,7 +1741,7 @@ class Type_struct(_Struct):
     @property
     def typeId(self):
         # no union check
-        value = self._read_primitive(8, ord('Q'))
+        value = self._read_primitive(8, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1629,6 +1781,7 @@ _Type_struct_list_item_type = _StructItemType(Type_struct)
 
 @Type_interface.__extend__
 class Type_interface(_Struct):
+    __capnpy_id__ = 0xed8bca69f7fb0cbf
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
     
@@ -1636,7 +1789,7 @@ class Type_interface(_Struct):
     @property
     def typeId(self):
         # no union check
-        value = self._read_primitive(8, ord('Q'))
+        value = self._read_primitive(8, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1674,8 +1827,58 @@ class Type_interface(_Struct):
 
 _Type_interface_list_item_type = _StructItemType(Type_interface)
 
+@Type_anyPointer_unconstrained.__extend__
+class Type_anyPointer_unconstrained(_Struct):
+    __capnpy_id__ = 0x8e3b5f79fe593656
+    __static_data_size__ = 3
+    __static_ptrs_size__ = 1
+    
+    
+    __tag__ = Type_anyPointer_unconstrained__tag__
+    __tag_offset__ = 10
+    
+    def is_anyKind(self):
+        return self._read_int16(10) == 0
+    def is_struct(self):
+        return self._read_int16(10) == 1
+    def is_list(self):
+        return self._read_int16(10) == 2
+    def is_capability(self):
+        return self._read_int16(10) == 3
+    
+    @property
+    def anyKind(self):
+        self._ensure_union(0)
+        return None
+    
+    @property
+    def struct(self):
+        self._ensure_union(1)
+        return None
+    
+    @property
+    def list(self):
+        self._ensure_union(2)
+        return None
+    
+    @property
+    def capability(self):
+        self._ensure_union(3)
+        return None
+    
+    def shortrepr(self):
+        parts = []
+        if self.is_anyKind(): parts.append("anyKind = %s" % "void")
+        if self.is_struct(): parts.append("struct = %s" % "void")
+        if self.is_list(): parts.append("list = %s" % "void")
+        if self.is_capability(): parts.append("capability = %s" % "void")
+        return "(%s)" % ", ".join(parts)
+
+_Type_anyPointer_unconstrained_list_item_type = _StructItemType(Type_anyPointer_unconstrained)
+
 @Type_anyPointer_parameter.__extend__
 class Type_anyPointer_parameter(_Struct):
+    __capnpy_id__ = 0x9dd1f724f4614a85
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
     
@@ -1683,7 +1886,7 @@ class Type_anyPointer_parameter(_Struct):
     @property
     def scopeId(self):
         # no union check
-        value = self._read_primitive(16, ord('Q'))
+        value = self._read_primitive(16, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1691,7 +1894,7 @@ class Type_anyPointer_parameter(_Struct):
     @property
     def parameterIndex(self):
         # no union check
-        value = self._read_primitive(10, ord('H'))
+        value = self._read_primitive(10, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1706,6 +1909,7 @@ _Type_anyPointer_parameter_list_item_type = _StructItemType(Type_anyPointer_para
 
 @Type_anyPointer_implicitMethodParameter.__extend__
 class Type_anyPointer_implicitMethodParameter(_Struct):
+    __capnpy_id__ = 0xbaefc9120c56e274
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
     
@@ -1713,7 +1917,7 @@ class Type_anyPointer_implicitMethodParameter(_Struct):
     @property
     def parameterIndex(self):
         # no union check
-        value = self._read_primitive(10, ord('H'))
+        value = self._read_primitive(10, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -1727,6 +1931,7 @@ _Type_anyPointer_implicitMethodParameter_list_item_type = _StructItemType(Type_a
 
 @Type_anyPointer.__extend__
 class Type_anyPointer(_Struct):
+    __capnpy_id__ = 0xc2573fe8a23e49f1
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
     
@@ -1744,7 +1949,14 @@ class Type_anyPointer(_Struct):
     @property
     def unconstrained(self):
         self._ensure_union(0)
-        return None
+        obj = Type_anyPointer_unconstrained.__new__(Type_anyPointer_unconstrained)
+        _Struct._init_from_buffer(obj, self._seg, self._data_offset,
+                                  self._data_size, self._ptrs_size)
+        return obj
+    
+    @staticmethod
+    def Unconstrained(anyKind=_undefined, struct=_undefined, list=_undefined, capability=_undefined):
+        return anyKind, struct, list, capability,
     
     @property
     def parameter(self):
@@ -1772,7 +1984,7 @@ class Type_anyPointer(_Struct):
     
     def shortrepr(self):
         parts = []
-        if self.is_unconstrained(): parts.append("unconstrained = %s" % "void")
+        if self.is_unconstrained(): parts.append("unconstrained = %s" % self.unconstrained.shortrepr())
         if self.is_parameter(): parts.append("parameter = %s" % self.parameter.shortrepr())
         if self.is_implicitMethodParameter(): parts.append("implicitMethodParameter = %s" % self.implicitMethodParameter.shortrepr())
         return "(%s)" % ", ".join(parts)
@@ -1781,6 +1993,7 @@ _Type_anyPointer_list_item_type = _StructItemType(Type_anyPointer)
 
 @Type.__extend__
 class Type(_Struct):
+    __capnpy_id__ = 0xd07378ede1f9cc60
     __static_data_size__ = 3
     __static_ptrs_size__ = 1
     
@@ -1963,6 +2176,7 @@ class Type(_Struct):
         pos = builder.allocate(32)
         anonymous__curtag = None
         anyPointer__curtag = None
+        anyPointer_unconstrained__curtag = None
         if void is not _undefined:
             anonymous__curtag = _check_tag(anonymous__curtag, 'void')
             builder.write_int16(0, 0)
@@ -2035,6 +2249,19 @@ class Type(_Struct):
             if anyPointer_unconstrained is not _undefined:
                 anyPointer__curtag = _check_tag(anyPointer__curtag, 'unconstrained')
                 builder.write_int16(8, 0)
+                anyPointer_unconstrained_anyKind, anyPointer_unconstrained_struct, anyPointer_unconstrained_list, anyPointer_unconstrained_capability, = anyPointer_unconstrained
+                if anyPointer_unconstrained_anyKind is not _undefined:
+                    anyPointer_unconstrained__curtag = _check_tag(anyPointer_unconstrained__curtag, 'anyKind')
+                    builder.write_int16(10, 0)
+                if anyPointer_unconstrained_struct is not _undefined:
+                    anyPointer_unconstrained__curtag = _check_tag(anyPointer_unconstrained__curtag, 'struct')
+                    builder.write_int16(10, 1)
+                if anyPointer_unconstrained_list is not _undefined:
+                    anyPointer_unconstrained__curtag = _check_tag(anyPointer_unconstrained__curtag, 'list')
+                    builder.write_int16(10, 2)
+                if anyPointer_unconstrained_capability is not _undefined:
+                    anyPointer_unconstrained__curtag = _check_tag(anyPointer_unconstrained__curtag, 'capability')
+                    builder.write_int16(10, 3)
             if anyPointer_parameter is not _undefined:
                 anyPointer__curtag = _check_tag(anyPointer__curtag, 'parameter')
                 builder.write_int16(8, 1)
@@ -2174,6 +2401,7 @@ _Type_list_item_type = _StructItemType(Type)
 
 @Value.__extend__
 class Value(_Struct):
+    __capnpy_id__ = 0xce23dcd2d7b00c9b
     __static_data_size__ = 2
     __static_ptrs_size__ = 1
     
@@ -2236,7 +2464,7 @@ class Value(_Struct):
     @property
     def int8(self):
         self._ensure_union(2)
-        value = self._read_primitive(2, ord('b'))
+        value = self._read_primitive(2, ord(b'b'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2244,7 +2472,7 @@ class Value(_Struct):
     @property
     def int16(self):
         self._ensure_union(3)
-        value = self._read_primitive(2, ord('h'))
+        value = self._read_primitive(2, ord(b'h'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2252,7 +2480,7 @@ class Value(_Struct):
     @property
     def int32(self):
         self._ensure_union(4)
-        value = self._read_primitive(4, ord('i'))
+        value = self._read_primitive(4, ord(b'i'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2260,7 +2488,7 @@ class Value(_Struct):
     @property
     def int64(self):
         self._ensure_union(5)
-        value = self._read_primitive(8, ord('q'))
+        value = self._read_primitive(8, ord(b'q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2268,7 +2496,7 @@ class Value(_Struct):
     @property
     def uint8(self):
         self._ensure_union(6)
-        value = self._read_primitive(2, ord('B'))
+        value = self._read_primitive(2, ord(b'B'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2276,7 +2504,7 @@ class Value(_Struct):
     @property
     def uint16(self):
         self._ensure_union(7)
-        value = self._read_primitive(2, ord('H'))
+        value = self._read_primitive(2, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2284,7 +2512,7 @@ class Value(_Struct):
     @property
     def uint32(self):
         self._ensure_union(8)
-        value = self._read_primitive(4, ord('I'))
+        value = self._read_primitive(4, ord(b'I'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2292,7 +2520,7 @@ class Value(_Struct):
     @property
     def uint64(self):
         self._ensure_union(9)
-        value = self._read_primitive(8, ord('Q'))
+        value = self._read_primitive(8, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2300,7 +2528,7 @@ class Value(_Struct):
     @property
     def float32(self):
         self._ensure_union(10)
-        value = self._read_primitive(4, ord('f'))
+        value = self._read_primitive(4, ord(b'f'))
         if 0.0 != 0:
             value = value ^ 0.0
         return value
@@ -2308,7 +2536,7 @@ class Value(_Struct):
     @property
     def float64(self):
         self._ensure_union(11)
-        value = self._read_primitive(8, ord('d'))
+        value = self._read_primitive(8, ord(b'd'))
         if 0.0 != 0:
             value = value ^ 0.0
         return value
@@ -2351,7 +2579,7 @@ class Value(_Struct):
     @property
     def enum(self):
         self._ensure_union(15)
-        value = self._read_primitive(2, ord('H'))
+        value = self._read_primitive(2, ord(b'H'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2446,7 +2674,7 @@ class Value(_Struct):
         if list is not _undefined:
             anonymous__curtag = _check_tag(anonymous__curtag, 'list')
             builder.write_int16(0, 14)
-            raise NotImplementedError('Unsupported field type: (name = "list", codeOrder = 14, discriminantValue = 14, slot = (offset = 0, type = (anyPointer = (unconstrained = void)), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 14))')
+            raise NotImplementedError('Unsupported field type: (name = "list", codeOrder = 14, discriminantValue = 14, slot = (offset = 0, type = (anyPointer = (unconstrained = (anyKind = void))), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 14))')
         if enum is not _undefined:
             anonymous__curtag = _check_tag(anonymous__curtag, 'enum')
             builder.write_int16(0, 15)
@@ -2454,14 +2682,14 @@ class Value(_Struct):
         if struct is not _undefined:
             anonymous__curtag = _check_tag(anonymous__curtag, 'struct')
             builder.write_int16(0, 16)
-            raise NotImplementedError('Unsupported field type: (name = "struct", codeOrder = 16, discriminantValue = 16, slot = (offset = 0, type = (anyPointer = (unconstrained = void)), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 16))')
+            raise NotImplementedError('Unsupported field type: (name = "struct", codeOrder = 16, discriminantValue = 16, slot = (offset = 0, type = (anyPointer = (unconstrained = (anyKind = void))), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 16))')
         if interface is not _undefined:
             anonymous__curtag = _check_tag(anonymous__curtag, 'interface')
             builder.write_int16(0, 17)
         if anyPointer is not _undefined:
             anonymous__curtag = _check_tag(anonymous__curtag, 'anyPointer')
             builder.write_int16(0, 18)
-            raise NotImplementedError('Unsupported field type: (name = "anyPointer", codeOrder = 18, discriminantValue = 18, slot = (offset = 0, type = (anyPointer = (unconstrained = void)), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 18))')
+            raise NotImplementedError('Unsupported field type: (name = "anyPointer", codeOrder = 18, discriminantValue = 18, slot = (offset = 0, type = (anyPointer = (unconstrained = (anyKind = void))), defaultValue = (anyPointer = ???), hadExplicitDefault = false), ordinal = (explicit = 18))')
         return builder.as_string()
     
     def __init__(self, void=_undefined, bool=_undefined, int8=_undefined, int16=_undefined, int32=_undefined, int64=_undefined, uint8=_undefined, uint16=_undefined, uint32=_undefined, uint64=_undefined, float32=_undefined, float64=_undefined, text=_undefined, data=_undefined, list=_undefined, enum=_undefined, struct=_undefined, interface=_undefined, anyPointer=_undefined):
@@ -2600,6 +2828,7 @@ _Value_list_item_type = _StructItemType(Value)
 
 @Annotation.__extend__
 class Annotation(_Struct):
+    __capnpy_id__ = 0xf1c8950dab257542
     __static_data_size__ = 1
     __static_ptrs_size__ = 2
     
@@ -2607,7 +2836,7 @@ class Annotation(_Struct):
     @property
     def id(self):
         # no union check
-        value = self._read_primitive(0, ord('Q'))
+        value = self._read_primitive(0, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2686,6 +2915,7 @@ _Annotation_list_item_type = _StructItemType(Annotation)
 
 @Brand_Scope.__extend__
 class Brand_Scope(_Struct):
+    __capnpy_id__ = 0xabd73485a9636bc9
     __static_data_size__ = 2
     __static_ptrs_size__ = 1
     
@@ -2701,7 +2931,7 @@ class Brand_Scope(_Struct):
     @property
     def scopeId(self):
         # no union check
-        value = self._read_primitive(0, ord('Q'))
+        value = self._read_primitive(0, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2768,6 +2998,7 @@ _Brand_Scope_list_item_type = _StructItemType(Brand_Scope)
 
 @Brand_Binding.__extend__
 class Brand_Binding(_Struct):
+    __capnpy_id__ = 0xc863cd16969ee7fc
     __static_data_size__ = 1
     __static_ptrs_size__ = 1
     
@@ -2850,6 +3081,7 @@ _Brand_Binding_list_item_type = _StructItemType(Brand_Binding)
 
 @Brand.__extend__
 class Brand(_Struct):
+    __capnpy_id__ = 0x903455f06065422b
     __static_data_size__ = 0
     __static_ptrs_size__ = 1
     
@@ -2889,8 +3121,62 @@ class Brand(_Struct):
 
 _Brand_list_item_type = _StructItemType(Brand)
 
+@CapnpVersion.__extend__
+class CapnpVersion(_Struct):
+    __capnpy_id__ = 0xd85d305b7d839963
+    __static_data_size__ = 1
+    __static_ptrs_size__ = 0
+    
+    
+    @property
+    def major(self):
+        # no union check
+        value = self._read_primitive(0, ord(b'H'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def minor(self):
+        # no union check
+        value = self._read_primitive(2, ord(b'B'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @property
+    def micro(self):
+        # no union check
+        value = self._read_primitive(3, ord(b'B'))
+        if 0 != 0:
+            value = value ^ 0
+        return value
+    
+    @staticmethod
+    def __new(major=0, minor=0, micro=0):
+        builder = _SegmentBuilder()
+        pos = builder.allocate(8)
+        builder.write_uint16(pos + 0, major)
+        builder.write_uint8(pos + 2, minor)
+        builder.write_uint8(pos + 3, micro)
+        return builder.as_string()
+    
+    def __init__(self, major=0, minor=0, micro=0):
+        _buf = CapnpVersion.__new(major, minor, micro)
+        self._init_from_buffer(_buf, 0, 1, 0)
+    
+    def shortrepr(self):
+        parts = []
+        parts.append("major = %s" % self.major)
+        parts.append("minor = %s" % self.minor)
+        parts.append("micro = %s" % self.micro)
+        return "(%s)" % ", ".join(parts)
+
+_CapnpVersion_list_item_type = _StructItemType(CapnpVersion)
+
 @CodeGeneratorRequest_RequestedFile_Import.__extend__
 class CodeGeneratorRequest_RequestedFile_Import(_Struct):
+    __capnpy_id__ = 0xae504193122357e5
     __static_data_size__ = 1
     __static_ptrs_size__ = 1
     
@@ -2898,7 +3184,7 @@ class CodeGeneratorRequest_RequestedFile_Import(_Struct):
     @property
     def id(self):
         # no union check
-        value = self._read_primitive(0, ord('Q'))
+        value = self._read_primitive(0, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -2937,6 +3223,7 @@ _CodeGeneratorRequest_RequestedFile_Import_list_item_type = _StructItemType(Code
 
 @CodeGeneratorRequest_RequestedFile.__extend__
 class CodeGeneratorRequest_RequestedFile(_Struct):
+    __capnpy_id__ = 0xcfea0eb02e810062
     __static_data_size__ = 1
     __static_ptrs_size__ = 2
     
@@ -2945,7 +3232,7 @@ class CodeGeneratorRequest_RequestedFile(_Struct):
     @property
     def id(self):
         # no union check
-        value = self._read_primitive(0, ord('Q'))
+        value = self._read_primitive(0, ord(b'Q'))
         if 0 != 0:
             value = value ^ 0
         return value
@@ -3001,8 +3288,9 @@ _CodeGeneratorRequest_RequestedFile_list_item_type = _StructItemType(CodeGenerat
 
 @CodeGeneratorRequest.__extend__
 class CodeGeneratorRequest(_Struct):
+    __capnpy_id__ = 0xbfc546f6210ad7ce
     __static_data_size__ = 0
-    __static_ptrs_size__ = 2
+    __static_ptrs_size__ = 4
     
     RequestedFile = CodeGeneratorRequest_RequestedFile
     
@@ -3036,22 +3324,66 @@ class CodeGeneratorRequest(_Struct):
         ptr = self._read_fast_ptr(8)
         return ptr != 0
     
+    @property
+    def capnpVersion(self):
+        # no union check
+        offset = 16
+        p = self._read_fast_ptr(offset)
+        if _ptr.kind(p) == _ptr.FAR:
+            offset, p = self._read_far_ptr(offset)
+        else:
+            offset += self._ptrs_offset
+        if p == 0:
+            return None
+        obj = CapnpVersion.__new__(CapnpVersion)
+        obj._init_from_pointer(self._seg, offset, p)
+        return obj
+    
+    def get_capnpVersion(self):
+        res = self.capnpVersion
+        if res is None:
+            return CapnpVersion.from_buffer(b'', 0, data_size=0, ptrs_size=0)
+        return res
+    
+    def has_capnpVersion(self):
+        ptr = self._read_fast_ptr(16)
+        return ptr != 0
+    
+    @property
+    def sourceInfo(self):
+        # no union check
+        return self._read_list(24, _Node_SourceInfo_list_item_type)
+    
+    def get_sourceInfo(self):
+        res = self.sourceInfo
+        if res is None:
+            return _List.from_buffer(b'', 0, 0, 0, _Node_SourceInfo_list_item_type)
+        return res
+    
+    def has_sourceInfo(self):
+        ptr = self._read_fast_ptr(24)
+        return ptr != 0
+    
     @staticmethod
-    def __new(nodes=None, requestedFiles=None):
+    def __new(nodes=None, requestedFiles=None, capnpVersion=None, sourceInfo=None):
         builder = _SegmentBuilder()
-        pos = builder.allocate(16)
+        pos = builder.allocate(32)
         builder.copy_from_list(pos + 0, _Node_list_item_type, nodes)
         builder.copy_from_list(pos + 8, _CodeGeneratorRequest_RequestedFile_list_item_type, requestedFiles)
+        builder.copy_from_struct(pos + 16, CapnpVersion, capnpVersion)
+        builder.copy_from_list(pos + 24, _Node_SourceInfo_list_item_type, sourceInfo)
         return builder.as_string()
     
-    def __init__(self, nodes=None, requestedFiles=None):
-        _buf = CodeGeneratorRequest.__new(nodes, requestedFiles)
-        self._init_from_buffer(_buf, 0, 0, 2)
+    def __init__(self, nodes=None, requestedFiles=None, capnpVersion=None, sourceInfo=None):
+        _buf = CodeGeneratorRequest.__new(nodes, requestedFiles, capnpVersion, sourceInfo)
+        self._init_from_buffer(_buf, 0, 0, 4)
     
     def shortrepr(self):
         parts = []
         if self.has_nodes(): parts.append("nodes = %s" % self.get_nodes().shortrepr())
         if self.has_requestedFiles(): parts.append("requestedFiles = %s" % self.get_requestedFiles().shortrepr())
+        if self.has_capnpVersion(): parts.append("capnpVersion = %s" % self.get_capnpVersion().shortrepr())
+        if self.has_sourceInfo(): parts.append("sourceInfo = %s" % self.get_sourceInfo().shortrepr())
         return "(%s)" % ", ".join(parts)
 
 _CodeGeneratorRequest_list_item_type = _StructItemType(CodeGeneratorRequest)

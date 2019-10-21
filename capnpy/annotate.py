@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2019-10-18 16:40
+# generated on 2019-10-21 11:28
 # cython: language_level=2
 
 from capnpy import ptr as _ptr
