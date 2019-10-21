@@ -1,5 +1,5 @@
 import six
-from capnpy.schema import CodeGeneratorRequest
+from capnpy.schema import CodeGeneratorRequest, Node
 from capnpy.annotate import Options
 from capnpy.compiler.module import ModuleGenerator
 
@@ -64,10 +64,12 @@ class ReflectionData(object):
         ann = self._get_annotation(entity, anncls)
         return bool(ann)
 
-    def _get_annotation(self, entity, anncls):
-        if hasattr(entity, '__capnpy_id__'):
-            entity = self.get_node(entity)
-        return self.m.has_annotation(entity, anncls)
+    def _get_annotation(self, entity_or_node, anncls):
+        if isinstance(entity_or_node, Node):
+            node = entity_or_node
+        else:
+            node = self.get_node(entity_or_node)
+        return self.m.has_annotation(node, anncls)
 
     def field_name(self, f):
         """
