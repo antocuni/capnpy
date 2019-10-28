@@ -1,3 +1,4 @@
+from capnpy.struct_ import Struct
 from capnpy.schema import (Node, Node__Enum, Node__Const, Node__Annotation,
                            Enumerant)
 from capnpy import annotate
@@ -143,17 +144,15 @@ class Node__Const:
         pass
 
     def emit_reference_as_child(self, m):
-        # XXX: this works only for numerical & text consts so far
-        name = self.shortname(m)
+        varname = self.shortname(m)
         if self.const.type.is_struct():
             ns = m.code.new_scope()
             struct = m.allnodes[self.const.type.struct.typeId]
-            ns.name = name
-            ns.data = self.const.value.struct.dumps()
-            ns.struct = struct.compile_name(m)
-            ns.w('{name} = {struct}.loads({data!r})')
+            structname = struct.compile_name(m)
+            s = self.const.value.struct.as_struct(Struct)
+            s = s.compact()
+            m.declare_const(varname, structname, s)
         else:
             # for primitive types
             val = self.const.value.as_pyobj()
-            m.w('{} = {!r}'.format(name, val))
-
+            m.w('{} = {!r}'.format(varname, val))
