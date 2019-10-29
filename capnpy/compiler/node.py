@@ -147,10 +147,10 @@ class Node__Const:
         ns = m.code.new_scope()
         ns.varname = self.shortname(m)
         if self.const.type.is_struct():
-            struct = m.allnodes[self.const.type.struct.typeId]
-            s = self.const.value.struct.as_struct(Struct)
-            s = s.compact()
-            ns.constdecl = m.declare_const(struct.compile_name(m), s)
+            struct_type = m.allnodes[self.const.type.struct.typeId]
+            val = self.const.value.struct.as_struct(Struct)
+            val = val.compact()
+            ns.constdecl = m.declare_const(struct_type.compile_name(m), val)
         else:
             # for primitive types
             val = self.const.value.as_pyobj()
