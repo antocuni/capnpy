@@ -149,8 +149,11 @@ class Node__Const:
         if self.const.type.is_struct():
             struct_type = m.allnodes[self.const.type.struct.typeId]
             val = self.const.value.struct.as_struct(Struct)
-            val = val.compact()
-            ns.constdecl = m.declare_const(struct_type.compile_name(m), val)
+            #val = val.compact()
+            # the desired constant is already in the the _reflection_data
+            # segment: reuse it to save RAM
+            ns.constdecl = m.declare_const(struct_type.compile_name(m), val,
+                                           segment='_reflection_data.request._seg')
         else:
             # for primitive types
             val = self.const.value.as_pyobj()

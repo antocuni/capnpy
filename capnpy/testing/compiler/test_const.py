@@ -1,4 +1,5 @@
 import pytest
+import capnpy
 from capnpy.testing.compiler.support import CompilerTest
 
 class TestConst(CompilerTest):
@@ -37,3 +38,7 @@ class TestConst(CompilerTest):
         mod = self.compile(schema)
         assert mod.bob.name == b'Bob'
         assert mod.bob.email == b'bob@example.com'
+        #
+        # check that reflection data and constants share the same segment
+        reflection = capnpy.get_reflection_data(mod)
+        assert reflection.request._seg is mod.bob._seg
