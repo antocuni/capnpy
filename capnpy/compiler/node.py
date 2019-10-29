@@ -144,15 +144,16 @@ class Node__Const:
         pass
 
     def emit_reference_as_child(self, m):
-        varname = self.shortname(m)
+        ns = m.code.new_scope()
+        ns.varname = self.shortname(m)
         if self.const.type.is_struct():
-            ns = m.code.new_scope()
             struct = m.allnodes[self.const.type.struct.typeId]
-            structname = struct.compile_name(m)
             s = self.const.value.struct.as_struct(Struct)
             s = s.compact()
-            m.declare_const(varname, structname, s)
+            ns.constdecl = m.declare_const(struct.compile_name(m), s)
         else:
             # for primitive types
             val = self.const.value.as_pyobj()
-            m.w('{} = {!r}'.format(varname, val))
+            ns.constdecl = repr(val)
+        #
+        ns.w('{varname} = {constdecl}')
