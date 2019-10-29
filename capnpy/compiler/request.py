@@ -149,14 +149,16 @@ class RequestedFile:
     def _emit_reflection_data(self, m):
         ns = m.code.new_scope()
         ns.modname = m.modname
-        ns.data = m.request.dumps()
-        ns.default_options_data = m.default_options.dumps()
+        ns.request = m.declare_const('_CodeGeneratorRequest', m.request)
+        ns.default_options = m.declare_const('_Options', m.default_options)
         ns.pyx = m.pyx
         ns.ww("""
+            from capnpy.schema import CodeGeneratorRequest as _CodeGeneratorRequest
+            from capnpy.annotate import Options as _Options
             from capnpy.reflection import ReflectionData as _ReflectionData
             class _{modname}_ReflectionData(_ReflectionData):
-                request_data = {data!r}
-                default_options_data = {default_options_data!r}
+                request = {request}
+                default_options = {default_options}
                 pyx = {pyx}
             _reflection_data = _{modname}_ReflectionData()
         """)

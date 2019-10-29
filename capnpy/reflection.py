@@ -1,6 +1,5 @@
 import six
-from capnpy.schema import CodeGeneratorRequest, Node
-from capnpy.annotate import Options
+from capnpy.schema import Node
 from capnpy.compiler.module import ModuleGenerator
 
 # main API entry point for end users
@@ -15,8 +14,8 @@ def get_reflection_data(module):
 class ReflectionData(object):
 
     # subclasses are supposed to fill these fields accordingly
-    request_data = None
-    default_options_data = None
+    request = None           # schema.CodeGeneratorRequest
+    default_options = None   # annotate.Options
     pyx = False
 
     # ModuleGenerator, initialized lazily
@@ -26,12 +25,10 @@ class ReflectionData(object):
         if self._m is not None:
             return self._m
         #
-        request = CodeGeneratorRequest.loads(self.request_data)
-        default_options = Options.loads(self.default_options_data)
-        self._m = ModuleGenerator(request,
+        self._m = ModuleGenerator(self.request,
                                   pyx=self.pyx,
                                   standalone=True,
-                                  default_options=default_options,
+                                  default_options=self.default_options,
                                   capnproto_version=None)
         return self._m
 
