@@ -148,12 +148,17 @@ class Node__Const:
         ns.varname = self.shortname(m)
         if self.const.type.is_struct():
             struct_type = m.allnodes[self.const.type.struct.typeId]
+            clsname = struct_type.compile_name(m)
             val = self.const.value.struct.as_struct(Struct)
-            #val = val.compact()
-            # the desired constant is already in the the _reflection_data
-            # segment: reuse it to save RAM
-            ns.constdecl = m.declare_const(struct_type.compile_name(m), val,
-                                           segment='_reflection_data.request._seg')
+            if m.options(self).include_reflection_data:
+                # the desired constant is already in the the _reflection_data
+                # segment: reuse it to save RAM
+                ns.constdecl = m.declare_const(clsname, val,
+                                               segment='_reflection_data.request._seg')
+            else:
+                # we don't have reflection_data, so just create a new segment
+                val = val.compact()
+                ns.constdecl = m.declare_const(clsname, val)
         else:
             # for primitive types
             val = self.const.value.as_pyobj()

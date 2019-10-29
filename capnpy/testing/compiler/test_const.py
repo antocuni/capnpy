@@ -42,3 +42,18 @@ class TestConst(CompilerTest):
         # check that reflection data and constants share the same segment
         reflection = capnpy.get_reflection_data(mod)
         assert reflection.request._seg is mod.bob._seg
+
+    def test_struct_no_reflection(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Person {
+            name @0 :Text;
+            email @1 :Text;
+        }
+        const bob :Person = (name = "Bob", email = "bob@example.com");
+        """
+        # check that we can emit the const even if we don't have the
+        # reflection data
+        mod = self.compile(schema, include_reflection_data=False)
+        assert mod.bob.name == b'Bob'
+        assert mod.bob.email == b'bob@example.com'
