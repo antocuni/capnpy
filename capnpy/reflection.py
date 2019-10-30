@@ -1,5 +1,5 @@
 import six
-from capnpy.schema import Node
+from capnpy.schema import Node, Field, Enumerant
 from capnpy.compiler.module import ModuleGenerator
 
 # main API entry point for end users
@@ -62,7 +62,7 @@ class ReflectionData(object):
         return bool(ann)
 
     def _get_annotation(self, entity_or_node, anncls):
-        if isinstance(entity_or_node, Node):
+        if isinstance(entity_or_node, (Node, Field, Enumerant)):
             node = entity_or_node
         else:
             node = self.get_node(entity_or_node)

@@ -106,6 +106,42 @@ class TestReflection(CompilerTest):
         with pytest.raises(KeyError):
             reflection.get_annotation(mod.Foo, annotate.key)
 
+    def test_get_annotation_fields(self):
+        from capnpy import annotate
+        schema = """
+        @0xbf5147cbbecf40c1;
+        annotation myAnnotation(field) :Text;
+        struct Point {
+            x @0 :Int64 $myAnnotation("hello");
+            y @1 :Int64;
+        }
+        """
+        mod = self.compile(schema)
+        r =  get_reflection_data(mod)
+        node_Point = r.get_node(mod.Point)
+        fx, fy = node_Point.get_struct_fields()
+        assert r.has_annotation(fx, mod.myAnnotation)
+        assert r.get_annotation(fx, mod.myAnnotation) == b'hello'
+        assert not r.has_annotation(fy, mod.myAnnotation)
+
+    def test_get_annotation_enumerants(self):
+        from capnpy import annotate
+        schema = """
+        @0xbf5147cbbecf40c1;
+        annotation myAnnotation(enumerant) :Text;
+        enum Color {
+            red @0 $myAnnotation("hello");
+            green @1;
+        }
+        """
+        mod = self.compile(schema)
+        r =  get_reflection_data(mod)
+        node_Color = r.get_node(mod.Color)
+        red, green = node_Color.get_enum_enumerants()
+        assert r.has_annotation(red, mod.myAnnotation)
+        assert r.get_annotation(red, mod.myAnnotation) == b'hello'
+        assert not r.has_annotation(green, mod.myAnnotation)
+
     def test_options(self):
         schema = """
         @0xbf5147cbbecf40c1;
