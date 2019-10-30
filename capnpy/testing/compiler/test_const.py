@@ -43,6 +43,16 @@ class TestConst(CompilerTest):
         reflection = capnpy.get_reflection_data(mod)
         assert reflection.request._seg is mod.bob._seg
 
+    def test_list(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        const int64List :List(Int64) = [1, 2, 3, 4];
+        const textList :List(Text) = ["hello", "world"];
+        """
+        mod = self.compile(schema)
+        assert mod.int64List == [1, 2, 3, 4]
+        assert mod.textList == [b'hello', b'world']
+
     def test_struct_no_reflection(self):
         schema = """
         @0xbf5147cbbecf40c1;

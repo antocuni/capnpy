@@ -1,4 +1,5 @@
 from capnpy.struct_ import Struct
+from capnpy.list import VoidItemType
 from capnpy.schema import (Node, Node__Enum, Node__Const, Node__Annotation,
                            Enumerant)
 from capnpy import annotate
@@ -144,13 +145,14 @@ class Node__Const:
         pass
 
     def emit_reference_as_child(self, m):
+        options = m.options(self)
         ns = m.code.new_scope()
         ns.varname = self.shortname(m)
         if self.const.type.is_struct():
             struct_type = m.allnodes[self.const.type.struct.typeId]
             clsname = struct_type.compile_name(m)
             val = self.const.value.struct.as_struct(Struct)
-            if m.options(self).include_reflection_data:
+            if options.include_reflection_data:
                 # the desired constant is already in the the _reflection_data
                 # segment: reuse it to save RAM
                 ns.constdecl = m.declare_const(clsname, val,
@@ -159,9 +161,28 @@ class Node__Const:
                 # we don't have reflection_data, so just create a new segment
                 val = val.compact()
                 ns.constdecl = m.declare_const(clsname, val)
+        elif self.const.type.is_list():
+            assert options.include_reflection_data
+            # we don't care about the precise item type here: we just need val
+            # to inspect it's _offset, _size_tag and _item_count
+            # attributes. So, we just use VoidItemType, which is unused since
+            # we never access any item
+            val = self.const.value.list.as_list(VoidItemType())
+            item_type = self.const.type.list.elementType.list_item_type(m, options)
+            ns.constdecl = self._declare_list_const(val, item_type)
         else:
             # for primitive types
             val = self.const.value.as_pyobj()
             ns.constdecl = repr(val)
         #
         ns.w('{varname} = {constdecl}')
+
+    def _declare_list_const(self, val, item_type):
+        segment = '_reflection_data.request._seg'
+        s = '_List.from_buffer({seg}, {offset}, {size_tag}, {item_count}, {item_type})'
+        return s.format(
+            seg=segment,
+            offset=val._offset,
+            size_tag=val._size_tag,
+            item_count=val._item_count,
+            item_type=item_type)
