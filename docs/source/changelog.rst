@@ -2,8 +2,11 @@
 Changelog
 ==========
 
-Current master
-==============
+.. To see the commits between two versions:
+   git log --graph --oneline 0.6.4..0.7.0
+
+0.8.0
+=====
 
 * Improve the ``shortrepr()`` method and consequently the ``__repr__`` of
   capnpy structs: the goal is to make the output of shortrepr() fully
