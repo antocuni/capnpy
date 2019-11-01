@@ -214,6 +214,23 @@ class ModuleGenerator(object):
                     ns.w('return {name}(x)')
         ns.w("_fill_enum({name})")
 
+    def declare_const(self, clsname, s, segment=None):
+        """
+        Declare a const from a given segment.
+
+        WARNING: this will dump the WHOLE segment of "s". If s is contained in
+        only a small part of the segment, you might want to call .compact() on
+        it before calling declare_const()
+        """
+        if segment is None:
+            segment = repr(s._seg.buf)
+        return '{name}.from_buffer({seg}, {offset}, {data_size}, {ptrs_size})'.format(
+            name=clsname,
+            seg=segment,
+            offset=s._data_offset,
+            data_size=s._data_size,
+            ptrs_size=s._ptrs_size)
+
     def def_property(self, ns, name, src):
         if self.pyx:
             with ns.block('property {name}:', name=name):

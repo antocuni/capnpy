@@ -127,3 +127,22 @@ class TestAnyPointer(CompilerTest):
         assert len(points) == 4
         assert points[0].x == 10
         assert points[0].y == 100
+
+    def test_dumps(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        struct Foo1 {
+            p @0 :Point;
+        }
+        struct Foo2 {
+            anyp @0 :AnyPointer;
+        }
+        """
+        mod = self.compile(schema)
+        a = mod.Foo1(mod.Point(1, 2))
+        b = mod.Foo2.loads(a.dumps())
+        assert a.p.dumps() == b.anyp.dumps()

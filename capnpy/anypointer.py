@@ -1,4 +1,5 @@
 from capnpy.blob import Blob
+from capnpy.struct_ import Struct
 from capnpy import ptr
 from capnpy.list import ItemType
 
@@ -52,3 +53,7 @@ class AnyPointer(object):
         if not isinstance(item_type, ItemType):
             item_type = ItemType.from_type(item_type)
         return self.struct_._read_list(self.offset, item_type)
+
+    def dumps(self):
+        s = self.as_struct(Struct)
+        return s.dumps()
