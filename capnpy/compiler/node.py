@@ -162,7 +162,8 @@ class Node__Const:
                 val = val.compact()
                 ns.constdecl = m.declare_const(clsname, val)
         elif self.const.type.is_list():
-            assert options.include_reflection_data
+            if not options.include_reflection_data:
+                raise NotImplementedError("list constants if include_reflection_data == False")
             # we don't care about the precise item type here: we just need val
             # to inspect it's _offset, _size_tag and _item_count
             # attributes. So, we just use VoidItemType, which is unused since
