@@ -5,6 +5,12 @@ Changelog
 .. To see the commits between two versions:
    git log --graph --oneline 0.6.4..0.7.0
 
+0.8.1
+=====
+
+* Fix the Reflection API in presence of large schemas, which ``capnp``
+  compiles using multiple segments and far pointers.
+
 0.8.0
 =====
 
