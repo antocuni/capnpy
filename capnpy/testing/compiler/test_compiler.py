@@ -3,6 +3,7 @@ import pytest
 from six import b
 
 import capnpy
+from capnpy.segment.segment import MultiSegment
 from capnpy.testing.compiler.support import CompilerTest
 from capnpy.compiler.compiler import CompilerError, BaseCompiler, DynamicCompiler
 
@@ -285,6 +286,48 @@ class TestCapnpExcecutable(CompilerTest):
             '-I%s' % d1,
             '-I%s' % d2,
             'myschema.capnp')
+
+    def test_declare_const_multi_segment(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Point {
+            x @0 :Int64;
+            y @1 :Int64;
+        }
+        struct Root {
+            p @0 :Point;
+        }
+        """
+        mod = self.compile(schema)
+        #
+        # create a multi-segment Root object. We don't have a builtin way to
+        # do it inside capnpy, so we need to do it manually
+        seg0 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # some garbage
+                 '\x0e\x00\x00\x00\x02\x00\x00\x00')   # far ptr: pad=1, segment=2, ofs=1
+                                                       # ==> 2nd line of seg2
+        seg1 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # garbage
+                 '\x01\x00\x00\x00\x00\x00\x00\x00'    # x == 1
+                 '\x02\x00\x00\x00\x00\x00\x00\x00')   # y == 2
+        seg2 = b('\x00\x00\x00\x00\x00\x00\x00\x00'    # garbage
+                 '\x0a\x00\x00\x00\x01\x00\x00\x00'    # far ptr: pad=0, segment=1, ofs=1
+                                                       # ==> 2nd line of seg1
+                 '\x00\x00\x00\x00\x02\x00\x00\x00')   # tag: struct,ofs=0,data=2,ptrs=0
+        seg = MultiSegment(seg0+seg1+seg2,
+                           segment_offsets=(0, len(seg0), len(seg0+seg1)))
+        myroot = mod.Root.from_buffer(seg, 8, data_size=0, ptrs_size=1)
+        assert myroot.p.x == 1
+        assert myroot.p.y == 2
+        #
+        # now, we call ModuleGenerator.declare_const on "myroot": then we
+        # eval() the source code and check that the new "declared" constant is
+        # still readable
+        m = capnpy.get_reflection_data(mod).m
+        src = m.declare_const('Root', myroot)
+        d = {'Root': mod.Root, '_MultiSegment': MultiSegment}
+        newroot = eval(src, d)
+        assert newroot.p.x == 1
+        assert newroot.p.y == 2
+
 
 class TestDynamicCompiler(object):
 

@@ -10,6 +10,7 @@ from capnpy.compiler.util import as_identifier
 from capnpy.convert_case import from_camel_case
 from capnpy import schema
 from capnpy import annotate
+from capnpy.segment.segment import Segment, MultiSegment
 
 # the following imports have side-effects, and augment the schema.* classes
 # with emit() methods
@@ -223,7 +224,15 @@ class ModuleGenerator(object):
         it before calling declare_const()
         """
         if segment is None:
-            segment = repr(s._seg.buf)
+            if isinstance(s._seg, MultiSegment):
+                segment = '_MultiSegment({buf!r}, {offsets!r})'.format(
+                    buf=s._seg.buf,
+                    offsets=s._seg.segment_offsets)
+            elif isinstance(s._seg, Segment):
+                segment = '_Segment({buf!r})'.format(buf=s._seg.buf)
+            else:
+                assert False, "Unknown segment type"
+        #
         return '{name}.from_buffer({seg}, {offset}, {data_size}, {ptrs_size})'.format(
             name=clsname,
             seg=segment,

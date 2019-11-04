@@ -53,6 +53,8 @@ class RequestedFile:
         m.w("from capnpy.enum import enum as _enum, fill_enum as _fill_enum")
         m.w("from capnpy.enum {cimport} BaseEnum as _BaseEnum")
         m.w("from capnpy.type import Types as _Types")
+        m.w("from capnpy.segment.segment {cimport} Segment as _Segment")
+        m.w("from capnpy.segment.segment {cimport} MultiSegment as _MultiSegment")
         m.w("from capnpy.segment.builder {cimport} SegmentBuilder as _SegmentBuilder")
         m.w("from capnpy.list {cimport} List as _List")
         m.w("from capnpy.list {cimport} PrimitiveItemType as _PrimitiveItemType")
