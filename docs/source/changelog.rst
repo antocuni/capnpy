@@ -5,6 +5,12 @@ Changelog
 .. To see the commits between two versions:
    git log --graph --oneline 0.6.4..0.7.0
 
+0.8.2
+=====
+
+* Add a Python2 fix so that calling ``repr()`` on structs does not crash in
+  case fields contain non-ASCII characters
+
 0.8.1
 =====
 
