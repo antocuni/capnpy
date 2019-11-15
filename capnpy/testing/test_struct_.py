@@ -1,5 +1,7 @@
+# -*- encoding: utf-8 -*-
+
 import py
-from six import b
+from six import b, PY3
 
 from capnpy import ptr
 from capnpy.type import Types
@@ -259,3 +261,13 @@ def test_raw_dumps_loads_multi_segment():
     p = obj2._read_struct(0, Struct)
     assert p._read_primitive(0, Types.int64.ifmt) == 1
     assert p._read_primitive(8, Types.int64.ifmt) == 2
+
+def test_unicode_repr():
+    class MyStruct(Struct):
+        def shortrepr(self):
+            return u'hellò'
+    s = MyStruct.from_buffer(b'', 0, 0, 0)
+    expected = u'<MyStruct: hellò>'
+    if not PY3:
+        expected = expected.encode('utf-8')
+    assert repr(s) == expected

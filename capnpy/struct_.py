@@ -1,3 +1,4 @@
+from six import PY3
 import marshal
 import warnings
 import capnpy
@@ -148,7 +149,13 @@ class Struct(Blob):
         return u'(no shortrepr)'
 
     def __repr__(self):
-        return u'<%s: %s>' % (self.__class__.__name__, self.shortrepr())
+        r = u'<%s: %s>' % (self.__class__.__name__, self.shortrepr())
+        if PY3:
+            return r
+        # on py2, we need to explicitly encode the string, else CPython
+        # automatically turns it into a bytes using ascii, which causes errors
+        # in case of non-ascii chars
+        return r.encode('utf-8')
 
     def which(self):
         """
