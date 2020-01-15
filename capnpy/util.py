@@ -86,16 +86,32 @@ def check_version(modname, version):
         raise ImportError(msg)
 
 def text_bytes_repr(s):
-    s = decode_maybe(s)
+    return text_unicode_repr(decode_maybe(s))
+
+def text_unicode_repr(s):
     s = s.replace('"', r'\"')
     s = s.replace("'", r"\'")
     return u'"%s"' % s
 
-def text_unicode_repr(s):
-    return text_bytes_repr(encode_maybe(s))
+def data_repr(s):
+    s = s.decode('utf-8', errors='backslashreplace')
+    return text_unicode_repr(s)
 
 
 try:
     from capnpy.floatrepr import float32_repr, float64_repr
 except ImportError:
     float32_repr = float64_repr = repr
+
+
+if six.PY2:
+    import codecs
+    _bytes_repr = lambda c: '\\x{:x}'.format(ord(c))
+    _text_repr = lambda c: ('\\U{:08x}' if ord(c) >= 0x10000 else '\\u{:04x}').format(ord(c))
+
+    def backslashreplace(ex):
+        c_repr = _bytes_repr if isinstance(ex, UnicodeDecodeError) else _text_repr
+        return u''.join(c_repr(c) for c in ex.object[ex.start:ex.end]), ex.end
+
+    # Define an error handler equivalent to that provided in Python 3.5+
+    codecs.register_error('backslashreplace', backslashreplace)

@@ -21,7 +21,19 @@ class TestShortRepr(CompilerTest):
         if ret != 0:
             raise ValueError(stderr)
         res = stdout.strip()
-        return res.decode('utf-8')
+        return res.decode('utf-8', errors='backslashreplace')
+
+    def encode(self, cls, myrepr):
+        from subprocess import Popen, PIPE
+        cmd = ['capnp', 'encode', self.mod.__schema__, cls.__name__]
+        proc = Popen(cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE)
+        proc.stdin.write(myrepr.encode('utf-8'))
+        stdout, stderr = proc.communicate()
+        ret = proc.wait()
+        if ret != 0:
+            raise ValueError(stderr)
+        res = stdout.strip()
+        return cls.loads(res)
 
     def check(self, obj, expected):
         def is_ascii(s):
@@ -42,6 +54,9 @@ class TestShortRepr(CompilerTest):
             return
         capnp_repr = self.decode(obj)
         assert myrepr == capnp_repr, 'shortrepr() does not match with capnp decode'
+        #
+        new_obj = self.encode(obj.__class__, myrepr)
+        assert obj.dumps() == new_obj.dumps(), 'shortrepr() failed to generate an equivalent object'
 
     def test_primitive(self):
         schema = """
@@ -180,6 +195,17 @@ class TestShortRepr(CompilerTest):
         p = self.mod.P(data=u'hellò'.encode('utf-8'))
         self.check(p, u'(data = "hellò")')
 
+    def test_data_non_textual(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct P {
+            data @0 :Data;
+        }
+        """
+        self.mod = self.compile(schema)
+        p = self.mod.P(data=b'\xa3')
+        self.check(p, r'(data = "\xa3")')
+
     def test_struct(self):
         schema = """
         @0xbf5147cbbecf40c1;
@@ -306,19 +332,22 @@ class TestShortRepr(CompilerTest):
         self.check(p, '()') # the default value is always empty
         #
         buf = b('\x01\x00\x00\x00\x00\x00\x00\x00'  # tag == b
+                '\x00\x00\x00\x00\x02\x00\x00\x00'  # struct
+                '\x00\x00\x00\x00\x00\x00\x00\x00'  # null ptr
                 '\x00\x00\x00\x00\x00\x00\x00\x00') # null ptr
         p = self.mod.P.from_buffer(buf, 0, 1, 1)
         assert p.is_b()
         self.check(p, '(b = (x = 0, y = 0))')
         #
         buf = b('\x02\x00\x00\x00\x00\x00\x00\x00'  # tag == c
+                '\x01\x00\x00\x00\x0a\x00\x00\x00'  # text
                 '\x00\x00\x00\x00\x00\x00\x00\x00') # null ptr
         p = self.mod.P.from_buffer(buf, 0, 1, 1)
         assert p.is_c()
         self.check(p, '(c = "")')
         #
         buf = b('\x03\x00\x00\x00\x00\x00\x00\x00'  # tag == d
-                '\x00\x00\x00\x00\x00\x00\x00\x00') # null ptr
+                '\x01\x00\x00\x00\x05\x00\x00\x00') # list
         p = self.mod.P.from_buffer(buf, 0, 1, 1)
         assert p.is_d()
         self.check(p, '(d = [])')

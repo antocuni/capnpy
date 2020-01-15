@@ -258,10 +258,12 @@ class Node__Struct:
             return ns.format('str(self.{pyname}).lower()')
         elif f.is_void():
             return '"void"'
-        elif f.is_text_bytes(m) or f.is_data():
+        elif f.is_text_bytes(m):
             return ns.format('_text_bytes_repr(self.get_{pyname}())')
         elif f.is_text_unicode(m):
             return ns.format('_text_unicode_repr(self.get_{pyname}())')
+        elif f.is_data():
+            return ns.format('_data_repr(self.get_{pyname}())')
         elif f.is_struct() or f.is_list():
             return ns.format('self.get_{pyname}().shortrepr()')
         elif f.is_group():
