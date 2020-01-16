@@ -68,6 +68,7 @@ class RequestedFile:
         m.w("from capnpy.anypointer import AnyPointer as _AnyPointer")
         m.w("from capnpy.util import text_bytes_repr as _text_bytes_repr")
         m.w("from capnpy.util import text_unicode_repr as _text_unicode_repr")
+        m.w("from capnpy.util import data_repr as _data_repr")
         m.w("from capnpy.util import float32_repr as _float32_repr")
         m.w("from capnpy.util import float64_repr as _float64_repr")
         m.w("from capnpy.util import extend_module_maybe as _extend_module_maybe")
