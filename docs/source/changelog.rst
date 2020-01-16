@@ -5,6 +5,11 @@ Changelog
 .. To see the commits between two versions:
    git log --graph --oneline 0.6.4..0.7.0
 
+0.8.3
+=====
+
+* Fix the ``repr()`` of ``Data`` fields when they contain non-ASCII characters
+
 0.8.2
 =====
 
