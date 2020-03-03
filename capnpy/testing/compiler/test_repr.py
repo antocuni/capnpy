@@ -21,7 +21,7 @@ class TestShortRepr(CompilerTest):
         if ret != 0:
             raise ValueError(stderr)
         res = stdout.strip()
-        return res.decode('utf-8', errors='backslashreplace')
+        return res.decode('utf-8')
 
     def encode(self, cls, myrepr):
         from subprocess import Popen, PIPE
@@ -35,25 +35,15 @@ class TestShortRepr(CompilerTest):
         res = stdout.strip()
         return cls.loads(res)
 
-    def check(self, obj, expected):
-        def is_ascii(s):
-            return all(ord(c) < 128 for c in s)
-        #
+    def check(self, obj, expected, check_decode=True):
         myrepr = obj.shortrepr()
         assert myrepr == expected, 'shortrepr() is not what we expect'
         #
-        if self.mod.__capnproto_version__ < '0.7.0' and not is_ascii(myrepr):
-            # text literals are outputted differently depending on the
-            # capnproto version. capnp >= 0.7.0 emits plain utf-8 text fields,
-            # while previous versions emits backslash-escaped utf-8: for example:
-            #    0.6.1: (txt = "hell\xc3\xb2")
-            #    0.7.0: (txt = "hellò")
-            #
-            # So, if we are using an older capnproto version and our repr
-            # contains non-ASCII chars, we just skip it.
-            return
-        capnp_repr = self.decode(obj)
-        assert myrepr == capnp_repr, 'shortrepr() does not match with capnp decode'
+        if check_decode:
+            # do not attempt to guarantee consistency with capnpy decode output
+            # for data fields which is not even itself internally consistent
+            capnp_repr = self.decode(obj)
+            assert myrepr == capnp_repr, 'shortrepr() does not match with capnp decode'
         #
         new_obj = self.encode(obj.__class__, myrepr)
         assert obj.dumps() == new_obj.dumps(), 'shortrepr() failed to generate an equivalent object'
@@ -193,7 +183,7 @@ class TestShortRepr(CompilerTest):
         self.check(p, r'(data = "tricky \" \'")')
         #
         p = self.mod.P(data=u'hellò'.encode('utf-8'))
-        self.check(p, u'(data = "hellò")')
+        self.check(p, u'(data = "hell\\xc3\\xb2")', check_decode=False)
 
     def test_data_non_textual(self):
         schema = """
@@ -204,7 +194,10 @@ class TestShortRepr(CompilerTest):
         """
         self.mod = self.compile(schema)
         p = self.mod.P(data=b'\xa3')
-        self.check(p, r'(data = "\xa3")')
+        self.check(p, r'(data = "\xa3")', check_decode=False)
+        #
+        p = self.mod.P(data=b'\x00')
+        self.check(p, r'(data = "\x00")', check_decode=False)
 
     def test_struct(self):
         schema = """
