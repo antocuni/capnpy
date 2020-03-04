@@ -5,6 +5,12 @@ Changelog
 .. To see the commits between two versions:
    git log --graph --oneline 0.6.4..0.7.0
 
+0.8.4
+=====
+
+* Change again the ``repr()`` of ``Data`` fields: it is not enough to escape
+  non-ASCII chars, we need to escape non-printable chars as well.
+
 0.8.3
 =====
 
