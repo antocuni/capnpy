@@ -1,54 +1,45 @@
 jobs:
   - job: LibraryTests
+    displayName: 'Tests'
     pool:
       vmImage: 'ubuntu-latest'
-    displayName: 'Tests'
-
     strategy:
       matrix:
         nopyx-test:
           python.version: '3.6'
           tox.env: nopyx-test
-
         py27-test:
           python.version: '2.7'
           tox.env: py27-test
-
         pypy-test:
           python.version: pypy2
           tox.env: pypy-test
-
         py35-test:
           python.version: '3.5'
           tox.env: py35-test
-
         pypy3-test:
           python.version: pypy3
           tox.env: pypy3-test
-
         py36-test:
           python.version: '3.6'
           tox.env: py36-test
-
         py37-test:
           python.version: '3.7'
           tox.env: py37-test
-
         docs:
           python.version: '2.7'
           tox.env: docs
 
     steps:
-      - task: UsePythonVersion@0
+      - displayName: 'Use Python $(python.version)'
+        task: UsePythonVersion@0
         inputs:
           versionSpec: '$(python.version)'
-        displayName: 'Use Python $(python.version)'
 
-      - script: |
+      - displayName: 'Install tox'
+        script: |
           pip install -U tox
-          displayName: Install tox
 
-      - script: |
+      - displayName: 'run tox -e $(tox.env)'
+        script: |
           tox -e $(tox.env)
-        displayName: run tox -e $(tox.env)
-
