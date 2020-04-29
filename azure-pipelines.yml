@@ -31,15 +31,13 @@ jobs:
           tox.env: docs
 
     steps:
-      - displayName: 'Use Python $(python.version)'
-        task: UsePythonVersion@0
+      - task: UsePythonVersion@0
         inputs:
           versionSpec: '$(python.version)'
+        displayName: 'Use Python $(python.version)'
 
-      - displayName: 'Install tox'
-        script: |
-          pip install -U tox
+      - script: pip install -U tox
+        displayName: 'Install tox'
 
-      - displayName: 'run tox -e $(tox.env)'
-        script: |
-          tox -e $(tox.env)
+      - script: tox -e $(tox.env)
+        displayName: 'run tox -e $(tox.env)'
