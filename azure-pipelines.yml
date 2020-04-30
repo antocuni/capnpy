@@ -37,8 +37,12 @@ jobs:
         displayName: 'Use Python $(python.version)'
 
       - script: |
-            pip install -U tox
-        displayName: 'Install tox'
+            bash ./travis/install_capnp.sh
+            pip install -U tox pip
+            # tox creates the sdist: we need cython to be installed in the env which
+            # creates the sdist, to generate the .c files
+            pip install cython>=0.25
+        displayName: 'Install tools'
 
       - script: tox -e $(tox.env)
         displayName: 'run tox -e $(tox.env)'
