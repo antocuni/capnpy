@@ -6,7 +6,7 @@ types. The idea is that if you have C variables, you can compute fast hashes
 
 cdef extern from "Python.h":
     int PY_MAJOR_VERSION
-cdef int PY3 = PY_MAJOR_VERSION == 3
+    int PY_MINOR_VERSION
 
 cdef extern from "_hash.h":
     ctypedef struct _Py_HashSecret_t:
@@ -18,6 +18,9 @@ cdef extern from "_hash.h":
     cdef Py_hash_t strhash_f(const void *src, Py_ssize_t len)
     long HASH_MASK
     long MINLONG
+
+cdef int PY3 = PY_MAJOR_VERSION == 3
+cdef int PY38 = (PY_MAJOR_VERSION == 3 and PY_MINOR_VERSION >= 8)
 
 
 cpdef long strhash(bytes a, long start, long size):
@@ -43,6 +46,11 @@ cpdef long longhash(unsigned long v):
     if PY3:
         return _longhash_3(v)
     return _longhash_2(v)
+
+cdef long tuplehash(long hashes[], long len):
+    if PY38:
+        return _tuplehash_38(hashes, len)
+    return _tuplehash_legacy(hashes, len)
 
 
 ### Python 2 ##################################################
@@ -116,7 +124,9 @@ cdef inline long _longhash_3(unsigned long v):
 # taken from python/Objects/tupleobject.c:tuplehash
 
 # Cython-only interface
-cdef long tuplehash(long hashes[], long len):
+
+# algorithm used by all pythons up to 3.7 (included)
+cdef long _tuplehash_legacy(long hashes[], long len):
     cdef long mult = 1000003
     cdef long x = 0x345678
     cdef long y
@@ -135,6 +145,9 @@ cdef long tuplehash(long hashes[], long len):
     if x == -1:
         x = -2
     return x
+
+cdef extern from "_hash_cpython.c":
+    long _tuplehash_38(long hashes[], long len)
 
 # Python interface, used by tests
 from cpython cimport array

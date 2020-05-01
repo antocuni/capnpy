@@ -2,7 +2,7 @@ all:
 	python3.8 setup.py build_ext --inplace
 
 clean:
-	find capnpy '(' -name '*.c' -or -name '*.so' ')' -print -delete
+	find capnpy '(' -name '*.c' -or -name '*.so' ')' -and -not -name '_hash_cpython.c' -print -delete
 	rm -rf build dist
 
 annotate:
