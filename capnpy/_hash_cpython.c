@@ -1,6 +1,9 @@
 #include "Python.h"
 
-/* tuplehash implementation on Python >= 3.8 */
+#if PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 8
+
+/* tuplehash implementation on Python >= 3.8, copied and adapted from
+   tupleobject.c */
 
 #if SIZEOF_PY_UHASH_T > 4
 #define _PyHASH_XXPRIME_1 ((Py_uhash_t)11400714785074694791ULL)
@@ -15,7 +18,7 @@
 #endif
 
 static long
-_tuplehash_38(long *hashes, long len)
+_cpython_tuplehash(long *hashes, long len)
 {
     Py_ssize_t i;
     Py_uhash_t acc = _PyHASH_XXPRIME_5;
@@ -37,3 +40,30 @@ _tuplehash_38(long *hashes, long len)
     }
     return acc;
 }
+
+#else /* PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 8 */
+
+/* tuplehash implementation on Python < 3.8, copied and adapted from
+   tupleobject.c */
+
+static long
+_cpython_tuplehash(long *hashes, long len)
+{
+    unsigned long x;  /* Unsigned for defined overflow behavior. */
+    Py_hash_t y;
+    unsigned long mult = 1000003UL;
+    x = 0x345678UL;
+    while (--len >= 0) {
+        y = *hashes++;
+        x = (x ^ y) * mult;
+        /* the cast might truncate len; that doesn't change hash stability */
+        mult += (long)(82520UL + len + len);
+    }
+    x += 97531UL;
+    if (x == (unsigned long)-1)
+        x = -2;
+    return x;
+}
+
+
+#endif /* PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 8 */
