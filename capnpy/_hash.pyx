@@ -6,7 +6,6 @@ types. The idea is that if you have C variables, you can compute fast hashes
 
 cdef extern from "Python.h":
     int PY_MAJOR_VERSION
-cdef int PY3 = PY_MAJOR_VERSION == 3
 
 cdef extern from "_hash.h":
     ctypedef struct _Py_HashSecret_t:
@@ -18,6 +17,8 @@ cdef extern from "_hash.h":
     cdef Py_hash_t strhash_f(const void *src, Py_ssize_t len)
     long HASH_MASK
     long MINLONG
+
+cdef int PY3 = PY_MAJOR_VERSION == 3
 
 
 cpdef long strhash(bytes a, long start, long size):
@@ -44,6 +45,8 @@ cpdef long longhash(unsigned long v):
         return _longhash_3(v)
     return _longhash_2(v)
 
+cdef long tuplehash(long hashes[], long len):
+    return _cpython_tuplehash(hashes, len)
 
 ### Python 2 ##################################################
 # string hashing algorithm. Copied from CPython's 2.7 stringobject.c. Note
@@ -112,29 +115,10 @@ cdef inline long _longhash_3(unsigned long v):
 ### END Python 3 ###############################################
 
 
-# tuple hashing algorithm. The magic numbers and the algorithm itself are
-# taken from python/Objects/tupleobject.c:tuplehash
-
 # Cython-only interface
-cdef long tuplehash(long hashes[], long len):
-    cdef long mult = 1000003
-    cdef long x = 0x345678
-    cdef long y
-    while True:
-        len -= 1
-        if len < 0:
-            break
-        # equivalent to y = *hashes++
-        y = hashes[0]
-        hashes += 1
-        #
-        x = (x ^ y) * mult
-        mult += <long>(82520 + len + len)
-    #
-    x += 97531
-    if x == -1:
-        x = -2
-    return x
+
+cdef extern from "_hash_cpython.c":
+    long _cpython_tuplehash(long hashes[], long len)
 
 # Python interface, used by tests
 from cpython cimport array
