@@ -5,6 +5,24 @@ Changelog
 .. To see the commits between two versions:
    git log --graph --oneline 0.6.4..0.7.0
 
+0.8.6
+=====
+
+* Re-enable the Cython extensions which were disabled by 0.8.5 by mistake.
+
+
+0.8.5
+=====
+
+.. warning::
+   This relase is broken. By mistake, most Cython extensions were disabled, so
+   the CPython wheels are slower than they should. Use 0.8.6 instead.
+
+* Add support for CPython 3.8: in particular, adapt the :ref:`$Py.key hashing
+  algorithm <equality-and-hashing>` to match the new `CPython's tuple hashing
+  <https://bugs.python.org/issue34751>`_.
+
+
 0.8.4
 =====
 

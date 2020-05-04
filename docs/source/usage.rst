@@ -736,6 +736,8 @@ suggests, the newly created message is guaranteed to be compact:
     True
 
 
+.. _equality-and-hashing:
+
 Equality and hashing
 ====================
 
