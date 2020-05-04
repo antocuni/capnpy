@@ -19,7 +19,7 @@ Changelog
    the CPython wheels are slower than they should. Use 0.8.6 instead.
 
 * Add support for CPython 3.8: in particular, adapt the :ref:`$Py.key hashing
-  algorithm <equality-and-hashing>` to match the new `CPython's tuple hashing
+  algorithm <equality and hashing>` to match the new `CPython's tuple hashing
   <https://bugs.python.org/issue34751>`_.
 
 

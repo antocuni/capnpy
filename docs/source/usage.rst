@@ -384,10 +384,8 @@ inspired by ``namedtuples``:
     value of a field, you can instantiate a new object, as you would do with
     namedtuples
 
-  - objects can be made `comparable and hashable`__ by specifying the
-    ``$Py.key`` annotation
-
-.. __: #equality-and-hashing
+  - objects can be made :ref:`comparable and hashable <equality and hashing>`
+    by specifying the ``$Py.key`` annotation
 
 
 Moreover, in case the type of a field is a pointer (e.g. ``Text``, ``Data``,
@@ -596,8 +594,8 @@ virtual group, which fishes the data from normal "flat" fields.
    :emphasize-lines: 8
    :lines: 3-
 
-This becomes particularly handy in conjuction with ``$Py.key`` (see `Equality
-and hashing`_), because it allows to get an hashable/comparable subset of the
+This becomes particularly handy in conjuction with ``$Py.key`` (see :ref:`Equality
+and hashing`), because it allows to get an hashable/comparable subset of the
 fields without affecting other parts of the code which want to access the
 flat fields:
 
@@ -735,8 +733,6 @@ suggests, the newly created message is guaranteed to be compact:
     >>> pnew._is_compact()
     True
 
-
-.. _equality-and-hashing:
 
 Equality and hashing
 ====================
