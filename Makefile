@@ -1,12 +1,5 @@
 all:
-	python2.7 setup.py build_ext --inplace
-	python3.7 setup.py build_ext --inplace
 	python3.8 setup.py build_ext --inplace
-
-x:
-	python2.7 -m pytest capnpy/testing/test__hash.py -x
-	python3.7 -m pytest capnpy/testing/test__hash.py -x
-	python3.8 -m pytest capnpy/testing/test__hash.py -x
 
 clean:
 	find capnpy '(' -name '*.c' -or -name '*.so' ')' -and -not -name '_hash_cpython.c' -print -delete
