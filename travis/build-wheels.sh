@@ -27,3 +27,5 @@ done
 for whl in wheelhouse/capnpy*.whl; do
     auditwheel repair "$whl" -w /capnpy/wheelhouse/
 done
+
+md5sum /capnpy/wheelhouse/*

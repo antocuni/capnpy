@@ -55,7 +55,7 @@ matrix:
         - docker
       env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
       install:
-        - if [[ -z $TRAVIS_TAG ]]; then exit 0; fi # exit early if it's not a tag
+        #- if [[ -z $TRAVIS_TAG ]]; then exit 0; fi # exit early if it's not a tag
         - docker pull $DOCKER_IMAGE
       script:
         - docker run --rm -v `pwd`:/capnpy $DOCKER_IMAGE /capnpy/travis/build-wheels.sh

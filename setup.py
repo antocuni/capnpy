@@ -169,7 +169,7 @@ else:
     extra_install_requires = []
 
 
-setup(name="capnpy",
+setup(name="testing-capnpy",
       author='Antonio Cuni',
       author_email='anto.cuni@gmail.com',
       url='https://github.com/antocuni/capnpy',
