@@ -60,8 +60,8 @@ matrix:
       script:
         - docker image ls $DOCKER_IMAGE
         - docker run --rm -v `pwd`:/capnpy $DOCKER_IMAGE /capnpy/travis/build-wheels.sh
-        - pip install twine
-        - twine upload -u antocuni.wheelbuilder -p $PYPIPASS dist/* wheelhouse/*
+        # - pip install twine
+        # - twine upload -u antocuni.wheelbuilder -p $PYPIPASS dist/* wheelhouse/*
 
 cache:
   pip: true
