@@ -118,6 +118,7 @@ class my_build_ext(build_ext):
 DEBUG = int(os.environ.get('CAPNPY_DEBUG', False)) # whether to compile files with -g
 
 def get_cython_extensions():
+    from Cython.Build import cythonize
     files = [## "capnpy/segment/base.pyx",
              ## "capnpy/segment/segment.py",
              ## "capnpy/segment/builder.pyx",
@@ -151,7 +152,7 @@ def get_cython_extensions():
             include_dirs = [capnpy_dir],
             extra_compile_args = extra_compile_args,
         )
-    return [getext(f) for f in files]
+    return cythonize([getext(f) for f in files])
 
 
 if hasattr(sys, 'pypy_version_info'):
