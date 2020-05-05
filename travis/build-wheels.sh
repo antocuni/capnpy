@@ -23,9 +23,18 @@ for pydir in "${PYTHONS[@]}"; do
     fi
 done
 
+echo
+echo "objdump ot capnpy/ptr.so"
+pushd /tmp/
+unzip ~/wheelhouse/testing_capnpy-0.0.1-cp27-cp27m-linux_x86_64.whl
+objdump -T capnpy/ptr.so
+popd
+
+
 # Bundle external shared libraries into the wheels
 for whl in wheelhouse/testing_capnpy*.whl; do
     auditwheel repair "$whl" -w /capnpy/wheelhouse/
 done
 
+echo
 md5sum /capnpy/wheelhouse/*

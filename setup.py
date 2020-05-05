@@ -118,22 +118,22 @@ class my_build_ext(build_ext):
 DEBUG = int(os.environ.get('CAPNPY_DEBUG', False)) # whether to compile files with -g
 
 def get_cython_extensions():
-    files = ["capnpy/segment/base.pyx",
-             "capnpy/segment/segment.py",
-             "capnpy/segment/builder.pyx",
-             "capnpy/segment/endof.py",
-             "capnpy/blob.py",
-             "capnpy/enum.py",
-             "capnpy/struct_.py",
-             "capnpy/list.py",
-             "capnpy/type.py",
-             "capnpy/message.py",
-             "capnpy/buffered.py",
-             "capnpy/filelike.py",
+    files = [## "capnpy/segment/base.pyx",
+             ## "capnpy/segment/segment.py",
+             ## "capnpy/segment/builder.pyx",
+             ## "capnpy/segment/endof.py",
+             ## "capnpy/blob.py",
+             ## "capnpy/enum.py",
+             ## "capnpy/struct_.py",
+             ## "capnpy/list.py",
+             ## "capnpy/type.py",
+             ## "capnpy/message.py",
+             ## "capnpy/buffered.py",
+             ## "capnpy/filelike.py",
              "capnpy/ptr.pyx",
-             "capnpy/packing.pyx",
-             "capnpy/_hash.pyx",
-             "capnpy/_util.pyx"
+             ## "capnpy/packing.pyx",
+             ## "capnpy/_hash.pyx",
+             ## "capnpy/_util.pyx"
             ]
 
     root_dir = os.path.abspath(os.path.dirname(__file__))
