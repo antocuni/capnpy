@@ -5,10 +5,10 @@ set -e -x
 PYTHONS=(
     cp27-cp27m
     cp27-cp27mu
-    # cp35-cp35m
-    # cp36-cp36m
-    # cp37-cp37m
-    # cp38-cp38
+    cp35-cp35m
+    cp36-cp36m
+    cp37-cp37m
+    cp38-cp38
     )
 
 for pydir in "${PYTHONS[@]}"; do
@@ -26,7 +26,7 @@ done
 echo
 echo "objdump ot capnpy/ptr.so"
 pushd /tmp/
-unzip /wheelhouse/testing_capnpy-0.0.1-cp27-cp27m-linux_x86_64.whl
+unzip /wheelhouse/testing_capnpy-0.0.1-cp27-cp27mu-linux_x86_64.whl
 objdump -T capnpy/ptr.so
 popd
 
