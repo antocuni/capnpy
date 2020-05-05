@@ -3,7 +3,7 @@ set -e -x
 
 # Compile wheels
 PYTHONS=(
-    cp27-cp27m
+    #cp27-cp27m
     cp27-cp27mu
     # cp35-cp35m
     # cp36-cp36m
