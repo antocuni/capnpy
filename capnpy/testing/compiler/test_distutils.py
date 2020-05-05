@@ -11,7 +11,7 @@ from capnpy.compiler.compiler import DistutilsCompiler
 def ROOT():
     import pkg_resources
     try:
-        dist = pkg_resources.get_distribution('capnpy')
+        dist = pkg_resources.get_distribution('testing-capnpy')
     except pkg_resources.DistributionNotFound:
         raise ValueError("Cannot find the capnpy distribution: "
                          "please run setup.py install. "
