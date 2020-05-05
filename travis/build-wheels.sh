@@ -24,7 +24,7 @@ for pydir in "${PYTHONS[@]}"; do
 done
 
 # Bundle external shared libraries into the wheels
-for whl in wheelhouse/capnpy*.whl; do
+for whl in wheelhouse/testing-capnpy*.whl; do
     auditwheel repair "$whl" -w /capnpy/wheelhouse/
 done
 
