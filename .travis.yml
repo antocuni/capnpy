@@ -58,6 +58,7 @@ matrix:
         #- if [[ -z $TRAVIS_TAG ]]; then exit 0; fi # exit early if it's not a tag
         - docker pull $DOCKER_IMAGE
       script:
+        - docker image ls $DOCKER_IMAGE
         - docker run --rm -v `pwd`:/capnpy $DOCKER_IMAGE /capnpy/travis/build-wheels.sh
         - pip install twine
         - twine upload -u antocuni.wheelbuilder -p $PYPIPASS dist/* wheelhouse/*

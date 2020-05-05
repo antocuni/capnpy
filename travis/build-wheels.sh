@@ -5,10 +5,10 @@ set -e -x
 PYTHONS=(
     cp27-cp27m
     cp27-cp27mu
-    cp35-cp35m
-    cp36-cp36m
-    cp37-cp37m
-    cp38-cp38
+    # cp35-cp35m
+    # cp36-cp36m
+    # cp37-cp37m
+    # cp38-cp38
     )
 
 for pydir in "${PYTHONS[@]}"; do
