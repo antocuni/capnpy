@@ -26,7 +26,7 @@ done
 echo
 echo "objdump ot capnpy/ptr.so"
 pushd /tmp/
-unzip ~/wheelhouse/testing_capnpy-0.0.1-cp27-cp27m-linux_x86_64.whl
+unzip /wheelhouse/testing_capnpy-0.0.1-cp27-cp27m-linux_x86_64.whl
 objdump -T capnpy/ptr.so
 popd
 
