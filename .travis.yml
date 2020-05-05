@@ -9,45 +9,45 @@ matrix:
     - python: '2.7'
       env: TOXENV=nopyx-test
 
-    - python: '2.7'
-      env: TOXENV=py27-test
+    # - python: '2.7'
+    #   env: TOXENV=py27-test
+
+    # # - python: '2.7'
+    # #   env: TOXENV=py27-bench
+
+    # - python: 'pypy'
+    #   env: TOXENV=pypy-test
+
+    # # - python: 'pypy-5.4'
+    # #   env: TOXENV=pypy-bench
+
+    # - python: '3.5'
+    #   env: TOXENV=nopyx-test
+
+    # - python: '3.5'
+    #   env: TOXENV=py35-test
+
+    # - python: 'pypy3'
+    #   env: TOXENV=pypy3-test
+
+    # - python: '3.6'
+    #   env: TOXENV=nopyx-test
+
+    # - python: '3.6'
+    #   env: TOXENV=py36-test
+
+    # - python: '3.7'
+    #   sudo: required
+    #   dist: xenial
+    #   env: TOXENV=py37-test
+
+    # - python: '3.8'
+    #   sudo: required
+    #   dist: xenial
+    #   env: TOXENV=py38-test
 
     # - python: '2.7'
-    #   env: TOXENV=py27-bench
-
-    - python: 'pypy'
-      env: TOXENV=pypy-test
-
-    # - python: 'pypy-5.4'
-    #   env: TOXENV=pypy-bench
-
-    - python: '3.5'
-      env: TOXENV=nopyx-test
-
-    - python: '3.5'
-      env: TOXENV=py35-test
-
-    - python: 'pypy3'
-      env: TOXENV=pypy3-test
-
-    - python: '3.6'
-      env: TOXENV=nopyx-test
-
-    - python: '3.6'
-      env: TOXENV=py36-test
-
-    - python: '3.7'
-      sudo: required
-      dist: xenial
-      env: TOXENV=py37-test
-
-    - python: '3.8'
-      sudo: required
-      dist: xenial
-      env: TOXENV=py38-test
-
-    - python: '2.7'
-      env: TOXENV=docs
+    #   env: TOXENV=docs
 
     - stage: deploy
       sudo: required
@@ -90,17 +90,19 @@ before_install:
   - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then openssl aes-256-cbc -K $encrypted_571f1f821904_key -iv $encrypted_571f1f821904_iv -in ./travis/travis.rsa.enc -out ./travis/travis.rsa -d; fi
 
 install:
-  - bash ./travis/install_capnp.sh
-  - pip install -U pip # so that we can use wheels
-  - pip install tox-travis
-  # tox creates the sdist: we need cython to be installed in the env which
-  # creates the sdist, to generate the .c files
-  - pip install cython>=0.25
+  - echo "nothing to do"
+  # - bash ./travis/install_capnp.sh
+  # - pip install -U pip # so that we can use wheels
+  # - pip install tox-travis
+  # # tox creates the sdist: we need cython to be installed in the env which
+  # # creates the sdist, to generate the .c files
+  # - pip install cython>=0.25
 
 script:
-  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./travis/clone-benchmarks-repo.sh; fi
-  - tox
-  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./travis/commit-results.sh; fi
+  - echo "nothing do do"
+  # - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./travis/clone-benchmarks-repo.sh; fi
+  # - tox
+  # - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./travis/commit-results.sh; fi
 
 notifications:
   webhooks:
