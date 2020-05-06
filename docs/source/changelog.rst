@@ -5,6 +5,14 @@ Changelog
 .. To see the commits between two versions:
    git log --graph --oneline 0.6.4..0.7.0
 
+0.8.7
+=====
+
+* Fix the ``manylinux`` Python2.7 wheels, which were broken in 0.8.6 because
+  of `this issue
+  <https://github.com/pypa/pip/issues/8165#issuecomment-624669107>`_.
+
+
 0.8.6
 =====
 

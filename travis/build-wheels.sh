@@ -16,6 +16,10 @@ for pydir in "${PYTHONS[@]}"; do
     "${pybin}/pip" install 'cython>=0.25'
     "${pybin}/pip" wheel /capnpy/ -w wheelhouse/
 
+    # workaround for this bug:
+    # https://github.com/pypa/pip/issues/8165#issuecomment-624669107
+    rm -rf /capnpy/build
+
     # create the sdist if it does not exist yet
     if [[ ! -d /capnpy/dist ]]
     then
