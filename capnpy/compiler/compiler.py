@@ -94,11 +94,7 @@ class BaseCompiler(object):
                                 "installed and in $PATH")
         self._capnp_check_version()
         # If <lang> is '-', the capnp compiler dumps the CodeGeneratorRequest bytes to standard output.
-        cmd = ['capnp', 'compile', '-o-']
-        for dirname in self.path:
-            if dirname.isdir():
-                cmd.append('-I%s' % dirname)
-        cmd.append(str(filename))
+        cmd = ['capnp', 'compile', '-o-', '-I/', str(filename)]
         return self._exec(*cmd)
 
     def _capnp_check_version(self):
