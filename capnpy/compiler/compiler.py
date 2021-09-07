@@ -35,7 +35,7 @@ class BaseCompiler(object):
     include_dirs = [str(PKGDIR)] # include "ptr.h"
 
     def __init__(self, path):
-        self.path = [py.path.local(dirname) for dirname in path]
+        self.path = [py.path.local(dirname) for dirname in path + ['/']]
         self.capnproto_version = None
         self._tmpdir = None
 
@@ -94,7 +94,11 @@ class BaseCompiler(object):
                                 "installed and in $PATH")
         self._capnp_check_version()
         # If <lang> is '-', the capnp compiler dumps the CodeGeneratorRequest bytes to standard output.
-        cmd = ['capnp', 'compile', '-o-', '-I/', str(filename)]
+        cmd = ['capnp', 'compile', '-o-']
+        for dirname in self.path:
+            if dirname.isdir():
+                cmd.append('-I%s' % dirname)
+        cmd.append(str(filename))
         return self._exec(*cmd)
 
     def _capnp_check_version(self):
