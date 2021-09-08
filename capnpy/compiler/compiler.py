@@ -35,7 +35,7 @@ class BaseCompiler(object):
     include_dirs = [str(PKGDIR)] # include "ptr.h"
 
     def __init__(self, path):
-        self.path = [py.path.local(dirname) for dirname in path]
+        self.path = [py.path.local(dirname) for dirname in path + ['/']]
         self.capnproto_version = None
         self._tmpdir = None
 
