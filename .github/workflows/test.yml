@@ -1,12 +1,15 @@
 ---
 name: tests
-on:
-  push:
-    branches:
-    - master
-  pull_request:
-    branches:
-    - master
+
+on: [push]
+
+# on:
+#   push:
+#     branches:
+#     - master
+#   pull_request:
+#     branches:
+#     - master
 
 env:
   CAPNPROTO: capnproto-c++-0.7.0
@@ -53,4 +56,9 @@ jobs:
           pip install tox cython>=0.25
 
       - name: Run tox
-        run: tox
+        #run: tox
+        run: |
+          echo "fake run tox"
+          python --version
+          echo "TOXENV: ${TOXENV}"
+          env
