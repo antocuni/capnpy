@@ -43,7 +43,7 @@ jobs:
           cache-name: cache-capnproto
         with:
           path: ~/capnproto
-          key: ${{ runner.os }}-${{ env.CAPNPROTO }}
+          key: ${{ env.CAPNPROTO }}-${{ runner.os }}
 
       - name: Install capnproto
         run: bash ./ci/install_capnp.sh
