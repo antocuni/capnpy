@@ -16,16 +16,17 @@ env:
 
 jobs:
   tox_tests:
-    name: tox ${{ matrix.python-version }}
+    name: tox -e ${{ matrix.python-version }}
 
     runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
           - python-version: '3.7'
-            foo: '37'
+            toxenv: 'py37-test'
+
           - python-version: '3.8'
-            foo: '38'
+            toxenv: 'py38-test'
 
     steps:
       - uses: actions/checkout@v2
@@ -54,8 +55,4 @@ jobs:
           pip install tox cython>=0.25
 
       - name: Run tox
-        #run: tox
-        run: |
-          echo "fake run tox"
-          python --version
-          echo "matrix.foo: ${{ matrix.foo }}"
+        run: tox -e ${{ matrix.toxenv }}
