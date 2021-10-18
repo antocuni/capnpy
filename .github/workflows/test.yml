@@ -16,7 +16,7 @@ env:
 
 jobs:
   main_tests:
-    name: tox ${{ matrix.TOXENV }}
+    name: tox ${{ matrix.python-version }}
 
     runs-on: ubunu-latest
     strategy:
@@ -56,5 +56,5 @@ jobs:
         run: |
           echo "fake run tox"
           python --version
-          echo "TOXENV: ${{ TOXENV }}"
+          #echo "TOXENV: ${{ TOXENV }}"
           env
