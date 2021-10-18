@@ -3,6 +3,7 @@ set -e
 
 CAPNPROTO=capnproto-c++-0.7.0
 
+cd
 if [ ! -d "$CAPNPROTO" ]; then
     echo 'Compiling capnproto'
     curl -O https://capnproto.org/$CAPNPROTO.tar.gz
