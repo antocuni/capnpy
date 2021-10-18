@@ -8,7 +8,7 @@ class TestStandalone(CompilerTest):
 
     @pytest.fixture(params=['py', 'pyx'])
     def initargs(self, request, tmpdir, monkeypatch):
-        CompilerTest.initargs(self, request, tmpdir)
+        CompilerTest._initargs(self, request, tmpdir)
         monkeypatch.syspath_prepend(tmpdir)
         self.imports = []
 
