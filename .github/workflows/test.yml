@@ -2,6 +2,9 @@
 name: tests
 on: [push, pull_request]
 
+env:
+  CAPNPROTO=capnproto-c++-0.7.0
+
 jobs:
   main_tests:
     name: Main tests
@@ -23,9 +26,21 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Setting up build environment
+      - name: Cache capnproto
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-capnproto
+        with:
+          path: ~/capnproto
+          key: ${{ runner.os }}-${{ env.CAPNPROTO }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.CAPNPROTO }}
+
+      - name: Install capnproto
+        run: bash ./ci/install_capnp.sh
+
+      - name: pip install
         run: |
-          bash ./travis/install_capnp.sh
           pip install -U pip # so that we can use wheels
           # tox creates the sdist: we need cython to be installed in the env which
           # creates the sdist, to generate the .c files
