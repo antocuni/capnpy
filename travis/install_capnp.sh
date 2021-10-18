@@ -1,20 +1,16 @@
 #!/bin/bash
 set -e
 
-CAPNPROTO=capnproto-c++-0.7.0
-
-cd
-if [ ! -d "$CAPNPROTO" ]; then
+if [ ! -d "$HOME/capnp/lib" ]; then
     echo 'Compiling capnproto'
+    CAPNPROTO=capnproto-c++-0.7.0
     curl -O https://capnproto.org/$CAPNPROTO.tar.gz
     tar zxf $CAPNPROTO.tar.gz
     cd $CAPNPROTO
-    ./configure
+    ./configure --prefix=$HOME/capnp
     make -j3
+    make install
 else
     echo 'Using cached capnproto'
-    cd $CAPNPROTO
 fi
-
-sudo make install
 capnp --version
