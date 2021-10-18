@@ -1,6 +1,12 @@
 ---
 name: tests
-on: [push, pull_request]
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
 
 env:
   CAPNPROTO: capnproto-c++-0.7.0
