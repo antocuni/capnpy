@@ -1,8 +1,8 @@
 capnpy
 ======
 
-.. image:: https://travis-ci.org/antocuni/capnpy.svg?branch=master
-    :target: https://travis-ci.org/antocuni/capnpy
+.. image:: https://github.com/antocuni/capnpy/actions/workflows/test.yml/badge.svg
+    :target: https://github.com/antocuni/capnpy/actions/workflows/test.yml
 
 A very fast implementation of `Cap’n Proto`_ for CPython and PyPy.
 

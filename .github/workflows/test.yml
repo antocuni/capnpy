@@ -1,0 +1,68 @@
+---
+name: tests
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+env:
+  CAPNPROTO: capnproto-c++-0.7.0
+
+jobs:
+  tox_tests:
+    name: tox -e ${{ matrix.toxenv }}
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - python-version: '2.7'
+            toxenv: 'nopyx-test'
+
+          - python-version: '2.7'
+            toxenv: 'py27-test'
+
+          - python-version: '3.6'
+            toxenv: 'py36-test'
+
+          - python-version: '3.7'
+            toxenv: 'py37-test'
+
+          - python-version: '3.8'
+            toxenv: 'py38-test'
+
+          - python-version: 'pypy-3.7'
+            toxenv: 'pypy3-test'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache capnproto
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-capnproto
+        with:
+          path: ~/capnproto
+          key: ${{ env.CAPNPROTO }}-${{ runner.os }}
+
+      - name: Install capnproto
+        run: bash ./ci/install_capnp.sh
+
+      - name: pip install
+        run: |
+          pip install -U pip # so that we can use wheels
+          # tox creates the sdist: we need cython to be installed in the env which
+          # creates the sdist, to generate the .c files
+          pip install tox cython>=0.25
+
+      - name: Run tox
+        run: tox -e ${{ matrix.toxenv }}
