@@ -23,11 +23,9 @@ jobs:
       matrix:
         include:
           - python-version: '3.7'
-            env:
-              TOXENV: py37-test
+            foo: '37'
           - python-version: '3.8'
-            env:
-              TOXENV: py38-test
+            foo: '38'
 
     steps:
       - uses: actions/checkout@v2
