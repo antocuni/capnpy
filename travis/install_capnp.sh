@@ -1,13 +1,13 @@
 #!/bin/bash
 set -e
 
-if [ ! -d "$HOME/capnp/lib" ]; then
+if [ ! -d "$CAPNP_DIR/lib" ]; then
     echo 'Compiling capnproto'
     CAPNPROTO=capnproto-c++-0.7.0
     curl -O https://capnproto.org/$CAPNPROTO.tar.gz
     tar zxf $CAPNPROTO.tar.gz
     cd $CAPNPROTO
-    ./configure --prefix=$HOME/capnp
+    ./configure --prefix=$CAPNP_DIR/lib
     make -j3
     make install
 else
