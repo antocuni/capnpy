@@ -87,7 +87,8 @@ def test_list_of_structs():
     assert read_point(2) == (30, 300)
     assert read_point(3) == (40, 400)
     #
-    py.test.raises(TypeError, "lst == lst")
+    with pytest.raises(TypeError):
+        lst == lst
 
 
 def test_text():
@@ -194,10 +195,10 @@ def test_list_comparisons():
     assert not lst1 == lst3 # different item_count
     assert lst1 != lst3
     #
-    py.test.raises(TypeError, "lst1 <  lst2")
-    py.test.raises(TypeError, "lst1 <= lst2")
-    py.test.raises(TypeError, "lst1 >  lst2")
-    py.test.raises(TypeError, "lst1 >= lst2")
+    with pytest.raises(TypeError): lst1 <  lst2
+    with pytest.raises(TypeError): lst1 <= lst2
+    with pytest.raises(TypeError): lst1 >  lst2
+    with pytest.raises(TypeError): lst1 >= lst2
 
 def test_compare_with_py_list():
     buf = b('\x01\x00\x00\x00\x25\x00\x00\x00'   # ptrlist
@@ -352,8 +353,10 @@ class TestPythonicInterface(object):
         assert mylist[0] == 0
         assert mylist[3] == 3
         assert mylist[-1] == 4
-        py.test.raises(IndexError, "mylist[5]")
-        py.test.raises(IndexError, "mylist[-6]")
+        with pytest.raises(IndexError):
+            mylist[5]
+        with pytest.raises(IndexError):
+            mylist[-6]
 
     def test_slice(self, mylist):
         assert mylist[2:4] == [2, 3]

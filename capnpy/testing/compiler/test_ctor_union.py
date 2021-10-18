@@ -120,8 +120,8 @@ class TestGenericCtor(BaseTestUnionConstructors):
         assert s.perimeter == 3
 
     def test_multiple_tags(self, mod):
-        einfo = py.test.raises(TypeError,
-                              "mod.Shape(area=0, perimeter=0, circle=1, square=2)")
+        with py.test.raises(TypeError) as einfo:
+            mod.Shape(area=0, perimeter=0, circle=1, square=2)
         assert str(einfo.value) == ('got multiple values for the union tag: '
                                     'circle, square')
 

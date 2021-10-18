@@ -16,13 +16,15 @@ def test_unpack_uint32():
     assert unpack_uint32(buf, 0) == a
     assert unpack_uint32(buf, 4) == b
     buf = b'abc'
-    pytest.raises(IndexError, "unpack_uint32(buf, 0)")
+    with pytest.raises(IndexError):
+        unpack_uint32(buf, 0)
 
 
 class TestBaseSegment(object):
 
     def test_None(self):
-        pytest.raises(AssertionError, "BaseSegment(None)")
+        with pytest.raises(AssertionError):
+            BaseSegment(None)
 
     def test_read_int64(self):
         buf = struct.pack('qqq', 42, 43, 44)
@@ -89,20 +91,20 @@ class TestBaseSegment(object):
     def test_errors(self):
         buf = b'\xff' * 8
         s = BaseSegment(buf)
-        pytest.raises(IndexError, "s.read_int8(-1)")
-        pytest.raises(IndexError, "s.read_int16(-1)")
-        pytest.raises(IndexError, "s.read_int32(-1)")
-        pytest.raises(IndexError, "s.read_int64(-1)")
+        with pytest.raises(IndexError): s.read_int8(-1)
+        with pytest.raises(IndexError): s.read_int16(-1)
+        with pytest.raises(IndexError): s.read_int32(-1)
+        with pytest.raises(IndexError): s.read_int64(-1)
         #
-        pytest.raises(IndexError, "s.read_uint8(-1)")
-        pytest.raises(IndexError, "s.read_uint16(-1)")
-        pytest.raises(IndexError, "s.read_uint32(-1)")
-        pytest.raises(IndexError, "s.read_uint64(-1)")
+        with pytest.raises(IndexError): s.read_uint8(-1)
+        with pytest.raises(IndexError): s.read_uint16(-1)
+        with pytest.raises(IndexError): s.read_uint32(-1)
+        with pytest.raises(IndexError): s.read_uint64(-1)
         #
-        pytest.raises(IndexError, "s.read_float(-1)")
-        pytest.raises(IndexError, "s.read_double(-1)")
+        with pytest.raises(IndexError): s.read_float(-1)
+        with pytest.raises(IndexError): s.read_double(-1)
         #
-        pytest.raises(IndexError, "s.read_int64(8)")
+        with pytest.raises(IndexError): s.read_int64(8)
 
     def test_dump_message(self):
         buf = b('garbage0'
@@ -127,8 +129,8 @@ class TestBaseSegment(object):
                 '\x02\x00\x00\x00\x00\x00\x00\x00'  # 2
                 'garbage1')
         s = BaseSegment(buf)
-        pytest.raises(ValueError, "s.dump_message(0, -1,  8)")
-        pytest.raises(ValueError, "s.dump_message(0, 32,  8)")
-        pytest.raises(ValueError, "s.dump_message(0,  8, -1)")
-        pytest.raises(ValueError, "s.dump_message(0,  8, 33)")
-        pytest.raises(ValueError, "s.dump_message(0, 16,  8)")
+        with pytest.raises(ValueError): s.dump_message(0, -1,  8)
+        with pytest.raises(ValueError): s.dump_message(0, 32,  8)
+        with pytest.raises(ValueError): s.dump_message(0,  8, -1)
+        with pytest.raises(ValueError): s.dump_message(0,  8, 33)
+        with pytest.raises(ValueError): s.dump_message(0, 16,  8)

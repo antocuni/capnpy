@@ -92,7 +92,8 @@ class TestConstructors(CompilerTest):
         assert p.x == 1
         assert p.y == 2
         assert p._seg.buf == buf
-        py.test.raises(TypeError, "mod.Point(z=None)")
+        with pytest.raises(TypeError):
+            mod.Point(z=None)
 
     def test_text_bytes(self):
         schema = """

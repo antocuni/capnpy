@@ -1,4 +1,4 @@
-import py
+import pytest
 import sys
 import capnpy
 from capnpy.testing.compiler.support import CompilerTest
@@ -6,7 +6,7 @@ from capnpy.compiler.compiler import StandaloneCompiler
 
 class TestStandalone(CompilerTest):
 
-    @py.test.fixture(params=['py', 'pyx'])
+    @pytest.fixture(params=['py', 'pyx'])
     def initargs(self, request, tmpdir, monkeypatch):
         CompilerTest.initargs(self, request, tmpdir)
         monkeypatch.syspath_prepend(tmpdir)
@@ -123,10 +123,12 @@ class TestStandalone(CompilerTest):
             assert f.ints == [1, 2, 3]
         #
         for proto in (0, pickle.HIGHEST_PROTOCOL):
-            py.test.raises(TypeError, "pickle.dumps(f.points, proto)")
+            with pytest.raises(TypeError):
+                pickle.dumps(f.points, proto)
         #
         for proto in (0, pickle.HIGHEST_PROTOCOL):
-            py.test.raises(TypeError, "pickle.dumps(f.ints, proto)")
+            with pytest.raises(TypeError):
+                pickle.dumps(f.ints, proto)
 
     def test_version(self, monkeypatch):
         monkeypatch.setattr(capnpy, '__version__', 'fake 1.0')
@@ -154,7 +156,8 @@ class TestStandalone(CompilerTest):
         # when in PYX mode, the module is not left inside sys.modules in case
         # of version mismatch
         for i in range(2):
-            exc = py.test.raises(ImportError, "self.import_('example')")
+            with pytest.raises(ImportError) as exc:
+                self.import_('example')
             expected = ('Version mismatch: the module has been compiled with '
                         'capnpy Fake 1.0, but the current version of capnpy '
                         'is Fake 2.0. Please recompile.')

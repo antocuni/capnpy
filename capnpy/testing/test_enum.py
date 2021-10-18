@@ -1,4 +1,4 @@
-import py
+import pytest
 from capnpy.enum import enum
 from capnpy.struct_ import Struct
 
@@ -12,7 +12,8 @@ def test_enum():
     assert repr(Color.red) == '<Color.red: 0>'
     assert str(Color.red) == 'red'
     assert Color(0) == Color.red
-    py.test.raises(AttributeError, "Color.red.x = 42")
+    with pytest.raises(AttributeError):
+        Color.red.x = 42
 
 def test_unknown():
     Color = enum('Color', ('red', 'green', 'blue'))

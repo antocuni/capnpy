@@ -1,4 +1,4 @@
-import py
+import pytest
 from six import b
 
 from capnpy import ptr
@@ -50,4 +50,5 @@ def test_hash_str_exception():
     buf = b''
     p = ptr.new_struct(0, 1, 1) # this is the wrong type of pointer
     bb = Segment(buf)
-    py.test.raises(AssertionError, "bb.hash_str(p, 0, 0, 0)")
+    with pytest.raises(AssertionError):
+        bb.hash_str(p, 0, 0, 0)

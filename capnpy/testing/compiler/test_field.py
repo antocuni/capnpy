@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-import py
+import pytest
 from six import b, PY3
 
 from capnpy.testing.compiler.support import CompilerTest
@@ -254,8 +254,10 @@ class TestField(CompilerTest):
         assert shape.area == 64
         assert shape.which() == mod.Shape.__tag__.square
         assert shape.square == 8
-        py.test.raises(ValueError, "shape.circle")
-        py.test.raises(ValueError, "shape.empty")
+        with pytest.raises(ValueError):
+            shape.circle
+        with pytest.raises(ValueError):
+            shape.empty
         #
         buf = b('\x40\x00\x00\x00\x00\x00\x00\x00'     # area == 64
                 '\x00\x00\x00\x00\x00\x00\x00\x00'     # unused
@@ -264,8 +266,10 @@ class TestField(CompilerTest):
         assert shape.area == 64
         assert shape.which() == mod.Shape.__tag__.empty
         assert shape.empty is None
-        py.test.raises(ValueError, "shape.square")
-        py.test.raises(ValueError, "shape.circle")
+        with pytest.raises(ValueError):
+            shape.square
+        with pytest.raises(ValueError):
+            shape.circle
 
     def test_which(self):
         schema = """
@@ -290,7 +294,8 @@ class TestField(CompilerTest):
         assert type(shape.__which__()) is int
         #
         foo = mod.Foo.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-        exc = py.test.raises(TypeError, "foo.which()")
+        with pytest.raises(TypeError) as exc:
+            foo.which()
         assert str(exc.value) == 'Cannot call which() on a non-union type'
 
     def test_is_union(self):
@@ -365,7 +370,8 @@ class TestField(CompilerTest):
         assert shape.which() == mod.Shape.__tag__.rectangle
         assert shape.rectangle.width == 4
         assert shape.rectangle.height == 5
-        py.test.raises(ValueError, "shape.circle.radius")
+        with pytest.raises(ValueError):
+            shape.circle.radius
 
     def test_bool(self):
         schema = """

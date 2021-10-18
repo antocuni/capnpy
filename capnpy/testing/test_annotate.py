@@ -16,7 +16,8 @@ class TestOptions:
     def test_BoolOption(self):
         assert BoolOption.true
         assert not BoolOption.false
-        pytest.raises(ValueError, "bool(BoolOption.notset)")
+        with pytest.raises(ValueError):
+            bool(BoolOption.notset)
         #
         t = BoolOption(True)
         assert t == BoolOption.true
