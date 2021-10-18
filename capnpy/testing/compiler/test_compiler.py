@@ -285,6 +285,7 @@ class TestCapnpExcecutable(CompilerTest):
             '-o-',
             '-I%s' % d1,
             '-I%s' % d2,
+            '-I/',
             'myschema.capnp')
 
     def test_declare_const_multi_segment(self):
