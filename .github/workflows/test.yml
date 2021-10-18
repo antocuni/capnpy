@@ -16,18 +16,16 @@ env:
 
 jobs:
   main_tests:
-    name: Main tests
-    runs-on: ${{ matrix.os }}
+    name: tox ${{ matrix.TOXENV }}
+
+    runs-on: ubunu-latest
     strategy:
       matrix:
-        os: [ubuntu-latest]
         include:
           - python-version: '3.7'
-            env:
-              TOXENV: py37-test
+            TOXENV: py37-test
           - python-version: '3.8'
-            env:
-              TOXENV: py38-test
+            TOXENV: py38-test
 
     steps:
       - uses: actions/checkout@v2
@@ -60,5 +58,5 @@ jobs:
         run: |
           echo "fake run tox"
           python --version
-          echo "TOXENV: ${TOXENV}"
+          echo "TOXENV: ${{ TOXENV }}"
           env
