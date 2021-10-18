@@ -32,8 +32,6 @@ jobs:
         with:
           path: ~/capnproto
           key: ${{ runner.os }}-${{ env.CAPNPROTO }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.CAPNPROTO }}
 
       - name: Install capnproto
         run: bash ./ci/install_capnp.sh
