@@ -15,10 +15,10 @@ env:
   CAPNPROTO: capnproto-c++-0.7.0
 
 jobs:
-  main_tests:
+  tox_tests:
     name: tox ${{ matrix.python-version }}
 
-    runs-on: ubunu-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
