@@ -16,17 +16,32 @@ env:
 
 jobs:
   tox_tests:
-    name: tox -e ${{ matrix.python-version }}
+    name: tox -e ${{ matrix.toxenv }}
 
     runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
+          - python-version: '2.7'
+            toxenv: 'nopyx-test'
+
+          - python-version: '2.7'
+            toxenv: 'py27-test'
+
+          - python-version: '3.5'
+            toxenv: 'py35-test'
+
+          - python-version: '3.6'
+            toxenv: 'py36-test'
+
           - python-version: '3.7'
             toxenv: 'py37-test'
 
           - python-version: '3.8'
             toxenv: 'py38-test'
+
+          - python-version: 'pypy-3.7'
+            toxenv: 'pypy3-test'
 
     steps:
       - uses: actions/checkout@v2
