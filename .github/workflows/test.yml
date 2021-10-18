@@ -1,7 +1,9 @@
 ---
 name: tests
-
 on: [push, pull_request]
+
+env:
+  - LD_LIBRARY_PATH: "$HOME/capnp/lib"
 
 jobs:
   main_tests:
@@ -26,6 +28,7 @@ jobs:
 
       - name: Setting up build environment
         run: |
+          echo "$HOME/capnp/bin" >> $GITHUB_PATH
           bash ./travis/install_capnp.sh
           pip install -U pip # so that we can use wheels
           # tox creates the sdist: we need cython to be installed in the env which
