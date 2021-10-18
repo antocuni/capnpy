@@ -60,18 +60,18 @@ cdef class TextUnicodeItemType(TextItemType):
 cdef class ListItemType(ItemType):
     cdef readonly ItemType inner_item_type
 
-cpdef ItemType void_list_item_type
-cpdef ItemType bool_list_item_type
-cpdef ItemType int8_list_item_type
-cpdef ItemType uint8_list_item_type
-cpdef ItemType int16_list_item_type
-cpdef ItemType uint16_list_item_type
-cpdef ItemType int32_list_item_type
-cpdef ItemType uint32_list_item_type
-cpdef ItemType int64_list_item_type
-cpdef ItemType uint64_list_item_type
-cpdef ItemType float32_list_item_type
-cpdef ItemType float64_list_item_type
-cpdef ItemType text_bytes_list_item_type
-cpdef ItemType text_unicode_list_item_type
-cpdef ItemType data_list_item_type
+cdef ItemType void_list_item_type
+cdef ItemType bool_list_item_type
+cdef ItemType int8_list_item_type
+cdef ItemType uint8_list_item_type
+cdef ItemType int16_list_item_type
+cdef ItemType uint16_list_item_type
+cdef ItemType int32_list_item_type
+cdef ItemType uint32_list_item_type
+cdef ItemType int64_list_item_type
+cdef ItemType uint64_list_item_type
+cdef ItemType float32_list_item_type
+cdef ItemType float64_list_item_type
+cdef ItemType text_bytes_list_item_type
+cdef ItemType text_unicode_list_item_type
+cdef ItemType data_list_item_type
