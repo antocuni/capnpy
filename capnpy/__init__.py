@@ -1,5 +1,5 @@
 import sys
-#import pkg_resources
+import pkg_resources
 
 from capnpy.compiler.compiler import DynamicCompiler
 from capnpy.compiler.distutils import capnpify
