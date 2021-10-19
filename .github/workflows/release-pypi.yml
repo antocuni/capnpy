@@ -1,0 +1,81 @@
+---
+name: Release to PyPI
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build_sdist:
+    name: Build source package
+    runs-on: 'ubuntu-latest'
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # needed for setuptools_scm
+
+    - name: Install/Upgrade Python dependencies
+      run: |
+        python -m pip install --upgrade pip wheel
+        python -m pip install cython>=0.29.21
+
+    - name: Build and install Python source package
+      run: |
+        python setup.py sdist
+        python -m pip install dist/*.tar.gz
+
+    - uses: actions/upload-artifact@v2
+      with:
+        path: dist/*.tar.gz
+
+
+  build_bdist:
+    name: Build binary wheels
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        #os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # needed for setuptools_scm
+
+    # setup Python for cibuildwheel
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    # for other architectures, see: https://cibuildwheel.readthedocs.io/en/stable/faq/#emulation
+    - name: Build wheels for CPython
+      uses: pypa/cibuildwheel@v2.1.1
+      env:
+        CIBW_BEFORE_BUILD: 'pip install cython>=0.29.21'
+        CIBW_BUILD: 'cp*'     # build all CPython versions
+        #CIBW_SKIP: 'cp310-*' #
+        CIBW_ARCHS: 'auto64'  # only 64-bit
+
+    - uses: actions/upload-artifact@v2
+      with:
+        path: ./wheelhouse/*.whl
+
+
+  upload_pypi:
+    name: Publish packages to PyPI
+    # only publish packages once everything is successful
+    needs: [build_bdist, build_sdist]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: artifact
+          path: dist
+
+      - uses: pypa/gh-action-pypi-publish@v1.4.2
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          # uncomment the following to upload to test.pypi.org
+          # repository_url: https://test.pypi.org/legacy/
