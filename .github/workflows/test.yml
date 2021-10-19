@@ -41,6 +41,9 @@ jobs:
           - python-version: '3.10'
             toxenv: 'py310-test'
 
+          - python-version: '3.11.0-alpha - 3.11' # SemVer's version range syntax
+            toxenv: 'py311-test'
+
           - python-version: 'pypy-3.7'
             toxenv: 'pypy3-test'
 
