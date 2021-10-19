@@ -1,11 +1,9 @@
 ---
 name: Release to PyPI
 
-# on:
-#   release:
-#     types: [created]
-
-on: [push] # temporary
+on:
+  release:
+    types: [created]
 
 
 jobs:
@@ -64,20 +62,20 @@ jobs:
         path: ./wheelhouse/*.whl
 
 
-  # upload_pypi:
-  #   name: Publish packages to PyPI
-  #   # only publish packages once everything is successful
-  #   needs: [build_bdist, build_sdist]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/download-artifact@v2
-  #       with:
-  #         name: artifact
-  #         path: dist
+  upload_pypi:
+    name: Publish packages to PyPI
+    # only publish packages once everything is successful
+    needs: [build_bdist, build_sdist]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: artifact
+          path: dist
 
-  #     - uses: pypa/gh-action-pypi-publish@v1.4.2
-  #       with:
-  #         user: __token__
-  #         password: ${{ secrets.pypi_api_token }}
-  #         # uncomment the following to upload to test.pypi.org
-  #         # repository_url: https://test.pypi.org/legacy/
+      - uses: pypa/gh-action-pypi-publish@v1.4.2
+        with:
+          user: __token__
+          password: ${{ secrets.pypi_api_token }}
+          # uncomment the following to upload to test.pypi.org
+          # repository_url: https://test.pypi.org/legacy/
