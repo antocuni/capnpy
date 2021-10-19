@@ -25,11 +25,6 @@ jobs:
         python setup.py sdist
         python -m pip install dist/*.tar.gz
 
-    - name: Run tests
-      run: |
-        pip install pytest pytest-xdist
-        pytest -n auto test/
-
     - uses: actions/upload-artifact@v2
       with:
         path: dist/*.tar.gz
@@ -56,6 +51,7 @@ jobs:
     - name: Build wheels for CPython
       uses: pypa/cibuildwheel@v2.1.1
       env:
+        CIBW_BEFORE_BUILD: 'pip instal cython>=0.29.21'
         CIBW_BUILD: 'cp*'     # build all CPython versions
         #CIBW_SKIP: 'cp310-*' #
         CIBW_ARCHS: 'auto64'  # only 64-bit
