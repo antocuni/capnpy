@@ -1,13 +1,14 @@
 ---
 name: tests
 
+# XXX temporary: disable tests for now in this PR
 on:
   push:
     branches:
     - master
-  pull_request:
-    branches:
-    - master
+  # pull_request:
+  #   branches:
+  #   - master
 
 env:
   CAPNPROTO: capnproto-c++-0.7.0
