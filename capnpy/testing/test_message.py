@@ -1,4 +1,4 @@
-import py.test
+import pytest
 from io import BytesIO
 from six import b, PY3
 from capnpy.message import load, loads, load_all, _load_message, dumps
@@ -67,24 +67,28 @@ def test_loads_not_whole_string():
             '\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
             '\x02\x00\x00\x00\x00\x00\x00\x00'   # y == 2
             'garbage0')
-    exc = py.test.raises(ValueError, "p = loads(buf, Struct)")
+    with pytest.raises(ValueError) as exc:
+        p = loads(buf, Struct)
     assert str(exc.value) == 'Not all bytes were consumed: 8 bytes left'
 
 def test_truncated_header_1():
     buf = b('\x03\x00\x00')  # we expect at least 4 bytes
-    exc = py.test.raises(ValueError, "p = loads(buf, Struct)")
+    with pytest.raises(ValueError) as exc:
+        p = loads(buf, Struct)
     assert str(exc.value) == 'Malformed header: expected 4 bytes, got 3'
 
 def test_truncated_header_2():
     buf = b('\x03\x00\x00\x00'  # 3+1 segments, but only two are specified
             '\x10\x00\x00\x00'  # size0: 16
             '\x20\x00\x00\x00') # size1: 32
-    exc = py.test.raises(ValueError, "p = loads(buf, Struct)")
+    with pytest.raises(ValueError) as exc:
+        p = loads(buf, Struct)
     assert str(exc.value) == 'Unexpected EOF when reading the header'
 
 def test_huge_number_of_segments():
     buf = b'hello' # this corresponds to 1819043177 segments
-    exc = py.test.raises(ValueError, "loads(buf, Struct)")
+    with pytest.raises(ValueError) as exc:
+        loads(buf, Struct)
     assert str(exc.value) == 'Unexpected EOF when reading the header'
 
 def test_wrong_size():
@@ -92,7 +96,8 @@ def test_wrong_size():
             '\x00\x00\x00\x00\x02\x00\x01\x00'   # ptr to payload (Point {x, y})
             '\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
             '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
-    exc = py.test.raises(ValueError, "loads(buf, Struct)")
+    with pytest.raises(ValueError) as exc:
+        loads(buf, Struct)
     assert str(exc.value) == ("Unexpected EOF: expected 32 bytes, got only 24. "
                               "Segment size: 4")
 
@@ -102,13 +107,15 @@ def test_wrong_size_multiple_segments():
             '\x00\x00\x00\x00\x02\x00\x01\x00'   # ptr to payload (Point {x, y})
             '\x01\x00\x00\x00\x00\x00\x00\x00'   # x == 1
             '\x02\x00\x00\x00\x00\x00\x00\x00')  # y == 2
-    exc = py.test.raises(ValueError, "loads(buf, Struct)")
+    with pytest.raises(ValueError) as exc:
+        loads(buf, Struct)
     assert str(exc.value) == ("Unexpected EOF: expected 72 bytes, got only 24. "
                               "Segments size: [4, 5]")
 
 def test_eof():
     buf = b''
-    exc = py.test.raises(EOFError, "loads(buf, Struct)")
+    with pytest.raises(EOFError):
+        loads(buf, Struct)
 
 def test_segments():
     header = b('\x03\x00\x00\x00'  # 3+1 segments

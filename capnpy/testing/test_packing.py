@@ -55,9 +55,12 @@ class TestUnpack(object):
 
     def test_errors(self):
         buf = b'\xff' * 8
-        pytest.raises(IndexError, "unpack_primitive(ord('q'), buf, -1)")
-        pytest.raises(IndexError, "unpack_primitive(ord('q'), buf, 8)")
-        pytest.raises(TypeError, "unpack_primitive(ord('q'), 42, 0)")
+        with pytest.raises(IndexError):
+            unpack_primitive(ord('q'), buf, -1)
+        with pytest.raises(IndexError):
+            unpack_primitive(ord('q'), buf, 8)
+        with pytest.raises(TypeError):
+            unpack_primitive(ord('q'), 42, 0)
 
 
 class TestPack(object):
@@ -80,7 +83,8 @@ class TestPack(object):
         #
         # check that it raises if it's out of bound
         out_of_bound = 256-struct.calcsize(fmt)+1
-        pytest.raises(IndexError, "pack_into(ord(fmt), buf, out_of_bound, value)")
+        with pytest.raises(IndexError):
+            pack_into(ord(fmt), buf, out_of_bound, value)
 
     def test_pack_into(self):
         self.check('b', 2**7 - 1)

@@ -25,6 +25,12 @@ class CompilerTest:
 
     @pytest.fixture(params=['py', 'pyx'])
     def initargs(self, request, tmpdir):
+        self._initargs(request, tmpdir)
+
+    def _initargs(self, request, tmpdir):
+        """
+        This can be overridden and/or called by subclasses
+        """
         if request.param in self.SKIP:
             py.test.skip('%s tests disabled for this class' % request.param)
         #

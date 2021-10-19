@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-import py
+import pytest
 from six import b, PY3
 
 from capnpy import ptr
@@ -163,7 +163,8 @@ def test_union():
     assert w == Shape.__tag__.square
     #
     shape._ensure_union(Shape.__tag__.square)
-    py.test.raises(ValueError, "shape._ensure_union(Shape.__tag__.circle)")
+    with pytest.raises(ValueError):
+        shape._ensure_union(Shape.__tag__.circle)
 
 
 def test_compact():
@@ -190,13 +191,13 @@ def test_compact():
 
 def test_comparisons_fail():
     s = Struct.from_buffer(b'', 0, data_size=0, ptrs_size=0)
-    py.test.raises(TypeError, "hash(s)")
-    py.test.raises(TypeError, "s == s")
-    py.test.raises(TypeError, "s != s")
-    py.test.raises(TypeError, "s < s")
-    py.test.raises(TypeError, "s <= s")
-    py.test.raises(TypeError, "s > s")
-    py.test.raises(TypeError, "s >= s")
+    with pytest.raises(TypeError): hash(s)
+    with pytest.raises(TypeError): s == s
+    with pytest.raises(TypeError): s != s
+    with pytest.raises(TypeError): s < s
+    with pytest.raises(TypeError): s <= s
+    with pytest.raises(TypeError): s > s
+    with pytest.raises(TypeError): s >= s
 
 def test_comparisons_succeed():
     class MyStruct(Struct):
@@ -213,10 +214,10 @@ def test_comparisons_succeed():
     assert hash(s1) == 1234
     assert s1 == s2
     assert s1 != s3
-    py.test.raises(TypeError, "s1 < s2")
-    py.test.raises(TypeError, "s1 <= s2")
-    py.test.raises(TypeError, "s1 > s2")
-    py.test.raises(TypeError, "s1 >= s2")
+    with pytest.raises(TypeError): s1 < s2
+    with pytest.raises(TypeError): s1 <= s2
+    with pytest.raises(TypeError): s1 > s2
+    with pytest.raises(TypeError): s1 >= s2
 
 def test_can_compare_with_other_types():
     class SubTuple(tuple):
@@ -224,14 +225,15 @@ def test_can_compare_with_other_types():
     s = Struct.from_buffer(b'', 0, data_size=0, ptrs_size=0)
     assert not s == 'hello'
     assert s != 'hello'
-    py.test.raises(TypeError, "s == ()")
-    py.test.raises(TypeError, "s != ()")
-    py.test.raises(TypeError, "s == SubTuple()")
-    py.test.raises(TypeError, "s != SubTuple()")
+    with pytest.raises(TypeError): s == ()
+    with pytest.raises(TypeError): s != ()
+    with pytest.raises(TypeError): s == SubTuple()
+    with pytest.raises(TypeError): s != SubTuple()
 
 
 def test_check_null_buffer():
-    py.test.raises(AssertionError, "Struct(None, 0, 0, 0)")
+    with pytest.raises(AssertionError):
+        Struct(None, 0, 0, 0)
 
 def test_raw_dumps_loads():
     buf = b('garbage0'

@@ -1,4 +1,4 @@
-import py
+import pytest
 import os
 import struct
 from capnpy.segment.segment import Segment, MultiSegment
@@ -20,11 +20,11 @@ def test_unpack_primitive():
     assert unpack_primitive(ord('q'), s, 0) == 1234
     #
     # left bound check
-    with py.test.raises(IndexError):
+    with pytest.raises(IndexError):
         unpack_primitive(ord('q'), s, -8)
     #
     # right bound check
-    with py.test.raises(IndexError):
+    with pytest.raises(IndexError):
         unpack_primitive(ord('q'), s, 1) # not enough bytes
 
 

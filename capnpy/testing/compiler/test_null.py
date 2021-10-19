@@ -1,4 +1,5 @@
 import py
+import pytest
 import six
 from six import b
 
@@ -174,7 +175,8 @@ class TestNullable(CompilerTest):
             }
         }
         """
-        exc = py.test.raises(ValueError, "self.compile(schema)")
+        with pytest.raises(ValueError) as exc:
+            self.compile(schema)
         msg = str(exc.value)
         assert msg == ('x: nullable groups must have exactly two fields: '
                        '"isNull" and "value"')
@@ -190,7 +192,8 @@ class TestNullable(CompilerTest):
             }
         }
         """
-        exc = py.test.raises(ValueError, "self.compile(schema)")
+        with pytest.raises(ValueError) as exc:
+            self.compile(schema)
         msg = str(exc.value)
         assert msg == ('x: cannot use pointer types for nullable values. '
                        'Pointers are already nullable.')

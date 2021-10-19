@@ -1,4 +1,4 @@
-import py
+import pytest
 from capnpy.testing.compiler.support import CompilerTest
 from capnpy.message import loads, dumps
 
@@ -32,7 +32,8 @@ class TestEvolution(CompilerTest):
         assert obj.x == 1
         assert obj.y == 2
         assert obj._data_size == 3
-        py.test.raises(AttributeError, "obj.z")
+        with pytest.raises(AttributeError):
+            obj.z
 
     def test_add_ptr_field(self):
         schema = """
@@ -66,4 +67,5 @@ class TestEvolution(CompilerTest):
         assert obj.p1.y == 2
         assert obj._data_size == 0
         assert obj._ptrs_size == 2
-        py.test.raises(AttributeError, "obj.p2")
+        with pytest.raises(AttributeError):
+            obj.p2

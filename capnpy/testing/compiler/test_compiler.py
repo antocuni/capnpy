@@ -239,7 +239,8 @@ class TestCapnpExcecutable(CompilerTest):
         @0xbf5147cbbecf40c1;
         """
         monkeypatch.setenv('PATH', str(self.tmpdir))
-        exc = py.test.raises(CompilerError, "self.compile(schema)")
+        with pytest.raises(CompilerError) as exc:
+            self.compile(schema)
         assert str(exc.value).startswith('Cannot find the capnp executable')
 
     def test_capnp_too_old(self, monkeypatch):
@@ -259,7 +260,8 @@ class TestCapnpExcecutable(CompilerTest):
         @0xbf5147cbbecf40c1;
         """
         monkeypatch.setenv('PATH', str(self.tmpdir))
-        exc = py.test.raises(CompilerError, "self.compile(schema)")
+        with pytest.raises(CompilerError) as exc:
+            self.compile(schema)
         assert str(exc.value).startswith('The capnp executable is too old')
 
     def test_capnp_path(self, tmpdir):

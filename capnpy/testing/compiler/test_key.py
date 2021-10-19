@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-import py
+import pytest
 import sys
 from capnpy.testing.compiler.support import CompilerTest
 
@@ -116,7 +116,8 @@ class TestFashHash(CompilerTest):
         mod = self.compile(schema)
         self.only_fasthash(mod.Point)
         p1 = mod.Point(1, 2, b"p1")
-        exc = py.test.raises(ValueError, "hash(p1)")
+        with pytest.raises(ValueError) as exc:
+            hash(p1)
         assert exc.value.args[0] == "slow hash not allowed"
 
     def test_fasthash_int_long(self):
