@@ -37,8 +37,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # Windows tests fail when built as a binary wheel for some reason
-        os: [ubuntu-latest] # , macos-latest]  #  windows-latest
+        os: [ubuntu-latest, macos-latest]
 
     steps:
     - uses: actions/checkout@v2
@@ -55,9 +54,8 @@ jobs:
     - name: Build wheels for CPython
       uses: pypa/cibuildwheel@v2.1.1
       env:
-        CIBW_BEFORE_BUILD: 'pip install cython>=0.29.21 && (cd /project; ls -la; git describe --tags)'
-        #CIBW_BUILD: 'cp*'     # build all CPython versions
-        CIBW_BUILD: 'cp38-*'     # tmp
+        CIBW_BEFORE_BUILD: 'pip install cython>=0.29.21'
+        CIBW_BUILD: 'cp*'     # build all CPython versions
         #CIBW_SKIP: 'cp310-*' #
         CIBW_ARCHS: 'auto64'  # only 64-bit
 
