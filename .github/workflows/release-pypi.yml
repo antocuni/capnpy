@@ -7,6 +7,9 @@ name: Release to PyPI
 
 on: [push]
 
+env:
+  USE_CYTHON: '0' # XXX
+
 jobs:
   build_sdist:
     name: Build source package
@@ -78,6 +81,6 @@ jobs:
       - uses: pypa/gh-action-pypi-publish@v1.4.2
         with:
           user: __token__
-          password: ${{ secrets.pypi_api_token }}
+          password: ${{ secrets.PYPI_API_TOKEN }}
           # uncomment the following to upload to test.pypi.org
           # repository_url: https://test.pypi.org/legacy/
