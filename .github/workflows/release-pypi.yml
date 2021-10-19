@@ -14,6 +14,8 @@ jobs:
     runs-on: 'ubuntu-latest'
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # needed for setuptools_scm
 
     - name: Install/Upgrade Python dependencies
       run: |
@@ -40,6 +42,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # needed for setuptools_scm
 
     # setup Python for cibuildwheel
     - name: Set up Python
