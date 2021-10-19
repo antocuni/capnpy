@@ -51,7 +51,7 @@ jobs:
     - name: Build wheels for CPython
       uses: pypa/cibuildwheel@v2.1.1
       env:
-        CIBW_BEFORE_BUILD: 'pip instal cython>=0.29.21'
+        CIBW_BEFORE_BUILD: 'pip install cython>=0.29.21'
         CIBW_BUILD: 'cp*'     # build all CPython versions
         #CIBW_SKIP: 'cp310-*' #
         CIBW_ARCHS: 'auto64'  # only 64-bit
