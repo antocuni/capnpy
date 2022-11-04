@@ -163,7 +163,7 @@ else:
 
 if USE_CYTHON:
     ext_modules = get_cython_extensions()
-    extra_install_requires = ['cython>=0.25']
+    extra_install_requires = ['cython>=0.29.30']
 else:
     ext_modules = []
     extra_install_requires = []
