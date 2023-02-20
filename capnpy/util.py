@@ -2,6 +2,7 @@ import sys
 import py
 from pypytools import IS_PYPY
 import six
+import struct
 
 import capnpy
 try:
@@ -131,3 +132,7 @@ try:
 except ImportError:
     float32_repr = float64_repr = repr
 
+# https://stackoverflow.com/a/51939549
+def fxor(a, b, fmt):
+    raw = [x ^ y for (x, y) in zip(struct.pack(mychr(fmt), a), struct.pack(mychr(fmt), b))]
+    return struct.unpack(mychr(fmt), bytes(raw))[0]

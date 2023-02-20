@@ -74,6 +74,7 @@ class RequestedFile:
         m.w("from capnpy.util import extend_module_maybe as _extend_module_maybe")
         m.w("from capnpy.util import check_version as _check_version")
         m.w("from capnpy.util import encode_maybe as _encode_maybe")
+        m.w("from capnpy.util import fxor as _fxor")
         #
         if m.pyx:
             m.w("from capnpy cimport _hash")
