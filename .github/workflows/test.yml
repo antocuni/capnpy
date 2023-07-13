@@ -65,7 +65,7 @@ jobs:
           pip install -U pip # so that we can use wheels
           # tox creates the sdist: we need cython to be installed in the env which
           # creates the sdist, to generate the .c files
-          pip install tox cython>=0.29.21
+          pip install tox cython>=0.29.30
 
       - name: Run tox
         run: tox -e ${{ matrix.toxenv }}

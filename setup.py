@@ -65,8 +65,8 @@ explicit installation of Cython in the non common cases (1) and (3).
 def my_cythonize(extensions):
     try:
         import Cython
-        if Cython.__version__ < '0.29.21':
-            print ('WARNING: required cython>0.29.21, found %s. The .c files will '
+        if Cython.__version__ < '0.29.30':
+            print ('WARNING: required cython>0.29.30, found %s. The .c files will '
                    'NOT be regenerated' % Cython.__version__)
             raise ImportError
         from Cython.Build import cythonize
