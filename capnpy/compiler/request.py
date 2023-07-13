@@ -141,9 +141,8 @@ class RequestedFile:
                 # ignore this file as it's useless for python
                 continue
             elif m.standalone:
-                assert ns.fullpath.startswith('/')
                 assert ns.fullpath.endswith('.capnp')
-                ns.modname = ns.fullpath[1:-6].replace('/', '.')
+                ns.modname = ns.fullpath.lstrip('/')[:-6].replace('/', '.')
                 ns.w('import {modname} as {importname}')
             else:
                 ns.pyx = m.pyx
