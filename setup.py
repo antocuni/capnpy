@@ -40,7 +40,7 @@ There are various use-cases to consider:
 So, Cython is handled transparently in cases (4) and (5), which are the two
 most common ones.
 
-In theory, we could add 'cython>=0.25' to setup_requires. This way, Cython
+In theory, we could add 'cython==0.29.36' to setup_requires. This way, Cython
 will be handled transparently also in the remaining cases. However:
 
   - if we do this setuptools tries to install cython in *all* cases
@@ -65,8 +65,8 @@ explicit installation of Cython in the non common cases (1) and (3).
 def my_cythonize(extensions):
     try:
         import Cython
-        if Cython.__version__ < '0.29.30':
-            print ('WARNING: required cython>0.29.30, found %s. The .c files will '
+        if Cython.__version__ < '0.29.30' or Cython.__version__ > '0.29.36':
+            print ('WARNING: cython 0.29.30 to 0.29.36 required, found %s. The .c files will '
                    'NOT be regenerated' % Cython.__version__)
             raise ImportError
         from Cython.Build import cythonize
@@ -163,7 +163,7 @@ else:
 
 if USE_CYTHON:
     ext_modules = get_cython_extensions()
-    extra_install_requires = ['cython>=0.29.30']
+    extra_install_requires = ['cython==0.29.36']
 else:
     ext_modules = []
     extra_install_requires = []

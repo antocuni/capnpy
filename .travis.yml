@@ -95,7 +95,7 @@ install:
   - pip install tox-travis
   # tox creates the sdist: we need cython to be installed in the env which
   # creates the sdist, to generate the .c files
-  - pip install cython>=0.29.30
+  - pip install cython==0.29.36
 
 script:
   - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./travis/clone-benchmarks-repo.sh; fi
