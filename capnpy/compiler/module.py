@@ -130,7 +130,7 @@ class ModuleGenerator(object):
         name = '_%s_capnp' % name
         if name in self.importnames.values():
             # avoid name clashes
-            name = '%s_%s' % (name, len(self.filenames))
+            name = '%s_%s' % (name, len(self.importnames))
         self.importnames[fname] = name
         return name
 
