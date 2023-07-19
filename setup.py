@@ -173,6 +173,7 @@ setup(name="capnpy",
       author='Antonio Cuni',
       author_email='anto.cuni@gmail.com',
       url='https://github.com/antocuni/capnpy',
+      long_description='A very fast implementation of Cap’n Proto for CPython and PyPy',
       use_scm_version=True,
       include_package_data=True,
       cmdclass={
