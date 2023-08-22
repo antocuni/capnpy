@@ -1,6 +1,8 @@
 import sys
 import py
+from pypytools import IS_PYPY
 import six
+import struct
 
 import capnpy
 try:
@@ -10,6 +12,25 @@ except ImportError:
 
 
 Py_TPFLAGS_HEAPTYPE = (1<<9)  # from object.h
+
+if IS_PYPY:
+    # workaround for a limitation of the PyPy JIT: struct.unpack is optimized
+    # only if the format string is a tracing-time constant; this is because of
+    # this line in rlib/rstruct/formatiterator.py:
+    #    @jit.look_inside_iff(lambda self, fmt: jit.isconstant(fmt))
+    #    def interpret(self, fmt):
+    #        ...
+    #
+    # The problem is that if you use struct.unpack(chr(113), '...'), chr(113)
+    # is not a tracing-time constant (it becomes constant later, during
+    # optimizeopt). The work around is to use mychr, which pyjitpl.py is smart
+    # enough to detect as a tracing-time constant.
+    _CHR = tuple(map(six.int2byte, range(256)))
+    def mychr(i):
+        return _CHR[i]
+
+else:
+    mychr = six.int2byte
 
 def magic_setattr(cls, attr, value):
     if cls.__flags__ & Py_TPFLAGS_HEAPTYPE:
@@ -111,3 +132,7 @@ try:
 except ImportError:
     float32_repr = float64_repr = repr
 
+# https://stackoverflow.com/a/51939549
+def fxor(a, b, fmt):
+    raw = [x ^ y for (x, y) in zip(struct.pack(mychr(fmt), a), struct.pack(mychr(fmt), b))]
+    return struct.unpack(mychr(fmt), bytes(raw))[0]
