@@ -38,7 +38,8 @@ class BaseSegment(object):
     def read_primitive(self, offset, ifmt):
         fmt = b'<' + mychr(ifmt)
         if offset < 0 or offset + struct.calcsize(fmt) > len(self.buf):
-            raise IndexError('Offset out of bounds: %d' % offset)
+            return 0
+            # raise IndexError('Offset out of bounds: %d' % offset)
         return struct.unpack_from(fmt, self.buf, offset)[0]
 
     def read_int64(self, offset):
