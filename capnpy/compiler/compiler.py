@@ -5,7 +5,7 @@ import os
 import types
 import subprocess
 from six import PY3
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 import capnpy
 from capnpy import schema
@@ -111,7 +111,7 @@ class BaseCompiler(object):
         if "unknown" in version:
             # can't determine capnp version, continue with caution
             return
-        if version < LooseVersion('0.5.0'):
+        if Version(version) < Version('0.5.0'):
             raise CompilerError("The capnp executable is too old: the minimum required "
                                 "version is 0.5.0")
 
