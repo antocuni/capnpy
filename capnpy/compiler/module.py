@@ -190,20 +190,20 @@ class ModuleGenerator(object):
                 # on CPython, make a tuple of prebuilt instances for the
                 # statically known values
                 ns.w("@staticmethod")
-                with ns.block('cdef _new(long x, __prebuilt={prebuilt}):') as ns:
+                with ns.block('cdef _new(long x, __prebuilt__={prebuilt}):') as ns:
                     ns.ww("""
                         try:
-                            return __prebuilt[x]
+                            return __prebuilt__[x]
                         except IndexError:
                             return {name}(x)
                     """)
 
                 # The following is a hack so that other module can use it via import.
                 ns.w("@staticmethod")
-                with ns.block('def _new_hack(long x, __prebuilt={prebuilt}):') as ns:
+                with ns.block('def _new_hack(long x, __prebuilt__={prebuilt}):') as ns:
                     ns.ww("""
                         try:
-                            return __prebuilt[x]
+                            return __prebuilt__[x]
                         except IndexError:
                             return {name}(x)
                     """)
