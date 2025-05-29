@@ -181,38 +181,12 @@ class ModuleGenerator(object):
                        for i in range(len(items))]
         ns.prebuilt = ', '.join(ns.prebuilt)
         ns.prebuilt = ns.format('({prebuilt},)')
-        with ns.block("{cdef class} {name}(_BaseEnum):"):
+        with ns.block("class {name}(_BaseEnum):"):
             ns.w("__capnpy_id__ = {capnpy_id}")
             ns.w("__members__ = {members}")
-            #
-            # define the _new staticmethod, to create new instances.
-            if self.pyx:
-                # on CPython, make a tuple of prebuilt instances for the
-                # statically known values
-                ns.w("@staticmethod")
-                with ns.block('cdef _new(long x, __prebuilt__={prebuilt}):') as ns:
-                    ns.ww("""
-                        try:
-                            return __prebuilt__[x]
-                        except IndexError:
-                            return {name}(x)
-                    """)
-
-                # The following is a hack so that other module can use it via import.
-                ns.w("@staticmethod")
-                with ns.block('def _new_hack(long x, __prebuilt__={prebuilt}):') as ns:
-                    ns.ww("""
-                        try:
-                            return __prebuilt__[x]
-                        except IndexError:
-                            return {name}(x)
-                    """)
-            else:
-                # on PyPy, always create a new object, so that the JIT will be
-                # able to make it virtual
-                ns.w("@staticmethod")
-                with ns.block('def _new(x):') as ns:
-                    ns.w('return {name}(x)')
+            ns.w("@staticmethod")
+            with ns.block('def _new(x):') as ns:
+                ns.w('return {name}(x)')
         ns.w("_fill_enum({name})")
 
     def declare_const(self, clsname, s, segment=None):

@@ -51,7 +51,7 @@ class RequestedFile:
         m.w("from capnpy.struct_ {cimport} check_tag as _check_tag")
         m.w("from capnpy.struct_ import undefined as _undefined")
         m.w("from capnpy.enum import enum as _enum, fill_enum as _fill_enum")
-        m.w("from capnpy.enum {cimport} BaseEnum as _BaseEnum")
+        m.w("from capnpy.enum import BaseEnum as _BaseEnum")
         m.w("from capnpy.type import Types as _Types")
         m.w("from capnpy.segment.segment {cimport} Segment as _Segment")
         m.w("from capnpy.segment.segment {cimport} MultiSegment as _MultiSegment")
