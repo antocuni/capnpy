@@ -1,6 +1,6 @@
 # THIS FILE HAS BEEN GENERATED AUTOMATICALLY BY capnpy
 # do not edit by hand
-# generated on 2019-10-21 11:28
+# generated on 2025-05-29 17:17
 # cython: language_level=2
 
 from capnpy import ptr as _ptr
@@ -10,6 +10,8 @@ from capnpy.struct_ import undefined as _undefined
 from capnpy.enum import enum as _enum, fill_enum as _fill_enum
 from capnpy.enum import BaseEnum as _BaseEnum
 from capnpy.type import Types as _Types
+from capnpy.segment.segment import Segment as _Segment
+from capnpy.segment.segment import MultiSegment as _MultiSegment
 from capnpy.segment.builder import SegmentBuilder as _SegmentBuilder
 from capnpy.list import List as _List
 from capnpy.list import PrimitiveItemType as _PrimitiveItemType
@@ -23,14 +25,15 @@ from capnpy.list import ListItemType as _ListItemType
 from capnpy.anypointer import AnyPointer as _AnyPointer
 from capnpy.util import text_bytes_repr as _text_bytes_repr
 from capnpy.util import text_unicode_repr as _text_unicode_repr
+from capnpy.util import data_repr as _data_repr
 from capnpy.util import float32_repr as _float32_repr
 from capnpy.util import float64_repr as _float64_repr
 from capnpy.util import extend_module_maybe as _extend_module_maybe
 from capnpy.util import check_version as _check_version
 from capnpy.util import encode_maybe as _encode_maybe
 __capnpy_id__ = 0xbc24c21845631520
-__capnpy_version__ = '0.7.1.dev8+g4a9c343'
-__capnproto_version__ = '0.7.0'
+__capnpy_version__ = '0.10.2.dev5+g61130cf'
+__capnproto_version__ = '1.0.1'
 # schema compiled with --no-version-check, skipping the call to _check_version
 # not including reflection data
 
