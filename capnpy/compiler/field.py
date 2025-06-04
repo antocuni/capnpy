@@ -94,9 +94,7 @@ class Field__Slot:
     def _emit_enum(self, m, ns, name):
         ns.enumcls = self.slot.type.compile_name(m)
         ns.default_ = self.slot.defaultValue.as_pyobj()
-
-        node = self.slot.type.get_node(m)
-        ns.newf = '_new_hack' if m.pyx and node.is_imported(m) else '_new'
+        ns.newf = '_new'
         m.def_property(ns, name, """
             {ensure_union}
             value = self._read_int16({offset})
