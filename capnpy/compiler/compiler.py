@@ -25,6 +25,16 @@ DEFAULT_OPTIONS = annotate.Options(
 
 PKGDIR = py.path.local(capnpy.__file__).dirpath()
 
+
+def import_from_path(module_name, file_path):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 class CompilerError(Exception):
     pass
 
@@ -208,7 +218,6 @@ class DynamicCompiler(BaseCompiler):
         Use Cython to compile the schema
         """
         import capnpy.ext # the package which we will load the .so in
-        import imp
         #
         # the generated file needs a reference to __compiler to be able to
         # import other schemas. In pure-python mode, we simply inject
@@ -228,7 +237,7 @@ class DynamicCompiler(BaseCompiler):
         tmpmod.__dict__['__schema__'] = str(filename)
         sys.modules[m.tmpname] = tmpmod
         modname = 'capnpy.ext.%s' % m.modname
-        mod = imp.load_dynamic(modname, str(dll))
+        mod = import_from_path(modname, str(dll))
         #
         # clean-up the cluttered sys.modules
         del sys.modules[mod.__name__]
