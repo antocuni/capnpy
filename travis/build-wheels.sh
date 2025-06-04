@@ -12,7 +12,7 @@ PYTHONS=(
 
 for pydir in "${PYTHONS[@]}"; do
     pybin=/opt/python/$pydir/bin
-    "${pybin}/pip" install 'cython==0.29.36'
+    "${pybin}/pip" install 'cython>=0.29.36'
     "${pybin}/pip" wheel /capnpy/ -w wheelhouse/
 
     # workaround for this bug:
