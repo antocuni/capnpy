@@ -190,7 +190,8 @@ setup(name="capnpy",
           'pypytools>=0.3.3',
           'docopt',
           'packaging',
-          'six'
+          'six',
+          'setuptools'
       ] + extra_install_requires,
       setup_requires=['setuptools_scm==5.0.2'],
       zip_safe=False,
