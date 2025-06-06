@@ -30,4 +30,10 @@ typedef struct {
     // Unused in Python 3, but has to exist during cython compilation
     _Py_HashSecret_custom HashSecret;
 
+    // Required for 3.13 because it's now hidden and C will assume the
+    // return type is int rather than long
+    #if PY_VERSION_HEX > 0x030D0000 && PY_VERSION_HEX < 0x030E0000
+    Py_hash_t _Py_HashBytes(const void *src, Py_ssize_t len);
+    #endif
+
 #endif
