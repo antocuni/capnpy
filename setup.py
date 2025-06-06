@@ -191,9 +191,11 @@ setup(name="capnpy",
           'docopt',
           'packaging',
           'six',
-          'setuptools'
+          'setuptools',
       ] + extra_install_requires,
-      setup_requires=['setuptools_scm==5.0.2'],
+      setup_requires=[
+          'setuptools_scm==5.0.2',
+      ] + extra_install_requires,
       zip_safe=False,
       entry_points={
           "distutils.setup_keywords": [
