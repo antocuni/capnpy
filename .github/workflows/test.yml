@@ -35,6 +35,12 @@ jobs:
           - python-version: '3.11'
             toxenv: 'py311-test'
 
+          - python-version: '3.12'
+            toxenv: 'py312-test'
+
+          - python-version: '3.13'
+            toxenv: 'py313-test'
+
           - python-version: 'pypy-3.7'
             toxenv: 'pypy3-test'
 
@@ -62,7 +68,7 @@ jobs:
           pip install -U pip # so that we can use wheels
           # tox creates the sdist: we need cython to be installed in the env which
           # creates the sdist, to generate the .c files
-          pip install tox==3.28.0 cython==0.29.36
+          pip install tox==3.28.0 cython==3.0.12
 
       - name: Run tox
         run: tox -e ${{ matrix.toxenv }}
