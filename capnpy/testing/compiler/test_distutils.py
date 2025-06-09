@@ -9,16 +9,16 @@ from capnpy.compiler.compiler import DistutilsCompiler
 
 @pytest.fixture
 def ROOT():
-    import pkg_resources
+    import importlib.machinery
     try:
-        dist = pkg_resources.get_distribution('capnpy')
-    except pkg_resources.DistributionNotFound:
+        dist_location = importlib.machinery.PathFinder.find_spec("capnpy").origin.split("/capnpy/")[0]
+    except AttributeError:
         raise ValueError("Cannot find the capnpy distribution: "
                          "please run setup.py install. "
                          "If you are running the tests from the checkout, "
                          "please run setup.py egg_info")
     #
-    return py.path.local(dist.location)
+    return py.path.local(dist_location)
 
 class TestDistutilsCompiler(CompilerTest):
 

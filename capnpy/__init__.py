@@ -1,5 +1,5 @@
 import sys
-import pkg_resources
+import importlib.metadata
 
 from capnpy.compiler.compiler import DynamicCompiler
 from capnpy.compiler.distutils import capnpify
@@ -8,7 +8,7 @@ from capnpy.reflection import get_reflection_data
 
 
 try:
-    __version__ = pkg_resources.get_distribution('capnpy').version
+    __version__ = importlib.metadata.version('capnpy')
 except Exception:
     __version__ = 'unknown'
 

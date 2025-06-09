@@ -3,7 +3,7 @@ import py
 import sys
 import glob
 import warnings
-from distutils.core import Extension
+from setuptools import Extension
 from capnpy.compiler.compiler import DistutilsCompiler
 from capnpy import annotate
 try:

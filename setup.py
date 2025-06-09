@@ -58,6 +58,7 @@ So, we chose to speed up the common cases, at the cost of requiring an
 explicit installation of Cython in the non common cases (1) and (3).
 """
 
+MIN_REQUIRED_CYTHON_VERSION = "0.29.30"
 
 ###############################################################################
 # Custom distutils commands
@@ -65,9 +66,12 @@ explicit installation of Cython in the non common cases (1) and (3).
 def my_cythonize(extensions):
     try:
         import Cython
-        if Cython.__version__ < '0.29.30' or Cython.__version__ > '0.29.36':
-            print ('WARNING: cython 0.29.30 to 0.29.36 required, found %s. The .c files will '
-                   'NOT be regenerated' % Cython.__version__)
+        if Cython.__version__ < MIN_REQUIRED_CYTHON_VERSION:
+            print (
+                f"WARNING: cython {MIN_REQUIRED_CYTHON_VERSION}+ "
+                f"required, found {Cython.__version__}. The .c files"
+                f" will NOT be regenerated"
+            )
             raise ImportError
         from Cython.Build import cythonize
     except ImportError:
@@ -163,7 +167,7 @@ else:
 
 if USE_CYTHON:
     ext_modules = get_cython_extensions()
-    extra_install_requires = ['cython==0.29.36']
+    extra_install_requires = [f'cython>={MIN_REQUIRED_CYTHON_VERSION}']
 else:
     ext_modules = []
     extra_install_requires = []
@@ -182,8 +186,16 @@ setup(name="capnpy",
       },
       packages=find_packages(),
       ext_modules=ext_modules,
-      install_requires=['pypytools>=0.3.3', 'docopt', 'six'] + extra_install_requires,
-      setup_requires=['setuptools_scm==5.0.2'],
+      install_requires=[
+          'pypytools>=0.3.3',
+          'docopt',
+          'packaging',
+          'six',
+          'setuptools',
+      ] + extra_install_requires,
+      setup_requires=[
+          'setuptools_scm==5.0.2',
+      ] + extra_install_requires,
       zip_safe=False,
       entry_points={
           "distutils.setup_keywords": [
