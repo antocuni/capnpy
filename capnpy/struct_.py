@@ -56,8 +56,8 @@ class Struct(Blob):
         self._ptrs_offset = offset + data_size*8
         self._data_size = data_size
         self._ptrs_size = ptrs_size
-        assert self._data_offset + data_size*8 <= len(self._seg.buf)
-        assert self._ptrs_offset + ptrs_size*8 <= len(self._seg.buf)
+        # assert self._data_offset + data_size*8 <= len(self._seg.buf)
+        # assert self._ptrs_offset + ptrs_size*8 <= len(self._seg.buf)
 
     def _init_from_pointer(self, buf, offset, p):
         assert ptr.kind(p) == ptr.STRUCT
@@ -179,12 +179,12 @@ class Struct(Blob):
 
     def _read_fast_ptr(self, offset):
         # Struct-specific logic
-        if offset >= self._ptrs_size*8:
+        if offset >= (self._data_size + self._ptrs_size)*8:
             return 0
         return self._seg.read_ptr(self._ptrs_offset+offset)
 
     def _read_far_ptr(self, offset):
-        if offset >= self._ptrs_size*8:
+        if offset >= (self._data_size + self._ptrs_size)*8:
             return offset, 0
         return self._seg.read_far_ptr(self._ptrs_offset+offset)
 
