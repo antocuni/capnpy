@@ -25,7 +25,13 @@ typedef struct {
 
     // Use values / methods from CPython 3.5
     #define HASH_MASK _PyHASH_MODULUS
+
+    // https://groups.google.com/g/cython-users/c/YQkU8oc8oSM/m/nVJ_IX8KAgAJ
+    #if PY_VERSION_HEX < 0x030E0000
     #define strhash_f _Py_HashBytes
+    #else
+    #define strhash_f Py_HashBuffer
+    #endif
 
     // Unused in Python 3, but has to exist during cython compilation
     _Py_HashSecret_custom HashSecret;
