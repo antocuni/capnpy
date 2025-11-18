@@ -59,6 +59,7 @@ explicit installation of Cython in the non common cases (1) and (3).
 """
 
 MIN_REQUIRED_CYTHON_VERSION = "0.29.30"
+MAX_CYTHON_VERSION = "3.1.7"
 
 ###############################################################################
 # Custom distutils commands
@@ -167,7 +168,7 @@ else:
 
 if USE_CYTHON:
     ext_modules = get_cython_extensions()
-    extra_install_requires = [f'cython>={MIN_REQUIRED_CYTHON_VERSION}']
+    extra_install_requires = [f'cython>={MIN_REQUIRED_CYTHON_VERSION},<={MAX_CYTHON_VERSION}']
 else:
     ext_modules = []
     extra_install_requires = []
