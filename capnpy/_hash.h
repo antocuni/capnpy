@@ -30,7 +30,7 @@ typedef struct {
     #if PY_VERSION_HEX < 0x030E0000
     #define strhash_f _Py_HashBytes
     #else
-    #define strhash_f _Py_HashBuffer
+    #define strhash_f Py_HashBuffer
     #endif
 
     // Unused in Python 3, but has to exist during cython compilation
