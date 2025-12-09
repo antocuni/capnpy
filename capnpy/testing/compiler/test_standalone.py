@@ -12,6 +12,21 @@ class TestStandalone(CompilerTest):
         monkeypatch.syspath_prepend(tmpdir)
         self.imports = []
 
+        yield
+
+    # As of pytest 7.4, the way teardowns work has changed, meaning that
+    # we we do not have the same order about when the teardown code is run.
+    # Putting the teardown stuff in the `initargs` fixture after a `yield`
+    # statement does lead to a corret execution order, and it should work
+    # for older versions of pytest too.
+
+    # def teardown(self):
+        # remove the modules which we have imported for the test from
+        # sys.modules
+        for modname in self.imports:
+            del sys.modules[modname]
+
+
     def compile(self, filename, src):
         infile = self.write(filename, src.strip())
         comp = StandaloneCompiler(sys.path)
@@ -21,12 +36,6 @@ class TestStandalone(CompilerTest):
         mod = __import__(modname)
         self.imports.append(modname)
         return mod
-
-    def teardown(self):
-        # remove the modules which we have imported for the test from
-        # sys.modules
-        for modname in self.imports:
-            del sys.modules[modname]
 
     def test_compile_and_import(self):
         self.compile("example.capnp", """
