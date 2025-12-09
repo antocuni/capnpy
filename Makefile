@@ -14,4 +14,4 @@ schema: annotate
 # run only python3 tests: this should good enough to be checked
 # locally before pushing and run the whole tests on travis
 test:
-	tox -e py37-test,py38-test
+	tox -e py38-test
