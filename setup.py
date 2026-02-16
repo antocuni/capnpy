@@ -194,7 +194,7 @@ setup(name="capnpy",
           'setuptools',
       ] + extra_install_requires,
       setup_requires=[
-          'setuptools_scm==5.0.2',
+          'setuptools_scm',
       ] + extra_install_requires,
       zip_safe=False,
       entry_points={
