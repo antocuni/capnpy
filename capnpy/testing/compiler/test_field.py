@@ -50,6 +50,29 @@ class TestField(CompilerTest):
         assert p.x == 0
         assert p.y is False
 
+    def test_float_default(self):
+        schema = """
+        @0xbf5147cbbecf40c1;
+        struct Foo {
+            x @0 :Float32 = 0.5;
+            y @1 :Float64 = 8.0;
+        }
+        """
+        mod = self.compile(schema)
+        #
+        buf = b('\x00\x00\x00\x00\x00\x00\x00\x00'
+                '\x00\x00\x00\x00\x00\x00\x00\x00')
+        p = mod.Foo.from_buffer(buf, 0, 2, 0)
+        assert p.x == 0.5
+        assert p.y == 8.0
+        #
+        buf = b('\x00\x00\x80\x00\x00\x00\x00\x00'
+                '\x00\x00\x00\x00\x00\x00\x10\x00')
+        p = mod.Foo.from_buffer(buf, 0, 2, 0)
+        assert p.x == 1.0
+        assert p.y == 16.0
+
+
     def test_void(self):
         schema = """
         @0xbf5147cbbecf40c1;

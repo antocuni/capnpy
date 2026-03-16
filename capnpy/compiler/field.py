@@ -34,6 +34,8 @@ class Field__Slot:
         #
         if self.slot.type.is_void():
             self._emit_void(m, ns, name)
+        elif self.slot.type.is_float32() or self.slot.type.is_float64():
+            self._emit_float(m, ns, name)
         elif self.slot.type.is_primitive():
             self._emit_primitive(m, ns, name)
         elif self.slot.type.is_bool():
@@ -75,6 +77,19 @@ class Field__Slot:
             value = self._read_primitive({offset}, {ifmt})
             if {default_} != 0:
                 value = value ^ {default_}
+            return value
+        """)
+
+    def _emit_float(self, m, ns, name):
+        ns.typename = '_Types.%s' % self.slot.type.which()
+        ns.default_ = self.slot.defaultValue.as_pyobj()
+        ns.ifmt = "ord(%r)" % self.slot.get_fmt()
+        m.def_property(ns, name, """
+            {ensure_union}
+            value = self._read_primitive({offset}, {ifmt})
+
+            if {default_} != 0:
+                value = _fxor(value, {default_}, {ifmt})
             return value
         """)
 
