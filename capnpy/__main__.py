@@ -1,44 +1,65 @@
-"""
-Usage: capnpy compile FILE [options]
-       capnpy decode FILE SCHEMA CLASS [options]
-
-Options:
-  --no-convert-case    Don't convert camelCase to camel_case
-  --text-type=TYPE     Type to use to represent Text fields [Default: bytes]
-                       Can be bytes or unicode
-  --no-pyx             Always produce a .py file, even if Cython is available
-  --no-version-check   Don't check for version discrepancy
-  --no-reflection      Don't include reflection data in the generated schema
-"""
 from __future__ import print_function
 
+import argparse
 import sys
 import time
-import docopt
 
 from capnpy import load_schema
 from capnpy.message import load
 from capnpy.annotate import Options
 from capnpy.compiler.compiler import StandaloneCompiler
 
+
+def make_parser():
+    parent = argparse.ArgumentParser(add_help=False)
+    parent.add_argument('--no-convert-case', action='store_true',
+                        help="Don't convert camelCase to camel_case")
+    parent.add_argument('--text-type', default='bytes',
+                        choices=('bytes', 'unicode'),
+                        help='Type to use to represent Text fields '
+                             '(default: bytes)')
+    parent.add_argument('--no-pyx', action='store_true',
+                        help='Always produce a .py file, even if Cython '
+                             'is available')
+    parent.add_argument('--no-version-check', action='store_true',
+                        help="Don't check for version discrepancy")
+    parent.add_argument('--no-reflection', action='store_true',
+                        help="Don't include reflection data in the "
+                             "generated schema")
+
+    parser = argparse.ArgumentParser(prog='capnpy')
+    sub = parser.add_subparsers(dest='command')
+    sub.required = True
+
+    compile_p = sub.add_parser('compile', parents=[parent],
+                               help='Compile a Cap\'n Proto schema')
+    compile_p.add_argument('FILE', help='The .capnp file to compile')
+
+    decode_p = sub.add_parser('decode', parents=[parent],
+                              help='Decode a Cap\'n Proto binary stream')
+    decode_p.add_argument('FILE', help='The binary file to decode')
+    decode_p.add_argument('SCHEMA', help='The schema module name')
+    decode_p.add_argument('CLASS', help='The class name to decode as')
+
+    return parser
+
+
 def parse_argv(argv):
-    args = docopt.docopt(__doc__, argv=argv)
-    if args['--text-type'] not in ('bytes', 'unicode'):
-        print(__doc__)
-        print()
-        print('ERROR: --text-type can be only bytes or unicode')
-        raise SystemExit(1)
-    #
-    args['--pyx'] = 'auto'
-    if args['--no-pyx']:
-        args['--pyx'] = False
-    del args['--no-pyx']
-    #
+    parser = make_parser()
+    ns = parser.parse_args(argv)
+    args = {
+        'compile': ns.command == 'compile',
+        'decode': ns.command == 'decode',
+        'FILE': ns.FILE,
+        'SCHEMA': getattr(ns, 'SCHEMA', None),
+        'CLASS': getattr(ns, 'CLASS', None),
+        '--pyx': False if ns.no_pyx else 'auto',
+    }
     kwargs = dict(
-        version_check = not args['--no-version-check'],
-        convert_case = not args['--no-convert-case'],
-        text_type = args['--text-type'],
-        include_reflection_data = not args['--no-reflection'],
+        version_check=not ns.no_version_check,
+        convert_case=not ns.no_convert_case,
+        text_type=ns.text_type,
+        include_reflection_data=not ns.no_reflection,
     )
     return args, Options.from_dict(kwargs)
 
