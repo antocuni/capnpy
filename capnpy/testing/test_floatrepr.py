@@ -1,5 +1,5 @@
 import pytest
-pytest.importorskip("capnpy.floatrepr")
+pytest.importorskip("capnpy.floatrepr", exc_type=ImportError)
 from capnpy.floatrepr import float32_repr, float64_repr
     
 def test_float32_repr():
